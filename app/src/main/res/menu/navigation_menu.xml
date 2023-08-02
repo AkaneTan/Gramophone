@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="@string/navigation_menu_home"
+        android:icon="@drawable/ic_home"
+        android:iconTint="?attr/colorOnSurface" />
+    <item
+        android:id="@+id/playlist"
+        android:title="@string/navigation_menu_playlist"
+        android:icon="@drawable/ic_library_music"
+        android:iconTint="?attr/colorOnSurface" />
+    <item
+        android:id="@+id/settings"
+        android:title="@string/navigation_menu_settings"
+        android:icon="@drawable/ic_settings"
+        android:iconTint="?attr/colorOnSurface" />
+</menu>

@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Serendipity" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">@bool/statusBarContentLight</item>
+    </style>
+
+    <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textFontWeight">500</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textFontWeight">620</item>
+    </style>
+
+    <style name="Theme.Serendipity" parent="Base.Theme.Serendipity" />
+</resources>
