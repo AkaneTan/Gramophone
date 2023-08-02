@@ -12,6 +12,9 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:contentScrim="?attr/colorSurface"
+        app:liftOnScrollColor="?attr/colorSurface"
+        app:statusBarScrim="?attr/colorSurface"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -20,6 +23,8 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/HeadlineTextAppearance"
+            app:layout_scrollEffect="compress"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
             app:menu="@menu/home_menu" />
 
         <com.google.android.material.tabs.TabLayout

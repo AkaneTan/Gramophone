@@ -12,13 +12,20 @@ import org.akanework.serendipity.R
 
 object MediaStoreUtils {
 
+    data class Album(
+        val title: String,
+        val artist: String,
+        val albumYear: Int,
+        val songList: List<MediaItem>
+    )
+
     /**
      * [getAllSongs] gets all of your songs from your local disk.
      *
      * @param context
      * @return
      */
-    fun getAllSongs(context: Context): List<MediaItem> {
+    fun getAllSongs(context: Context): Pair<MutableList<MediaItem>, MutableList<Album>> {
         val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
@@ -37,6 +44,8 @@ object MediaStoreUtils {
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
 
         val songs = mutableListOf<MediaItem>()
+        val albumMap = mutableMapOf<Pair<String, Int>, MutableList<MediaItem>>() // Pair of albumTitle and albumYear as key
+        val albumList = mutableListOf<Album>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
@@ -89,7 +98,7 @@ object MediaStoreUtils {
                             .setArtist(artist)
                             .setAlbumTitle(album)
                             .setAlbumArtist(albumArtist)
-                            .setArtworkUri(artworkUri)
+                            .setArtworkUri(imgUri)
                             .setTrackNumber(trackNumber)
                             .setDiscNumber(discNumber)
                             .setRecordingYear(year)
@@ -98,10 +107,18 @@ object MediaStoreUtils {
                     )
                     .build()
                 )
+
+                albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
             }
         }
         cursor?.close()
 
-        return songs
+        for ((key, value) in albumMap) {
+            val (albumTitle, albumYear) = key
+            val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber.toString() }
+            albumList.add(Album(albumTitle, sortedAlbumSongs.first().mediaMetadata.artist.toString(), albumYear, sortedAlbumSongs))
+        }
+
+        return Pair(songs, albumList)
     }
 }

@@ -4,6 +4,7 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/statusBarContentLight</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">

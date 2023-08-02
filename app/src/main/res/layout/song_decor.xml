@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/song_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:padding="8dp"
+        android:textColor="?attr/colorPrimary"
+        android:textFontWeight="500"
+        tools:text="0 Song"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sort"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="end|center_vertical"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:insetRight="0dp"
+        android:insetLeft="0dp"
+        android:backgroundTint="?attr/colorSurface"
+        app:icon="@drawable/ic_sort"
+        app:iconTint="?attr/colorPrimary"
+        app:iconSize="24dp"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"/>
+
+</FrameLayout>

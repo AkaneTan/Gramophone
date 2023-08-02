@@ -13,7 +13,7 @@ import org.akanework.serendipity.ui.fragments.SongFragment
 /**
  * This is the ViewPager2 adapter.
  */
-class MainViewPagerAdapter(fragmentManager: FragmentActivity) :
+class ViewPager2Adapter(fragmentManager: FragmentActivity) :
     FragmentStateAdapter(fragmentManager) {
     override fun getItemCount(): Int = 6
 
