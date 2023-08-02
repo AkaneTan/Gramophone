@@ -5,6 +5,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.akanework.serendipity.ui.fragments.AlbumFragment
 import org.akanework.serendipity.ui.fragments.ArtistFragment
+import org.akanework.serendipity.ui.fragments.DateFragment
+import org.akanework.serendipity.ui.fragments.GenreFragment
 import org.akanework.serendipity.ui.fragments.PlaylistFragment
 import org.akanework.serendipity.ui.fragments.SongFragment
 
@@ -13,13 +15,15 @@ import org.akanework.serendipity.ui.fragments.SongFragment
  */
 class MainViewPagerAdapter(fragmentManager: FragmentActivity) :
     FragmentStateAdapter(fragmentManager) {
-    override fun getItemCount(): Int = 4
+    override fun getItemCount(): Int = 6
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> SongFragment()
         1 -> AlbumFragment()
         2 -> ArtistFragment()
-        3 -> PlaylistFragment()
+        3 -> GenreFragment()
+        4 -> DateFragment()
+        5 -> PlaylistFragment()
         else -> throw IllegalArgumentException("Invalid position: $position")
     }
 }

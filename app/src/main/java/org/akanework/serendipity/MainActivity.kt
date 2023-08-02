@@ -29,10 +29,13 @@ class MainActivity : AppCompatActivity() {
                 0 -> getString(R.string.category_songs)
                 1 -> getString(R.string.category_albums)
                 2 -> getString(R.string.category_artists)
-                3 -> getString(R.string.category_playlists)
+                3 -> getString(R.string.category_genres)
+                4 -> getString(R.string.category_dates)
+                5 -> getString(R.string.category_playlists)
                 else -> "Unknown"
             }
         }.attach()
+        viewPager2.offscreenPageLimit = 5
 
         Log.d("TAGTAG", MediaStoreUtils.getAllSongs(this).size.toString())
 
