@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Serendipity"
+rootProject.name = "Gramophone"
 include(":app")
  

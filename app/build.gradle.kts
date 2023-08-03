@@ -6,11 +6,11 @@ plugins {
 
 
 android {
-    namespace = "org.akanework.serendipity"
+    namespace = "org.akanework.gramophone"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "org.akanework.serendipity"
+        applicationId = "org.akanework.gramophone"
         minSdk = 31
         targetSdk = 33
         versionCode = 1

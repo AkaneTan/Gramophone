@@ -9,7 +9,7 @@
     </item>
     <item
         android:bottom="16dp"
-        android:drawable="@drawable/artist_art"
+        android:drawable="@drawable/dates_art"
         android:end="16dp"
         android:start="16dp"
         android:top="16dp" />

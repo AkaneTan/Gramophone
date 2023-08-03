@@ -6,6 +6,11 @@
         <item name="android:windowLightStatusBar">@bool/statusBarContentLight</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+    
+    <style name="navigationViewItemShape" parent="@style/ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+    </style> 
 
     <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="android:fontFamily">sans-serif</item>
@@ -17,6 +22,14 @@
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textFontWeight">620</item>
+    </style>
+
+    <style name="MaterialToolBarStyle" parent="Widget.Material3.Toolbar">
+        <item name="actionOverflowMenuStyle">@style/ToolbarMenuStyle</item>
+    </style>
+
+    <style name="ToolbarMenuStyle">
+        <item name="android:paddingEnd">4dp</item>
     </style>
 
     <style name="Theme.Serendipity" parent="Base.Theme.Serendipity" />
