@@ -42,7 +42,7 @@ class SongFragment : Fragment() {
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 
         libraryViewModel.mediaItemList.observe(viewLifecycleOwner) { mediaItems ->
-            if (mediaItems.isNotEmpty() && !(mediaItems.containsAll(songList) && songList.containsAll(mediaItems))) {
+            if (mediaItems.isNotEmpty()) {
                 songAdapter.updateList(mediaItems)
                 songDecorAdapter.updateSongCounter(mediaItems.size)
             }

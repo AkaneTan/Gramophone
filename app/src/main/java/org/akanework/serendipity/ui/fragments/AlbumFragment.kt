@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,8 +13,6 @@ import org.akanework.serendipity.R
 import org.akanework.serendipity.logic.utils.MediaStoreUtils
 import org.akanework.serendipity.ui.adapters.AlbumAdapter
 import org.akanework.serendipity.ui.adapters.AlbumDecorAdapter
-import org.akanework.serendipity.ui.adapters.SongAdapter
-import org.akanework.serendipity.ui.adapters.SongDecorAdapter
 import org.akanework.serendipity.ui.viewmodels.LibraryViewModel
 
 /**
@@ -39,7 +36,7 @@ class AlbumFragment : Fragment() {
         albumList.addAll(libraryViewModel.albumItemList.value!!)
         val albumAdapter = AlbumAdapter(albumList)
         val albumDecorAdapter = AlbumDecorAdapter(requireContext(),
-            libraryViewModel.mediaItemList.value!!.size,
+            libraryViewModel.albumItemList.value!!.size,
             albumAdapter)
         val concatAdapter = ConcatAdapter(albumDecorAdapter, albumAdapter)
 
@@ -54,7 +51,7 @@ class AlbumFragment : Fragment() {
         }
 
         libraryViewModel.albumItemList.observe(viewLifecycleOwner) { mediaItems ->
-            if (mediaItems.isNotEmpty() && !(mediaItems.containsAll(albumList) && albumList.containsAll(mediaItems))) {
+            if (mediaItems.isNotEmpty()) {
                 albumAdapter.updateList(mediaItems)
                 albumDecorAdapter.updateSongCounter(mediaItems.size)
             }

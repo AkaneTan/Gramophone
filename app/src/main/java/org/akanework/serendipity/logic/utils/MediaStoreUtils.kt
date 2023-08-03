@@ -8,11 +8,12 @@ import android.util.Log
 import androidx.core.database.getIntOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import org.akanework.serendipity.R
+import kotlin.system.measureTimeMillis
 
 object MediaStoreUtils {
 
     data class Album(
+        val id: Long,
         val title: String,
         val artist: String,
         val albumYear: Int,
@@ -20,6 +21,7 @@ object MediaStoreUtils {
     )
 
     data class Artist(
+        val id: Long,
         val title: String,
         val songList: List<MediaItem>
     )
@@ -30,7 +32,7 @@ object MediaStoreUtils {
      * @param context
      * @return
      */
-    fun getAllSongs(context: Context): Pair<MutableList<MediaItem>, MutableList<Album>> {
+    fun getAllSongs(context: Context): Triple<MutableList<MediaItem>, MutableList<Album>, MutableList<Artist>> {
         val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
@@ -38,7 +40,6 @@ object MediaStoreUtils {
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.ALBUM_ARTIST,
-            MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.YEAR,
             MediaStore.Audio.Media.ALBUM_ID,
@@ -49,10 +50,8 @@ object MediaStoreUtils {
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
 
         val songs = mutableListOf<MediaItem>()
-        val albumMap = mutableMapOf<Pair<String, Int>, MutableList<MediaItem>>() // Pair of albumTitle and albumYear as key
-        val albumList = mutableListOf<Album>()
+        val albumMap = mutableMapOf<Pair<String, Int>, MutableList<MediaItem>>()
         val artistMap = mutableMapOf<String, MutableList<MediaItem>>()
-        val artistList = mutableListOf<Artist>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
@@ -67,7 +66,6 @@ object MediaStoreUtils {
             val artistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
             val albumColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
             val albumArtistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ARTIST)
-            val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
             val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val yearColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR)
             val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
@@ -82,7 +80,6 @@ object MediaStoreUtils {
                 val album = it.getString(albumColumn)
                 val albumArtist = it.getString(albumArtistColumn)
                     ?: null
-                val duration = it.getLong(durationColumn)
                 val path = it.getString(pathColumn)
                 val year = it.getInt(yearColumn)
                 val albumId = it.getLong(albumIdColumn)
@@ -121,30 +118,36 @@ object MediaStoreUtils {
         }
         cursor?.close()
 
-        for ((key, value) in albumMap) {
-            val (albumTitle, albumYear) = key
-            val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber.toString() }
+        lateinit var sortedAlbumList: MutableList<Album>
+        lateinit var sortedArtistList: MutableList<Artist>
 
-            val albumArtist = sortedAlbumSongs.first().mediaMetadata.albumArtist
-                ?: sortedAlbumSongs.first().mediaMetadata.artist.toString()
+        val duration = measureTimeMillis {
+            sortedAlbumList = albumMap.entries
+                .mapIndexed { index, (key, value) ->
+                    val (albumTitle, albumYear) = key
+                    val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber.toString() }
+                    val albumArtist = sortedAlbumSongs.first().mediaMetadata.albumArtist
+                        ?: sortedAlbumSongs.first().mediaMetadata.artist.toString()
+                    Album(index.toLong(), albumTitle, albumArtist.toString(), albumYear, sortedAlbumSongs)
+                }
+                .sortedWith(compareBy({ it.title }, { it.albumYear }))
+                .toMutableList()
+            sortedArtistList = artistMap.entries
+                .mapIndexed { index, (artistName, songsByArtist) ->
+                    val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
+                    Artist(index.toLong(), artistName, sortedArtistSongs)
+                }
+                .sortedBy { it.title }
+                .toMutableList()
 
-            albumList.insertSorted(Album(albumTitle, albumArtist.toString(), albumYear, sortedAlbumSongs))
-                { a, b -> a.title.compareTo(b.title) }
         }
+        Log.d("TAGTAG", "Time elapsed: $duration")
 
-        for ((artistName, songsByArtist) in artistMap) {
-            val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
-
-            artistList.insertSorted(Artist(artistName, sortedArtistSongs))
-                { a, b -> a.title.compareTo(b.title)}
-        }
-
-        return Pair(songs, albumList)
+        return Triple(songs, sortedAlbumList, sortedArtistList)
     }
 
     /**
      * Helper function to insert an element into the sorted position in a list.
-     * @param list The list where the element should be inserted.
      * @param element The element to be inserted.
      * @param comparator The comparator function to compare elements.
      */

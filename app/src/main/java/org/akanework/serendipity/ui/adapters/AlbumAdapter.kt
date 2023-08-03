@@ -64,7 +64,7 @@ class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>) :
         override fun getOldListSize() = oldList.size
         override fun getNewListSize() = newList.size
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            (oldList[oldItemPosition].title + oldList[oldItemPosition].artist) == (newList[newItemPosition].title + newList[newItemPosition].artist)
+            oldList[oldItemPosition].id == newList[newItemPosition].id
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldList[oldItemPosition] == newList[newItemPosition]
     }
 }
