@@ -10,12 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.serendipity.R
 
-class SongDecorAdapter(private val context: Context,
-                       private var songCount: Int,
-                       private val songAdapter: SongAdapter)
-    : RecyclerView.Adapter<SongDecorAdapter.ViewHolder>() {
+class AlbumDecorAdapter(private val context: Context,
+                        private var albumCount: Int,
+                        private val albumAdapter: AlbumAdapter)
+    : RecyclerView.Adapter<AlbumDecorAdapter.ViewHolder>() {
 
     private var sortStatus = 0
+
+    companion object {
+        const val VIEW_TYPE_ALBUM_DECOR = 0
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
@@ -23,13 +27,14 @@ class SongDecorAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val songText = songCount.toString() + ' '+
-                if (songCount <= 1) context.getString(R.string.song) else context.getString(R.string.songs)
+        val songText = albumCount.toString() + ' '+
+                if (albumCount <= 1) context.getString(R.string.album) else context.getString(R.string.albums)
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
 
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_songs)
+            popupMenu.menu.findItem(R.id.album).isVisible = false
 
             when (sortStatus) {
                 0 -> {
@@ -38,32 +43,22 @@ class SongDecorAdapter(private val context: Context,
                 1 -> {
                     popupMenu.menu.findItem(R.id.artist).isChecked = true
                 }
-                2 -> {
-                    popupMenu.menu.findItem(R.id.album).isChecked = true
-                }
             }
 
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.title.toString() }
+                            albumAdapter.sortBy { it2 -> it2.title }
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
                     }
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.artist.toString() }
+                            albumAdapter.sortBy { it2 -> it2.artist }
                             menuItem.isChecked = true
                             sortStatus = 1
-                        }
-                    }
-                    R.id.album -> {
-                        if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.albumTitle.toString() }
-                            menuItem.isChecked = true
-                            sortStatus = 2
                         }
                     }
                 }
@@ -82,7 +77,7 @@ class SongDecorAdapter(private val context: Context,
 
     fun updateSongCounter(count: Int) {
         sortStatus = 0
-        songCount = count
+        albumCount = count
         notifyItemChanged(0)
     }
 }

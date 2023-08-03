@@ -55,7 +55,7 @@
                 android:textFontWeight="400"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:singleLine="true"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 tools:text="Example Artist" />
 
         </LinearLayout>

@@ -19,6 +19,11 @@ object MediaStoreUtils {
         val songList: List<MediaItem>
     )
 
+    data class Artist(
+        val title: String,
+        val songList: List<MediaItem>
+    )
+
     /**
      * [getAllSongs] gets all of your songs from your local disk.
      *
@@ -46,6 +51,8 @@ object MediaStoreUtils {
         val songs = mutableListOf<MediaItem>()
         val albumMap = mutableMapOf<Pair<String, Int>, MutableList<MediaItem>>() // Pair of albumTitle and albumYear as key
         val albumList = mutableListOf<Album>()
+        val artistMap = mutableMapOf<String, MutableList<MediaItem>>()
+        val artistList = mutableListOf<Artist>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
@@ -74,7 +81,7 @@ object MediaStoreUtils {
                 val artist = it.getString(artistColumn)
                 val album = it.getString(albumColumn)
                 val albumArtist = it.getString(albumArtistColumn)
-                    ?: context.getString(R.string.unknown_artist)
+                    ?: null
                 val duration = it.getLong(durationColumn)
                 val path = it.getString(pathColumn)
                 val year = it.getInt(yearColumn)
@@ -109,6 +116,7 @@ object MediaStoreUtils {
                 )
 
                 albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
+                artistMap.getOrPut(artist) { mutableListOf() }.add(songs.last())
             }
         }
         cursor?.close()
@@ -116,9 +124,38 @@ object MediaStoreUtils {
         for ((key, value) in albumMap) {
             val (albumTitle, albumYear) = key
             val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber.toString() }
-            albumList.add(Album(albumTitle, sortedAlbumSongs.first().mediaMetadata.artist.toString(), albumYear, sortedAlbumSongs))
+
+            val albumArtist = sortedAlbumSongs.first().mediaMetadata.albumArtist
+                ?: sortedAlbumSongs.first().mediaMetadata.artist.toString()
+
+            albumList.insertSorted(Album(albumTitle, albumArtist.toString(), albumYear, sortedAlbumSongs))
+                { a, b -> a.title.compareTo(b.title) }
+        }
+
+        for ((artistName, songsByArtist) in artistMap) {
+            val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
+
+            artistList.insertSorted(Artist(artistName, sortedArtistSongs))
+                { a, b -> a.title.compareTo(b.title)}
         }
 
         return Pair(songs, albumList)
     }
+
+    /**
+     * Helper function to insert an element into the sorted position in a list.
+     * @param list The list where the element should be inserted.
+     * @param element The element to be inserted.
+     * @param comparator The comparator function to compare elements.
+     */
+    private fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<T>) {
+        val insertionIndex = this.binarySearch(element, comparator)
+
+        if (insertionIndex < 0) {
+            this.add(-(insertionIndex + 1), element)
+        } else {
+            this.add(insertionIndex, element)
+        }
+    }
+
 }

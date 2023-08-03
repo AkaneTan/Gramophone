@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,25 +13,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.serendipity.R
+import org.akanework.serendipity.logic.utils.MediaStoreUtils
 
-/**
- * [SongAdapter] is an adapter for displaying songs.
- */
-class SongAdapter(private val songList: MutableList<MediaItem>) :
-    RecyclerView.Adapter<SongAdapter.ViewHolder>() {
+class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>) :
+    RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.adapter_list_card, parent, false))
+            .inflate(R.layout.adapter_grid_card, parent, false))
     }
 
-    override fun getItemCount(): Int = songList.size
+    override fun getItemCount(): Int = albumList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.songTitle.text = songList[position].mediaMetadata.title
-        holder.songArtist.text = songList[position].mediaMetadata.artist
+        holder.songTitle.text = albumList[position].title
+        holder.songArtist.text = albumList[position].artist
 
         Glide.with(holder.songCover.context)
-            .load(songList[position].mediaMetadata.artworkUri)
+            .load(albumList[position].songList.first().mediaMetadata.artworkUri)
             .placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
 
@@ -44,29 +41,30 @@ class SongAdapter(private val songList: MutableList<MediaItem>) :
         val songArtist: TextView = view.findViewById(R.id.artist)
     }
 
-    fun sortBy(selector: (MediaItem) -> String) {
+    fun sortBy(selector: (MediaStoreUtils.Album) -> String) {
         CoroutineScope(Dispatchers.Default).launch {
             // Sorting in the background using coroutines
-            songList.sortBy { selector(it) }
+            albumList.sortBy { selector(it) }
 
             // Update the UI on the main thread
             withContext(Dispatchers.Main) {
-                notifyItemRangeChanged(0, songList.size - 1)
+                notifyItemRangeChanged(0, albumList.size - 1)
             }
         }
     }
 
-    fun updateList(newList: MutableList<MediaItem>) {
-        val diffResult = DiffUtil.calculateDiff(SongDiffCallback(songList, newList))
-        songList.clear()
-        songList.addAll(newList)
+    fun updateList(newList: MutableList<MediaStoreUtils.Album>) {
+        val diffResult = DiffUtil.calculateDiff(SongDiffCallback(albumList, newList))
+        albumList.clear()
+        albumList.addAll(newList)
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private class SongDiffCallback(private val oldList: List<MediaItem>, private val newList: List<MediaItem>) : DiffUtil.Callback() {
+    private class SongDiffCallback(private val oldList: MutableList<MediaStoreUtils.Album>, private val newList: MutableList<MediaStoreUtils.Album>) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
         override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldList[oldItemPosition].mediaId == newList[newItemPosition].mediaId
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            (oldList[oldItemPosition].title + oldList[oldItemPosition].artist) == (newList[newItemPosition].title + newList[newItemPosition].artist)
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

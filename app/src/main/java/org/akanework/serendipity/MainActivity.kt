@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
@@ -22,11 +23,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        CoroutineScope(Dispatchers.Default).launch {
-            val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
-            withContext(Dispatchers.Main) {
-                libraryViewModel.mediaItemList.value = pairObject.first
-                libraryViewModel.albumItemList.value = pairObject.second
+        if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
+            CoroutineScope(Dispatchers.Default).launch {
+                val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
+                withContext(Dispatchers.Main) {
+                    libraryViewModel.mediaItemList.value = pairObject.first
+                    libraryViewModel.albumItemList.value = pairObject.second
+                }
             }
         }
 
@@ -37,6 +40,28 @@ class MainActivity : AppCompatActivity() {
         // Initialize layouts.
         val viewPager2 = findViewById<ViewPager2>(R.id.fragment_viewpager)
         val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
+        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+
+        topAppBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.settings -> {
+                    true
+                }
+                R.id.refresh -> {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
+                        withContext(Dispatchers.Main) {
+                            libraryViewModel.mediaItemList.value = pairObject.first
+                            libraryViewModel.albumItemList.value = pairObject.second
+                        }
+                    }
+                    true
+                }
+                else -> {
+                    true
+                }
+            }
+        }
 
         // Connect ViewPager2.
         viewPager2.adapter = ViewPager2Adapter(this)

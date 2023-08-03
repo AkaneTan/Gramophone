@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="8dp"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cover_frame"
+        android:layout_width="164dp"
+        android:layout_height="164dp"
+        app:strokeWidth="0dp"
+        app:cardCornerRadius="6dp">
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="164dp"
+            android:layout_height="164dp"
+            android:src="@drawable/ic_default_cover" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="28dp"
+        android:layout_below="@id/cover_frame"
+        android:layout_alignStart="@id/cover_frame"
+        android:layout_alignEnd="@id/info"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textFontWeight="500"
+            android:textColor="?attr/colorOnSurface"
+            android:singleLine="true"
+            android:textSize="14sp"
+            tools:text="Example Title"/>
+
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textFontWeight="400"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:singleLine="true"
+            android:textSize="14sp"
+            tools:text="Example Artist" />
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/info"
+        android:layout_width="28dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:backgroundTint="?attr/colorSurface"
+        app:icon="@drawable/ic_more_vert"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
+        app:iconTint="?attr/colorOnSurface"
+        android:layout_below="@id/cover_frame"
+        android:layout_alignEnd="@id/cover_frame"/>
+
+</RelativeLayout>
