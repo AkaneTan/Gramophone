@@ -1,5 +1,7 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,14 +46,22 @@ import org.akanework.gramophone.R
         holder.itemView.setOnClickListener {
             val standardBottomSheet = mainActivity.findViewById<FrameLayout>(R.id.player_layout)
             val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
-            standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            standardBottomSheetBehavior.isHideable = false
             val mediaController = mainActivity.getPlayer()
             mediaController.setMediaItems(songList)
             mediaController.seekToDefaultPosition(position)
             mediaController.audioAttributes
             mediaController.prepare()
             mediaController.play()
+            if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    if (standardBottomSheetBehavior.isHideable) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            standardBottomSheetBehavior.isHideable = false
+                        }, 300)
+                    }
+                }, 200)
+            }
         }
 
     }

@@ -85,6 +85,7 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+        <!-- Player Layout -->
         <FrameLayout
             android:id="@+id/player_layout"
             style="@style/BottomPlayerSheetStyle"
@@ -93,36 +94,103 @@
             app:layout_behavior="@string/bottom_sheet_behavior"
             app:behavior_hideable="true"
             app:behavior_peekHeight="66dp"
+            android:fitsSystemWindows="false"
             android:clickable="true"
             android:background="?attr/colorOnSurface"
-            android:translationZ="16dp">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="16dp">
+            android:translationZ="256dp"
+            tools:behavior_peekHeight="1000dp">
+
+            <!-- Preview Player -->
+            <RelativeLayout
+                android:id="@+id/preview_player"
+                android:layout_width="match_parent"
+                android:layout_height="66dp">
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/album_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
                     app:strokeWidth="0dp"
                     app:cardCornerRadius="6dp">
                     <ImageView
-                        android:id="@+id/album_cover"
+                        android:id="@+id/preview_album_cover"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/ic_default_cover" />
                 </com.google.android.material.card.MaterialCardView>
-                <TextView
-                    android:id="@+id/song_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/album_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/album_layout"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="112dp"
+                    android:orientation="vertical">
+                    <org.akanework.gramophone.ui.components.MarqueeTextView
+                        android:id="@+id/preview_song_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textFontWeight="500"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="Example title" />
+
+                    <org.akanework.gramophone.ui.components.MarqueeTextView
+                        android:id="@+id/preview_artist_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textFontWeight="500"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="Example Artist" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/preview_control"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:insetTop="0dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:layout_toStartOf="@id/preview_next"
+                    android:layout_centerVertical="true"
+                    app:icon="@drawable/pause_art"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:iconSize="24dp"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/preview_next"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:insetTop="0dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"
+                    app:icon="@drawable/next_art"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:iconSize="24dp"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+            </RelativeLayout>
+
+            <!-- Full Player -->
+            <RelativeLayout
+                android:id="@+id/full_player"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </RelativeLayout>
         </FrameLayout>
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

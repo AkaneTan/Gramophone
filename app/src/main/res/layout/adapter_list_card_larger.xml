@@ -9,7 +9,7 @@
     android:paddingEnd="4dp"
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground">
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -59,9 +59,9 @@
                 tools:text="Example Artist" />
 
         </LinearLayout>
-        
+
     </LinearLayout>
-    
+
     <com.google.android.material.button.MaterialButton
         android:layout_width="48dp"
         android:layout_height="48dp"

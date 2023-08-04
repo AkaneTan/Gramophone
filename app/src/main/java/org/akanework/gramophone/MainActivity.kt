@@ -3,12 +3,18 @@ package org.akanework.gramophone
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
@@ -18,6 +24,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -41,14 +48,78 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var controllerFuture: ListenableFuture<MediaController>
 
     private lateinit var bottomSheetPreviewCover: ImageView
+    private lateinit var bottomSheetPreviewTitle: TextView
+    private lateinit var bottomSheetPreviewSubtitle: TextView
+    private lateinit var bottomSheetPreviewControllerButton: MaterialButton
+    private lateinit var bottomSheetPreviewNextButton: MaterialButton
 
-    val playerListener = object : Player.Listener {
+    private lateinit var standardBottomSheet: FrameLayout
+    private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+
+    private lateinit var topAppBar: MaterialToolbar
+
+    private var isPlayerPlaying = false
+
+    private val playerListener = object : Player.Listener {
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            super.onMediaItemTransition(mediaItem, reason)
+            updateSongInfo(mediaItem)
+        }
+
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
-                Glide.with(bottomSheetPreviewCover)
-                    .load(controllerFuture.get().currentMediaItem?.mediaMetadata!!.artworkUri)
-                    .placeholder(R.drawable.ic_default_cover)
-                    .into(bottomSheetPreviewCover)
+            isPlayerPlaying = isPlaying
+            val instance = controllerFuture.get()
+            Log.d("TAG", "isPlaying, $isPlaying")
+            if (isPlaying) {
+                bottomSheetPreviewControllerButton.icon =
+                    AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+            } else if (instance.playbackState != 2) {
+                Log.d("TAG", "Triggered, ${instance.playbackState}")
+                bottomSheetPreviewControllerButton.icon =
+                    AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+            }
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            super.onPlaybackStateChanged(playbackState)
+            Log.d("TAG", "PlaybackState: $playbackState")
+        }
+    }
+
+    fun updateSongInfo(mediaItem: MediaItem?) {
+        Log.d("TAG", "${!controllerFuture.get().isPlaying}")
+        val instance = controllerFuture.get()
+        if (instance.mediaItemCount != 0) {
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    Log.d("TAG", "PlaybackState: ${instance.playbackState}, isPlaying: ${instance.isPlaying}")
+                    if (instance.isPlaying) {
+                        Log.d("TAG", "REACHED1")
+                        bottomSheetPreviewControllerButton.icon =
+                            AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+                    } else if (instance.playbackState != 2) {
+                        Log.d("TAG", "REACHED2")
+                        bottomSheetPreviewControllerButton.icon =
+                            AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+                    }
+                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        standardBottomSheetBehavior.isHideable = false
+                    }, 200 )}, 200)
+            Glide.with(bottomSheetPreviewCover)
+                .load(mediaItem?.mediaMetadata?.artworkUri)
+                .placeholder(R.drawable.ic_default_cover)
+                .into(bottomSheetPreviewCover)
+            bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
+            bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist
+        } else {
+            if (!standardBottomSheetBehavior.isHideable) {
+                standardBottomSheetBehavior.isHideable = true
+            }
+            Handler(Looper.getMainLooper()).postDelayed({
+                standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }, 200)
         }
     }
 
@@ -57,7 +128,39 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         controllerFuture = MediaController.Builder(this, sessionToken)
             .buildAsync()
         controllerFuture.addListener(
-            { controllerFuture.get().addListener(playerListener) },
+            {   val controller = controllerFuture.get()
+                controller.addListener(playerListener)
+                topAppBar.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.shuffle -> {
+                            libraryViewModel.mediaItemList.value?.let { it1 ->
+                                controller.setMediaItems(
+                                    it1
+                                )
+                                controller.shuffleModeEnabled = true
+                                controller.prepare()
+                                controller.play()
+                            }
+                        }
+                        R.id.search -> {
+
+                        }
+                        else -> throw IllegalStateException()
+                    }
+                    true
+                }
+                bottomSheetPreviewControllerButton.setOnClickListener {
+                    if (controller.isPlaying) {
+                        controllerFuture.get().pause()
+                    } else {
+                        controllerFuture.get().play()
+                    }
+                }
+                bottomSheetPreviewNextButton.setOnClickListener {
+                    controllerFuture.get().seekToNextMediaItem()
+                }
+                updateSongInfo(controller.currentMediaItem)
+            },
             MoreExecutors.directExecutor()
         )
         Log.d("TAG", "onStart")
@@ -85,6 +188,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             }
         }
 
+        val params = window.attributes
+        params.layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        window.attributes = params
+
         // Set content Views.
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
@@ -92,18 +200,20 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         // Initialize layouts.
         val viewPager2 = findViewById<ViewPager2>(R.id.fragment_viewpager)
         val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
-        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        topAppBar = findViewById(R.id.topAppBar)
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
 
-        val standardBottomSheet = findViewById<FrameLayout>(R.id.player_layout)
-        val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
+        standardBottomSheet = findViewById(R.id.player_layout)
+        standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
 
-        bottomSheetPreviewCover = findViewById(R.id.album_cover)
+        bottomSheetPreviewCover = findViewById(R.id.preview_album_cover)
+        bottomSheetPreviewTitle = findViewById(R.id.preview_song_name)
+        bottomSheetPreviewSubtitle = findViewById(R.id.preview_artist_name)
+        bottomSheetPreviewControllerButton = findViewById(R.id.preview_control)
+        bottomSheetPreviewNextButton = findViewById(R.id.preview_next)
 
-        if (!this::controllerFuture.isInitialized || !controllerFuture.get().isPlaying) {
-            standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        }
+        standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         topAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -236,5 +346,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             }
         }.attach()
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        controllerFuture.get().removeListener(playerListener)
+        controllerFuture.get().release()
     }
 }
