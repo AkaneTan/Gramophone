@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
@@ -35,7 +36,7 @@ class SongFragment : Fragment() {
         songRecyclerView.layoutManager = LinearLayoutManager(activity)
         val songList = mutableListOf<MediaItem>()
         songList.addAll(libraryViewModel.mediaItemList.value!!)
-        val songAdapter = SongAdapter(songList)
+        val songAdapter = SongAdapter(songList, requireActivity() as MainActivity)
         val songDecorAdapter = SongDecorAdapter(requireContext(),
             libraryViewModel.mediaItemList.value!!.size,
             songAdapter)

@@ -11,7 +11,7 @@ import com.bumptech.glide.module.AppGlideModule
  * This shouldn't be touched at any time.
  */
 @GlideModule
-class SerendipityGlideModule : AppGlideModule() {
+class GramophoneGlideModule : AppGlideModule() {
     override fun applyOptions(context: Context, builder: GlideBuilder) {
         builder.setLogLevel(Log.ERROR)
     }

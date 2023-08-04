@@ -3,22 +3,27 @@ package org.akanework.gramophone.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 
 /**
  * [SongAdapter] is an adapter for displaying songs.
  */
-class SongAdapter(private val songList: MutableList<MediaItem>) :
+@UnstableApi class SongAdapter(private val songList: MutableList<MediaItem>,
+                  private val mainActivity: MainActivity) :
     RecyclerView.Adapter<SongAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context)
@@ -35,6 +40,19 @@ class SongAdapter(private val songList: MutableList<MediaItem>) :
             .load(songList[position].mediaMetadata.artworkUri)
             .placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
+
+        holder.itemView.setOnClickListener {
+            val standardBottomSheet = mainActivity.findViewById<FrameLayout>(R.id.player_layout)
+            val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
+            standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            standardBottomSheetBehavior.isHideable = false
+            val mediaController = mainActivity.getPlayer()
+            mediaController.setMediaItems(songList)
+            mediaController.seekToDefaultPosition(position)
+            mediaController.audioAttributes
+            mediaController.prepare()
+            mediaController.play()
+        }
 
     }
 

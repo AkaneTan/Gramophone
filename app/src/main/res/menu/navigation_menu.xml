@@ -1,42 +1,46 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/songs"
-        android:icon="@drawable/ic_music_note"
-        android:title="@string/category_songs"
-        android:checkable="true"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/albums"
-        android:icon="@drawable/album_art"
-        android:title="@string/category_albums"
-        android:checkable="true"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/artists"
-        android:icon="@drawable/artist_art"
-        android:title="@string/category_artists"
-        android:checkable="true"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/genres"
-        android:icon="@drawable/genres_art"
-        android:title="@string/category_genres"
-        android:checkable="true"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/dates"
-        android:icon="@drawable/dates_art"
-        android:title="@string/category_dates"
-        android:checkable="true"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/playlists"
-        android:icon="@drawable/ic_queue_music"
-        android:title="@string/category_playlists"
-        android:checkable="true"
-        app:showAsAction="ifRoom"/>
+    <item android:title="@string/categories">
+        <menu>
+            <item
+                android:id="@+id/songs"
+                android:icon="@drawable/ic_music_note"
+                android:title="@string/category_songs"
+                android:checkable="true"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/albums"
+                android:icon="@drawable/album_art"
+                android:title="@string/category_albums"
+                android:checkable="true"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/artists"
+                android:icon="@drawable/artist_art"
+                android:title="@string/category_artists"
+                android:checkable="true"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/genres"
+                android:icon="@drawable/genres_art"
+                android:title="@string/category_genres"
+                android:checkable="true"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/dates"
+                android:icon="@drawable/dates_art"
+                android:title="@string/category_dates"
+                android:checkable="true"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/playlists"
+                android:icon="@drawable/ic_queue_music"
+                android:title="@string/category_playlists"
+                android:checkable="true"
+                app:showAsAction="ifRoom"/>
+        </menu>
+    </item>
     <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_refresh"

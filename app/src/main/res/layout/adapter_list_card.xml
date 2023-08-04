@@ -25,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/cover"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/ic_default_cover" />
 
         </com.google.android.material.card.MaterialCardView>

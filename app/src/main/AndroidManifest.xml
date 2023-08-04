@@ -24,13 +24,18 @@
         android:theme="@style/Theme.Serendipity">
 
         <service
-            android:name=".logic.services.SerendipityPlaybackService"
+            android:name=".logic.services.GramophonePlaybackService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback"
-            tools:ignore="ExportedService" />
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService"/>
+                <action android:name="androidx.media3.session.MediaSessionService"/>
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleInstance"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

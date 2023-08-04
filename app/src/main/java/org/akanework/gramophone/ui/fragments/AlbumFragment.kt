@@ -21,6 +21,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class AlbumFragment : Fragment() {
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private lateinit var gridLayoutManager: GridLayoutManager
+    private lateinit var concatAdapter: ConcatAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +32,6 @@ class AlbumFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_album, container, false)
         val albumRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
-        val gridLayoutManager = GridLayoutManager(activity, 2)
         albumRecyclerView.layoutManager = gridLayoutManager
         val albumList = mutableListOf<MediaStoreUtils.Album>()
         albumList.addAll(libraryViewModel.albumItemList.value!!)
@@ -38,17 +39,7 @@ class AlbumFragment : Fragment() {
         val albumDecorAdapter = AlbumDecorAdapter(requireContext(),
             libraryViewModel.albumItemList.value!!.size,
             albumAdapter)
-        val concatAdapter = ConcatAdapter(albumDecorAdapter, albumAdapter)
-
-        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (concatAdapter.getItemViewType(position) == AlbumDecorAdapter.VIEW_TYPE_ALBUM_DECOR) {
-                    gridLayoutManager.spanCount // Return the total span count for albumDecorAdapter
-                } else {
-                    1 // For other view types, return 1 (normal span)
-                }
-            }
-        }
+        concatAdapter = ConcatAdapter(albumDecorAdapter, albumAdapter)
 
         if (!libraryViewModel.albumItemList.hasActiveObservers()) {
             libraryViewModel.albumItemList.observe(viewLifecycleOwner) { mediaItems ->
@@ -67,5 +58,15 @@ class AlbumFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        gridLayoutManager = GridLayoutManager(activity, 2)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (concatAdapter.getItemViewType(position) == AlbumDecorAdapter.VIEW_TYPE_ALBUM_DECOR) {
+                    gridLayoutManager.spanCount // Return the total span count for albumDecorAdapter
+                } else {
+                    1 // For other view types, return 1 (normal span)
+                }
+            }
+        }
     }
 }
