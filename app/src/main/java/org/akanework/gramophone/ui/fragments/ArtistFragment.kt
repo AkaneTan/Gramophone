@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
@@ -51,6 +52,11 @@ class ArtistFragment : Fragment() {
         }
 
         artistRecyclerView.adapter = concatAdapter
+
+        FastScrollerBuilder(artistRecyclerView).apply {
+            useMd2Style()
+            build()
+        }
         return rootView
     }
 }
