@@ -48,7 +48,7 @@ import org.akanework.gramophone.R
             val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
             val mediaController = mainActivity.getPlayer()
             mediaController.setMediaItems(songList)
-            mediaController.seekToDefaultPosition(position)
+            mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
             mediaController.audioAttributes
             mediaController.prepare()
             mediaController.play()
