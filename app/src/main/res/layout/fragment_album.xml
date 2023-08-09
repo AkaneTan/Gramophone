@@ -10,7 +10,7 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="128dp"
+        android:paddingBottom="154dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay"

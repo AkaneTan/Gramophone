@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.px
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -54,6 +55,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
         FastScrollerBuilder(recyclerView).apply {
             useMd2Style()
+            setPadding(0, 0, 0, (66).px)
             build()
         }
 
