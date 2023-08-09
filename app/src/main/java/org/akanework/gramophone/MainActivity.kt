@@ -2,6 +2,7 @@ package org.akanework.gramophone
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,6 +13,8 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
@@ -57,12 +60,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var navigationView: NavigationView
 
     private var isPlayerPlaying = false
-
-    private var _lockedDrawer = false
-
-    fun lockDrawer(operation: Boolean) {
-        _lockedDrawer = operation
-    }
 
     private val playerListener = object : Player.Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -177,25 +174,27 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         super.onStart()
     }
 
-    fun getSession() = sessionToken
-
     fun getPlayer(): MediaController = controllerFuture.get()
+
+    private fun updateLibrary() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
+            withContext(Dispatchers.Main) {
+                libraryViewModel.mediaItemList.value = pairObject.songList
+                libraryViewModel.albumItemList.value = pairObject.albumList
+                libraryViewModel.artistItemList.value = pairObject.artistList
+                libraryViewModel.genreItemList.value = pairObject.genreList
+                libraryViewModel.dateItemList.value = pairObject.dateList
+            }
+        }
+    }
 
     @SuppressLint("StringFormatMatches")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
-                withContext(Dispatchers.Main) {
-                    libraryViewModel.mediaItemList.value = pairObject.songList
-                    libraryViewModel.albumItemList.value = pairObject.albumList
-                    libraryViewModel.artistItemList.value = pairObject.artistList
-                    libraryViewModel.genreItemList.value = pairObject.genreList
-                    libraryViewModel.dateItemList.value = pairObject.dateList
-                }
-            }
+            updateLibrary()
         }
 
         val params = window.attributes
@@ -225,80 +224,133 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
 
         navigationView.setNavigationItemSelectedListener {
-            if (!_lockedDrawer) {
-                val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
-                when (it.itemId) {
-                    R.id.songs -> {
-                        viewPager2.setCurrentItem(0, true)
-                        drawerLayout.close()
-                    }
-                    R.id.albums -> {
-                        viewPager2.setCurrentItem(1, true)
-                        drawerLayout.close()
-                    }
-                    R.id.artists -> {
-                        viewPager2.setCurrentItem(2, true)
-                        drawerLayout.close()
-                    }
-                    R.id.genres -> {
-                        viewPager2.setCurrentItem(3, true)
-                        drawerLayout.close()
-                    }
-                    R.id.dates -> {
-                        viewPager2.setCurrentItem(4, true)
-                        drawerLayout.close()
-                    }
-                    R.id.playlists -> {
-                        viewPager2.setCurrentItem(5, true)
-                        drawerLayout.close()
-                    }
-                    R.id.refresh -> {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
-                            withContext(Dispatchers.Main) {
-                                libraryViewModel.mediaItemList.value = pairObject.songList
-                                libraryViewModel.albumItemList.value = pairObject.albumList
-                                libraryViewModel.artistItemList.value = pairObject.artistList
-                                libraryViewModel.genreItemList.value = pairObject.genreList
-                                libraryViewModel.dateItemList.value = pairObject.dateList
-                                val snackBar = Snackbar.make(fragmentContainerView,
-                                    getString(
-                                        R.string.refreshed_songs,
-                                        libraryViewModel.mediaItemList.value!!.size
-                                    ), Snackbar.LENGTH_LONG)
-                                snackBar.setAction(R.string.dismiss) {
-                                    snackBar.dismiss()
-                                }
-                                snackBar.setBackgroundTint(
-                                    MaterialColors.getColor(
-                                        snackBar.view,
-                                        com.google.android.material.R.attr.colorSurface
-                                    ))
-                                snackBar.setActionTextColor(
-                                    MaterialColors.getColor(
-                                        snackBar.view,
-                                        com.google.android.material.R.attr.colorPrimary
-                                    ))
-                                snackBar.setTextColor(
-                                    MaterialColors.getColor(
-                                        snackBar.view,
-                                        com.google.android.material.R.attr.colorOnSurface
-                                    ))
-                                snackBar.anchorView = standardBottomSheet
-                                snackBar.show()
-                            }
-                        }
-                        drawerLayout.close()
-                    }
-                    R.id.settings -> {
-                        drawerLayout.close()
-                    }
-                    else -> throw IllegalStateException()
+            val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
+            when (it.itemId) {
+                R.id.songs -> {
+                    viewPager2.setCurrentItem(0, true)
+                    drawerLayout.close()
                 }
+                R.id.albums -> {
+                    viewPager2.setCurrentItem(1, true)
+                    drawerLayout.close()
+                }
+                R.id.artists -> {
+                    viewPager2.setCurrentItem(2, true)
+                    drawerLayout.close()
+                }
+                R.id.genres -> {
+                    viewPager2.setCurrentItem(3, true)
+                    drawerLayout.close()
+                }
+                R.id.dates -> {
+                    viewPager2.setCurrentItem(4, true)
+                    drawerLayout.close()
+                }
+                R.id.playlists -> {
+                    viewPager2.setCurrentItem(5, true)
+                    drawerLayout.close()
+                }
+                R.id.refresh -> {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
+                        withContext(Dispatchers.Main) {
+                            libraryViewModel.mediaItemList.value = pairObject.songList
+                            libraryViewModel.albumItemList.value = pairObject.albumList
+                            libraryViewModel.artistItemList.value = pairObject.artistList
+                            libraryViewModel.genreItemList.value = pairObject.genreList
+                            libraryViewModel.dateItemList.value = pairObject.dateList
+                            val snackBar = Snackbar.make(fragmentContainerView,
+                                getString(
+                                    R.string.refreshed_songs,
+                                    libraryViewModel.mediaItemList.value!!.size
+                                ), Snackbar.LENGTH_LONG)
+                            snackBar.setAction(R.string.dismiss) {
+                                snackBar.dismiss()
+                            }
+                            snackBar.setBackgroundTint(
+                                MaterialColors.getColor(
+                                    snackBar.view,
+                                    com.google.android.material.R.attr.colorSurface
+                                ))
+                            snackBar.setActionTextColor(
+                                MaterialColors.getColor(
+                                    snackBar.view,
+                                    com.google.android.material.R.attr.colorPrimary
+                                ))
+                            snackBar.setTextColor(
+                                MaterialColors.getColor(
+                                    snackBar.view,
+                                    com.google.android.material.R.attr.colorOnSurface
+                                ))
+                            snackBar.anchorView = standardBottomSheet
+                            snackBar.show()
+                        }
+                    }
+                    drawerLayout.close()
+                }
+                R.id.settings -> {
+                    drawerLayout.close()
+                }
+                else -> throw IllegalStateException()
             }
             true
         }
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_MEDIA_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Ask if was denied.
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
+                    Constants.PERMISSION_READ_MEDIA_AUDIO
+                )
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Ask if was denied.
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    Constants.PERMISSION_READ_EXTERNAL_STORAGE
+                )
+            }
+        }
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            Constants.PERMISSION_READ_MEDIA_AUDIO -> {
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    updateLibrary()
+                } else {
+                    // TODO: Show a prompt here
+                }
+            }
+            Constants.PERMISSION_READ_EXTERNAL_STORAGE -> {
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    updateLibrary()
+                } else {
+                    // TODO: Show a prompt here
+                }
+            }
+        }
     }
 
     override fun onStop() {
