@@ -1,10 +1,12 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,8 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
-class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>) :
+class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>,
+    private val fragmentManager: FragmentManager
+) :
     RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context)
@@ -33,6 +38,14 @@ class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>) :
             .placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
 
+        holder.itemView.setOnClickListener {
+            fragmentManager.beginTransaction()
+                .addToBackStack("SUBFRAG")
+                .replace(R.id.container, GeneralSubFragment().apply {
+                    arguments = Bundle().apply { putInt("Position", position) }
+                })
+                .commit()
+        }
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

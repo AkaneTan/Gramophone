@@ -36,7 +36,7 @@ class AlbumFragment : Fragment() {
         albumRecyclerView.layoutManager = gridLayoutManager
         val albumList = mutableListOf<MediaStoreUtils.Album>()
         albumList.addAll(libraryViewModel.albumItemList.value!!)
-        val albumAdapter = AlbumAdapter(albumList)
+        val albumAdapter = AlbumAdapter(albumList, requireActivity().supportFragmentManager)
         val albumDecorAdapter = AlbumDecorAdapter(requireContext(),
             libraryViewModel.albumItemList.value!!.size,
             albumAdapter)

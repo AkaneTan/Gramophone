@@ -24,6 +24,7 @@
             app:layout_scrollEffect="compress"
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:navigationIcon="@drawable/ic_menu"
+            app:navigationIconTint="?attr/colorOnSurface"
             app:menu="@menu/home_menu"
             tools:ignore="RtlSymmetry" />
 
