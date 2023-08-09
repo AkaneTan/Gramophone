@@ -12,6 +12,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             0,
             songAdapter)
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
+        val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = concatAdapter
@@ -83,6 +85,10 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                     }
                 }
             }
+        }
+
+        returnButton.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
         return rootView
