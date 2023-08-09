@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="design_navigation_item_separator_height">0dp</dimen>
+    <dimen name="recyclerview_bottom_padding">200dp</dimen>
 </resources>
