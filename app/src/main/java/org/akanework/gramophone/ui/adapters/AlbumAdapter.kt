@@ -42,7 +42,11 @@ class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>,
             fragmentManager.beginTransaction()
                 .addToBackStack("SUBFRAG")
                 .replace(R.id.container, GeneralSubFragment().apply {
-                    arguments = Bundle().apply { putInt("Position", position) }
+                    arguments = Bundle().apply {
+                        putInt("Position", position)
+                        putInt("Item", 1)
+                        putString("Title", albumList[position].title)
+                    }
                 })
                 .commit()
         }

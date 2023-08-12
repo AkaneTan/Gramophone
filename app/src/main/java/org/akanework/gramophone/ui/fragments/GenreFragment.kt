@@ -34,7 +34,7 @@ class GenreFragment : Fragment() {
         genreRecyclerView.layoutManager = LinearLayoutManager(activity)
         val genreList = mutableListOf<MediaStoreUtils.Genre>()
         genreList.addAll(libraryViewModel.genreItemList.value!!)
-        val genreAdapter = GenreAdapter(genreList, requireContext())
+        val genreAdapter = GenreAdapter(genreList, requireContext(), requireActivity().supportFragmentManager)
         val genreDecorAdapter = GenreDecorAdapter(requireContext(),
             libraryViewModel.genreItemList.value!!.size,
             genreAdapter)

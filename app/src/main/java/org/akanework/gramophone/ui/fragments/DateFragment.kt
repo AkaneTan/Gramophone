@@ -33,7 +33,7 @@ class DateFragment : Fragment() {
         dateRecyclerView.layoutManager = LinearLayoutManager(activity)
         val dateList = mutableListOf<MediaStoreUtils.Date>()
         dateList.addAll(libraryViewModel.dateItemList.value!!)
-        val dateAdapter = DateAdapter(dateList, requireContext())
+        val dateAdapter = DateAdapter(dateList, requireContext(), requireActivity().supportFragmentManager)
         val dateDecorAdapter = DateDecorAdapter(requireContext(),
             libraryViewModel.dateItemList.value!!.size,
             dateAdapter)

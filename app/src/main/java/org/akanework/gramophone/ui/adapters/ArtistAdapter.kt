@@ -1,11 +1,13 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,12 +17,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
  */
 class ArtistAdapter(private val artistList: MutableList<MediaStoreUtils.Artist>,
-    private val context: Context) :
+    private val context: Context,
+    private val fragmentManager: FragmentManager) :
     RecyclerView.Adapter<ArtistAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context)
@@ -43,6 +47,18 @@ class ArtistAdapter(private val artistList: MutableList<MediaStoreUtils.Artist>,
             .placeholder(R.drawable.ic_default_cover_artist)
             .into(holder.songCover)
 
+        holder.itemView.setOnClickListener {
+            fragmentManager.beginTransaction()
+                .addToBackStack("SUBFRAG")
+                .replace(R.id.container, GeneralSubFragment().apply {
+                    arguments = Bundle().apply {
+                        putInt("Position", position)
+                        putInt("Item", 2)
+                        putString("Title", artistList[position].title)
+                    }
+                })
+                .commit()
+        }
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

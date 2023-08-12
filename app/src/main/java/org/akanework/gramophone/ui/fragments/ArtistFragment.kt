@@ -34,7 +34,7 @@ class ArtistFragment : Fragment() {
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
         val artistList = mutableListOf<MediaStoreUtils.Artist>()
         artistList.addAll(libraryViewModel.artistItemList.value!!)
-        val artistAdapter = ArtistAdapter(artistList, requireContext())
+        val artistAdapter = ArtistAdapter(artistList, requireContext(), requireActivity().supportFragmentManager)
         val artistDecorAdapter = ArtistDecorAdapter(requireContext(),
             libraryViewModel.artistItemList.value!!.size,
             artistAdapter)

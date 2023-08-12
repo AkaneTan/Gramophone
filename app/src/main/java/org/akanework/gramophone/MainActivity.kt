@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @UnstableApi class MainActivity : AppCompatActivity() {
@@ -290,6 +291,10 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 }
                 R.id.settings -> {
                     drawerLayout.close()
+                    supportFragmentManager.beginTransaction()
+                        .addToBackStack("SETTINGS")
+                        .replace(R.id.container, SettingsFragment())
+                        .commit()
                 }
                 else -> throw IllegalStateException()
             }
