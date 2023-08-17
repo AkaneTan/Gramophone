@@ -4,7 +4,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -65,7 +64,7 @@ object MediaStoreUtils {
             MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.MIME_TYPE,
             MediaStore.Audio.Media.DISC_NUMBER,
-            MediaStore.Audio.Media.NUM_TRACKS,
+            MediaStore.Audio.Media.TRACK,
             MediaStore.Audio.Media.GENRE
         )
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
@@ -95,7 +94,7 @@ object MediaStoreUtils {
             val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
             val mimeTypeColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
             val discNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DISC_NUMBER)
-            val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.NUM_TRACKS)
+            val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
             val genreColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE)
 
             while (it.moveToNext()) {
@@ -109,8 +108,8 @@ object MediaStoreUtils {
                 val year = it.getInt(yearColumn)
                 val albumId = it.getLong(albumIdColumn)
                 val mimeType = it.getString(mimeTypeColumn)
-                val discNumber = it.getIntOrNull(discNumberColumn)
-                val trackNumber = it.getIntOrNull(trackNumberColumn)
+                var discNumber = it.getInt(discNumberColumn)
+                var trackNumber = it.getInt(trackNumberColumn)
                 val genre = it.getStringOrNull(genreColumn)
 
                 val artworkUri = Uri.parse("content://media/external/audio/albumart")
@@ -118,6 +117,12 @@ object MediaStoreUtils {
                     artworkUri,
                     albumId
                 )
+
+                if (trackNumber.toString().length == 4) {
+                    discNumber = trackNumber.toString().substring(0, 1).toInt()
+                    trackNumber = trackNumber.toString().substring(3, 4).toInt()
+                }
+
                 songs.add(MediaItem.Builder()
                     .setUri(Uri.parse(path))
                     .setMediaId(id.toString())
@@ -180,21 +185,6 @@ object MediaStoreUtils {
             .toMutableList()
 
         return LibraryStoreClass(songs, sortedAlbumList, sortedArtistList, sortedGenreList, sortedDateList)
-    }
-
-    /**
-     * Helper function to insert an element into the sorted position in a list.
-     * @param element The element to be inserted.
-     * @param comparator The comparator function to compare elements.
-     */
-    private fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<T>) {
-        val insertionIndex = this.binarySearch(element, comparator)
-
-        if (insertionIndex < 0) {
-            this.add(-(insertionIndex + 1), element)
-        } else {
-            this.add(insertionIndex, element)
-        }
     }
 
 }
