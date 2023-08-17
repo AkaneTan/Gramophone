@@ -119,8 +119,8 @@ object MediaStoreUtils {
                 )
 
                 if (trackNumber.toString().length == 4) {
-                    discNumber = trackNumber.toString().substring(0, 1).toInt()
-                    trackNumber = trackNumber.toString().substring(3, 4).toInt()
+                    discNumber = trackNumber / 100
+                    trackNumber %= 100
                 }
 
                 songs.add(MediaItem.Builder()
