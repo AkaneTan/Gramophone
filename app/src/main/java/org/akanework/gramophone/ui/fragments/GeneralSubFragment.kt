@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.transition.MaterialSharedAxis
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.SongAdapter
@@ -70,6 +71,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = concatAdapter
+
+        FastScrollerBuilder(recyclerView).useMd2Style().build()
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
