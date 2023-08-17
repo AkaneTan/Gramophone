@@ -60,7 +60,5 @@ class GenreFragment : Fragment() {
         return rootView
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+
 }

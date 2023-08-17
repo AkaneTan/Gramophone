@@ -7,8 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:fitsSystemWindows="false"
-    tools:openDrawer="start">
+    android:fitsSystemWindows="false">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -33,7 +32,8 @@
             android:fitsSystemWindows="false"
             android:clickable="true"
             android:background="?attr/colorOnSurface"
-            android:translationZ="256dp">
+            android:translationZ="256dp"
+            tools:behavior_peekHeight="1000dp">
 
             <!-- Preview Player -->
             <RelativeLayout
@@ -122,6 +122,12 @@
                 android:id="@+id/full_player"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="128sp"
+                    android:text="HELLOWORLDHELLOWORLD"/>
 
             </RelativeLayout>
         </FrameLayout>

@@ -54,7 +54,7 @@ dependencies {
     implementation("androidx.media3:media3-session:1.1.0")
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("me.zhanghai.android.fastscroll:library:1.2.0")
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
 
 }

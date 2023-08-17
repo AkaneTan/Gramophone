@@ -6,9 +6,13 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.MediaItem
@@ -105,10 +110,12 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         bottomSheetPreviewControllerButton.icon =
                             AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
                     }
-                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        standardBottomSheetBehavior.isHideable = false
-                    }, 200 )}, 200)
+                    if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
+                        standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            standardBottomSheetBehavior.isHideable = false
+                        }, 200 )
+                    } }, 200)
             Glide.with(bottomSheetPreviewCover)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .placeholder(R.drawable.ic_default_cover)
@@ -193,6 +200,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     @SuppressLint("StringFormatMatches")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ActivityCompat.postponeEnterTransition(this)
 
         if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
             updateLibrary()
@@ -290,16 +299,41 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                     drawerLayout.close()
                 }
                 R.id.settings -> {
-                    drawerLayout.close()
                     supportFragmentManager.beginTransaction()
                         .addToBackStack("SETTINGS")
                         .replace(R.id.container, SettingsFragment())
                         .commit()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        drawerLayout.close()
+                    }, 50)
                 }
                 else -> throw IllegalStateException()
             }
             true
         }
+
+        val previewPlayer = findViewById<RelativeLayout>(R.id.preview_player)
+        val fullPlayer = findViewById<RelativeLayout>(R.id.full_player)
+
+        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
+                    fullPlayer.visibility = GONE
+                } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                    fullPlayer.visibility = VISIBLE
+                    previewPlayer.visibility = VISIBLE
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    previewPlayer.visibility = GONE
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                previewPlayer.alpha = 1 - (slideOffset)
+                fullPlayer.alpha = slideOffset
+            }
+        }
+
+        standardBottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(

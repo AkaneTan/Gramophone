@@ -59,4 +59,5 @@ class ArtistFragment : Fragment() {
         }
         return rootView
     }
+
 }

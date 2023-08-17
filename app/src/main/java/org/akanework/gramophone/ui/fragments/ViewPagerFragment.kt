@@ -16,6 +16,7 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import kotlin.random.Random
 
 @UnstableApi class ViewPagerFragment : Fragment() {
 
@@ -29,7 +30,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
     }
@@ -50,10 +50,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 R.id.shuffle -> {
                     libraryViewModel.mediaItemList.value?.let { it1 ->
                         val controller = (requireActivity() as MainActivity).getPlayer()
-                        controller.setMediaItems(
-                            it1
-                        )
-                        controller.shuffleModeEnabled = true
+                        controller.setMediaItems(it1)
+                        controller.seekToDefaultPosition(Random.nextInt(0, it1.size))
                         controller.prepare()
                         controller.play()
                     }
@@ -75,7 +73,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         }
 
         // Connect ViewPager2.
-        viewPager2.adapter = ViewPager2Adapter(requireActivity())
+        viewPager2.adapter = ViewPager2Adapter(childFragmentManager, lifecycle)
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.category_songs)
