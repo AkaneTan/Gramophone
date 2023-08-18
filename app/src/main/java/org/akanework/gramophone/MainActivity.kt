@@ -58,6 +58,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var bottomSheetPreviewSubtitle: TextView
     private lateinit var bottomSheetPreviewControllerButton: MaterialButton
     private lateinit var bottomSheetPreviewNextButton: MaterialButton
+    private lateinit var bottomSheetFullCover: ImageView
+    private lateinit var bottomSheetFullTitle: TextView
+    private lateinit var bottomSheetFullSubtitle: TextView
 
     private lateinit var standardBottomSheet: FrameLayout
     private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
@@ -120,8 +123,14 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .placeholder(R.drawable.ic_default_cover)
                 .into(bottomSheetPreviewCover)
+            Glide.with(bottomSheetFullCover)
+                .load(mediaItem?.mediaMetadata?.artworkUri)
+                .placeholder(R.drawable.ic_default_cover)
+                .into(bottomSheetFullCover)
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist
+            bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
+            bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist
         } else {
             if (!standardBottomSheetBehavior.isHideable) {
                 standardBottomSheetBehavior.isHideable = true
@@ -228,6 +237,10 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         bottomSheetPreviewSubtitle = findViewById(R.id.preview_artist_name)
         bottomSheetPreviewControllerButton = findViewById(R.id.preview_control)
         bottomSheetPreviewNextButton = findViewById(R.id.preview_next)
+
+        bottomSheetFullCover = findViewById(R.id.full_sheet_cover)
+        bottomSheetFullTitle = findViewById(R.id.full_song_name)
+        bottomSheetFullSubtitle = findViewById(R.id.full_song_artist)
 
         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
