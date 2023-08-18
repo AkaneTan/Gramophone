@@ -16,21 +16,13 @@
         android:layout_marginEnd="48dp"
         android:orientation="horizontal">
 
-        <com.google.android.material.card.MaterialCardView
+        <ImageView
+            android:id="@+id/cover"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
-            app:strokeWidth="0dp"
-            app:cardCornerRadius="6dp">
-
-            <ImageView
-                android:id="@+id/cover"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_default_cover"
-                android:background="?attr/colorSurfaceContainer" />
-
-        </com.google.android.material.card.MaterialCardView>
+            android:src="@drawable/ic_default_cover"
+            android:background="?attr/colorSurfaceContainer" />
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -14,21 +14,12 @@
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cover_frame"
+    <ImageView
+        android:id="@+id/cover"
         android:layout_width="164dp"
         android:layout_height="164dp"
-        app:strokeWidth="0dp"
-        app:cardCornerRadius="6dp">
-
-        <ImageView
-            android:id="@+id/cover"
-            android:layout_width="164dp"
-            android:layout_height="164dp"
-            android:src="@drawable/ic_default_cover"
-            android:background="?attr/colorSurfaceContainer" />
-
-    </com.google.android.material.card.MaterialCardView>
+        android:src="@drawable/ic_default_cover"
+        android:background="?attr/colorSurfaceContainer" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,8 +27,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="28dp"
-        android:layout_below="@id/cover_frame"
-        android:layout_alignStart="@id/cover_frame"
+        android:layout_below="@id/cover"
+        android:layout_alignStart="@id/cover"
         android:layout_alignEnd="@id/info"
         android:orientation="vertical">
 
@@ -79,7 +70,7 @@
         app:iconPadding="0dp"
         app:iconSize="24dp"
         app:iconTint="?attr/colorOnSurface"
-        android:layout_below="@id/cover_frame"
-        android:layout_alignEnd="@id/cover_frame"/>
+        android:layout_below="@id/cover"
+        android:layout_alignEnd="@id/cover" />
 
 </RelativeLayout>
