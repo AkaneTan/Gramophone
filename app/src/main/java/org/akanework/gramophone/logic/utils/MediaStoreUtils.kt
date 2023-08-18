@@ -42,7 +42,8 @@ object MediaStoreUtils {
         val albumList: MutableList<Album>,
         val artistList: MutableList<Artist>,
         val genreList: MutableList<Genre>,
-        val dateList: MutableList<Date>
+        val dateList: MutableList<Date>,
+        val durationList: MutableMap<Long, Long>
     )
 
     /**
@@ -65,7 +66,8 @@ object MediaStoreUtils {
             MediaStore.Audio.Media.MIME_TYPE,
             MediaStore.Audio.Media.DISC_NUMBER,
             MediaStore.Audio.Media.TRACK,
-            MediaStore.Audio.Media.GENRE
+            MediaStore.Audio.Media.GENRE,
+            MediaStore.Audio.Media.DURATION
         )
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
 
@@ -74,6 +76,7 @@ object MediaStoreUtils {
         val artistMap = mutableMapOf<String, MutableList<MediaItem>>()
         val genreMap = mutableMapOf<String?, MutableList<MediaItem>>()
         val dateMap = mutableMapOf<Int, MutableList<MediaItem>>()
+        val durationMap = mutableMapOf<Long, Long>()
         val unknownGenre = context.getString(R.string.unknown_genre)
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -96,6 +99,7 @@ object MediaStoreUtils {
             val discNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DISC_NUMBER)
             val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
             val genreColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE)
+            val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
 
             while (it.moveToNext()) {
                 val id = it.getLong(idColumn)
@@ -110,6 +114,7 @@ object MediaStoreUtils {
                 val mimeType = it.getString(mimeTypeColumn)
                 var discNumber = it.getInt(discNumberColumn)
                 var trackNumber = it.getInt(trackNumberColumn)
+                val duration = it.getLong(durationColumn)
                 val genre = it.getStringOrNull(genreColumn)
 
                 val artworkUri = Uri.parse("content://media/external/audio/albumart")
@@ -147,6 +152,7 @@ object MediaStoreUtils {
                 artistMap.getOrPut(artist) { mutableListOf() }.add(songs.last())
                 genreMap.getOrPut(genre) { mutableListOf() }.add(songs.last())
                 dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
+                durationMap[id] = duration
             }
         }
         cursor?.close()
@@ -184,7 +190,7 @@ object MediaStoreUtils {
             .sortedByDescending { it.title }
             .toMutableList()
 
-        return LibraryStoreClass(songs, sortedAlbumList, sortedArtistList, sortedGenreList, sortedDateList)
+        return LibraryStoreClass(songs, sortedAlbumList, sortedArtistList, sortedGenreList, sortedDateList, durationMap)
     }
 
 }

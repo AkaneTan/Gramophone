@@ -35,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
@@ -43,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
+import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -64,6 +66,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var bottomSheetFullControllerButton: MaterialButton
     private lateinit var bottomSheetFullNextButton: MaterialButton
     private lateinit var bottomSheetFullPreviousButton: MaterialButton
+    private lateinit var bottomSheetFullDuration: TextView
+    private lateinit var bottomSheetFullPosition: TextView
+    private lateinit var bottomSheetFullSlider: Slider
 
     private lateinit var standardBottomSheet: FrameLayout
     private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
@@ -73,6 +78,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var navigationView: NavigationView
 
     private var isPlayerPlaying = false
+    private var isUserTracking = false
+    private var runnableRunning = 0
 
     private val playerListener = object : Player.Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -96,6 +103,32 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                     AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
                 bottomSheetFullControllerButton.icon =
                     AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+            }
+            if (isPlaying) {
+                val positionRunnable = object : Runnable {
+                    override fun run() {
+                        val position = GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
+                        Log.d("TAG", position)
+                        if (runnableRunning == 1) {
+                            bottomSheetFullPosition.text = position
+                            val duration = libraryViewModel.durationItemList.value?.get(
+                                instance.currentMediaItem?.mediaId?.toLong())
+                            if (duration != null && !isUserTracking) {
+                                bottomSheetFullSlider.value = instance.currentPosition.toFloat() / duration.toFloat()
+                            }
+                        }
+                        if (instance.isPlaying) {
+                            Handler(Looper.getMainLooper()).postDelayed(this, 500)
+                        } else {
+                            runnableRunning --
+                        }
+                        Log.d("TAG", "Runnables: $runnableRunning")
+                    }
+                }
+                if (runnableRunning == 0) {
+                    Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
+                    runnableRunning ++
+                }
             }
         }
 
@@ -131,7 +164,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         Handler(Looper.getMainLooper()).postDelayed({
                             standardBottomSheetBehavior.isHideable = false
                         }, 200 )
-                    } }, 200)
+                    }}, 200)
             Glide.with(bottomSheetPreviewCover)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .placeholder(R.drawable.ic_default_cover)
@@ -144,6 +177,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist
             bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist
+            bottomSheetFullDuration.text =
+                mediaItem?.mediaId?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+                    ?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
         } else {
             if (!standardBottomSheetBehavior.isHideable) {
                 standardBottomSheetBehavior.isHideable = true
@@ -210,9 +246,61 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                     controllerFuture.get().seekToNextMediaItem()
                 }
                 updateSongInfo(controller.currentMediaItem)
+                if (controllerFuture.get().isPlaying) {
+                    val positionRunnable = object : Runnable {
+                        private val instance = controllerFuture.get()
+                        override fun run() {
+                            val position =
+                                GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
+                            Log.d("TAG", position)
+                            if (runnableRunning == 1) {
+                                bottomSheetFullPosition.text = position
+                                val duration = libraryViewModel.durationItemList.value?.get(
+                                    instance.currentMediaItem?.mediaId?.toLong())
+                                if (duration != null && !isUserTracking) {
+                                    bottomSheetFullSlider.value = instance.currentPosition.toFloat() / duration.toFloat()
+                                }
+                            }
+                            if (instance.isPlaying) {
+                                Handler(Looper.getMainLooper()).postDelayed(this, 500)
+                            } else {
+                                runnableRunning --
+                            }
+                            Log.d("TAG", "Runnables: $runnableRunning")
+                        }
+                    }
+                    if (runnableRunning == 0) {
+                        Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
+                        runnableRunning ++
+                    }
+                }
+
+                // When the slider is dragged by user, mark it
+                // to use this state later.
+                val touchListener: Slider.OnSliderTouchListener = object : Slider.OnSliderTouchListener {
+                    override fun onStartTrackingTouch(slider: Slider) {
+                        isUserTracking = true
+                    }
+
+                    override fun onStopTrackingTouch(slider: Slider) {
+                        // This value is multiplied by 1000 is because
+                        // when the number is too big (like when toValue
+                        // used the duration directly) we might encounter
+                        // some performance problem.
+                        val instance = controllerFuture.get()
+                        val mediaId = instance.currentMediaItem?.mediaId
+                        if (mediaId != null) {
+                            instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
+                        }
+                        isUserTracking = false
+                    }
+                }
+
+                bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
             },
             MoreExecutors.directExecutor()
         )
+
         Log.d("TAG", "onStart")
         super.onStart()
     }
@@ -228,6 +316,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 libraryViewModel.artistItemList.value = pairObject.artistList
                 libraryViewModel.genreItemList.value = pairObject.genreList
                 libraryViewModel.dateItemList.value = pairObject.dateList
+                libraryViewModel.durationItemList.value = pairObject.durationList
             }
         }
     }
@@ -270,6 +359,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         bottomSheetFullPreviousButton = findViewById(R.id.sheet_previous_song)
         bottomSheetFullControllerButton = findViewById(R.id.sheet_mid_button)
         bottomSheetFullNextButton = findViewById(R.id.sheet_next_song)
+        bottomSheetFullPosition = findViewById(R.id.position)
+        bottomSheetFullDuration = findViewById(R.id.duration)
+        bottomSheetFullSlider = findViewById(R.id.slider)
 
         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 

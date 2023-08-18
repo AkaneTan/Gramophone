@@ -17,4 +17,7 @@ class LibraryViewModel : ViewModel() {
     val dateItemList: MutableLiveData<MutableList<MediaStoreUtils.Date>> = MutableLiveData(
         mutableListOf()
     )
+    val durationItemList: MutableLiveData<MutableMap<Long, Long>> = MutableLiveData(
+        mutableMapOf()
+    )
 }

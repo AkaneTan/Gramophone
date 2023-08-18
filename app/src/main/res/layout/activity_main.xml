@@ -169,32 +169,38 @@
                     android:layout_below="@id/cover_frame"
                     android:layout_above="@id/playlist">
 
-                    <org.akanework.gramophone.ui.components.MarqueeTextView
-                        android:id="@+id/full_song_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@id/full_song_artist"
-                        android:layout_marginStart="18dp"
-                        android:layout_marginEnd="18dp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="22sp"
-                        android:textFontWeight="600"
-                        android:gravity="center"
-                        tools:text="Artifiction" />
-
-                    <org.akanework.gramophone.ui.components.MarqueeTextView
-                        android:id="@+id/full_song_artist"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@id/slider"
-                        android:layout_marginStart="18dp"
-                        android:layout_marginEnd="18dp"
-                        android:layout_marginBottom="8dp"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:textFontWeight="500"
-                        tools:text="Artifiction" />
+                        android:orientation="vertical">
+
+                        <org.akanework.gramophone.ui.components.MarqueeTextView
+                            android:id="@+id/full_song_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="18dp"
+                            android:layout_marginEnd="18dp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="22sp"
+                            android:textFontWeight="600"
+                            android:gravity="center"
+                            tools:text="Artifiction" />
+
+                        <org.akanework.gramophone.ui.components.MarqueeTextView
+                            android:id="@+id/full_song_artist"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="18dp"
+                            android:layout_marginEnd="18dp"
+                            android:layout_marginBottom="8dp"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:textFontWeight="500"
+                            tools:text="Artifiction" />
+
+                    </LinearLayout>
 
                     <com.google.android.material.slider.Slider
                         android:id="@+id/slider"
@@ -202,9 +208,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
-                        android:value="0.5"
+                        android:value="0"
                         android:layout_above="@id/duration_frame"
-                        app:thumbRadius="8dp"/>
+                        app:thumbRadius="8dp"
+                        app:labelBehavior="gone" />
 
                     <FrameLayout
                         android:id="@+id/duration_frame"
@@ -216,6 +223,7 @@
                         android:layout_marginEnd="18dp">
 
                         <TextView
+                            android:id="@+id/position"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/default_time"
@@ -224,6 +232,7 @@
                             android:layout_gravity="start"/>
 
                         <TextView
+                            android:id="@+id/duration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/default_time"
