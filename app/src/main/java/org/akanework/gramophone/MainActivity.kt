@@ -61,11 +61,15 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var bottomSheetFullCover: ImageView
     private lateinit var bottomSheetFullTitle: TextView
     private lateinit var bottomSheetFullSubtitle: TextView
+    private lateinit var bottomSheetFullControllerButton: MaterialButton
+    private lateinit var bottomSheetFullNextButton: MaterialButton
+    private lateinit var bottomSheetFullPreviousButton: MaterialButton
 
     private lateinit var standardBottomSheet: FrameLayout
     private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
 
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var previewPlayer: RelativeLayout
     private lateinit var navigationView: NavigationView
 
     private var isPlayerPlaying = false
@@ -84,9 +88,13 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             if (isPlaying) {
                 bottomSheetPreviewControllerButton.icon =
                     AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+                bottomSheetFullControllerButton.icon =
+                    AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
             } else if (instance.playbackState != 2) {
                 Log.d("TAG", "Triggered, ${instance.playbackState}")
                 bottomSheetPreviewControllerButton.icon =
+                    AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+                bottomSheetFullControllerButton.icon =
                     AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
             }
         }
@@ -108,13 +116,18 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         Log.d("TAG", "REACHED1")
                         bottomSheetPreviewControllerButton.icon =
                             AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+                        bottomSheetFullControllerButton.icon =
+                            AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
                     } else if (instance.playbackState != 2) {
                         Log.d("TAG", "REACHED2")
                         bottomSheetPreviewControllerButton.icon =
                             AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+                        bottomSheetFullControllerButton.icon =
+                            AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
                     }
                     if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                        previewPlayer.alpha = 1f
                         Handler(Looper.getMainLooper()).postDelayed({
                             standardBottomSheetBehavior.isHideable = false
                         }, 200 )
@@ -180,7 +193,20 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         controllerFuture.get().play()
                     }
                 }
+                bottomSheetFullControllerButton.setOnClickListener {
+                    if (controller.isPlaying) {
+                        controllerFuture.get().pause()
+                    } else {
+                        controllerFuture.get().play()
+                    }
+                }
                 bottomSheetPreviewNextButton.setOnClickListener {
+                    controllerFuture.get().seekToNextMediaItem()
+                }
+                bottomSheetFullPreviousButton.setOnClickListener {
+                    controllerFuture.get().seekToPreviousMediaItem()
+                }
+                bottomSheetFullNextButton.setOnClickListener {
                     controllerFuture.get().seekToNextMediaItem()
                 }
                 updateSongInfo(controller.currentMediaItem)
@@ -241,6 +267,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         bottomSheetFullCover = findViewById(R.id.full_sheet_cover)
         bottomSheetFullTitle = findViewById(R.id.full_song_name)
         bottomSheetFullSubtitle = findViewById(R.id.full_song_artist)
+        bottomSheetFullPreviousButton = findViewById(R.id.sheet_previous_song)
+        bottomSheetFullControllerButton = findViewById(R.id.sheet_mid_button)
+        bottomSheetFullNextButton = findViewById(R.id.sheet_next_song)
 
         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -325,7 +354,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             true
         }
 
-        val previewPlayer = findViewById<RelativeLayout>(R.id.preview_player)
+        previewPlayer = findViewById(R.id.preview_player)
         val fullPlayer = findViewById<RelativeLayout>(R.id.full_player)
 
         val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {

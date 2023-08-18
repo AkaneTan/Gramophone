@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
-            app:tabContentStart="56dp"
+            app:tabContentStart="60dp"
             app:tabMode="scrollable"
             app:tabTextAppearance="@style/TabTextAppearance">
 
@@ -51,7 +51,8 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/category_artists" />
+                android:text="@string/category_artists"
+                android:textAllCaps="true" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

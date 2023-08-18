@@ -27,7 +27,8 @@
                 android:id="@+id/cover"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/ic_default_cover" />
+                android:src="@drawable/ic_default_cover"
+                android:background="?attr/colorSurfaceContainer" />
 
         </com.google.android.material.card.MaterialCardView>
 

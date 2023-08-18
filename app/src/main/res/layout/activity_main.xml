@@ -53,7 +53,8 @@
                         android:id="@+id/preview_album_cover"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/ic_default_cover" />
+                        android:src="@drawable/ic_default_cover"
+                        android:background="?attr/colorSurfaceContainer" />
                 </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
@@ -129,7 +130,7 @@
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:layout_marginStart="18dp"
-                    android:layout_marginTop="64dp"
+                    android:layout_marginTop="52dp"
                     android:layout_marginEnd="18dp"
                     android:layout_marginBottom="18dp"
                     android:backgroundTint="?attr/colorSurface"
@@ -167,7 +168,8 @@
                             android:id="@+id/full_sheet_cover"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_default_cover" />
+                            android:src="@drawable/ic_default_cover"
+                            android:background="?attr/colorSurfaceContainer" />
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -190,8 +192,7 @@
                         android:layout_marginEnd="18dp"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="22sp"
-                        android:textFontWeight="700"
-                        android:gravity="center"
+                        android:textFontWeight="600"
                         tools:text="Artifiction" />
 
                     <org.akanework.gramophone.ui.components.MarqueeTextView
@@ -205,7 +206,6 @@
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="20sp"
                         android:textFontWeight="500"
-                        android:gravity="center"
                         tools:text="Artifiction" />
 
                     <com.google.android.material.slider.Slider
@@ -222,7 +222,7 @@
                         android:id="@+id/duration_frame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_above="@id/controller_frame"
+                        android:layout_above="@id/sheet_mid_button"
                         android:layout_marginBottom="16dp"
                         android:layout_marginStart="18dp"
                         android:layout_marginEnd="18dp">
@@ -231,6 +231,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/default_time"
+                            android:textFontWeight="500"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:layout_gravity="start"/>
 
@@ -239,165 +240,147 @@
                             android:layout_height="wrap_content"
                             android:text="@string/default_time"
                             android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textFontWeight="500"
                             android:layout_gravity="end"/>
 
                     </FrameLayout>
 
-                    <LinearLayout
-                        android:id="@+id/controller_frame"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:layout_gravity="center_horizontal">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/sheet_mid_button"
+                        android:layout_width="134dp"
+                        android:layout_height="82dp"
+                        android:backgroundTint="?attr/colorPrimaryContainer"
+                        android:elevation="0dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:layout_centerHorizontal="true"
+                        app:icon="@drawable/play_art"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="40sp"
+                        app:iconTint="?attr/colorOnPrimaryContainer" />
 
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/sheet_previous_song"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_gravity="center"
+                        android:backgroundTint="?attr/colorSecondaryContainer"
+                        android:elevation="0dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:layout_toStartOf="@id/sheet_mid_button"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginEnd="20dp"
+                        app:icon="@drawable/previous_art"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="32sp"
+                        app:iconTint="?attr/colorOnSecondaryContainer" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/sheet_loop"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
-                                android:layout_gravity="center"
-                                android:backgroundTint="?attr/colorSurface"
-                                android:checkable="true"
-                                android:elevation="0dp"
-                                android:insetLeft="0dp"
-                                android:insetTop="0dp"
-                                android:insetRight="0dp"
-                                android:insetBottom="0dp"
-                                android:saveEnabled="false"
-                                app:icon="@drawable/ic_repeat"
-                                app:iconGravity="textStart"
-                                app:iconPadding="0dp"
-                                app:iconSize="30sp"
-                                app:iconTint="@color/sl_check_button" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="4dp"
-                            android:layout_weight="1">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/sheet_previous_song"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
-                                android:layout_gravity="center"
-                                android:backgroundTint="?attr/colorSurface"
-                                android:elevation="0dp"
-                                android:insetLeft="0dp"
-                                android:insetTop="0dp"
-                                android:insetRight="0dp"
-                                android:insetBottom="0dp"
-                                app:icon="@drawable/previous_art"
-                                app:iconGravity="textStart"
-                                app:iconPadding="0dp"
-                                app:iconSize="30sp"
-                                app:iconTint="?attr/colorOnSurface" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="78dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1.5">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/sheet_mid_button"
-                                android:layout_width="78dp"
-                                android:layout_height="78dp"
-                                android:layout_gravity="center"
-                                android:backgroundTint="?attr/colorSecondaryContainer"
-                                android:elevation="0dp"
-                                android:insetLeft="0dp"
-                                android:insetTop="0dp"
-                                android:insetRight="0dp"
-                                android:insetBottom="0dp"
-                                app:icon="@drawable/play_art"
-                                app:iconGravity="textStart"
-                                app:iconPadding="0dp"
-                                app:iconSize="40sp"
-                                app:iconTint="?attr/colorOnSecondaryContainer" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="4dp"
-                            android:layout_weight="1">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/sheet_next_song"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
-                                android:backgroundTint="?attr/colorSurface"
-                                android:layout_gravity="center"
-                                android:elevation="0dp"
-                                android:insetLeft="0dp"
-                                android:insetTop="0dp"
-                                android:insetRight="0dp"
-                                android:insetBottom="0dp"
-                                app:icon="@drawable/next_art"
-                                app:iconGravity="textStart"
-                                app:iconPadding="0dp"
-                                app:iconSize="30sp"
-                                app:iconTint="?attr/colorOnSurface" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/sheet_random"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
-                                android:backgroundTint="?attr/colorSurface"
-                                android:layout_gravity="center"
-                                android:checkable="true"
-                                android:elevation="0dp"
-                                android:insetLeft="0dp"
-                                android:insetTop="0dp"
-                                android:insetRight="0dp"
-                                android:insetBottom="0dp"
-                                android:saveEnabled="false"
-                                app:icon="@drawable/ic_shuffle"
-                                app:iconGravity="textStart"
-                                app:iconPadding="0dp"
-                                app:iconSize="30sp"
-                                app:iconTint="@color/sl_check_button" />
-                        </FrameLayout>
-
-                    </LinearLayout>
-
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/sheet_next_song"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:backgroundTint="?attr/colorSecondaryContainer"
+                        android:layout_gravity="center"
+                        android:elevation="0dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:layout_toEndOf="@id/sheet_mid_button"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginStart="20dp"
+                        app:icon="@drawable/next_art"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="32sp"
+                        app:iconTint="?attr/colorOnSecondaryContainer" />
 
                 </RelativeLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sheet_loop"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:checkable="true"
+                    android:elevation="0dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:saveEnabled="false"
+                    android:layout_toStartOf="@id/sheet_random"
+                    android:layout_alignTop="@id/sheet_random"
+                    app:icon="@drawable/ic_repeat"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="24sp"
+                    app:iconTint="@color/sl_check_button" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sheet_random"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:layout_gravity="center"
+                    android:checkable="true"
+                    android:elevation="0dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:saveEnabled="false"
+                    android:layout_toStartOf="@id/playlist"
+                    android:layout_alignTop="@id/playlist"
+                    app:icon="@drawable/ic_shuffle"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="24sp"
+                    app:iconTint="@color/sl_check_button" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playlist"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginEnd="18dp"
+                    android:layout_marginBottom="8dp"
                     android:backgroundTint="?attr/colorSurface"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    app:icon="@drawable/ic_queue_music"
+                    app:icon="@drawable/ic_playlist_play"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="24dp"
                     app:iconTint="?attr/colorOnSurface" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/lyrics"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginBottom="8dp"
+                    android:backgroundTint="?attr/colorPrimaryContainer"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/subtitles_art"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="24dp"
+                    app:iconTint="?attr/colorOnPrimaryContainer" />
 
             </RelativeLayout>
 
