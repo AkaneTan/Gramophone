@@ -54,6 +54,7 @@ import org.akanework.gramophone.R
             if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
                     if (standardBottomSheetBehavior.isHideable) {
                         Handler(Looper.getMainLooper()).postDelayed({
                             standardBottomSheetBehavior.isHideable = false

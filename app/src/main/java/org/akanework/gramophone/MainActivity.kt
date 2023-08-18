@@ -361,6 +361,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
                     fullPlayer.visibility = GONE
+                    previewPlayer.alpha = 1f
                 } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
                     fullPlayer.visibility = VISIBLE
                     previewPlayer.visibility = VISIBLE

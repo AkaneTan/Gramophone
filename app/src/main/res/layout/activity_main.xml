@@ -41,26 +41,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
                 tools:visibility="gone">
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/album_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+
+                <ImageView
+                    android:id="@+id/preview_album_cover"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginStart="16dp"
-                    app:strokeWidth="0dp"
-                    app:cardCornerRadius="6dp">
-                    <ImageView
-                        android:id="@+id/preview_album_cover"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/ic_default_cover"
-                        android:background="?attr/colorSurfaceContainer" />
-                </com.google.android.material.card.MaterialCardView>
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_default_cover"
+                    android:background="?attr/colorSurfaceContainer" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/album_layout"
+                    android:layout_toEndOf="@id/preview_album_cover"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="112dp"
@@ -153,7 +147,8 @@
                     android:layout_marginRight="18dp"
                     android:layout_below="@+id/slide_down">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageView
+                        android:id="@+id/full_sheet_cover"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -161,17 +156,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:strokeWidth="0dp"
-                        app:cardCornerRadius="8dp">
-
-                        <ImageView
-                            android:id="@+id/full_sheet_cover"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_default_cover"
-                            android:background="?attr/colorSurfaceContainer" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:src="@drawable/ic_default_cover"
+                        android:background="?attr/colorSurfaceContainer" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -193,6 +179,7 @@
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="22sp"
                         android:textFontWeight="600"
+                        android:gravity="center"
                         tools:text="Artifiction" />
 
                     <org.akanework.gramophone.ui.components.MarqueeTextView
@@ -205,6 +192,7 @@
                         android:layout_marginBottom="8dp"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="20sp"
+                        android:gravity="center"
                         android:textFontWeight="500"
                         tools:text="Artifiction" />
 
@@ -247,9 +235,9 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/sheet_mid_button"
-                        android:layout_width="134dp"
-                        android:layout_height="82dp"
-                        android:backgroundTint="?attr/colorPrimaryContainer"
+                        android:layout_width="84dp"
+                        android:layout_height="84dp"
+                        android:backgroundTint="?attr/colorSecondaryContainer"
                         android:elevation="0dp"
                         android:insetLeft="0dp"
                         android:insetTop="0dp"
@@ -260,33 +248,32 @@
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
                         app:iconSize="40sp"
-                        app:iconTint="?attr/colorOnPrimaryContainer" />
+                        app:iconTint="?attr/colorOnSecondaryContainer" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/sheet_previous_song"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="84dp"
+                        android:layout_height="84dp"
                         android:layout_gravity="center"
-                        android:backgroundTint="?attr/colorSecondaryContainer"
+                        android:backgroundTint="?attr/colorSurface"
                         android:elevation="0dp"
                         android:insetLeft="0dp"
                         android:insetTop="0dp"
                         android:insetRight="0dp"
                         android:insetBottom="0dp"
                         android:layout_toStartOf="@id/sheet_mid_button"
-                        android:layout_marginTop="7dp"
                         android:layout_marginEnd="20dp"
                         app:icon="@drawable/previous_art"
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
-                        app:iconSize="32sp"
-                        app:iconTint="?attr/colorOnSecondaryContainer" />
+                        app:iconSize="36sp"
+                        app:iconTint="?attr/colorOnSurface" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/sheet_next_song"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:backgroundTint="?attr/colorSecondaryContainer"
+                        android:layout_width="84dp"
+                        android:layout_height="84dp"
+                        android:backgroundTint="?attr/colorSurface"
                         android:layout_gravity="center"
                         android:elevation="0dp"
                         android:insetLeft="0dp"
@@ -294,15 +281,55 @@
                         android:insetRight="0dp"
                         android:insetBottom="0dp"
                         android:layout_toEndOf="@id/sheet_mid_button"
-                        android:layout_marginTop="7dp"
                         android:layout_marginStart="20dp"
                         app:icon="@drawable/next_art"
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
-                        app:iconSize="32sp"
-                        app:iconTint="?attr/colorOnSecondaryContainer" />
+                        app:iconSize="36sp"
+                        app:iconTint="?attr/colorOnSurface" />
 
                 </RelativeLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/timer"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:checkable="true"
+                    android:elevation="0dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:saveEnabled="false"
+                    android:layout_toStartOf="@id/lyrics"
+                    android:layout_alignTop="@id/lyrics"
+                    app:icon="@drawable/timer_art"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="24sp"
+                    app:iconTint="@color/sl_check_button" />
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/lyrics"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:checkable="true"
+                    android:elevation="0dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:saveEnabled="false"
+                    android:layout_toStartOf="@id/sheet_loop"
+                    android:layout_alignTop="@id/sheet_loop"
+                    app:icon="@drawable/subtitles_art"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="24sp"
+                    app:iconTint="@color/sl_check_button" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/sheet_loop"
@@ -363,24 +390,6 @@
                     app:iconPadding="0dp"
                     app:iconSize="24dp"
                     app:iconTint="?attr/colorOnSurface" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/lyrics"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginStart="18dp"
-                    android:layout_marginBottom="8dp"
-                    android:backgroundTint="?attr/colorPrimaryContainer"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    app:icon="@drawable/subtitles_art"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="24dp"
-                    app:iconTint="?attr/colorOnPrimaryContainer" />
 
             </RelativeLayout>
 
