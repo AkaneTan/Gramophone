@@ -8,6 +8,7 @@ plugins {
 android {
     namespace = "org.akanework.gramophone"
     compileSdk = 33
+    android.buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "org.akanework.gramophone"

@@ -309,15 +309,19 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
     private fun updateLibrary() {
         CoroutineScope(Dispatchers.Default).launch {
-            val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
-            withContext(Dispatchers.Main) {
-                libraryViewModel.mediaItemList.value = pairObject.songList
-                libraryViewModel.albumItemList.value = pairObject.albumList
-                libraryViewModel.artistItemList.value = pairObject.artistList
-                libraryViewModel.genreItemList.value = pairObject.genreList
-                libraryViewModel.dateItemList.value = pairObject.dateList
-                libraryViewModel.durationItemList.value = pairObject.durationList
-            }
+            updateLibraryWithInCoroutine()
+        }
+    }
+
+    private suspend fun updateLibraryWithInCoroutine() {
+        val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
+        withContext(Dispatchers.Main) {
+            libraryViewModel.mediaItemList.value = pairObject.songList
+            libraryViewModel.albumItemList.value = pairObject.albumList
+            libraryViewModel.artistItemList.value = pairObject.artistList
+            libraryViewModel.genreItemList.value = pairObject.genreList
+            libraryViewModel.dateItemList.value = pairObject.dateList
+            libraryViewModel.durationItemList.value = pairObject.durationList
         }
     }
 
@@ -396,13 +400,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 }
                 R.id.refresh -> {
                     CoroutineScope(Dispatchers.Default).launch {
-                        val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
+                        updateLibraryWithInCoroutine()
                         withContext(Dispatchers.Main) {
-                            libraryViewModel.mediaItemList.value = pairObject.songList
-                            libraryViewModel.albumItemList.value = pairObject.albumList
-                            libraryViewModel.artistItemList.value = pairObject.artistList
-                            libraryViewModel.genreItemList.value = pairObject.genreList
-                            libraryViewModel.dateItemList.value = pairObject.dateList
                             val snackBar = Snackbar.make(fragmentContainerView,
                                 getString(
                                     R.string.refreshed_songs,
