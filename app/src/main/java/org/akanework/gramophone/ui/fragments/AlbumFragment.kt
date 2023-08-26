@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
@@ -63,10 +64,7 @@ class AlbumFragment : Fragment() {
 
         albumRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(albumRecyclerView).apply {
-            useMd2Style()
-            build()
-        }
+        FastScrollerBuilder(albumRecyclerView).build()
         return rootView
     }
 

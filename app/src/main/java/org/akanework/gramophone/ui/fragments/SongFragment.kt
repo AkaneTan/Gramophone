@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
@@ -64,10 +65,8 @@ class SongFragment : Fragment() {
 
         songRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(songRecyclerView).apply {
-            useMd2Style()
-            build()
-        }
+        FastScrollerBuilder(songRecyclerView).build()
+
         return rootView
     }
 }

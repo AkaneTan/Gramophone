@@ -36,7 +36,9 @@
             app:tabBackground="@android:color/transparent"
             app:tabContentStart="60dp"
             app:tabMode="scrollable"
-            app:tabTextAppearance="@style/TabTextAppearance">
+            app:tabTextAppearance="@style/TabTextAppearance"
+            app:tabIndicator="@drawable/ic_indicator"
+            app:tabIndicatorHeight="2.5dp">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
