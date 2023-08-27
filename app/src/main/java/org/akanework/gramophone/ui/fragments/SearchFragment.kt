@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -57,7 +56,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         recyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {
-            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), android.R.color.transparent)!!)
             setPadding(0, 0, 0, (66).px)
             build()
         }
