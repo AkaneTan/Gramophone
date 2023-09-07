@@ -110,11 +110,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         val position = GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
                         Log.d("TAG", position)
                         if (runnableRunning == 1) {
-                            bottomSheetFullPosition.text = position
                             val duration = libraryViewModel.durationItemList.value?.get(
                                 instance.currentMediaItem?.mediaId?.toLong())
                             if (duration != null && !isUserTracking) {
                                 bottomSheetFullSlider.value = instance.currentPosition.toFloat() / duration.toFloat()
+                                bottomSheetFullPosition.text = position
                             }
                         }
                         if (instance.isPlaying) {
@@ -254,11 +254,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                                 GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
                             Log.d("TAG", position)
                             if (runnableRunning == 1) {
-                                bottomSheetFullPosition.text = position
                                 val duration = libraryViewModel.durationItemList.value?.get(
                                     instance.currentMediaItem?.mediaId?.toLong())
                                 if (duration != null && !isUserTracking) {
                                     bottomSheetFullSlider.value = instance.currentPosition.toFloat() / duration.toFloat()
+                                    bottomSheetFullPosition.text = position
                                 }
                             }
                             if (instance.isPlaying) {
@@ -293,6 +293,16 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                             instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
                         }
                         isUserTracking = false
+                    }
+                }
+
+                bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
+                    if (isUser) {
+                        val instance = controllerFuture.get()
+                        val dest = instance.currentMediaItem?.mediaId?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+                        if (dest != null) {
+                            bottomSheetFullPosition.text = GramophoneUtils.convertDurationToTimeStamp((value * dest).toLong())
+                        }
                     }
                 }
 
