@@ -128,7 +128,7 @@ object MediaStoreUtils {
                     albumId
                 )
 
-                if (trackNumber.toString().length == 4) {
+                if (trackNumber >= 1000) {
                     discNumber = trackNumber / 100
                     trackNumber %= 100
                 }
@@ -168,7 +168,7 @@ object MediaStoreUtils {
         val sortedAlbumList: MutableList<Album> = albumMap.entries
             .mapIndexed { index, (key, value) ->
                 val (albumTitle, albumYear) = key
-                val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber.toString() }
+                val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber }
                 val albumArtist = sortedAlbumSongs.first().mediaMetadata.albumArtist
                     ?: sortedAlbumSongs.first().mediaMetadata.artist.toString()
                 Album(index.toLong(), albumTitle, albumArtist.toString(), albumYear, sortedAlbumSongs)
