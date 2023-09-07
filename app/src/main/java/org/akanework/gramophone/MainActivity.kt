@@ -216,9 +216,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             4 -> {
                 navigationView.setCheckedItem(R.id.dates)
             }
-            5 -> {
-                navigationView.setCheckedItem(R.id.playlists)
-            }
             else -> throw IllegalStateException()
         }
     }
@@ -456,10 +453,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 }
                 R.id.dates -> {
                     viewPager2.setCurrentItem(4, true)
-                    drawerLayout.close()
-                }
-                R.id.playlists -> {
-                    viewPager2.setCurrentItem(5, true)
                     drawerLayout.close()
                 }
                 R.id.refresh -> {

@@ -81,7 +81,6 @@ import kotlin.random.Random
                 2 -> getString(R.string.category_artists)
                 3 -> getString(R.string.category_genres)
                 4 -> getString(R.string.category_dates)
-                5 -> getString(R.string.category_playlists)
                 else -> "Unknown"
             }
         }.attach()

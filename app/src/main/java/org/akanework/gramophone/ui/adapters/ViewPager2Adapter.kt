@@ -16,7 +16,7 @@ import org.akanework.gramophone.ui.fragments.SongFragment
  */
 class ViewPager2Adapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
-    override fun getItemCount(): Int = 6
+    override fun getItemCount(): Int = 5
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> SongFragment()
@@ -24,7 +24,6 @@ class ViewPager2Adapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) 
         2 -> ArtistFragment()
         3 -> GenreFragment()
         4 -> DateFragment()
-        5 -> PlaylistFragment()
         else -> throw IllegalArgumentException("Invalid position: $position")
     }
 }

@@ -33,12 +33,6 @@
                 android:title="@string/category_dates"
                 android:checkable="true"
                 app:showAsAction="ifRoom"/>
-            <item
-                android:id="@+id/playlists"
-                android:icon="@drawable/ic_queue_music"
-                android:title="@string/category_playlists"
-                android:checkable="true"
-                app:showAsAction="ifRoom"/>
         </menu>
     </item>
     <item
