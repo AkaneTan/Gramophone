@@ -129,7 +129,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                                                 putInt("Position", positionArtist)
                                                 putInt("Item", 2)
                                                 putString("Title",
-                                                    viewModel.albumItemList.value?.get(positionArtist)?.title
+                                                    viewModel.artistItemList.value?.get(positionArtist)?.title
                                                 )
                                             }
                                         })
