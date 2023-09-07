@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
@@ -35,7 +36,7 @@ class ArtistFragment : Fragment() {
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
         val artistList = mutableListOf<MediaStoreUtils.Artist>()
         artistList.addAll(libraryViewModel.artistItemList.value!!)
-        val artistAdapter = ArtistAdapter(artistList, requireContext(), requireActivity().supportFragmentManager)
+        val artistAdapter = ArtistAdapter(artistList, requireContext(), requireActivity().supportFragmentManager, requireActivity() as MainActivity)
         val artistDecorAdapter = ArtistDecorAdapter(requireContext(),
             libraryViewModel.artistItemList.value!!.size,
             artistAdapter)

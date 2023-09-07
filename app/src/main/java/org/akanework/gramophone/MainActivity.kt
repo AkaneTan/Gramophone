@@ -379,6 +379,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             libraryViewModel.genreItemList.value = pairObject.genreList
             libraryViewModel.dateItemList.value = pairObject.dateList
             libraryViewModel.durationItemList.value = pairObject.durationList
+            libraryViewModel.fileUriList.value = pairObject.fileUriList
+            libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
         }
     }
 

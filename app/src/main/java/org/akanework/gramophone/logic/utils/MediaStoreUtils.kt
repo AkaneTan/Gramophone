@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import org.akanework.gramophone.R
@@ -43,7 +44,9 @@ object MediaStoreUtils {
         val artistList: MutableList<Artist>,
         val genreList: MutableList<Genre>,
         val dateList: MutableList<Date>,
-        val durationList: MutableMap<Long, Long>
+        val durationList: MutableMap<Long, Long>,
+        val fileUriList: MutableMap<Long, Uri>,
+        val mimeTypeList: MutableMap<Long, String>
     )
 
     /**
@@ -77,6 +80,8 @@ object MediaStoreUtils {
         val genreMap = mutableMapOf<String?, MutableList<MediaItem>>()
         val dateMap = mutableMapOf<Int, MutableList<MediaItem>>()
         val durationMap = mutableMapOf<Long, Long>()
+        val fileUriMap = mutableMapOf<Long, Uri>()
+        val mimeTypeMap = mutableMapOf<Long, String>()
         val unknownGenre = context.getString(R.string.unknown_genre)
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -153,6 +158,8 @@ object MediaStoreUtils {
                 genreMap.getOrPut(genre) { mutableListOf() }.add(songs.last())
                 dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
                 durationMap[id] = duration
+                fileUriMap[id] = path.toUri()
+                mimeTypeMap[id] = mimeType
             }
         }
         cursor?.close()
@@ -190,7 +197,7 @@ object MediaStoreUtils {
             .sortedByDescending { it.title }
             .toMutableList()
 
-        return LibraryStoreClass(songs, sortedAlbumList, sortedArtistList, sortedGenreList, sortedDateList, durationMap)
+        return LibraryStoreClass(songs, sortedAlbumList, sortedArtistList, sortedGenreList, sortedDateList, durationMap, fileUriMap, mimeTypeMap)
     }
 
 }

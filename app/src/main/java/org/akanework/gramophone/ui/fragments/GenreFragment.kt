@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.GenreAdapter
@@ -35,7 +36,8 @@ class GenreFragment : Fragment() {
         genreRecyclerView.layoutManager = LinearLayoutManager(activity)
         val genreList = mutableListOf<MediaStoreUtils.Genre>()
         genreList.addAll(libraryViewModel.genreItemList.value!!)
-        val genreAdapter = GenreAdapter(genreList, requireContext(), requireActivity().supportFragmentManager)
+        val genreAdapter = GenreAdapter(genreList, requireContext(), requireActivity().supportFragmentManager,
+            requireActivity() as MainActivity)
         val genreDecorAdapter = GenreDecorAdapter(requireContext(),
             libraryViewModel.genreItemList.value!!.size,
             genreAdapter)

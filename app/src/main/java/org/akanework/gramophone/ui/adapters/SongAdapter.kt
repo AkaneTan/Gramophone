@@ -1,25 +1,35 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.content.Intent
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.viewModels
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.fragments.GeneralSubFragment
+import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
  * [SongAdapter] is an adapter for displaying songs.
@@ -31,6 +41,8 @@ import org.akanework.gramophone.R
         return ViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.adapter_list_card, parent, false))
     }
+
+    val viewModel: LibraryViewModel by mainActivity.viewModels()
 
     override fun getItemCount(): Int = songList.size
 
@@ -64,12 +76,93 @@ import org.akanework.gramophone.R
             }
         }
 
+        holder.moreButton.setOnClickListener { it ->
+            val popupMenu = PopupMenu(it.context, it)
+            popupMenu.inflate(R.menu.more_menu)
+
+            popupMenu.setOnMenuItemClickListener { it1 ->
+                when (it1.itemId) {
+                    R.id.play_next -> {
+                        val mediaController = mainActivity.getPlayer()
+                        mediaController.addMediaItem(mediaController.currentMediaItemIndex + 1, songList[holder.bindingAdapterPosition])
+                    }
+                    R.id.album -> {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            val positionAlbum = viewModel.albumItemList.value?.indexOfFirst {
+                                val currentItem = songList[holder.bindingAdapterPosition]
+                                val isMatching = (it.title == currentItem.mediaMetadata.albumTitle) &&
+                                        (it.songList.contains(currentItem))
+                                isMatching
+                            }
+                            if (positionAlbum != null) {
+                                withContext(Dispatchers.Main) {
+                                    mainActivity.supportFragmentManager.beginTransaction()
+                                        .addToBackStack("SUBFRAG")
+                                        .replace(R.id.container, GeneralSubFragment().apply {
+                                            arguments = Bundle().apply {
+                                                putInt("Position", positionAlbum)
+                                                putInt("Item", 1)
+                                                putString("Title",
+                                                    viewModel.albumItemList.value?.get(positionAlbum)?.title
+                                                )
+                                            }
+                                        })
+                                        .commit()
+                                }
+                            }
+                        }
+                    }
+                    R.id.artist -> {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            val positionArtist = viewModel.artistItemList.value?.indexOfFirst {
+                                val currentItem = songList[holder.bindingAdapterPosition]
+                                val isMatching = (it.title == currentItem.mediaMetadata.artist) &&
+                                        (it.songList.contains(currentItem))
+                                isMatching
+                            }
+                            if (positionArtist != null) {
+                                withContext(Dispatchers.Main) {
+                                    mainActivity.supportFragmentManager.beginTransaction()
+                                        .addToBackStack("SUBFRAG")
+                                        .replace(R.id.container, GeneralSubFragment().apply {
+                                            arguments = Bundle().apply {
+                                                putInt("Position", positionArtist)
+                                                putInt("Item", 2)
+                                                putString("Title",
+                                                    viewModel.albumItemList.value?.get(positionArtist)?.title
+                                                )
+                                            }
+                                        })
+                                        .commit()
+                                }
+                            }
+                        }
+                    }
+                    R.id.details -> {
+
+                    }
+                    /*
+                    R.id.share -> {
+                        val builder = ShareCompat.IntentBuilder(mainActivity)
+                        val mimeTypes = mutableSetOf<String>()
+                        builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+                        mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+                        builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
+                     } */
+                     */
+                }
+                true
+            }
+            popupMenu.show()
+        }
+
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
+        val moreButton: MaterialButton = view.findViewById(R.id.more)
     }
 
     fun sortBy(selector: (MediaItem) -> String) {

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
@@ -41,7 +42,7 @@ class AlbumFragment : Fragment() {
 
         val albumList = mutableListOf<MediaStoreUtils.Album>()
         albumList.addAll(libraryViewModel.albumItemList.value!!)
-        val albumAdapter = AlbumAdapter(albumList, requireActivity().supportFragmentManager)
+        val albumAdapter = AlbumAdapter(albumList, requireActivity().supportFragmentManager, requireActivity() as MainActivity)
         val albumDecorAdapter = AlbumDecorAdapter(requireContext(),
             libraryViewModel.albumItemList.value!!.size,
             albumAdapter)

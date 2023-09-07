@@ -7,14 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
@@ -24,7 +27,8 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class DateAdapter(private val dateList: MutableList<MediaStoreUtils.Date>,
                   private val context: Context,
-                  private val fragmentManager: FragmentManager) :
+                  private val fragmentManager: FragmentManager,
+                  private val mainActivity: MainActivity) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context)
@@ -62,12 +66,42 @@ class DateAdapter(private val dateList: MutableList<MediaStoreUtils.Date>,
                 })
                 .commit()
         }
+
+        holder.moreButton.setOnClickListener { it ->
+            val popupMenu = PopupMenu(it.context, it)
+            popupMenu.inflate(R.menu.more_menu_less)
+
+            popupMenu.setOnMenuItemClickListener { it1 ->
+                when (it1.itemId) {
+                    R.id.play_next -> {
+                        val mediaController = mainActivity.getPlayer()
+                        mediaController.addMediaItems(mediaController.currentMediaItemIndex + 1, dateList[holder.bindingAdapterPosition].songList)
+                    }
+                    R.id.details -> {
+
+                    }
+                    /*
+                    R.id.share -> {
+                        val builder = ShareCompat.IntentBuilder(mainActivity)
+                        val mimeTypes = mutableSetOf<String>()
+                        builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+                        mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+                        builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
+                     } */
+                     */
+                }
+                true
+            }
+            popupMenu.show()
+        }
+
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
+        val moreButton: MaterialButton = view.findViewById(R.id.more)
     }
 
     fun sortByDescending(selector: (MediaStoreUtils.Date) -> String) {

@@ -29,7 +29,7 @@
         android:layout_marginEnd="28dp"
         android:layout_below="@id/cover"
         android:layout_alignStart="@id/cover"
-        android:layout_alignEnd="@id/info"
+        android:layout_alignEnd="@id/more"
         android:orientation="vertical">
 
         <TextView
@@ -55,7 +55,7 @@
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/info"
+        android:id="@+id/more"
         android:layout_width="28dp"
         android:layout_height="39dp"
         android:layout_marginTop="8dp"

@@ -1,5 +1,6 @@
 package org.akanework.gramophone.ui.viewmodels
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
@@ -18,6 +19,12 @@ class LibraryViewModel : ViewModel() {
         mutableListOf()
     )
     val durationItemList: MutableLiveData<MutableMap<Long, Long>> = MutableLiveData(
+        mutableMapOf()
+    )
+    val fileUriList: MutableLiveData<MutableMap<Long, Uri>> = MutableLiveData(
+        mutableMapOf()
+    )
+    val mimeTypeList: MutableLiveData<MutableMap<Long, String>> = MutableLiveData(
         mutableMapOf()
     )
 }

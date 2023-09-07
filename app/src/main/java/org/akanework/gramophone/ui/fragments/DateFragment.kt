@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.DateAdapter
@@ -33,7 +34,7 @@ class DateFragment : Fragment() {
         dateRecyclerView.layoutManager = LinearLayoutManager(activity)
         val dateList = mutableListOf<MediaStoreUtils.Date>()
         dateList.addAll(libraryViewModel.dateItemList.value!!)
-        val dateAdapter = DateAdapter(dateList, requireContext(), requireActivity().supportFragmentManager)
+        val dateAdapter = DateAdapter(dateList, requireContext(), requireActivity().supportFragmentManager, requireActivity() as MainActivity)
         val dateDecorAdapter = DateDecorAdapter(requireContext(),
             libraryViewModel.dateItemList.value!!.size,
             dateAdapter)
