@@ -28,12 +28,6 @@ import org.akanework.gramophone.MainActivity
                 FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
             ))
             .build()
-        player.addListener(object : Player.Listener{
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                super.onIsPlayingChanged(isPlaying)
-
-            }
-        })
         val audioAttributes: AudioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
             .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
