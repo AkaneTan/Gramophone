@@ -17,7 +17,7 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textFontWeight">500</item>
+        <item name="android:textFontWeight">700</item>
     </style>
 
     <style name="MaterialToolBarStyle" parent="Widget.Material3.Toolbar">
