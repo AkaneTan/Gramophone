@@ -25,6 +25,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
@@ -68,6 +71,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var bottomSheetFullPreviousButton: MaterialButton
     private lateinit var bottomSheetFullDuration: TextView
     private lateinit var bottomSheetFullPosition: TextView
+    private lateinit var bottomSheetShuffleButton: MaterialButton
+    private lateinit var bottomSheetLoopButton: MaterialButton
+    private lateinit var bottomSheetPlaylistButton: MaterialButton
+    private lateinit var bottomSheetLyricButton: MaterialButton
+    private lateinit var bottomSheetTimerButton: MaterialButton
     private lateinit var bottomSheetFullSlider: Slider
 
     private lateinit var standardBottomSheet: FrameLayout
@@ -245,6 +253,45 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 bottomSheetFullNextButton.setOnClickListener {
                     controllerFuture.get().seekToNextMediaItem()
                 }
+                bottomSheetShuffleButton.isChecked = controller.shuffleModeEnabled
+                bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
+                    controllerFuture.get().shuffleModeEnabled = isChecked
+                }
+                when (controller.repeatMode) {
+                    REPEAT_MODE_ALL -> {
+                        bottomSheetLoopButton.isChecked = true
+                        bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+                    }
+                    REPEAT_MODE_OFF -> {
+                        bottomSheetLoopButton.isChecked = false
+                        bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+                    }
+                    REPEAT_MODE_ONE -> {
+                        bottomSheetLoopButton.isChecked = true
+                        bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
+                    }
+                }
+                bottomSheetLoopButton.addOnCheckedChangeListener { _, _ ->
+                    val instance = controllerFuture.get()
+                    when (instance.repeatMode) {
+                        REPEAT_MODE_ALL -> {
+                            bottomSheetLoopButton.isChecked = true
+                            bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
+                            instance.repeatMode = REPEAT_MODE_ONE
+                        }
+                        REPEAT_MODE_OFF -> {
+                            bottomSheetLoopButton.isChecked = true
+                            bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+                            instance.repeatMode = REPEAT_MODE_ALL
+
+                        }
+                        REPEAT_MODE_ONE -> {
+                            bottomSheetLoopButton.isChecked = false
+                            bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+                            instance.repeatMode = REPEAT_MODE_OFF
+                        }
+                    }
+                }
                 updateSongInfo(controller.currentMediaItem)
                 if (controllerFuture.get().isPlaying) {
                     val positionRunnable = object : Runnable {
@@ -376,6 +423,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         bottomSheetFullPosition = findViewById(R.id.position)
         bottomSheetFullDuration = findViewById(R.id.duration)
         bottomSheetFullSlider = findViewById(R.id.slider)
+        bottomSheetShuffleButton = findViewById(R.id.sheet_random)
+        bottomSheetLoopButton = findViewById(R.id.sheet_loop)
+        bottomSheetLyricButton = findViewById(R.id.lyrics)
+        bottomSheetTimerButton = findViewById(R.id.timer)
+        bottomSheetPlaylistButton = findViewById(R.id.playlist)
 
         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
