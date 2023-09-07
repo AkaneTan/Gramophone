@@ -268,7 +268,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
                     }
                 }
-                bottomSheetLoopButton.addOnCheckedChangeListener { _, _ ->
+                bottomSheetLoopButton.setOnClickListener {
                     val instance = controllerFuture.get()
                     when (instance.repeatMode) {
                         REPEAT_MODE_ALL -> {
