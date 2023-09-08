@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.text.format.DateFormat.is24HourFormat
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -40,6 +42,9 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD
+import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
@@ -51,10 +56,12 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.ui.viewmodels.TimerViewModel
 
 @UnstableApi class MainActivity : AppCompatActivity() {
 
     private val libraryViewModel: LibraryViewModel by viewModels()
+    private val timerViewModel: TimerViewModel by viewModels()
     private lateinit var sessionToken: SessionToken
     private lateinit var controllerFuture: ListenableFuture<MediaController>
 
@@ -223,6 +230,27 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         }
     }
 
+    // When the slider is dragged by user, mark it
+    // to use this state later.
+    private val touchListener: Slider.OnSliderTouchListener = object : Slider.OnSliderTouchListener {
+        override fun onStartTrackingTouch(slider: Slider) {
+            isUserTracking = true
+        }
+
+        override fun onStopTrackingTouch(slider: Slider) {
+            // This value is multiplied by 1000 is because
+            // when the number is too big (like when toValue
+            // used the duration directly) we might encounter
+            // some performance problem.
+            val instance = controllerFuture.get()
+            val mediaId = instance.currentMediaItem?.mediaId
+            if (mediaId != null) {
+                instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
+            }
+            isUserTracking = false
+        }
+    }
+
     override fun onStart() {
         sessionToken = SessionToken(this, ComponentName(this, GramophonePlaybackService::class.java))
         controllerFuture = MediaController.Builder(this, sessionToken)
@@ -230,33 +258,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         controllerFuture.addListener(
             {   val controller = controllerFuture.get()
                 controller.addListener(playerListener)
-                bottomSheetPreviewControllerButton.setOnClickListener {
-                    if (controller.isPlaying) {
-                        controllerFuture.get().pause()
-                    } else {
-                        controllerFuture.get().play()
-                    }
-                }
-                bottomSheetFullControllerButton.setOnClickListener {
-                    if (controller.isPlaying) {
-                        controllerFuture.get().pause()
-                    } else {
-                        controllerFuture.get().play()
-                    }
-                }
-                bottomSheetPreviewNextButton.setOnClickListener {
-                    controllerFuture.get().seekToNextMediaItem()
-                }
-                bottomSheetFullPreviousButton.setOnClickListener {
-                    controllerFuture.get().seekToPreviousMediaItem()
-                }
-                bottomSheetFullNextButton.setOnClickListener {
-                    controllerFuture.get().seekToNextMediaItem()
-                }
+
                 bottomSheetShuffleButton.isChecked = controller.shuffleModeEnabled
-                bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
-                    controllerFuture.get().shuffleModeEnabled = isChecked
-                }
+                bottomSheetTimerButton.isChecked = timerViewModel.timerDuration != 0
                 when (controller.repeatMode) {
                     REPEAT_MODE_ALL -> {
                         bottomSheetLoopButton.isChecked = true
@@ -269,27 +273,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                     REPEAT_MODE_ONE -> {
                         bottomSheetLoopButton.isChecked = true
                         bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
-                    }
-                }
-                bottomSheetLoopButton.setOnClickListener {
-                    val instance = controllerFuture.get()
-                    when (instance.repeatMode) {
-                        REPEAT_MODE_ALL -> {
-                            bottomSheetLoopButton.isChecked = true
-                            bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
-                            instance.repeatMode = REPEAT_MODE_ONE
-                        }
-                        REPEAT_MODE_OFF -> {
-                            bottomSheetLoopButton.isChecked = true
-                            bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                            instance.repeatMode = REPEAT_MODE_ALL
-
-                        }
-                        REPEAT_MODE_ONE -> {
-                            bottomSheetLoopButton.isChecked = false
-                            bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                            instance.repeatMode = REPEAT_MODE_OFF
-                        }
                     }
                 }
                 updateSongInfo(controller.currentMediaItem)
@@ -321,39 +304,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                         runnableRunning ++
                     }
                 }
-
-                // When the slider is dragged by user, mark it
-                // to use this state later.
-                val touchListener: Slider.OnSliderTouchListener = object : Slider.OnSliderTouchListener {
-                    override fun onStartTrackingTouch(slider: Slider) {
-                        isUserTracking = true
-                    }
-
-                    override fun onStopTrackingTouch(slider: Slider) {
-                        // This value is multiplied by 1000 is because
-                        // when the number is too big (like when toValue
-                        // used the duration directly) we might encounter
-                        // some performance problem.
-                        val instance = controllerFuture.get()
-                        val mediaId = instance.currentMediaItem?.mediaId
-                        if (mediaId != null) {
-                            instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
-                        }
-                        isUserTracking = false
-                    }
-                }
-
-                bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
-                    if (isUser) {
-                        val instance = controllerFuture.get()
-                        val dest = instance.currentMediaItem?.mediaId?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
-                        if (dest != null) {
-                            bottomSheetFullPosition.text = GramophoneUtils.convertDurationToTimeStamp((value * dest).toLong())
-                        }
-                    }
-                }
-
-                bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
             },
             MoreExecutors.directExecutor()
         )
@@ -382,6 +332,24 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             libraryViewModel.fileUriList.value = pairObject.fileUriList
             libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
         }
+    }
+
+    private fun setUpTimer(destinationTime: Int) {
+        timerViewModel.timerDuration = destinationTime
+        timerViewModel.timer = object : CountDownTimer(destinationTime.toLong(), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                Log.d("TAG", "TICK, $millisUntilFinished")
+            }
+
+            override fun onFinish() {
+                val instance = controllerFuture.get()
+                instance.pause()
+                timerViewModel.timerDuration = 0
+                timerViewModel.timer = null
+                bottomSheetTimerButton.isChecked = false
+            }
+        }
+        timerViewModel.timer!!.start()
     }
 
     @SuppressLint("StringFormatMatches")
@@ -446,6 +414,100 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 previewPlayer.visibility = GONE
             }
         }
+
+        bottomSheetTimerButton.setOnClickListener {
+            bottomSheetTimerButton.isChecked = true
+            val picker =
+                MaterialTimePicker.Builder()
+                    .setHour(timerViewModel.timerDuration / 3600 / 1000)
+                    .setMinute((timerViewModel.timerDuration % (3600 * 1000)) / (60 * 1000))
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setInputMode(INPUT_MODE_KEYBOARD)
+                    .build()
+            picker.addOnPositiveButtonClickListener {
+                val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
+                Log.d("TAG", "destinateTime: $destinationTime")
+                if (destinationTime != 0 && timerViewModel.timer == null) {
+                    setUpTimer(destinationTime)
+                } else if (destinationTime != 0 && timerViewModel.timer != null) {
+                    timerViewModel.timer!!.cancel()
+                    timerViewModel.timer = null
+                    timerViewModel.timerDuration = 0
+                    setUpTimer(destinationTime)
+                } else {
+                    timerViewModel.timer?.cancel()
+                    timerViewModel.timer = null
+                    timerViewModel.timerDuration = 0
+                }
+            }
+            picker.addOnDismissListener {
+                bottomSheetTimerButton.isChecked = timerViewModel.timerDuration != 0
+            }
+            picker.show(supportFragmentManager, "timer")
+        }
+
+        bottomSheetLoopButton.setOnClickListener {
+            val instance = controllerFuture.get()
+            when (instance.repeatMode) {
+                REPEAT_MODE_ALL -> {
+                    bottomSheetLoopButton.isChecked = true
+                    bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
+                    instance.repeatMode = REPEAT_MODE_ONE
+                }
+                REPEAT_MODE_OFF -> {
+                    bottomSheetLoopButton.isChecked = true
+                    bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+                    instance.repeatMode = REPEAT_MODE_ALL
+
+                }
+                REPEAT_MODE_ONE -> {
+                    bottomSheetLoopButton.isChecked = false
+                    bottomSheetLoopButton.icon = AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+                    instance.repeatMode = REPEAT_MODE_OFF
+                }
+            }
+        }
+
+        bottomSheetPreviewControllerButton.setOnClickListener {
+            val instance = controllerFuture.get()
+            if (instance.isPlaying) {
+                instance.pause()
+            } else {
+                instance.play()
+            }
+        }
+        bottomSheetFullControllerButton.setOnClickListener {
+            val instance = controllerFuture.get()
+            if (instance.isPlaying) {
+                instance.pause()
+            } else {
+                instance.play()
+            }
+        }
+        bottomSheetPreviewNextButton.setOnClickListener {
+            controllerFuture.get().seekToNextMediaItem()
+        }
+        bottomSheetFullPreviousButton.setOnClickListener {
+            controllerFuture.get().seekToPreviousMediaItem()
+        }
+        bottomSheetFullNextButton.setOnClickListener {
+            controllerFuture.get().seekToNextMediaItem()
+        }
+        bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
+            controllerFuture.get().shuffleModeEnabled = isChecked
+        }
+
+        bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
+            if (isUser) {
+                val instance = controllerFuture.get()
+                val dest = instance.currentMediaItem?.mediaId?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+                if (dest != null) {
+                    bottomSheetFullPosition.text = GramophoneUtils.convertDurationToTimeStamp((value * dest).toLong())
+                }
+            }
+        }
+
+        bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
 
         bottomSheetFullSlideUpButton.setOnClickListener {
             standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
