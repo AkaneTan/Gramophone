@@ -147,6 +147,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         }
     }
 
+    fun setBottomPlayerPreviewVisible() { previewPlayer.visibility = VISIBLE }
+
     fun updateSongInfo(mediaItem: MediaItem?) {
         Log.d("TAG", "${!controllerFuture.get().isPlaying}")
         val instance = controllerFuture.get()
@@ -527,7 +529,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
                     fullPlayer.visibility = GONE
-                    previewPlayer.visibility = VISIBLE
                     previewPlayer.alpha = 1f
                 } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
                     fullPlayer.visibility = VISIBLE

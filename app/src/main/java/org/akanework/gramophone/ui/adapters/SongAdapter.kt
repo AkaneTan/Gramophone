@@ -66,6 +66,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    mainActivity.setBottomPlayerPreviewVisible()
 
                     if (standardBottomSheetBehavior.isHideable) {
                         Handler(Looper.getMainLooper()).postDelayed({
