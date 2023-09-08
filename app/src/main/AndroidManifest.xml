@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission
         android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         tools:node="remove" />
@@ -27,7 +29,8 @@
         <service
             android:name=".logic.services.GramophonePlaybackService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback">
+            android:foregroundServiceType="mediaPlayback"
+            android:permission="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService"/>
                 <action android:name="androidx.media3.session.MediaSessionService"/>

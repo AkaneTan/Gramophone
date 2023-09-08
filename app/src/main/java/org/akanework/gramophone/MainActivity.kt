@@ -668,6 +668,5 @@ import org.akanework.gramophone.ui.viewmodels.TimerViewModel
     override fun onStop() {
         super.onStop()
         controllerFuture.get().removeListener(playerListener)
-        controllerFuture.get().release()
     }
 }
