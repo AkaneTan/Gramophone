@@ -26,7 +26,8 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-@UnstableApi class SearchFragment : Fragment() {
+@UnstableApi
+class SearchFragment : Fragment() {
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
@@ -46,9 +47,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
-        val songDecorAdapter = SongDecorAdapter(requireContext(),
+        val songDecorAdapter = SongDecorAdapter(
+            requireContext(),
             0,
-            songAdapter)
+            songAdapter
+        )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
@@ -67,9 +70,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             } else {
                 CoroutineScope(Dispatchers.Default).launch {
                     val filteredList = libraryViewModel.mediaItemList.value?.filter {
-                        val isMatchingTitle = it.mediaMetadata.title!!.contains(editText.text ,true)
-                        val isMatchingAlbum = it.mediaMetadata.albumTitle!!.contains(editText.text ,true)
-                        val isMatchingArtist = it.mediaMetadata.artist!!.contains(editText.text ,true)
+                        val isMatchingTitle = it.mediaMetadata.title!!.contains(editText.text, true)
+                        val isMatchingAlbum =
+                            it.mediaMetadata.albumTitle!!.contains(editText.text, true)
+                        val isMatchingArtist =
+                            it.mediaMetadata.artist!!.contains(editText.text, true)
                         isMatchingTitle || isMatchingAlbum || isMatchingArtist
                     }
                     if (filteredList != null) {

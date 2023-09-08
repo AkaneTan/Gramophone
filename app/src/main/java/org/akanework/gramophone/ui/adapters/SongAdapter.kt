@@ -1,10 +1,8 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
@@ -34,12 +30,17 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [SongAdapter] is an adapter for displaying songs.
  */
-@UnstableApi class SongAdapter(private val songList: MutableList<MediaItem>,
-                  private val mainActivity: MainActivity) :
+@UnstableApi
+class SongAdapter(
+    private val songList: MutableList<MediaItem>,
+    private val mainActivity: MainActivity
+) :
     RecyclerView.Adapter<SongAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.adapter_list_card, parent, false))
+        return ViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.adapter_list_card, parent, false)
+        )
     }
 
     val viewModel: LibraryViewModel by mainActivity.viewModels()
@@ -85,14 +86,19 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 when (it1.itemId) {
                     R.id.play_next -> {
                         val mediaController = mainActivity.getPlayer()
-                        mediaController.addMediaItem(mediaController.currentMediaItemIndex + 1, songList[holder.bindingAdapterPosition])
+                        mediaController.addMediaItem(
+                            mediaController.currentMediaItemIndex + 1,
+                            songList[holder.bindingAdapterPosition]
+                        )
                     }
+
                     R.id.album -> {
                         CoroutineScope(Dispatchers.Default).launch {
                             val positionAlbum = viewModel.albumItemList.value?.indexOfFirst {
                                 val currentItem = songList[holder.bindingAdapterPosition]
-                                val isMatching = (it.title == currentItem.mediaMetadata.albumTitle) &&
-                                        (it.songList.contains(currentItem))
+                                val isMatching =
+                                    (it.title == currentItem.mediaMetadata.albumTitle) &&
+                                            (it.songList.contains(currentItem))
                                 isMatching
                             }
                             if (positionAlbum != null) {
@@ -103,7 +109,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                                             arguments = Bundle().apply {
                                                 putInt("Position", positionAlbum)
                                                 putInt("Item", 1)
-                                                putString("Title",
+                                                putString(
+                                                    "Title",
                                                     viewModel.albumItemList.value?.get(positionAlbum)?.title
                                                 )
                                             }
@@ -113,6 +120,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                             }
                         }
                     }
+
                     R.id.artist -> {
                         CoroutineScope(Dispatchers.Default).launch {
                             val positionArtist = viewModel.artistItemList.value?.indexOfFirst {
@@ -129,8 +137,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                                             arguments = Bundle().apply {
                                                 putInt("Position", positionArtist)
                                                 putInt("Item", 2)
-                                                putString("Title",
-                                                    viewModel.artistItemList.value?.get(positionArtist)?.title
+                                                putString(
+                                                    "Title",
+                                                    viewModel.artistItemList.value?.get(
+                                                        positionArtist
+                                                    )?.title
                                                 )
                                             }
                                         })
@@ -139,6 +150,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                             }
                         }
                     }
+
                     R.id.details -> {
 
                     }
@@ -188,10 +200,16 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private class SongDiffCallback(private val oldList: List<MediaItem>, private val newList: List<MediaItem>) : DiffUtil.Callback() {
+    private class SongDiffCallback(
+        private val oldList: List<MediaItem>,
+        private val newList: List<MediaItem>
+    ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
         override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldList[oldItemPosition].mediaId == newList[newItemPosition].mediaId
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldList[oldItemPosition] == newList[newItemPosition]
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition].mediaId == newList[newItemPosition].mediaId
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

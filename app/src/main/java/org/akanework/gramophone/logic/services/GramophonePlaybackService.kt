@@ -6,7 +6,6 @@ import android.app.PendingIntent.getActivity
 import android.content.Intent
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -14,19 +13,22 @@ import androidx.media3.session.MediaSessionService
 import org.akanework.gramophone.MainActivity
 
 
-@UnstableApi class GramophonePlaybackService : MediaSessionService() {
+@UnstableApi
+class GramophonePlaybackService : MediaSessionService() {
 
     private var mediaSession: MediaSession? = null
 
     override fun onCreate() {
         val player = ExoPlayer.Builder(this).build()
         mediaSession = MediaSession.Builder(this, player)
-            .setSessionActivity(getActivity(
-                this,
-                0,
-                Intent(this, MainActivity::class.java),
-                FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
-            ))
+            .setSessionActivity(
+                getActivity(
+                    this,
+                    0,
+                    Intent(this, MainActivity::class.java),
+                    FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+                )
+            )
             .build()
         val audioAttributes: AudioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
@@ -45,6 +47,7 @@ import org.akanework.gramophone.MainActivity
         super.onDestroy()
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =
+        mediaSession
 
 }

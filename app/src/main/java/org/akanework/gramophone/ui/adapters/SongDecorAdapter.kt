@@ -10,20 +10,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 
-class SongDecorAdapter(private val context: Context,
-                       private var songCount: Int,
-                       private val songAdapter: SongAdapter)
-    : RecyclerView.Adapter<SongDecorAdapter.ViewHolder>() {
+class SongDecorAdapter(
+    private val context: Context,
+    private var songCount: Int,
+    private val songAdapter: SongAdapter
+) : RecyclerView.Adapter<SongDecorAdapter.ViewHolder>() {
 
     private var sortStatus = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val songText = songCount.toString() + ' '+
+        val songText = songCount.toString() + ' ' +
                 if (songCount <= 1) context.getString(R.string.song) else context.getString(R.string.songs)
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
@@ -35,9 +37,11 @@ class SongDecorAdapter(private val context: Context,
                 0 -> {
                     popupMenu.menu.findItem(R.id.name).isChecked = true
                 }
+
                 1 -> {
                     popupMenu.menu.findItem(R.id.artist).isChecked = true
                 }
+
                 2 -> {
                     popupMenu.menu.findItem(R.id.album).isChecked = true
                 }
@@ -52,6 +56,7 @@ class SongDecorAdapter(private val context: Context,
                             sortStatus = 0
                         }
                     }
+
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
                             songAdapter.sortBy { it2 -> it2.mediaMetadata.artist.toString() }
@@ -59,6 +64,7 @@ class SongDecorAdapter(private val context: Context,
                             sortStatus = 1
                         }
                     }
+
                     R.id.album -> {
                         if (!menuItem.isChecked) {
                             songAdapter.sortBy { it2 -> it2.mediaMetadata.albumTitle.toString() }
@@ -86,5 +92,5 @@ class SongDecorAdapter(private val context: Context,
         notifyItemChanged(0)
     }
 
-    fun isCounterEmpty() : Boolean = songCount == 0
+    fun isCounterEmpty(): Boolean = songCount == 0
 }

@@ -133,24 +133,25 @@ object MediaStoreUtils {
                     trackNumber %= 100
                 }
 
-                songs.add(MediaItem.Builder()
-                    .setUri(Uri.parse(path))
-                    .setMediaId(id.toString())
-                    .setMimeType(mimeType)
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(title)
-                            .setArtist(artist)
-                            .setAlbumTitle(album)
-                            .setAlbumArtist(albumArtist)
-                            .setArtworkUri(imgUri)
-                            .setTrackNumber(trackNumber)
-                            .setDiscNumber(discNumber)
-                            .setRecordingYear(year)
-                            .setReleaseYear(year)
-                            .build()
-                    )
-                    .build()
+                songs.add(
+                    MediaItem.Builder()
+                        .setUri(Uri.parse(path))
+                        .setMediaId(id.toString())
+                        .setMimeType(mimeType)
+                        .setMediaMetadata(
+                            MediaMetadata.Builder()
+                                .setTitle(title)
+                                .setArtist(artist)
+                                .setAlbumTitle(album)
+                                .setAlbumArtist(albumArtist)
+                                .setArtworkUri(imgUri)
+                                .setTrackNumber(trackNumber)
+                                .setDiscNumber(discNumber)
+                                .setRecordingYear(year)
+                                .setReleaseYear(year)
+                                .build()
+                        )
+                        .build()
                 )
 
                 albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
@@ -171,7 +172,13 @@ object MediaStoreUtils {
                 val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber }
                 val albumArtist = sortedAlbumSongs.first().mediaMetadata.albumArtist
                     ?: sortedAlbumSongs.first().mediaMetadata.artist.toString()
-                Album(index.toLong(), albumTitle, albumArtist.toString(), albumYear, sortedAlbumSongs)
+                Album(
+                    index.toLong(),
+                    albumTitle,
+                    albumArtist.toString(),
+                    albumYear,
+                    sortedAlbumSongs
+                )
             }
             .sortedWith(compareBy({ it.title }, { it.albumYear }))
             .toMutableList()
@@ -197,7 +204,16 @@ object MediaStoreUtils {
             .sortedByDescending { it.title }
             .toMutableList()
 
-        return LibraryStoreClass(songs, sortedAlbumList, sortedArtistList, sortedGenreList, sortedDateList, durationMap, fileUriMap, mimeTypeMap)
+        return LibraryStoreClass(
+            songs,
+            sortedAlbumList,
+            sortedArtistList,
+            sortedGenreList,
+            sortedDateList,
+            durationMap,
+            fileUriMap,
+            mimeTypeMap
+        )
     }
 
 }

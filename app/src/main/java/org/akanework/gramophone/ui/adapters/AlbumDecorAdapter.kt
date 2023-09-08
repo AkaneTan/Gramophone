@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 
-class AlbumDecorAdapter(private val context: Context,
-                        private var albumCount: Int,
-                        private val albumAdapter: AlbumAdapter)
-    : RecyclerView.Adapter<AlbumDecorAdapter.ViewHolder>() {
+class AlbumDecorAdapter(
+    private val context: Context,
+    private var albumCount: Int,
+    private val albumAdapter: AlbumAdapter
+) : RecyclerView.Adapter<AlbumDecorAdapter.ViewHolder>() {
 
     private var sortStatus = 0
 
@@ -22,12 +23,13 @@ class AlbumDecorAdapter(private val context: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val songText = albumCount.toString() + ' '+
+        val songText = albumCount.toString() + ' ' +
                 if (albumCount <= 1) context.getString(R.string.album) else context.getString(R.string.albums)
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
@@ -40,6 +42,7 @@ class AlbumDecorAdapter(private val context: Context,
                 0 -> {
                     popupMenu.menu.findItem(R.id.name).isChecked = true
                 }
+
                 1 -> {
                     popupMenu.menu.findItem(R.id.artist).isChecked = true
                 }
@@ -54,6 +57,7 @@ class AlbumDecorAdapter(private val context: Context,
                             sortStatus = 0
                         }
                     }
+
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
                             albumAdapter.sortBy { it2 -> it2.artist }
@@ -81,5 +85,5 @@ class AlbumDecorAdapter(private val context: Context,
         notifyItemChanged(0)
     }
 
-    fun isCounterEmpty() : Boolean = albumCount == 0
+    fun isCounterEmpty(): Boolean = albumCount == 0
 }

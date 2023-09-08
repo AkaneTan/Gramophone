@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,10 +8,10 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/recyclerview_bottom_padding"
-        android:paddingTop="4dp"
         android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="@dimen/recyclerview_bottom_padding"
         android:scrollbarStyle="outsideOverlay"
-        tools:listitem="@layout/adapter_list_card"/>
+        tools:listitem="@layout/adapter_list_card" />
 
 </FrameLayout>

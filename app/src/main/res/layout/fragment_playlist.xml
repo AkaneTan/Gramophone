@@ -11,362 +11,362 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="100" />
+            android:textFontWeight="100"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="200" />
+            android:textFontWeight="200"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="300" />
+            android:textFontWeight="300"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="400" />
+            android:textFontWeight="400"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="500" />
+            android:textFontWeight="500"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="600" />
+            android:textFontWeight="600"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="700" />
+            android:textFontWeight="700"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="800" />
+            android:textFontWeight="800"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="100" />
+            android:textFontWeight="100"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="200" />
+            android:textFontWeight="200"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="300" />
+            android:textFontWeight="300"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="400" />
+            android:textFontWeight="400"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="500" />
+            android:textFontWeight="500"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="600" />
+            android:textFontWeight="600"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="700" />
+            android:textFontWeight="700"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="800" />
+            android:textFontWeight="800"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="100" />
+            android:textFontWeight="100"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="200" />
+            android:textFontWeight="200"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="300" />
+            android:textFontWeight="300"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="400" />
+            android:textFontWeight="400"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="500" />
+            android:textFontWeight="500"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="600" />
+            android:textFontWeight="600"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="700" />
+            android:textFontWeight="700"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="800" />
+            android:textFontWeight="800"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="100" />
+            android:textFontWeight="100"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="200" />
+            android:textFontWeight="200"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="300" />
+            android:textFontWeight="300"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="400" />
+            android:textFontWeight="400"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="500" />
+            android:textFontWeight="500"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="600" />
+            android:textFontWeight="600"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="700" />
+            android:textFontWeight="700"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="800" />
+            android:textFontWeight="800"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="100" />
+            android:textFontWeight="100"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="200" />
+            android:textFontWeight="200"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="300" />
+            android:textFontWeight="300"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="400" />
+            android:textFontWeight="400"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="500" />
+            android:textFontWeight="500"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="600" />
+            android:textFontWeight="600"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="700" />
+            android:textFontWeight="700"
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="Hello world!"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif"
-            android:textFontWeight="800" />
+            android:textFontWeight="800"
+            android:textSize="22sp" />
 
     </LinearLayout>
 

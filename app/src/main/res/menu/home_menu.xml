@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search"
-        android:title="@string/home_menu_search"
         android:icon="@drawable/ic_search"
         android:iconTint="?attr/colorOnSurface"
+        android:title="@string/home_menu_search"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/shuffle"
-        android:title="@string/home_menu_shuffle"
         android:icon="@drawable/ic_shuffle"
         android:iconTint="?attr/colorOnSurface"
+        android:title="@string/home_menu_shuffle"
         app:showAsAction="ifRoom" />
 </menu>

@@ -1,54 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:gravity="center_horizontal"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="16dp"
-    android:paddingTop="8dp"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp">
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="164dp"
         android:layout_height="164dp"
-        android:src="@drawable/ic_default_cover"
-        android:background="?attr/colorSurfaceContainer" />
+        android:background="?attr/colorSurfaceContainer"
+        android:src="@drawable/ic_default_cover" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="28dp"
         android:layout_below="@id/cover"
         android:layout_alignStart="@id/cover"
         android:layout_alignEnd="@id/more"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="28dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textFontWeight="500"
-            android:textColor="?attr/colorOnSurface"
             android:singleLine="true"
+            android:textColor="?attr/colorOnSurface"
+            android:textFontWeight="500"
             android:textSize="14sp"
-            tools:text="Example Title"/>
+            tools:text="Example Title" />
 
         <TextView
             android:id="@+id/artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textFontWeight="400"
-            android:textColor="?attr/colorOnSurfaceVariant"
             android:singleLine="true"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textFontWeight="400"
             android:textSize="14sp"
             tools:text="Example Artist" />
 
@@ -58,19 +57,19 @@
         android:id="@+id/more"
         android:layout_width="28dp"
         android:layout_height="39dp"
+        android:layout_below="@id/cover"
+        android:layout_alignEnd="@id/cover"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
         android:backgroundTint="@android:color/transparent"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         app:icon="@drawable/ic_more_vert"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"
-        app:iconTint="?attr/colorOnSurface"
-        android:layout_below="@id/cover"
-        android:layout_alignEnd="@id/cover" />
+        app:iconTint="?attr/colorOnSurface" />
 
 </RelativeLayout>

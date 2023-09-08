@@ -10,10 +10,10 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         app:contentScrim="?attr/colorSurface"
         app:liftOnScrollColor="?attr/colorSurface"
-        app:statusBarScrim="?attr/colorSurface"
-        android:fitsSystemWindows="true">
+        app:statusBarScrim="?attr/colorSurface">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
@@ -32,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"

@@ -1,7 +1,5 @@
 package org.akanework.gramophone.logic.utils
 
-import android.content.res.Resources.getSystem
-
 object GramophoneUtils {
 
     /**

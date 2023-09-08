@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
@@ -47,9 +46,11 @@ class SongFragment : Fragment() {
         val songList = mutableListOf<MediaItem>()
         songList.addAll(libraryViewModel.mediaItemList.value!!)
         val songAdapter = SongAdapter(songList, requireActivity() as MainActivity)
-        val songDecorAdapter = SongDecorAdapter(requireContext(),
+        val songDecorAdapter = SongDecorAdapter(
+            requireContext(),
             libraryViewModel.mediaItemList.value!!.size,
-            songAdapter)
+            songAdapter
+        )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 
         if (!libraryViewModel.mediaItemList.hasActiveObservers()) {

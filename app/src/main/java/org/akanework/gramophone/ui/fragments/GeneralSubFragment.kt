@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
@@ -21,7 +20,8 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-@UnstableApi class GeneralSubFragment : Fragment() {
+@UnstableApi
+class GeneralSubFragment : Fragment() {
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
@@ -51,14 +51,18 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
                 // Albums
                 itemList = libraryViewModel.albumItemList.value!![position].songList.toMutableList()
             }
+
             2 -> {
                 // Artists
-                itemList = libraryViewModel.artistItemList.value!![position].songList.toMutableList()
+                itemList =
+                    libraryViewModel.artistItemList.value!![position].songList.toMutableList()
             }
+
             3 -> {
                 // Genres
                 itemList = libraryViewModel.genreItemList.value!![position].songList.toMutableList()
             }
+
             4 -> {
                 // Dates
                 itemList = libraryViewModel.dateItemList.value!![position].songList.toMutableList()
@@ -66,9 +70,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         }
 
         val songAdapter = SongAdapter(itemList, requireActivity() as MainActivity)
-        val songDecorAdapter = SongDecorAdapter(requireContext(),
+        val songDecorAdapter = SongDecorAdapter(
+            requireContext(),
             itemList.size,
-            songAdapter)
+            songAdapter
+        )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = concatAdapter

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="74dp"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:paddingStart="16dp"
-    android:paddingEnd="4dp"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingStart="16dp"
+    android:paddingEnd="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,8 +20,8 @@
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_default_cover"
-            android:background="?attr/colorSurfaceContainer" />
+            android:background="?attr/colorSurfaceContainer"
+            android:src="@drawable/ic_default_cover" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -35,19 +34,19 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textFontWeight="400"
-                android:textColor="?attr/colorOnSurface"
                 android:singleLine="true"
+                android:textColor="?attr/colorOnSurface"
+                android:textFontWeight="400"
                 android:textSize="16sp"
-                tools:text="Example Title"/>
+                tools:text="Example Title" />
 
             <TextView
                 android:id="@+id/artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textFontWeight="400"
-                android:textColor="?attr/colorOnSurfaceVariant"
                 android:singleLine="true"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textFontWeight="400"
                 android:textSize="16sp"
                 tools:text="Example Artist" />
 
@@ -59,16 +58,16 @@
         android:id="@+id/more"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
+        android:layout_gravity="end|center_vertical"
         android:backgroundTint="?attr/colorSurface"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         app:icon="@drawable/ic_more_vert"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"
-        app:iconTint="?attr/colorOnSurface"
-        android:layout_gravity="end|center_vertical"/>
+        app:iconTint="?attr/colorOnSurface" />
 
 </FrameLayout>

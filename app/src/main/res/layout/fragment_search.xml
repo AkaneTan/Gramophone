@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.fragments.SearchFragment"
     android:backgroundTint="?attr/colorSurface"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.fragments.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -26,10 +25,10 @@
                 android:layout_height="64dp"
                 android:backgroundTint="@android:color/transparent"
                 app:icon="@drawable/ic_arrow_back"
-                app:iconSize="24dp"
-                app:iconTint="?attr/colorOnSurface"
                 app:iconGravity="textStart"
-                app:iconPadding="8dp" />
+                app:iconPadding="8dp"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSurface" />
 
             <EditText
                 android:id="@+id/edit_text"
@@ -38,8 +37,8 @@
                 android:layout_gravity="center_vertical"
                 android:backgroundTint="@android:color/transparent"
                 android:hint="@string/search"
-                android:textSize="20sp"
-                android:textColorHint="?attr/colorOnSurfaceVariant"/>
+                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:textSize="20sp" />
 
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>

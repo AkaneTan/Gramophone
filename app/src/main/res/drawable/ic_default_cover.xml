@@ -8,8 +8,8 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/album_art"
         android:bottom="12dp"
+        android:drawable="@drawable/album_art"
         android:end="12dp"
         android:start="12dp"
         android:top="12dp" />

@@ -26,8 +26,8 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="2dp"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:paddingStart="2dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbar"
@@ -64,12 +64,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_category_info"
-                android:textColor="?attr/colorPrimary"
-                android:textFontWeight="500"
                 android:paddingStart="18dp"
                 android:paddingTop="16dp"
-                android:paddingEnd="22dp"/>
+                android:paddingEnd="22dp"
+                android:text="@string/settings_category_info"
+                android:textColor="?attr/colorPrimary"
+                android:textFontWeight="500" />
 
             <FrameLayout
                 android:layout_width="match_parent"

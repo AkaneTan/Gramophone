@@ -10,20 +10,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 
-class DateDecorAdapter(private val context: Context,
-                       private var dateCount: Int,
-                       private val dateAdapter: DateAdapter)
-    : RecyclerView.Adapter<DateDecorAdapter.ViewHolder>() {
+class DateDecorAdapter(
+    private val context: Context,
+    private var dateCount: Int,
+    private val dateAdapter: DateAdapter
+) : RecyclerView.Adapter<DateDecorAdapter.ViewHolder>() {
 
     private var sortStatus = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val songText = dateCount.toString() + ' '+
+        val songText = dateCount.toString() + ' ' +
                 if (dateCount <= 1) context.getString(R.string.item) else context.getString(R.string.items)
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
@@ -35,6 +37,7 @@ class DateDecorAdapter(private val context: Context,
                 0 -> {
                     popupMenu.menu.findItem(R.id.name).isChecked = true
                 }
+
                 1 -> {
                     popupMenu.menu.findItem(R.id.size).isChecked = true
                 }
@@ -49,6 +52,7 @@ class DateDecorAdapter(private val context: Context,
                             sortStatus = 0
                         }
                     }
+
                     R.id.size -> {
                         if (!menuItem.isChecked) {
                             dateAdapter.sortByDescendingInt { it2 -> it2.songList.size }
@@ -76,5 +80,5 @@ class DateDecorAdapter(private val context: Context,
         notifyItemChanged(0)
     }
 
-    fun isCounterEmpty() : Boolean = dateCount == 0
+    fun isCounterEmpty(): Boolean = dateCount == 0
 }

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:fitsSystemWindows="false">
+    android:fitsSystemWindows="false"
+    tools:context=".MainActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -16,9 +15,9 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/container"
+            android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment" />
+            android:layout_height="match_parent" />
 
         <!-- Player Layout -->
         <FrameLayout
@@ -26,13 +25,13 @@
             style="@style/BottomPlayerSheetStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/bottom_sheet_behavior"
+            android:background="?attr/colorOnSurface"
+            android:clickable="true"
+            android:fitsSystemWindows="false"
+            android:translationZ="256dp"
             app:behavior_hideable="true"
             app:behavior_peekHeight="66dp"
-            android:fitsSystemWindows="false"
-            android:clickable="true"
-            android:background="?attr/colorOnSurface"
-            android:translationZ="256dp"
+            app:layout_behavior="@string/bottom_sheet_behavior"
             tools:behavior_peekHeight="1000dp">
 
             <!-- Preview Player -->
@@ -46,34 +45,35 @@
                     android:id="@+id/preview_album_cover"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="16dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_default_cover"
-                    android:background="?attr/colorSurfaceContainer" />
+                    android:layout_marginStart="16dp"
+                    android:background="?attr/colorSurfaceContainer"
+                    android:src="@drawable/ic_default_cover" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/preview_album_cover"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="112dp"
+                    android:layout_toEndOf="@id/preview_album_cover"
                     android:orientation="vertical">
+
                     <org.akanework.gramophone.ui.components.MarqueeTextView
                         android:id="@+id/preview_song_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="?attr/colorOnSurface"
                         android:textFontWeight="500"
                         android:textSize="14sp"
-                        android:textColor="?attr/colorOnSurface"
                         tools:text="Example title" />
 
                     <org.akanework.gramophone.ui.components.MarqueeTextView
                         android:id="@+id/preview_artist_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textFontWeight="500"
                         android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textFontWeight="500"
                         tools:text="Example Artist" />
                 </LinearLayout>
 
@@ -81,36 +81,36 @@
                     android:id="@+id/preview_control"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/preview_next"
+                    android:backgroundTint="?attr/colorSurface"
                     android:insetLeft="0dp"
+                    android:insetTop="0dp"
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
-                    android:insetTop="0dp"
-                    android:backgroundTint="?attr/colorSurface"
-                    android:layout_toStartOf="@id/preview_next"
-                    android:layout_centerVertical="true"
                     app:icon="@drawable/pause_art"
-                    app:iconTint="?attr/colorOnSurface"
-                    app:iconSize="24dp"
                     app:iconGravity="textStart"
-                    app:iconPadding="0dp" />
+                    app:iconPadding="0dp"
+                    app:iconSize="24dp"
+                    app:iconTint="?attr/colorOnSurface" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/preview_next"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="?attr/colorSurface"
                     android:insetLeft="0dp"
+                    android:insetTop="0dp"
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
-                    android:insetTop="0dp"
-                    android:backgroundTint="?attr/colorSurface"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="8dp"
                     app:icon="@drawable/next_art"
-                    app:iconTint="?attr/colorOnSurface"
-                    app:iconSize="24dp"
                     app:iconGravity="textStart"
-                    app:iconPadding="0dp" />
+                    app:iconPadding="0dp"
+                    app:iconSize="24dp"
+                    app:iconTint="?attr/colorOnSurface" />
             </RelativeLayout>
 
             <!-- Full Player -->
@@ -142,32 +142,32 @@
                     android:id="@+id/cover_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/slide_down"
                     android:layout_marginLeft="18dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginRight="18dp"
-                    android:layout_below="@+id/slide_down">
+                    android:layout_marginRight="18dp">
 
                     <ImageView
                         android:id="@+id/full_sheet_cover"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:background="?attr/colorSurfaceContainer"
+                        android:src="@drawable/ic_default_cover"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintDimensionRatio="H,1:1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:src="@drawable/ic_default_cover"
-                        android:background="?attr/colorSurfaceContainer" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
+                    android:layout_above="@id/playlist"
                     android:layout_below="@id/cover_frame"
-                    android:layout_above="@id/playlist">
+                    android:layout_gravity="center"
+                    android:gravity="center">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -181,10 +181,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="18dp"
                             android:layout_marginEnd="18dp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="22sp"
-                            android:textFontWeight="600"
                             android:gravity="center"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textFontWeight="600"
+                            android:textSize="22sp"
                             tools:text="Artifiction" />
 
                         <org.akanework.gramophone.ui.components.MarqueeTextView
@@ -194,10 +194,10 @@
                             android:layout_marginStart="18dp"
                             android:layout_marginEnd="18dp"
                             android:layout_marginBottom="8dp"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:textSize="20sp"
                             android:gravity="center"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textFontWeight="500"
+                            android:textSize="20sp"
                             tools:text="Artifiction" />
 
                     </LinearLayout>
@@ -206,39 +206,39 @@
                         android:id="@+id/slider"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_above="@id/duration_frame"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
                         android:value="0"
-                        android:layout_above="@id/duration_frame"
-                        app:thumbRadius="8dp"
-                        app:labelBehavior="gone" />
+                        app:labelBehavior="gone"
+                        app:thumbRadius="8dp" />
 
                     <FrameLayout
                         android:id="@+id/duration_frame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@id/sheet_mid_button"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginStart="18dp"
-                        android:layout_marginEnd="18dp">
+                        android:layout_marginEnd="18dp"
+                        android:layout_marginBottom="16dp">
 
                         <TextView
                             android:id="@+id/position"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="start"
                             android:text="@string/default_time"
-                            android:textFontWeight="500"
                             android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_gravity="start"/>
+                            android:textFontWeight="500" />
 
                         <TextView
                             android:id="@+id/duration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="end"
                             android:text="@string/default_time"
                             android:textColor="?attr/colorOnSurfaceVariant"
-                            android:textFontWeight="500"
-                            android:layout_gravity="end"/>
+                            android:textFontWeight="500" />
 
                     </FrameLayout>
 
@@ -246,13 +246,13 @@
                         android:id="@+id/sheet_mid_button"
                         android:layout_width="84dp"
                         android:layout_height="84dp"
+                        android:layout_centerHorizontal="true"
                         android:backgroundTint="?attr/colorSecondaryContainer"
                         android:elevation="0dp"
                         android:insetLeft="0dp"
                         android:insetTop="0dp"
                         android:insetRight="0dp"
                         android:insetBottom="0dp"
-                        android:layout_centerHorizontal="true"
                         app:icon="@drawable/play_art"
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
@@ -264,14 +264,14 @@
                         android:layout_width="84dp"
                         android:layout_height="84dp"
                         android:layout_gravity="center"
+                        android:layout_marginEnd="20dp"
+                        android:layout_toStartOf="@id/sheet_mid_button"
                         android:backgroundTint="?attr/colorSurface"
                         android:elevation="0dp"
                         android:insetLeft="0dp"
                         android:insetTop="0dp"
                         android:insetRight="0dp"
                         android:insetBottom="0dp"
-                        android:layout_toStartOf="@id/sheet_mid_button"
-                        android:layout_marginEnd="20dp"
                         app:icon="@drawable/previous_art"
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
@@ -282,15 +282,15 @@
                         android:id="@+id/sheet_next_song"
                         android:layout_width="84dp"
                         android:layout_height="84dp"
-                        android:backgroundTint="?attr/colorSurface"
                         android:layout_gravity="center"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/sheet_mid_button"
+                        android:backgroundTint="?attr/colorSurface"
                         android:elevation="0dp"
                         android:insetLeft="0dp"
                         android:insetTop="0dp"
                         android:insetRight="0dp"
                         android:insetBottom="0dp"
-                        android:layout_toEndOf="@id/sheet_mid_button"
-                        android:layout_marginStart="20dp"
                         app:icon="@drawable/next_art"
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
@@ -303,6 +303,8 @@
                     android:id="@+id/timer"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_alignTop="@id/lyrics"
+                    android:layout_toStartOf="@id/lyrics"
                     android:backgroundTint="?attr/colorSurface"
                     android:checkable="true"
                     android:elevation="0dp"
@@ -311,8 +313,6 @@
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
                     android:saveEnabled="false"
-                    android:layout_toStartOf="@id/lyrics"
-                    android:layout_alignTop="@id/lyrics"
                     app:icon="@drawable/timer_art"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
@@ -324,6 +324,8 @@
                     android:id="@+id/lyrics"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_alignTop="@id/sheet_loop"
+                    android:layout_toStartOf="@id/sheet_loop"
                     android:backgroundTint="?attr/colorSurface"
                     android:checkable="true"
                     android:elevation="0dp"
@@ -332,8 +334,6 @@
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
                     android:saveEnabled="false"
-                    android:layout_toStartOf="@id/sheet_loop"
-                    android:layout_alignTop="@id/sheet_loop"
                     app:icon="@drawable/subtitles_art"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
@@ -344,6 +344,8 @@
                     android:id="@+id/sheet_loop"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_alignTop="@id/sheet_random"
+                    android:layout_toStartOf="@id/sheet_random"
                     android:backgroundTint="?attr/colorSurface"
                     android:checkable="true"
                     android:elevation="0dp"
@@ -352,8 +354,6 @@
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
                     android:saveEnabled="false"
-                    android:layout_toStartOf="@id/sheet_random"
-                    android:layout_alignTop="@id/sheet_random"
                     app:icon="@drawable/ic_repeat"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
@@ -364,8 +364,10 @@
                     android:id="@+id/sheet_random"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:backgroundTint="?attr/colorSurface"
+                    android:layout_alignTop="@id/playlist"
                     android:layout_gravity="center"
+                    android:layout_toStartOf="@id/playlist"
+                    android:backgroundTint="?attr/colorSurface"
                     android:checkable="true"
                     android:elevation="0dp"
                     android:insetLeft="0dp"
@@ -373,8 +375,6 @@
                     android:insetRight="0dp"
                     android:insetBottom="0dp"
                     android:saveEnabled="false"
-                    android:layout_toStartOf="@id/playlist"
-                    android:layout_alignTop="@id/playlist"
                     app:icon="@drawable/ic_shuffle"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
@@ -412,6 +412,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:listDivider="?attr/colorPrimary"
-        app:menu="@menu/navigation_menu"/>
+        app:menu="@menu/navigation_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

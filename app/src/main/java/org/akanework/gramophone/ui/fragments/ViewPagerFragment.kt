@@ -18,7 +18,8 @@ import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
-@UnstableApi class ViewPagerFragment : Fragment() {
+@UnstableApi
+class ViewPagerFragment : Fragment() {
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
@@ -56,12 +57,14 @@ import kotlin.random.Random
                         controller.play()
                     }
                 }
+
                 R.id.search -> {
                     requireActivity().supportFragmentManager.beginTransaction()
                         .addToBackStack("SEARCH")
                         .replace(R.id.container, SearchFragment())
                         .commit()
                 }
+
                 else -> throw IllegalStateException()
             }
             true

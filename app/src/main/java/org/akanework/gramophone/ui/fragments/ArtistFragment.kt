@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
@@ -36,10 +35,17 @@ class ArtistFragment : Fragment() {
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
         val artistList = mutableListOf<MediaStoreUtils.Artist>()
         artistList.addAll(libraryViewModel.artistItemList.value!!)
-        val artistAdapter = ArtistAdapter(artistList, requireContext(), requireActivity().supportFragmentManager, requireActivity() as MainActivity)
-        val artistDecorAdapter = ArtistDecorAdapter(requireContext(),
+        val artistAdapter = ArtistAdapter(
+            artistList,
+            requireContext(),
+            requireActivity().supportFragmentManager,
+            requireActivity() as MainActivity
+        )
+        val artistDecorAdapter = ArtistDecorAdapter(
+            requireContext(),
             libraryViewModel.artistItemList.value!!.size,
-            artistAdapter)
+            artistAdapter
+        )
         val concatAdapter = ConcatAdapter(artistDecorAdapter, artistAdapter)
 
         if (!libraryViewModel.artistItemList.hasActiveObservers()) {

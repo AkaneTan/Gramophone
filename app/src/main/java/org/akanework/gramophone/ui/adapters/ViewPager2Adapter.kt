@@ -8,7 +8,6 @@ import org.akanework.gramophone.ui.fragments.AlbumFragment
 import org.akanework.gramophone.ui.fragments.ArtistFragment
 import org.akanework.gramophone.ui.fragments.DateFragment
 import org.akanework.gramophone.ui.fragments.GenreFragment
-import org.akanework.gramophone.ui.fragments.PlaylistFragment
 import org.akanework.gramophone.ui.fragments.SongFragment
 
 /**

@@ -1,55 +1,53 @@
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:title="@string/categories">
         <menu>
             <item
                 android:id="@+id/songs"
+                android:checkable="true"
                 android:icon="@drawable/ic_music_note"
                 android:title="@string/category_songs"
-                android:checkable="true"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/albums"
+                android:checkable="true"
                 android:icon="@drawable/album_art"
                 android:title="@string/category_albums"
-                android:checkable="true"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/artists"
+                android:checkable="true"
                 android:icon="@drawable/artist_art"
                 android:title="@string/category_artists"
-                android:checkable="true"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/genres"
+                android:checkable="true"
                 android:icon="@drawable/genres_art"
                 android:title="@string/category_genres"
-                android:checkable="true"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/dates"
+                android:checkable="true"
                 android:icon="@drawable/dates_art"
                 android:title="@string/category_dates"
-                android:checkable="true"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
-    <item
-        android:title="@string/operations">
+    <item android:title="@string/operations">
         <menu>
             <item
                 android:id="@+id/refresh"
+                android:checkable="false"
                 android:icon="@drawable/ic_refresh"
                 android:title="@string/home_menu_refresh"
-                android:checkable="false"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/settings"
+                android:checkable="false"
                 android:icon="@drawable/settings_art"
                 android:title="@string/home_menu_settings"
-                android:checkable="false"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>

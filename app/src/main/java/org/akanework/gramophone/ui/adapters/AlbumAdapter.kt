@@ -21,13 +21,17 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
-class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>,
-                   private val fragmentManager: FragmentManager,
-                   private val mainActivity: MainActivity) :
+class AlbumAdapter(
+    private val albumList: MutableList<MediaStoreUtils.Album>,
+    private val fragmentManager: FragmentManager,
+    private val mainActivity: MainActivity
+) :
     RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.adapter_grid_card, parent, false))
+        return ViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.adapter_grid_card, parent, false)
+        )
     }
 
     override fun getItemCount(): Int = albumList.size
@@ -62,8 +66,12 @@ class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>,
                 when (it1.itemId) {
                     R.id.play_next -> {
                         val mediaController = mainActivity.getPlayer()
-                        mediaController.addMediaItems(mediaController.currentMediaItemIndex + 1, albumList[holder.bindingAdapterPosition].songList)
+                        mediaController.addMediaItems(
+                            mediaController.currentMediaItemIndex + 1,
+                            albumList[holder.bindingAdapterPosition].songList
+                        )
                     }
+
                     R.id.details -> {
 
                     }
@@ -112,11 +120,16 @@ class AlbumAdapter(private val albumList: MutableList<MediaStoreUtils.Album>,
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private class SongDiffCallback(private val oldList: MutableList<MediaStoreUtils.Album>, private val newList: MutableList<MediaStoreUtils.Album>) : DiffUtil.Callback() {
+    private class SongDiffCallback(
+        private val oldList: MutableList<MediaStoreUtils.Album>,
+        private val newList: MutableList<MediaStoreUtils.Album>
+    ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
         override fun getNewListSize() = newList.size
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             oldList[oldItemPosition].id == newList[newItemPosition].id
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldList[oldItemPosition] == newList[newItemPosition]
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

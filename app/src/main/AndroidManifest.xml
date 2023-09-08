@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
@@ -32,15 +33,15 @@
             android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK">
             <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService"/>
-                <action android:name="androidx.media3.session.MediaSessionService"/>
+                <action android:name="android.media.browse.MediaBrowserService" />
+                <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
 
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleInstance"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
