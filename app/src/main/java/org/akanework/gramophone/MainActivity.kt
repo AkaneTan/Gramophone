@@ -71,6 +71,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
     private lateinit var bottomSheetFullPreviousButton: MaterialButton
     private lateinit var bottomSheetFullDuration: TextView
     private lateinit var bottomSheetFullPosition: TextView
+    private lateinit var bottomSheetFullSlideUpButton: MaterialButton
     private lateinit var bottomSheetShuffleButton: MaterialButton
     private lateinit var bottomSheetLoopButton: MaterialButton
     private lateinit var bottomSheetPlaylistButton: MaterialButton
@@ -422,6 +423,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
         bottomSheetFullPosition = findViewById(R.id.position)
         bottomSheetFullDuration = findViewById(R.id.duration)
         bottomSheetFullSlider = findViewById(R.id.slider)
+        bottomSheetFullSlideUpButton = findViewById(R.id.slide_down)
         bottomSheetShuffleButton = findViewById(R.id.sheet_random)
         bottomSheetLoopButton = findViewById(R.id.sheet_loop)
         bottomSheetLyricButton = findViewById(R.id.lyrics)
@@ -430,7 +432,26 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+        previewPlayer = findViewById(R.id.preview_player)
+        val fullPlayer = findViewById<RelativeLayout>(R.id.full_player)
+
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
+
+        standardBottomSheet.setOnClickListener {
+            if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                fullPlayer.visibility = VISIBLE
+                previewPlayer.visibility = GONE
+            }
+        }
+
+        bottomSheetFullSlideUpButton.setOnClickListener {
+            standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            Handler(Looper.getMainLooper()).postDelayed({
+            fullPlayer.visibility = GONE
+            previewPlayer.visibility = VISIBLE},
+            200)
+        }
 
         navigationView.setNavigationItemSelectedListener {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
@@ -502,13 +523,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
             true
         }
 
-        previewPlayer = findViewById(R.id.preview_player)
-        val fullPlayer = findViewById<RelativeLayout>(R.id.full_player)
-
         val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
                     fullPlayer.visibility = GONE
+                    previewPlayer.visibility = VISIBLE
                     previewPlayer.alpha = 1f
                 } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
                     fullPlayer.visibility = VISIBLE

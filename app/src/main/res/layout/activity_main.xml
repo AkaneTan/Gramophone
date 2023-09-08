@@ -127,7 +127,7 @@
                     android:layout_marginTop="52dp"
                     android:layout_marginEnd="18dp"
                     android:layout_marginBottom="18dp"
-                    android:backgroundTint="?attr/colorSurface"
+                    android:backgroundTint="@android:color/transparent"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
                     android:insetRight="0dp"
