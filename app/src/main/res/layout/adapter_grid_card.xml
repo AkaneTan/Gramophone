@@ -64,7 +64,7 @@
         android:insetBottom="0dp"
         android:insetLeft="0dp"
         android:insetRight="0dp"
-        android:backgroundTint="?attr/colorSurface"
+        android:backgroundTint="@android:color/transparent"
         app:icon="@drawable/ic_more_vert"
         app:iconGravity="textStart"
         app:iconPadding="0dp"

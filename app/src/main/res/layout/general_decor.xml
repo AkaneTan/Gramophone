@@ -25,7 +25,7 @@
         android:insetBottom="0dp"
         android:insetRight="0dp"
         android:insetLeft="0dp"
-        android:backgroundTint="?attr/colorSurface"
+        android:backgroundTint="@android:color/transparent"
         app:icon="@drawable/ic_sort"
         app:iconTint="?attr/colorPrimary"
         app:iconSize="24dp"
