@@ -552,7 +552,13 @@ class MainActivity : AppCompatActivity() {
             controllerFuture.get().seekToNextMediaItem()
         }
         bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
-            controllerFuture.get().shuffleModeEnabled = isChecked
+            controllerFuture.get().sendCustomCommand(
+                SessionCommand(
+                    if (isChecked)
+                        Constants.PLAYBACK_SHUFFLE_ACTION_ON
+                    else
+                        Constants.PLAYBACK_SHUFFLE_ACTION_OFF,
+                    Bundle.EMPTY), Bundle.EMPTY)
         }
 
         bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
