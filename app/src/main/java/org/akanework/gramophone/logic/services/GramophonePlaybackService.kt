@@ -5,15 +5,20 @@ import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
+import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import org.akanework.gramophone.Constants
@@ -26,9 +31,22 @@ import org.akanework.gramophone.R
  */
 @UnstableApi
 class GramophonePlaybackService : MediaSessionService() {
+
     private var mediaSession: MediaSession? = null
+    private lateinit var customCommands: List<CommandButton>
 
     override fun onCreate() {
+
+        customCommands =
+            listOf(
+                getShuffleCommandButton(
+                    SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_ON, Bundle.EMPTY)
+                ),
+                getShuffleCommandButton(
+                    SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY)
+                )
+            )
+
         // Create an exoplayer2 instance here for server side.
         val player = ExoPlayer.Builder(this).build()
 
@@ -39,6 +57,8 @@ class GramophonePlaybackService : MediaSessionService() {
             MediaSession
                 .Builder(this, player)
                 .setCallback(callback)
+                .setCustomLayout(ImmutableList.of(customCommands[0]))
+                .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader(/* context= */ this)))
                 .setSessionActivity(
                     getActivity(
                         this,
@@ -61,6 +81,15 @@ class GramophonePlaybackService : MediaSessionService() {
         super.onCreate()
     }
 
+    private fun getShuffleCommandButton(sessionCommand: SessionCommand): CommandButton {
+        val isOn = sessionCommand.customAction == Constants.PLAYBACK_SHUFFLE_ACTION_ON
+        return CommandButton.Builder()
+            .setDisplayName(getString(R.string.shuffle))
+            .setSessionCommand(sessionCommand)
+            .setIconResId(if (isOn) R.drawable.ic_shuffle else R.drawable.ic_shuffle_on)
+            .build()
+    }
+
     override fun onDestroy() {
         // When destroying, we should release server side player
         // alongside with the mediaSession.
@@ -79,20 +108,16 @@ class GramophonePlaybackService : MediaSessionService() {
 
     private inner class CustomMediaSessionCallback: MediaSession.Callback {
         // Configure commands available to the controller in onConnect()
-        override fun onConnect(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ): MediaSession.ConnectionResult {
-            val connectionResult = super.onConnect(session, controller)
-            val sessionCommands =
-                connectionResult.availableSessionCommands
-                    .buildUpon()
-                    // Add custom commands
-                    .add(SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION, Bundle()))
-                    .build()
-            return MediaSession.ConnectionResult.accept(
-                sessionCommands, connectionResult.availablePlayerCommands
-            )
+        override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
+            val availableSessionCommands =
+                MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
+            for (commandButton in customCommands) {
+                // Add custom command to available session commands.
+                commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
+            }
+            return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                .setAvailableSessionCommands(availableSessionCommands.build())
+                .build()
         }
 
         override fun onCustomCommand(
@@ -101,31 +126,19 @@ class GramophonePlaybackService : MediaSessionService() {
             customCommand: SessionCommand,
             args: Bundle
         ): ListenableFuture<SessionResult> {
-            if (customCommand.customAction == Constants.PLAYBACK_SHUFFLE_ACTION) {
-                // Do custom logic here
-                session.player.shuffleModeEnabled = !session.player.shuffleModeEnabled
-                return Futures.immediateFuture(
-                    SessionResult(SessionResult.RESULT_SUCCESS)
-                )
+            Log.d("PlaybackService", "onCustomCommand")
+            if (Constants.PLAYBACK_SHUFFLE_ACTION_ON == customCommand.customAction) {
+                // Enable shuffling.
+                session.player.shuffleModeEnabled = true
+                // Change the custom layout to contain the `Disable shuffling` command.
+                session.setCustomLayout(ImmutableList.of(customCommands[1]))
+            } else if (Constants.PLAYBACK_SHUFFLE_ACTION_OFF == customCommand.customAction) {
+                // Disable shuffling.
+                session.player.shuffleModeEnabled = false
+                // Change the custom layout to contain the `Enable shuffling` command.
+                session.setCustomLayout(ImmutableList.of(customCommands[0]))
             }
-            return Futures.immediateFuture(
-                SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
-            )
-        }
-
-        override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
-            super.onPostConnect(session, controller)
-
-            val shuffleButton = CommandButton.Builder()
-                .setDisplayName("Save to favorites")
-                .setIconResId(R.drawable.ic_shuffle)
-                .setSessionCommand(SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION, Bundle()))
-                .build()
-
-            // Pass in a list of the controls that the client app should display to users. The arrangement
-            // of these controls in the UI is managed by the client app.
-            session.setCustomLayout(controller, listOf(shuffleButton))
-
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
         }
     }
 }
