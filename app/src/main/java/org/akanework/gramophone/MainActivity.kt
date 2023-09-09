@@ -193,6 +193,7 @@ class MainActivity : AppCompatActivity() {
                     if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                         previewPlayer.alpha = 1f
+                        previewPlayer.visibility = View.VISIBLE
                         Handler(Looper.getMainLooper()).postDelayed({
                             standardBottomSheetBehavior.isHideable = false
                         }, 200)
