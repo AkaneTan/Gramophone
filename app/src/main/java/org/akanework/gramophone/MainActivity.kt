@@ -26,7 +26,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -38,6 +40,7 @@ import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
@@ -298,12 +301,26 @@ class MainActivity : AppCompatActivity() {
     private fun releaseTimer(controller: MediaController) = controller.sendCustomCommand(
         SessionCommand(Constants.SERVICE_CLEAR_TIMER, Bundle.EMPTY), Bundle.EMPTY)
 
+    private val sessionListener: MediaController.Listener = object : MediaController.Listener {
+        override fun onCustomCommand(
+            controller: MediaController,
+            command: SessionCommand,
+            args: Bundle
+        ): ListenableFuture<SessionResult> {
+            if (command.customAction == Constants.SERVICE_IS_STOPPED_BY_TIMER) {
+                bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
+            }
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+        }
+    }
+
     override fun onStart() {
         sessionToken =
             SessionToken(this, ComponentName(this, GramophonePlaybackService::class.java))
         controllerFuture =
             MediaController
                 .Builder(this, sessionToken)
+                .setListener(sessionListener)
                 .buildAsync()
         controllerFuture.addListener(
             {

@@ -36,7 +36,6 @@ class GramophonePlaybackService : MediaSessionService() {
 
     private var mediaSession: MediaSession? = null
     private lateinit var customCommands: List<CommandButton>
-    private var isStoppedByTimer = false
 
     var timer: CountDownTimer? = null
     var timerDuration = 0
@@ -137,6 +136,7 @@ class GramophonePlaybackService : MediaSessionService() {
             availableSessionCommands.add(SessionCommand(Constants.SERVICE_ADD_TIMER, Bundle.EMPTY))
             availableSessionCommands.add(SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY))
             availableSessionCommands.add(SessionCommand(Constants.SERVICE_CLEAR_TIMER, Bundle.EMPTY))
+            availableSessionCommands.add(SessionCommand(Constants.SERVICE_IS_STOPPED_BY_TIMER, Bundle.EMPTY))
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
                 .setAvailableSessionCommands(availableSessionCommands.build())
                 .build()
@@ -205,6 +205,13 @@ class GramophonePlaybackService : MediaSessionService() {
                     mediaSession?.player?.pause()
                     timerDuration = 0
                     timer = null
+
+                    mediaSession?.connectedControllers?.forEach {
+                        mediaSession!!.sendCustomCommand(it,
+                            SessionCommand(Constants.SERVICE_IS_STOPPED_BY_TIMER, Bundle.EMPTY),
+                            Bundle.EMPTY
+                        )
+                    }
                 }
             }
         timer!!.start()
