@@ -368,6 +368,7 @@ class MainActivity : AppCompatActivity() {
             libraryViewModel.mediaItemList.value = pairObject.songList
             libraryViewModel.albumItemList.value = pairObject.albumList
             libraryViewModel.artistItemList.value = pairObject.artistList
+            libraryViewModel.albumArtistItemList.value = pairObject.albumArtistList
             libraryViewModel.genreItemList.value = pairObject.genreList
             libraryViewModel.dateItemList.value = pairObject.dateList
             libraryViewModel.durationItemList.value = pairObject.durationList

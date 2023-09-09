@@ -46,6 +46,7 @@ class ArtistFragment : Fragment() {
                 requireContext(),
                 libraryViewModel.artistItemList.value!!.size,
                 artistAdapter,
+                requireActivity() as MainActivity,
             )
         val concatAdapter = ConcatAdapter(artistDecorAdapter, artistAdapter)
 

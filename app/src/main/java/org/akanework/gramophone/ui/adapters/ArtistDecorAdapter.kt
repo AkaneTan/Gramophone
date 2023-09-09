@@ -5,17 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class ArtistDecorAdapter(
     private val context: Context,
     private var artistCount: Int,
     private val artistAdapter: ArtistAdapter,
+    private val mainActivity: MainActivity
 ) : RecyclerView.Adapter<ArtistDecorAdapter.ViewHolder>() {
     private var sortStatus = 0
+    private var isDisplayingAlbumArtist = false
+    private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -36,7 +42,8 @@ class ArtistDecorAdapter(
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
-            popupMenu.inflate(R.menu.sort_menu_artist)
+            popupMenu.inflate(R.menu.sort_menu_artist_only)
+            popupMenu.menu.findItem(R.id.album_artist).isChecked = isDisplayingAlbumArtist
 
             when (sortStatus) {
                 0 -> {
@@ -63,6 +70,32 @@ class ArtistDecorAdapter(
                             artistAdapter.sortByDescendingInt { it2 -> it2.songList.size }
                             menuItem.isChecked = true
                             sortStatus = 1
+                        }
+                    }
+
+                    R.id.album_artist -> {
+                        if (!isDisplayingAlbumArtist) {
+                            isDisplayingAlbumArtist = true
+                            var itemCount = 0
+                            menuItem.isChecked = !menuItem.isChecked
+                            viewModel.albumArtistItemList.value?.let { it1 ->
+                                artistAdapter.updateList(
+                                    it1
+                                )
+                                itemCount = it1.size
+                            }
+                            updateSongCounter(itemCount)
+                        } else {
+                            isDisplayingAlbumArtist = false
+                            var itemCount = 0
+                            menuItem.isChecked = !menuItem.isChecked
+                            viewModel.artistItemList.value?.let { it1 ->
+                                artistAdapter.updateList(
+                                    it1
+                                )
+                                itemCount = it1.size
+                            }
+                            updateSongCounter(itemCount)
                         }
                     }
                 }

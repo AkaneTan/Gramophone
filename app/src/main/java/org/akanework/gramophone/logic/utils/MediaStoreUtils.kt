@@ -61,6 +61,7 @@ object MediaStoreUtils {
     data class LibraryStoreClass(
         val songList: MutableList<MediaItem>,
         val albumList: MutableList<Album>,
+        val albumArtistList: MutableList<Artist>,
         val artistList: MutableList<Artist>,
         val genreList: MutableList<Genre>,
         val dateList: MutableList<Date>,
@@ -100,12 +101,14 @@ object MediaStoreUtils {
         val songs = mutableListOf<MediaItem>()
         val albumMap = mutableMapOf<Pair<String, Int>, MutableList<MediaItem>>()
         val artistMap = mutableMapOf<String, MutableList<MediaItem>>()
+        val albumArtistMap = mutableMapOf<String, MutableList<MediaItem>>()
         val genreMap = mutableMapOf<String?, MutableList<MediaItem>>()
         val dateMap = mutableMapOf<Int, MutableList<MediaItem>>()
         val durationMap = mutableMapOf<Long, Long>()
         val fileUriMap = mutableMapOf<Long, Uri>()
         val mimeTypeMap = mutableMapOf<Long, String>()
         val unknownGenre = context.getString(R.string.unknown_genre)
+        val unknownArtist = context.getString(R.string.unknown_artist)
         val cursor =
             context.contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -189,6 +192,9 @@ object MediaStoreUtils {
                 // Build our metadata maps/lists.
                 albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
                 artistMap.getOrPut(artist) { mutableListOf() }.add(songs.last())
+                albumArtistMap.getOrPut(
+                    albumArtist ?: unknownArtist
+                ) { mutableListOf() }.add(songs.last())
                 genreMap.getOrPut(genre) { mutableListOf() }.add(songs.last())
                 dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
                 durationMap[id] = duration
@@ -229,6 +235,14 @@ object MediaStoreUtils {
                     Artist(index.toLong(), artistName, sortedArtistSongs)
                 }.sortedBy { it.title }
                 .toMutableList()
+        val sortedAlbumArtistList: MutableList<Artist> =
+            albumArtistMap
+                .entries
+                .mapIndexed { index, (artistName, songsByArtist) ->
+                    val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
+                    Artist(index.toLong(), artistName, sortedArtistSongs)
+                }.sortedBy { it.title }
+                .toMutableList()
         val sortedGenreList: MutableList<Genre> =
             genreMap
                 .entries
@@ -249,6 +263,7 @@ object MediaStoreUtils {
         return LibraryStoreClass(
             songs,
             sortedAlbumList,
+            sortedAlbumArtistList,
             sortedArtistList,
             sortedGenreList,
             sortedDateList,

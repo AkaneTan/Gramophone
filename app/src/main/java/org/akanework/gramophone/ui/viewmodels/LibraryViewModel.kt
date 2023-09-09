@@ -10,6 +10,10 @@ class LibraryViewModel : ViewModel() {
     val mediaItemList: MutableLiveData<MutableList<MediaItem>> = MutableLiveData(mutableListOf())
     val albumItemList: MutableLiveData<MutableList<MediaStoreUtils.Album>> =
         MutableLiveData(mutableListOf())
+    val albumArtistItemList: MutableLiveData<MutableList<MediaStoreUtils.Artist>> =
+        MutableLiveData(
+            mutableListOf(),
+        )
     val artistItemList: MutableLiveData<MutableList<MediaStoreUtils.Artist>> =
         MutableLiveData(
             mutableListOf(),
