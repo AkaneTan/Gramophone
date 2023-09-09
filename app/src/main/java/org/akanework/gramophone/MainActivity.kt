@@ -26,7 +26,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
-import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
@@ -60,7 +59,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 @UnstableApi
 class MainActivity : AppCompatActivity() {
-    // Import our viewmodels.
+    // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
 
     private lateinit var sessionToken: SessionToken
@@ -94,7 +93,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previewPlayer: RelativeLayout
     private lateinit var navigationView: NavigationView
 
-    private var isPlayerPlaying = false
     private var isUserTracking = false
     private var runnableRunning = 0
 
@@ -115,7 +113,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
-                isPlayerPlaying = isPlaying
                 val instance = controllerFuture.get()
                 Log.d("TAG", "isPlaying, $isPlaying")
                 if (isPlaying) {
@@ -153,7 +150,7 @@ class MainActivity : AppCompatActivity() {
                                 } else {
                                     runnableRunning--
                                 }
-                                Log.d("TAG", "Runnables: $runnableRunning")
+                                Log.d("TAG", "Runnable: $runnableRunning")
                             }
                         }
                     if (runnableRunning == 0) {
@@ -374,7 +371,7 @@ class MainActivity : AppCompatActivity() {
                                 } else {
                                     runnableRunning--
                                 }
-                                Log.d("TAG", "Runnables: $runnableRunning")
+                                Log.d("TAG", "Runnable: $runnableRunning")
                             }
                         }
                     if (runnableRunning == 0) {
@@ -489,7 +486,7 @@ class MainActivity : AppCompatActivity() {
                     .build()
             picker.addOnPositiveButtonClickListener {
                 val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-                Log.d("TAG", "destinateTime: $destinationTime")
+                Log.d("TAG", "destinationTime: $destinationTime")
                 val clickController = controllerFuture.get()
                 if (destinationTime != 0) {
                     setTimer(clickController, destinationTime)
