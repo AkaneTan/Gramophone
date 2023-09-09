@@ -107,6 +107,11 @@ class MainActivity : AppCompatActivity() {
                 updateSongInfo(mediaItem)
             }
 
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+                bottomSheetShuffleButton.isChecked = shuffleModeEnabled
+            }
+
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
                 isPlayerPlaying = isPlaying
