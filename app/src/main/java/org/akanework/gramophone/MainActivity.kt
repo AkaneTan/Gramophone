@@ -773,8 +773,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        controllerFuture.get().removeListener(playerListener)
-        if ()
-        controllerFuture.get().release()
+        val instance = controllerFuture.get()
+        instance.removeListener(playerListener)
+
+        // Do not release controller if it's still playing and
+        // has timer turned on.
+        if (!instance.isPlaying && timerViewModel.timerDuration != 0) {
+            controllerFuture.get().release()
+        }
     }
 }
