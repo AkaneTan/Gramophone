@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -27,6 +26,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionToken
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -49,7 +49,6 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
-import org.akanework.gramophone.ui.viewmodels.TimerViewModel
 
 /**
  * [MainActivity] is our main and only activity which
@@ -60,7 +59,6 @@ import org.akanework.gramophone.ui.viewmodels.TimerViewModel
 class MainActivity : AppCompatActivity() {
     // Import our viewmodels.
     private val libraryViewModel: LibraryViewModel by viewModels()
-    private val timerViewModel: TimerViewModel by viewModels()
 
     private lateinit var sessionToken: SessionToken
     private lateinit var controllerFuture: ListenableFuture<MediaController>
@@ -284,6 +282,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private fun alreadyHasTimer(controller: MediaController) : Boolean = controller.sendCustomCommand(
+        SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
+        Bundle.EMPTY).get().extras.getInt("duration") != 0
+
+    private fun queryTimerDuration(controller: MediaController) : Int = controller.sendCustomCommand(
+        SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
+        Bundle.EMPTY).get().extras.getInt("duration")
+
+    private fun setTimer(controller: MediaController, value: Int) = controller.sendCustomCommand(
+        SessionCommand(Constants.SERVICE_ADD_TIMER, Bundle.EMPTY).apply {
+              customExtras.putInt("duration", value)
+        }, Bundle.EMPTY)
+
+    private fun releaseTimer(controller: MediaController) = controller.sendCustomCommand(
+        SessionCommand(Constants.SERVICE_CLEAR_TIMER, Bundle.EMPTY), Bundle.EMPTY)
+
     override fun onStart() {
         sessionToken =
             SessionToken(this, ComponentName(this, GramophonePlaybackService::class.java))
@@ -297,7 +311,7 @@ class MainActivity : AppCompatActivity() {
                 controller.addListener(playerListener)
 
                 bottomSheetShuffleButton.isChecked = controller.shuffleModeEnabled
-                bottomSheetTimerButton.isChecked = timerViewModel.timerDuration != 0
+                bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
                 when (controller.repeatMode) {
                     Player.REPEAT_MODE_ALL -> {
                         bottomSheetLoopButton.isChecked = true
@@ -382,25 +396,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUpTimer(destinationTime: Int) {
-        timerViewModel.timerDuration = destinationTime
-        timerViewModel.timer =
-            object : CountDownTimer(destinationTime.toLong(), 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    Log.d("TAG", "TICK, $millisUntilFinished")
-                }
-
-                override fun onFinish() {
-                    val instance = controllerFuture.get()
-                    instance.pause()
-                    timerViewModel.timerDuration = 0
-                    timerViewModel.timer = null
-                    bottomSheetTimerButton.isChecked = false
-                }
-            }
-        timerViewModel.timer!!.start()
-    }
-
     @SuppressLint("StringFormatMatches")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -466,32 +461,27 @@ class MainActivity : AppCompatActivity() {
 
         bottomSheetTimerButton.setOnClickListener {
             bottomSheetTimerButton.isChecked = true
+            val controller = controllerFuture.get()
             val picker =
                 MaterialTimePicker
                     .Builder()
-                    .setHour(timerViewModel.timerDuration / 3600 / 1000)
-                    .setMinute((timerViewModel.timerDuration % (3600 * 1000)) / (60 * 1000))
+                    .setHour(queryTimerDuration(controller) / 3600 / 1000)
+                    .setMinute((queryTimerDuration(controller) % (3600 * 1000)) / (60 * 1000))
                     .setTimeFormat(TimeFormat.CLOCK_24H)
                     .setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .build()
             picker.addOnPositiveButtonClickListener {
                 val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
                 Log.d("TAG", "destinateTime: $destinationTime")
-                if (destinationTime != 0 && timerViewModel.timer == null) {
-                    setUpTimer(destinationTime)
-                } else if (destinationTime != 0 && timerViewModel.timer != null) {
-                    timerViewModel.timer!!.cancel()
-                    timerViewModel.timer = null
-                    timerViewModel.timerDuration = 0
-                    setUpTimer(destinationTime)
+                val clickController = controllerFuture.get()
+                if (destinationTime != 0) {
+                    setTimer(clickController, destinationTime)
                 } else {
-                    timerViewModel.timer?.cancel()
-                    timerViewModel.timer = null
-                    timerViewModel.timerDuration = 0
+                    releaseTimer(clickController)
                 }
             }
             picker.addOnDismissListener {
-                bottomSheetTimerButton.isChecked = timerViewModel.timerDuration != 0
+                bottomSheetTimerButton.isChecked = alreadyHasTimer(controllerFuture.get())
             }
             picker.show(supportFragmentManager, "timer")
         }
@@ -782,11 +772,6 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         val instance = controllerFuture.get()
         instance.removeListener(playerListener)
-
-        // Do not release controller if it's still playing and
-        // has timer turned on.
-        if (!instance.isPlaying && timerViewModel.timerDuration != 0) {
-            controllerFuture.get().release()
-        }
+        controllerFuture.get().release()
     }
 }
