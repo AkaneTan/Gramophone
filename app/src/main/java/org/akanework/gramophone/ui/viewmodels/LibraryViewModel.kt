@@ -10,22 +10,28 @@ class LibraryViewModel : ViewModel() {
     val mediaItemList: MutableLiveData<MutableList<MediaItem>> = MutableLiveData(mutableListOf())
     val albumItemList: MutableLiveData<MutableList<MediaStoreUtils.Album>> =
         MutableLiveData(mutableListOf())
-    val artistItemList: MutableLiveData<MutableList<MediaStoreUtils.Artist>> = MutableLiveData(
-        mutableListOf()
-    )
-    val genreItemList: MutableLiveData<MutableList<MediaStoreUtils.Genre>> = MutableLiveData(
-        mutableListOf()
-    )
-    val dateItemList: MutableLiveData<MutableList<MediaStoreUtils.Date>> = MutableLiveData(
-        mutableListOf()
-    )
-    val durationItemList: MutableLiveData<MutableMap<Long, Long>> = MutableLiveData(
-        mutableMapOf()
-    )
-    val fileUriList: MutableLiveData<MutableMap<Long, Uri>> = MutableLiveData(
-        mutableMapOf()
-    )
-    val mimeTypeList: MutableLiveData<MutableMap<Long, String>> = MutableLiveData(
-        mutableMapOf()
-    )
+    val artistItemList: MutableLiveData<MutableList<MediaStoreUtils.Artist>> =
+        MutableLiveData(
+            mutableListOf(),
+        )
+    val genreItemList: MutableLiveData<MutableList<MediaStoreUtils.Genre>> =
+        MutableLiveData(
+            mutableListOf(),
+        )
+    val dateItemList: MutableLiveData<MutableList<MediaStoreUtils.Date>> =
+        MutableLiveData(
+            mutableListOf(),
+        )
+    val durationItemList: MutableLiveData<MutableMap<Long, Long>> =
+        MutableLiveData(
+            mutableMapOf(),
+        )
+    val fileUriList: MutableLiveData<MutableMap<Long, Uri>> =
+        MutableLiveData(
+            mutableMapOf(),
+        )
+    val mimeTypeList: MutableLiveData<MutableMap<Long, String>> =
+        MutableLiveData(
+            mutableMapOf(),
+        )
 }

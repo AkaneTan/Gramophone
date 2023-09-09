@@ -12,7 +12,6 @@ import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 
 class SettingsFragment : Fragment() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,7 +22,7 @@ class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
@@ -37,5 +36,4 @@ class SettingsFragment : Fragment() {
 
         return rootView
     }
-
 }

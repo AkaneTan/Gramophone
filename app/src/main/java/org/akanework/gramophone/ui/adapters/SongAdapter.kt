@@ -33,25 +33,31 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @UnstableApi
 class SongAdapter(
     private val songList: MutableList<MediaItem>,
-    private val mainActivity: MainActivity
-) :
-    RecyclerView.Adapter<SongAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.adapter_list_card, parent, false)
+    private val mainActivity: MainActivity,
+) : RecyclerView.Adapter<SongAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.adapter_list_card, parent, false),
         )
-    }
 
     val viewModel: LibraryViewModel by mainActivity.viewModels()
 
     override fun getItemCount(): Int = songList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         holder.songTitle.text = songList[position].mediaMetadata.title
         holder.songArtist.text = songList[position].mediaMetadata.artist
 
-        Glide.with(holder.songCover.context)
+        Glide
+            .with(holder.songCover.context)
             .load(songList[position].mediaMetadata.artworkUri)
             .placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
@@ -88,34 +94,44 @@ class SongAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItem(
                             mediaController.currentMediaItemIndex + 1,
-                            songList[holder.bindingAdapterPosition]
+                            songList[holder.bindingAdapterPosition],
                         )
                     }
 
                     R.id.album -> {
                         CoroutineScope(Dispatchers.Default).launch {
-                            val positionAlbum = viewModel.albumItemList.value?.indexOfFirst {
-                                val currentItem = songList[holder.bindingAdapterPosition]
-                                val isMatching =
-                                    (it.title == currentItem.mediaMetadata.albumTitle) &&
+                            val positionAlbum =
+                                viewModel.albumItemList.value?.indexOfFirst {
+                                    val currentItem = songList[holder.bindingAdapterPosition]
+                                    val isMatching =
+                                        (it.title == currentItem.mediaMetadata.albumTitle) &&
                                             (it.songList.contains(currentItem))
-                                isMatching
-                            }
+                                    isMatching
+                                }
                             if (positionAlbum != null) {
                                 withContext(Dispatchers.Main) {
-                                    mainActivity.supportFragmentManager.beginTransaction()
+                                    mainActivity
+                                        .supportFragmentManager
+                                        .beginTransaction()
                                         .addToBackStack("SUBFRAG")
-                                        .replace(R.id.container, GeneralSubFragment().apply {
-                                            arguments = Bundle().apply {
-                                                putInt("Position", positionAlbum)
-                                                putInt("Item", 1)
-                                                putString(
-                                                    "Title",
-                                                    viewModel.albumItemList.value?.get(positionAlbum)?.title
-                                                )
-                                            }
-                                        })
-                                        .commit()
+                                        .replace(
+                                            R.id.container,
+                                            GeneralSubFragment().apply {
+                                                arguments =
+                                                    Bundle().apply {
+                                                        putInt("Position", positionAlbum)
+                                                        putInt("Item", 1)
+                                                        putString(
+                                                            "Title",
+                                                            viewModel
+                                                                .albumItemList
+                                                                .value
+                                                                ?.get(positionAlbum)
+                                                                ?.title,
+                                                        )
+                                                    }
+                                            },
+                                        ).commit()
                                 }
                             }
                         }
@@ -123,36 +139,45 @@ class SongAdapter(
 
                     R.id.artist -> {
                         CoroutineScope(Dispatchers.Default).launch {
-                            val positionArtist = viewModel.artistItemList.value?.indexOfFirst {
-                                val currentItem = songList[holder.bindingAdapterPosition]
-                                val isMatching = (it.title == currentItem.mediaMetadata.artist) &&
-                                        (it.songList.contains(currentItem))
-                                isMatching
-                            }
+                            val positionArtist =
+                                viewModel.artistItemList.value?.indexOfFirst {
+                                    val currentItem = songList[holder.bindingAdapterPosition]
+                                    val isMatching =
+                                        (it.title == currentItem.mediaMetadata.artist) &&
+                                            (it.songList.contains(currentItem))
+                                    isMatching
+                                }
                             if (positionArtist != null) {
                                 withContext(Dispatchers.Main) {
-                                    mainActivity.supportFragmentManager.beginTransaction()
+                                    mainActivity
+                                        .supportFragmentManager
+                                        .beginTransaction()
                                         .addToBackStack("SUBFRAG")
-                                        .replace(R.id.container, GeneralSubFragment().apply {
-                                            arguments = Bundle().apply {
-                                                putInt("Position", positionArtist)
-                                                putInt("Item", 2)
-                                                putString(
-                                                    "Title",
-                                                    viewModel.artistItemList.value?.get(
-                                                        positionArtist
-                                                    )?.title
-                                                )
-                                            }
-                                        })
-                                        .commit()
+                                        .replace(
+                                            R.id.container,
+                                            GeneralSubFragment().apply {
+                                                arguments =
+                                                    Bundle().apply {
+                                                        putInt("Position", positionArtist)
+                                                        putInt("Item", 2)
+                                                        putString(
+                                                            "Title",
+                                                            viewModel
+                                                                .artistItemList
+                                                                .value
+                                                                ?.get(
+                                                                    positionArtist,
+                                                                )?.title,
+                                                        )
+                                                    }
+                                            },
+                                        ).commit()
                                 }
                             }
                         }
                     }
 
                     R.id.details -> {
-
                     }
                     /*
                     R.id.share -> {
@@ -168,10 +193,11 @@ class SongAdapter(
             }
             popupMenu.show()
         }
-
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
@@ -202,14 +228,20 @@ class SongAdapter(
 
     private class SongDiffCallback(
         private val oldList: List<MediaItem>,
-        private val newList: List<MediaItem>
+        private val newList: List<MediaItem>,
     ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
-        override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].mediaId == newList[newItemPosition].mediaId
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition].mediaId == newList[newItemPosition].mediaId
+
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

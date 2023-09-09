@@ -13,27 +13,32 @@ import org.akanework.gramophone.R
 class AlbumDecorAdapter(
     private val context: Context,
     private var albumCount: Int,
-    private val albumAdapter: AlbumAdapter
+    private val albumAdapter: AlbumAdapter,
 ) : RecyclerView.Adapter<AlbumDecorAdapter.ViewHolder>() {
-
     private var sortStatus = 0
 
     companion object {
         const val VIEW_TYPE_ALBUM_DECOR = 0
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val songText = albumCount.toString() + ' ' +
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
+        val songText =
+            albumCount.toString() + ' ' +
                 if (albumCount <= 1) context.getString(R.string.album) else context.getString(R.string.albums)
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
-
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_songs)
             popupMenu.menu.findItem(R.id.album).isVisible = false
@@ -74,7 +79,9 @@ class AlbumDecorAdapter(
 
     override fun getItemCount(): Int = 1
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val sortButton: MaterialButton = view.findViewById(R.id.sort)
         val songCounter: TextView = view.findViewById(R.id.song_counter)
     }

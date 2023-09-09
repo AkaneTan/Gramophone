@@ -12,7 +12,10 @@ import com.bumptech.glide.module.AppGlideModule
  */
 @GlideModule
 class GramophoneGlideModule : AppGlideModule() {
-    override fun applyOptions(context: Context, builder: GlideBuilder) {
+    override fun applyOptions(
+        context: Context,
+        builder: GlideBuilder,
+    ) {
         builder.setLogLevel(Log.ERROR)
     }
 }

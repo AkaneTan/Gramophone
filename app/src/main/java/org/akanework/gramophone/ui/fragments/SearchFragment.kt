@@ -28,7 +28,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @UnstableApi
 class SearchFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,19 +38,21 @@ class SearchFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
-        val songDecorAdapter = SongDecorAdapter(
-            requireContext(),
-            0,
-            songAdapter
-        )
+        val songDecorAdapter =
+            SongDecorAdapter(
+                requireContext(),
+                0,
+                songAdapter,
+            )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
@@ -69,14 +70,15 @@ class SearchFragment : Fragment() {
                 songDecorAdapter.updateSongCounter(0)
             } else {
                 CoroutineScope(Dispatchers.Default).launch {
-                    val filteredList = libraryViewModel.mediaItemList.value?.filter {
-                        val isMatchingTitle = it.mediaMetadata.title!!.contains(editText.text, true)
-                        val isMatchingAlbum =
-                            it.mediaMetadata.albumTitle!!.contains(editText.text, true)
-                        val isMatchingArtist =
-                            it.mediaMetadata.artist!!.contains(editText.text, true)
-                        isMatchingTitle || isMatchingAlbum || isMatchingArtist
-                    }
+                    val filteredList =
+                        libraryViewModel.mediaItemList.value?.filter {
+                            val isMatchingTitle = it.mediaMetadata.title!!.contains(editText.text, true)
+                            val isMatchingAlbum =
+                                it.mediaMetadata.albumTitle!!.contains(editText.text, true)
+                            val isMatchingArtist =
+                                it.mediaMetadata.artist!!.contains(editText.text, true)
+                            isMatchingTitle || isMatchingAlbum || isMatchingArtist
+                        }
                     if (filteredList != null) {
                         withContext(Dispatchers.Main) {
                             if (filteredList.isNotEmpty()) {
@@ -97,5 +99,4 @@ class SearchFragment : Fragment() {
 
         return rootView
     }
-
 }

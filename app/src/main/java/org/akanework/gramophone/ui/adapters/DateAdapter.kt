@@ -29,46 +29,65 @@ class DateAdapter(
     private val dateList: MutableList<MediaStoreUtils.Date>,
     private val context: Context,
     private val fragmentManager: FragmentManager,
-    private val mainActivity: MainActivity
-) :
-    RecyclerView.Adapter<DateAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.adapter_list_card_larger, parent, false)
+    private val mainActivity: MainActivity,
+) : RecyclerView.Adapter<DateAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.adapter_list_card_larger, parent, false),
         )
-    }
 
     override fun getItemCount(): Int = dateList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.songTitle.text = if (dateList[position].title == 0)
-            context.getString(R.string.unknown_year)
-        else
-            dateList[position].title.toString()
-        val songText = dateList[position].songList.size.toString() + ' ' +
-                if (dateList[position].songList.size <= 1)
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
+        holder.songTitle.text =
+            if (dateList[position].title == 0) {
+                context.getString(R.string.unknown_year)
+            } else {
+                dateList[position].title.toString()
+            }
+        val songText =
+            dateList[position].songList.size.toString() + ' ' +
+                if (dateList[position].songList.size <= 1) {
                     context.getString(R.string.song)
-                else
+                } else {
                     context.getString(R.string.songs)
+                }
         holder.songArtist.text = songText
 
-        Glide.with(holder.songCover.context)
-            .load(dateList[position].songList.first().mediaMetadata.artworkUri)
-            .placeholder(R.drawable.ic_default_cover_date)
+        Glide
+            .with(holder.songCover.context)
+            .load(
+                dateList[position]
+                    .songList
+                    .first()
+                    .mediaMetadata
+                    .artworkUri,
+            ).placeholder(R.drawable.ic_default_cover_date)
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            fragmentManager.beginTransaction()
+            fragmentManager
+                .beginTransaction()
                 .addToBackStack("SUBFRAG")
-                .replace(R.id.container, GeneralSubFragment().apply {
-                    arguments = Bundle().apply {
-                        putInt("Position", position)
-                        putInt("Item", 4)
-                        putString("Title", holder.songTitle.text as String)
-                    }
-                })
-                .commit()
+                .replace(
+                    R.id.container,
+                    GeneralSubFragment().apply {
+                        arguments =
+                            Bundle().apply {
+                                putInt("Position", position)
+                                putInt("Item", 4)
+                                putString("Title", holder.songTitle.text as String)
+                            }
+                    },
+                ).commit()
         }
 
         holder.moreButton.setOnClickListener { it ->
@@ -81,12 +100,11 @@ class DateAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItems(
                             mediaController.currentMediaItemIndex + 1,
-                            dateList[holder.bindingAdapterPosition].songList
+                            dateList[holder.bindingAdapterPosition].songList,
                         )
                     }
 
                     R.id.details -> {
-
                     }
                     /*
                     R.id.share -> {
@@ -102,10 +120,11 @@ class DateAdapter(
             }
             popupMenu.show()
         }
-
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
@@ -151,14 +170,20 @@ class DateAdapter(
 
     private class SongDiffCallback(
         private val oldList: MutableList<MediaStoreUtils.Date>,
-        private val newList: MutableList<MediaStoreUtils.Date>
+        private val newList: MutableList<MediaStoreUtils.Date>,
     ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
-        override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition].id == newList[newItemPosition].id
+
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

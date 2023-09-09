@@ -33,38 +33,45 @@ import androidx.appcompat.widget.AppCompatTextView
  * make it everywhere.
  */
 @Suppress("KotlinConstantConditions")
-class MarqueeTextView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : AppCompatTextView(
-    context,
-    attrs,
-    defStyleAttr
-) {
-    init {
-        isSingleLine = true
-        ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
-        marqueeRepeatLimit = -1
-        isFocusable = true
-        isFocusableInTouchMode = true
-    }
+class MarqueeTextView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+    ) : AppCompatTextView(
+            context,
+            attrs,
+            defStyleAttr,
+        ) {
+        init {
+            isSingleLine = true
+            ellipsize =
+                android
+                    .text
+                    .TextUtils
+                    .TruncateAt
+                    .MARQUEE
+            marqueeRepeatLimit = -1
+            isFocusable = true
+            isFocusableInTouchMode = true
+        }
 
-    override fun isFocused(): Boolean = true
+        override fun isFocused(): Boolean = true
 
-    override fun onFocusChanged(
-        focused: Boolean,
-        direction: Int,
-        previouslyFocusedRect: Rect?
-    ) {
-        if (focused) {
-            super.onFocusChanged(focused, direction, previouslyFocusedRect)
+        override fun onFocusChanged(
+            focused: Boolean,
+            direction: Int,
+            previouslyFocusedRect: Rect?,
+        ) {
+            if (focused) {
+                super.onFocusChanged(focused, direction, previouslyFocusedRect)
+            }
+        }
+
+        override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+            if (hasWindowFocus) {
+                super.onWindowFocusChanged(hasWindowFocus)
+            }
         }
     }
-
-    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
-        if (hasWindowFocus) {
-            super.onWindowFocusChanged(hasWindowFocus)
-        }
-    }
-}

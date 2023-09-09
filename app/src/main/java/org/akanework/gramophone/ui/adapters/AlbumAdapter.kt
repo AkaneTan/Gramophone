@@ -24,38 +24,53 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class AlbumAdapter(
     private val albumList: MutableList<MediaStoreUtils.Album>,
     private val fragmentManager: FragmentManager,
-    private val mainActivity: MainActivity
-) :
-    RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.adapter_grid_card, parent, false)
+    private val mainActivity: MainActivity,
+) : RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.adapter_grid_card, parent, false),
         )
-    }
 
     override fun getItemCount(): Int = albumList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         holder.songTitle.text = albumList[position].title
         holder.songArtist.text = albumList[position].artist
 
-        Glide.with(holder.songCover.context)
-            .load(albumList[position].songList.first().mediaMetadata.artworkUri)
-            .placeholder(R.drawable.ic_default_cover)
+        Glide
+            .with(holder.songCover.context)
+            .load(
+                albumList[position]
+                    .songList
+                    .first()
+                    .mediaMetadata
+                    .artworkUri,
+            ).placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            fragmentManager.beginTransaction()
+            fragmentManager
+                .beginTransaction()
                 .addToBackStack("SUBFRAG")
-                .replace(R.id.container, GeneralSubFragment().apply {
-                    arguments = Bundle().apply {
-                        putInt("Position", position)
-                        putInt("Item", 1)
-                        putString("Title", albumList[position].title)
-                    }
-                })
-                .commit()
+                .replace(
+                    R.id.container,
+                    GeneralSubFragment().apply {
+                        arguments =
+                            Bundle().apply {
+                                putInt("Position", position)
+                                putInt("Item", 1)
+                                putString("Title", albumList[position].title)
+                            }
+                    },
+                ).commit()
         }
 
         holder.moreButton.setOnClickListener { it ->
@@ -68,12 +83,11 @@ class AlbumAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItems(
                             mediaController.currentMediaItemIndex + 1,
-                            albumList[holder.bindingAdapterPosition].songList
+                            albumList[holder.bindingAdapterPosition].songList,
                         )
                     }
 
                     R.id.details -> {
-
                     }
                     /*
                     R.id.share -> {
@@ -91,7 +105,9 @@ class AlbumAdapter(
         }
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
@@ -122,14 +138,20 @@ class AlbumAdapter(
 
     private class SongDiffCallback(
         private val oldList: MutableList<MediaStoreUtils.Album>,
-        private val newList: MutableList<MediaStoreUtils.Album>
+        private val newList: MutableList<MediaStoreUtils.Album>,
     ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
-        override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition].id == newList[newItemPosition].id
+
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

@@ -8,8 +8,6 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -26,9 +24,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Player.REPEAT_MODE_ALL
-import androidx.media3.common.Player.REPEAT_MODE_OFF
-import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
@@ -42,7 +37,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD
 import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
@@ -57,11 +51,17 @@ import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import org.akanework.gramophone.ui.viewmodels.TimerViewModel
 
+/**
+ * [MainActivity] is our main and only activity which
+ * handles the bottom sheet and fragment switching.
+ * [ViewPager2] is categorized inside a separate fragment.
+ */
 @UnstableApi
 class MainActivity : AppCompatActivity() {
-
+    // Import our viewmodels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     private val timerViewModel: TimerViewModel by viewModels()
+
     private lateinit var sessionToken: SessionToken
     private lateinit var controllerFuture: ListenableFuture<MediaController>
 
@@ -97,68 +97,74 @@ class MainActivity : AppCompatActivity() {
     private var isUserTracking = false
     private var runnableRunning = 0
 
-    private val playerListener = object : Player.Listener {
-        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            super.onMediaItemTransition(mediaItem, reason)
-            updateSongInfo(mediaItem)
-        }
-
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-            super.onIsPlayingChanged(isPlaying)
-            isPlayerPlaying = isPlaying
-            val instance = controllerFuture.get()
-            Log.d("TAG", "isPlaying, $isPlaying")
-            if (isPlaying) {
-                bottomSheetPreviewControllerButton.icon =
-                    AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
-                bottomSheetFullControllerButton.icon =
-                    AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
-            } else if (instance.playbackState != 2) {
-                Log.d("TAG", "Triggered, ${instance.playbackState}")
-                bottomSheetPreviewControllerButton.icon =
-                    AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
-                bottomSheetFullControllerButton.icon =
-                    AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+    private val playerListener =
+        object : Player.Listener {
+            override fun onMediaItemTransition(
+                mediaItem: MediaItem?,
+                reason: Int,
+            ) {
+                super.onMediaItemTransition(mediaItem, reason)
+                updateSongInfo(mediaItem)
             }
-            if (isPlaying) {
-                val positionRunnable = object : Runnable {
-                    override fun run() {
-                        val position =
-                            GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
-                        Log.d("TAG", position)
-                        if (runnableRunning == 1) {
-                            val duration = libraryViewModel.durationItemList.value?.get(
-                                instance.currentMediaItem?.mediaId?.toLong()
-                            )
-                            if (duration != null && !isUserTracking) {
-                                bottomSheetFullSlider.value =
-                                    instance.currentPosition.toFloat() / duration.toFloat()
-                                bottomSheetFullPosition.text = position
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                isPlayerPlaying = isPlaying
+                val instance = controllerFuture.get()
+                Log.d("TAG", "isPlaying, $isPlaying")
+                if (isPlaying) {
+                    bottomSheetPreviewControllerButton.icon =
+                        AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+                    bottomSheetFullControllerButton.icon =
+                        AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+                } else if (instance.playbackState != 2) {
+                    Log.d("TAG", "Triggered, ${instance.playbackState}")
+                    bottomSheetPreviewControllerButton.icon =
+                        AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+                    bottomSheetFullControllerButton.icon =
+                        AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+                }
+                if (isPlaying) {
+                    val positionRunnable =
+                        object : Runnable {
+                            override fun run() {
+                                val position =
+                                    GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
+                                Log.d("TAG", position)
+                                if (runnableRunning == 1) {
+                                    val duration =
+                                        libraryViewModel.durationItemList.value?.get(
+                                            instance.currentMediaItem?.mediaId?.toLong(),
+                                        )
+                                    if (duration != null && !isUserTracking) {
+                                        bottomSheetFullSlider.value =
+                                            instance.currentPosition.toFloat() / duration.toFloat()
+                                        bottomSheetFullPosition.text = position
+                                    }
+                                }
+                                if (instance.isPlaying) {
+                                    Handler(Looper.getMainLooper()).postDelayed(this, 500)
+                                } else {
+                                    runnableRunning--
+                                }
+                                Log.d("TAG", "Runnables: $runnableRunning")
                             }
                         }
-                        if (instance.isPlaying) {
-                            Handler(Looper.getMainLooper()).postDelayed(this, 500)
-                        } else {
-                            runnableRunning--
-                        }
-                        Log.d("TAG", "Runnables: $runnableRunning")
+                    if (runnableRunning == 0) {
+                        Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
+                        runnableRunning++
                     }
                 }
-                if (runnableRunning == 0) {
-                    Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
-                    runnableRunning++
-                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                super.onPlaybackStateChanged(playbackState)
+                Log.d("TAG", "PlaybackState: $playbackState")
             }
         }
 
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            super.onPlaybackStateChanged(playbackState)
-            Log.d("TAG", "PlaybackState: $playbackState")
-        }
-    }
-
     fun setBottomPlayerPreviewVisible() {
-        previewPlayer.visibility = VISIBLE
+        previewPlayer.visibility = View.VISIBLE
     }
 
     fun updateSongInfo(mediaItem: MediaItem?) {
@@ -169,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                 {
                     Log.d(
                         "TAG",
-                        "PlaybackState: ${instance.playbackState}, isPlaying: ${instance.isPlaying}"
+                        "PlaybackState: ${instance.playbackState}, isPlaying: ${instance.isPlaying}",
                     )
                     if (instance.isPlaying) {
                         Log.d("TAG", "REACHED1")
@@ -191,13 +197,16 @@ class MainActivity : AppCompatActivity() {
                             standardBottomSheetBehavior.isHideable = false
                         }, 200)
                     }
-                }, 200
+                },
+                200,
             )
-            Glide.with(bottomSheetPreviewCover)
+            Glide
+                .with(bottomSheetPreviewCover)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .placeholder(R.drawable.ic_default_cover)
                 .into(bottomSheetPreviewCover)
-            Glide.with(bottomSheetFullCover)
+            Glide
+                .with(bottomSheetFullCover)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .placeholder(R.drawable.ic_default_cover)
                 .into(bottomSheetFullCover)
@@ -206,7 +215,9 @@ class MainActivity : AppCompatActivity() {
             bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist
             bottomSheetFullDuration.text =
-                mediaItem?.mediaId?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+                mediaItem
+                    ?.mediaId
+                    ?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
                     ?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
         } else {
             if (!standardBottomSheetBehavior.isHideable) {
@@ -270,8 +281,10 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         sessionToken =
             SessionToken(this, ComponentName(this, GramophonePlaybackService::class.java))
-        controllerFuture = MediaController.Builder(this, sessionToken)
-            .buildAsync()
+        controllerFuture =
+            MediaController
+                .Builder(this, sessionToken)
+                .buildAsync()
         controllerFuture.addListener(
             {
                 val controller = controllerFuture.get()
@@ -280,19 +293,19 @@ class MainActivity : AppCompatActivity() {
                 bottomSheetShuffleButton.isChecked = controller.shuffleModeEnabled
                 bottomSheetTimerButton.isChecked = timerViewModel.timerDuration != 0
                 when (controller.repeatMode) {
-                    REPEAT_MODE_ALL -> {
+                    Player.REPEAT_MODE_ALL -> {
                         bottomSheetLoopButton.isChecked = true
                         bottomSheetLoopButton.icon =
                             AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
                     }
 
-                    REPEAT_MODE_OFF -> {
+                    Player.REPEAT_MODE_OFF -> {
                         bottomSheetLoopButton.isChecked = false
                         bottomSheetLoopButton.icon =
                             AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
                     }
 
-                    REPEAT_MODE_ONE -> {
+                    Player.REPEAT_MODE_ONE -> {
                         bottomSheetLoopButton.isChecked = true
                         bottomSheetLoopButton.icon =
                             AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
@@ -300,37 +313,40 @@ class MainActivity : AppCompatActivity() {
                 }
                 updateSongInfo(controller.currentMediaItem)
                 if (controllerFuture.get().isPlaying) {
-                    val positionRunnable = object : Runnable {
-                        private val instance = controllerFuture.get()
-                        override fun run() {
-                            val position =
-                                GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
-                            Log.d("TAG", position)
-                            if (runnableRunning == 1) {
-                                val duration = libraryViewModel.durationItemList.value?.get(
-                                    instance.currentMediaItem?.mediaId?.toLong()
-                                )
-                                if (duration != null && !isUserTracking) {
-                                    bottomSheetFullSlider.value =
-                                        instance.currentPosition.toFloat() / duration.toFloat()
-                                    bottomSheetFullPosition.text = position
+                    val positionRunnable =
+                        object : Runnable {
+                            private val instance = controllerFuture.get()
+
+                            override fun run() {
+                                val position =
+                                    GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
+                                Log.d("TAG", position)
+                                if (runnableRunning == 1) {
+                                    val duration =
+                                        libraryViewModel.durationItemList.value?.get(
+                                            instance.currentMediaItem?.mediaId?.toLong(),
+                                        )
+                                    if (duration != null && !isUserTracking) {
+                                        bottomSheetFullSlider.value =
+                                            instance.currentPosition.toFloat() / duration.toFloat()
+                                        bottomSheetFullPosition.text = position
+                                    }
                                 }
+                                if (instance.isPlaying) {
+                                    Handler(Looper.getMainLooper()).postDelayed(this, 500)
+                                } else {
+                                    runnableRunning--
+                                }
+                                Log.d("TAG", "Runnables: $runnableRunning")
                             }
-                            if (instance.isPlaying) {
-                                Handler(Looper.getMainLooper()).postDelayed(this, 500)
-                            } else {
-                                runnableRunning--
-                            }
-                            Log.d("TAG", "Runnables: $runnableRunning")
                         }
-                    }
                     if (runnableRunning == 0) {
                         Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
                         runnableRunning++
                     }
                 }
             },
-            MoreExecutors.directExecutor()
+            MoreExecutors.directExecutor(),
         )
 
         Log.d("TAG", "onStart")
@@ -361,19 +377,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpTimer(destinationTime: Int) {
         timerViewModel.timerDuration = destinationTime
-        timerViewModel.timer = object : CountDownTimer(destinationTime.toLong(), 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                Log.d("TAG", "TICK, $millisUntilFinished")
-            }
+        timerViewModel.timer =
+            object : CountDownTimer(destinationTime.toLong(), 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    Log.d("TAG", "TICK, $millisUntilFinished")
+                }
 
-            override fun onFinish() {
-                val instance = controllerFuture.get()
-                instance.pause()
-                timerViewModel.timerDuration = 0
-                timerViewModel.timer = null
-                bottomSheetTimerButton.isChecked = false
+                override fun onFinish() {
+                    val instance = controllerFuture.get()
+                    instance.pause()
+                    timerViewModel.timerDuration = 0
+                    timerViewModel.timer = null
+                    bottomSheetTimerButton.isChecked = false
+                }
             }
-        }
         timerViewModel.timer!!.start()
     }
 
@@ -435,19 +452,20 @@ class MainActivity : AppCompatActivity() {
         standardBottomSheet.setOnClickListener {
             if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                fullPlayer.visibility = VISIBLE
-                previewPlayer.visibility = GONE
+                fullPlayer.visibility = View.VISIBLE
+                previewPlayer.visibility = View.GONE
             }
         }
 
         bottomSheetTimerButton.setOnClickListener {
             bottomSheetTimerButton.isChecked = true
             val picker =
-                MaterialTimePicker.Builder()
+                MaterialTimePicker
+                    .Builder()
                     .setHour(timerViewModel.timerDuration / 3600 / 1000)
                     .setMinute((timerViewModel.timerDuration % (3600 * 1000)) / (60 * 1000))
                     .setTimeFormat(TimeFormat.CLOCK_24H)
-                    .setInputMode(INPUT_MODE_KEYBOARD)
+                    .setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .build()
             picker.addOnPositiveButtonClickListener {
                 val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
@@ -474,26 +492,25 @@ class MainActivity : AppCompatActivity() {
         bottomSheetLoopButton.setOnClickListener {
             val instance = controllerFuture.get()
             when (instance.repeatMode) {
-                REPEAT_MODE_ALL -> {
+                Player.REPEAT_MODE_ALL -> {
                     bottomSheetLoopButton.isChecked = true
                     bottomSheetLoopButton.icon =
                         AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
-                    instance.repeatMode = REPEAT_MODE_ONE
+                    instance.repeatMode = Player.REPEAT_MODE_ONE
                 }
 
-                REPEAT_MODE_OFF -> {
+                Player.REPEAT_MODE_OFF -> {
                     bottomSheetLoopButton.isChecked = true
                     bottomSheetLoopButton.icon =
                         AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                    instance.repeatMode = REPEAT_MODE_ALL
-
+                    instance.repeatMode = Player.REPEAT_MODE_ALL
                 }
 
-                REPEAT_MODE_ONE -> {
+                Player.REPEAT_MODE_ONE -> {
                     bottomSheetLoopButton.isChecked = false
                     bottomSheetLoopButton.icon =
                         AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                    instance.repeatMode = REPEAT_MODE_OFF
+                    instance.repeatMode = Player.REPEAT_MODE_OFF
                 }
             }
         }
@@ -530,9 +547,10 @@ class MainActivity : AppCompatActivity() {
         bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
             if (isUser) {
                 val instance = controllerFuture.get()
-                val dest = instance.currentMediaItem?.mediaId?.let {
-                    libraryViewModel.durationItemList.value?.get(it.toLong())
-                }
+                val dest =
+                    instance.currentMediaItem?.mediaId?.let {
+                        libraryViewModel.durationItemList.value?.get(it.toLong())
+                    }
                 if (dest != null) {
                     bottomSheetFullPosition.text =
                         GramophoneUtils.convertDurationToTimeStamp((value * dest).toLong())
@@ -546,10 +564,10 @@ class MainActivity : AppCompatActivity() {
             standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    fullPlayer.visibility = GONE
-                    previewPlayer.visibility = VISIBLE
+                    fullPlayer.visibility = View.GONE
+                    previewPlayer.visibility = View.VISIBLE
                 },
-                200
+                200,
             )
         }
 
@@ -585,33 +603,53 @@ class MainActivity : AppCompatActivity() {
                     CoroutineScope(Dispatchers.Default).launch {
                         updateLibraryWithInCoroutine()
                         withContext(Dispatchers.Main) {
-                            val snackBar = Snackbar.make(
-                                fragmentContainerView,
-                                getString(
-                                    R.string.refreshed_songs,
-                                    libraryViewModel.mediaItemList.value!!.size
-                                ), Snackbar.LENGTH_LONG
-                            )
+                            val snackBar =
+                                Snackbar.make(
+                                    fragmentContainerView,
+                                    getString(
+                                        R.string.refreshed_songs,
+                                        libraryViewModel.mediaItemList.value!!.size,
+                                    ),
+                                    Snackbar.LENGTH_LONG,
+                                )
                             snackBar.setAction(R.string.dismiss) {
                                 snackBar.dismiss()
                             }
                             snackBar.setBackgroundTint(
                                 MaterialColors.getColor(
                                     snackBar.view,
-                                    com.google.android.material.R.attr.colorSurface
-                                )
+                                    com
+                                        .google
+                                        .android
+                                        .material
+                                        .R
+                                        .attr
+                                        .colorSurface,
+                                ),
                             )
                             snackBar.setActionTextColor(
                                 MaterialColors.getColor(
                                     snackBar.view,
-                                    com.google.android.material.R.attr.colorPrimary
-                                )
+                                    com
+                                        .google
+                                        .android
+                                        .material
+                                        .R
+                                        .attr
+                                        .colorPrimary,
+                                ),
                             )
                             snackBar.setTextColor(
                                 MaterialColors.getColor(
                                     snackBar.view,
-                                    com.google.android.material.R.attr.colorOnSurface
-                                )
+                                    com
+                                        .google
+                                        .android
+                                        .material
+                                        .R
+                                        .attr
+                                        .colorOnSurface,
+                                ),
                             )
                             snackBar.anchorView = standardBottomSheet
                             snackBar.show()
@@ -621,7 +659,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.settings -> {
-                    supportFragmentManager.beginTransaction()
+                    supportFragmentManager
+                        .beginTransaction()
                         .addToBackStack("SETTINGS")
                         .replace(R.id.container, SettingsFragment())
                         .commit()
@@ -635,61 +674,77 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
-                    fullPlayer.visibility = GONE
-                    previewPlayer.alpha = 1f
-                } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                    fullPlayer.visibility = VISIBLE
-                    previewPlayer.visibility = VISIBLE
-                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    previewPlayer.visibility = GONE
+        val bottomSheetCallback =
+            object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(
+                    bottomSheet: View,
+                    newState: Int,
+                ) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
+                        fullPlayer.visibility = View.GONE
+                        previewPlayer.alpha = 1f
+                    } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                        fullPlayer.visibility = View.VISIBLE
+                        previewPlayer.visibility = View.VISIBLE
+                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        previewPlayer.visibility = View.GONE
+                    }
+                }
+
+                override fun onSlide(
+                    bottomSheet: View,
+                    slideOffset: Float,
+                ) {
+                    previewPlayer.alpha = 1 - (slideOffset)
+                    fullPlayer.alpha = slideOffset
                 }
             }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                previewPlayer.alpha = 1 - (slideOffset)
-                fullPlayer.alpha = slideOffset
-            }
-        }
-
         standardBottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        if (android
+                .os
+                .Build
+                .VERSION
+                .SDK_INT >=
+            android
+                .os
+                .Build
+                .VERSION_CODES
+                .TIRAMISU
+        ) {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    android.Manifest.permission.READ_MEDIA_AUDIO
+                    android.Manifest.permission.READ_MEDIA_AUDIO,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 // Ask if was denied.
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
-                    Constants.PERMISSION_READ_MEDIA_AUDIO
+                    Constants.PERMISSION_READ_MEDIA_AUDIO,
                 )
             }
         } else {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 // Ask if was denied.
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    Constants.PERMISSION_READ_EXTERNAL_STORAGE
+                    Constants.PERMISSION_READ_EXTERNAL_STORAGE,
                 )
             }
         }
-
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -719,6 +774,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         controllerFuture.get().removeListener(playerListener)
+        if ()
         controllerFuture.get().release()
     }
 }

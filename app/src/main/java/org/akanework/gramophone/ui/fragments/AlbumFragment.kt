@@ -22,7 +22,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [AlbumFragment] displays information about your albums.
  */
 class AlbumFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,23 +33,25 @@ class AlbumFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_album, container, false)
         val albumRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         val albumList = mutableListOf<MediaStoreUtils.Album>()
         albumList.addAll(libraryViewModel.albumItemList.value!!)
-        val albumAdapter = AlbumAdapter(
-            albumList,
-            requireActivity().supportFragmentManager,
-            requireActivity() as MainActivity
-        )
-        val albumDecorAdapter = AlbumDecorAdapter(
-            requireContext(),
-            libraryViewModel.albumItemList.value!!.size,
-            albumAdapter
-        )
+        val albumAdapter =
+            AlbumAdapter(
+                albumList,
+                requireActivity().supportFragmentManager,
+                requireActivity() as MainActivity,
+            )
+        val albumDecorAdapter =
+            AlbumDecorAdapter(
+                requireContext(),
+                libraryViewModel.albumItemList.value!!.size,
+                albumAdapter,
+            )
         val concatAdapter = ConcatAdapter(albumDecorAdapter, albumAdapter)
 
         val gridLayoutManager = CustomGridLayoutManager(requireContext(), 2)
@@ -73,5 +74,4 @@ class AlbumFragment : Fragment() {
         FastScrollerBuilder(albumRecyclerView).build()
         return rootView
     }
-
 }

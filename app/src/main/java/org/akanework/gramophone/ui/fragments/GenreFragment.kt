@@ -21,13 +21,12 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [GenreFragment] displays information about your song's genres.
  */
 class GenreFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_genre, container, false)
         val genreRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
@@ -35,15 +34,19 @@ class GenreFragment : Fragment() {
         genreRecyclerView.layoutManager = LinearLayoutManager(activity)
         val genreList = mutableListOf<MediaStoreUtils.Genre>()
         genreList.addAll(libraryViewModel.genreItemList.value!!)
-        val genreAdapter = GenreAdapter(
-            genreList, requireContext(), requireActivity().supportFragmentManager,
-            requireActivity() as MainActivity
-        )
-        val genreDecorAdapter = GenreDecorAdapter(
-            requireContext(),
-            libraryViewModel.genreItemList.value!!.size,
-            genreAdapter
-        )
+        val genreAdapter =
+            GenreAdapter(
+                genreList,
+                requireContext(),
+                requireActivity().supportFragmentManager,
+                requireActivity() as MainActivity,
+            )
+        val genreDecorAdapter =
+            GenreDecorAdapter(
+                requireContext(),
+                libraryViewModel.genreItemList.value!!.size,
+                genreAdapter,
+            )
         val concatAdapter = ConcatAdapter(genreDecorAdapter, genreAdapter)
 
         if (!libraryViewModel.genreItemList.hasActiveObservers()) {
@@ -63,6 +66,4 @@ class GenreFragment : Fragment() {
 
         return rootView
     }
-
-
 }

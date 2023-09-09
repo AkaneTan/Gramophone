@@ -4,7 +4,6 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-
 android {
     namespace = "org.akanework.gramophone"
     compileSdk = 34
@@ -24,7 +23,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -54,5 +53,4 @@ dependencies {
     implementation("me.zhanghai.android.fastscroll:library:1.2.0")
     // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
-
 }

@@ -21,13 +21,12 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [ArtistFragment] displays information about artists.
  */
 class ArtistFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_artist, container, false)
         val artistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
@@ -35,17 +34,19 @@ class ArtistFragment : Fragment() {
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
         val artistList = mutableListOf<MediaStoreUtils.Artist>()
         artistList.addAll(libraryViewModel.artistItemList.value!!)
-        val artistAdapter = ArtistAdapter(
-            artistList,
-            requireContext(),
-            requireActivity().supportFragmentManager,
-            requireActivity() as MainActivity
-        )
-        val artistDecorAdapter = ArtistDecorAdapter(
-            requireContext(),
-            libraryViewModel.artistItemList.value!!.size,
-            artistAdapter
-        )
+        val artistAdapter =
+            ArtistAdapter(
+                artistList,
+                requireContext(),
+                requireActivity().supportFragmentManager,
+                requireActivity() as MainActivity,
+            )
+        val artistDecorAdapter =
+            ArtistDecorAdapter(
+                requireContext(),
+                libraryViewModel.artistItemList.value!!.size,
+                artistAdapter,
+            )
         val concatAdapter = ConcatAdapter(artistDecorAdapter, artistAdapter)
 
         if (!libraryViewModel.artistItemList.hasActiveObservers()) {
@@ -65,5 +66,4 @@ class ArtistFragment : Fragment() {
 
         return rootView
     }
-
 }

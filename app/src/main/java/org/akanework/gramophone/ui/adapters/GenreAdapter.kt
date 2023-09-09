@@ -29,43 +29,60 @@ class GenreAdapter(
     private val genreList: MutableList<MediaStoreUtils.Genre>,
     private val context: Context,
     private val fragmentManager: FragmentManager,
-    private val mainActivity: MainActivity
-) :
-    RecyclerView.Adapter<GenreAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.adapter_list_card_larger, parent, false)
+    private val mainActivity: MainActivity,
+) : RecyclerView.Adapter<GenreAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder =
+        ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.adapter_list_card_larger, parent, false),
         )
-    }
 
     override fun getItemCount(): Int = genreList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         holder.songTitle.text = genreList[position].title
-        val songText = genreList[position].songList.size.toString() + ' ' +
-                if (genreList[position].songList.size <= 1)
+        val songText =
+            genreList[position].songList.size.toString() + ' ' +
+                if (genreList[position].songList.size <= 1) {
                     context.getString(R.string.song)
-                else
+                } else {
                     context.getString(R.string.songs)
+                }
         holder.songArtist.text = songText
 
-        Glide.with(holder.songCover.context)
-            .load(genreList[position].songList.first().mediaMetadata.artworkUri)
-            .placeholder(R.drawable.ic_default_cover_genre)
+        Glide
+            .with(holder.songCover.context)
+            .load(
+                genreList[position]
+                    .songList
+                    .first()
+                    .mediaMetadata
+                    .artworkUri,
+            ).placeholder(R.drawable.ic_default_cover_genre)
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            fragmentManager.beginTransaction()
+            fragmentManager
+                .beginTransaction()
                 .addToBackStack("SUBFRAG")
-                .replace(R.id.container, GeneralSubFragment().apply {
-                    arguments = Bundle().apply {
-                        putInt("Position", position)
-                        putInt("Item", 3)
-                        putString("Title", holder.songTitle.text as String)
-                    }
-                })
-                .commit()
+                .replace(
+                    R.id.container,
+                    GeneralSubFragment().apply {
+                        arguments =
+                            Bundle().apply {
+                                putInt("Position", position)
+                                putInt("Item", 3)
+                                putString("Title", holder.songTitle.text as String)
+                            }
+                    },
+                ).commit()
         }
 
         holder.moreButton.setOnClickListener { it ->
@@ -78,12 +95,11 @@ class GenreAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItems(
                             mediaController.currentMediaItemIndex + 1,
-                            genreList[holder.bindingAdapterPosition].songList
+                            genreList[holder.bindingAdapterPosition].songList,
                         )
                     }
 
                     R.id.details -> {
-
                     }
                     /*
                     R.id.share -> {
@@ -99,10 +115,11 @@ class GenreAdapter(
             }
             popupMenu.show()
         }
-
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
@@ -148,14 +165,20 @@ class GenreAdapter(
 
     private class SongDiffCallback(
         private val oldList: MutableList<MediaStoreUtils.Genre>,
-        private val newList: MutableList<MediaStoreUtils.Genre>
+        private val newList: MutableList<MediaStoreUtils.Genre>,
     ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
-        override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition].id == newList[newItemPosition].id
+
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ) = oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

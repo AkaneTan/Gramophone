@@ -20,7 +20,6 @@ import kotlin.random.Random
 
 @UnstableApi
 class ViewPagerFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     private lateinit var viewPager2: ViewPager2
@@ -38,7 +37,7 @@ class ViewPagerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_viewpager, container, false)
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
@@ -59,7 +58,9 @@ class ViewPagerFragment : Fragment() {
                 }
 
                 R.id.search -> {
-                    requireActivity().supportFragmentManager.beginTransaction()
+                    requireActivity()
+                        .supportFragmentManager
+                        .beginTransaction()
                         .addToBackStack("SEARCH")
                         .replace(R.id.container, SearchFragment())
                         .commit()
@@ -78,14 +79,15 @@ class ViewPagerFragment : Fragment() {
         // Connect ViewPager2.
         viewPager2.adapter = ViewPager2Adapter(childFragmentManager, lifecycle)
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.category_songs)
-                1 -> getString(R.string.category_albums)
-                2 -> getString(R.string.category_artists)
-                3 -> getString(R.string.category_genres)
-                4 -> getString(R.string.category_dates)
-                else -> "Unknown"
-            }
+            tab.text =
+                when (position) {
+                    0 -> getString(R.string.category_songs)
+                    1 -> getString(R.string.category_albums)
+                    2 -> getString(R.string.category_artists)
+                    3 -> getString(R.string.category_genres)
+                    4 -> getString(R.string.category_dates)
+                    else -> "Unknown"
+                }
         }.attach()
 
         return rootView

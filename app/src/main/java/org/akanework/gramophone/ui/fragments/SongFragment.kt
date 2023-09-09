@@ -24,7 +24,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * about songs.
  */
 class SongFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,7 @@ class SongFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_song, container, false)
         val songRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
@@ -46,11 +45,12 @@ class SongFragment : Fragment() {
         val songList = mutableListOf<MediaItem>()
         songList.addAll(libraryViewModel.mediaItemList.value!!)
         val songAdapter = SongAdapter(songList, requireActivity() as MainActivity)
-        val songDecorAdapter = SongDecorAdapter(
-            requireContext(),
-            libraryViewModel.mediaItemList.value!!.size,
-            songAdapter
-        )
+        val songDecorAdapter =
+            SongDecorAdapter(
+                requireContext(),
+                libraryViewModel.mediaItemList.value!!.size,
+                songAdapter,
+            )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 
         if (!libraryViewModel.mediaItemList.hasActiveObservers()) {

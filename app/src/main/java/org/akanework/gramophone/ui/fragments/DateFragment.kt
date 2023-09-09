@@ -21,12 +21,12 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [DateFragment] displays information about your song's dates.
  */
 class DateFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_date, container, false)
         val dateRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
@@ -34,17 +34,19 @@ class DateFragment : Fragment() {
         dateRecyclerView.layoutManager = LinearLayoutManager(activity)
         val dateList = mutableListOf<MediaStoreUtils.Date>()
         dateList.addAll(libraryViewModel.dateItemList.value!!)
-        val dateAdapter = DateAdapter(
-            dateList,
-            requireContext(),
-            requireActivity().supportFragmentManager,
-            requireActivity() as MainActivity
-        )
-        val dateDecorAdapter = DateDecorAdapter(
-            requireContext(),
-            libraryViewModel.dateItemList.value!!.size,
-            dateAdapter
-        )
+        val dateAdapter =
+            DateAdapter(
+                dateList,
+                requireContext(),
+                requireActivity().supportFragmentManager,
+                requireActivity() as MainActivity,
+            )
+        val dateDecorAdapter =
+            DateDecorAdapter(
+                requireContext(),
+                libraryViewModel.dateItemList.value!!.size,
+                dateAdapter,
+            )
         val concatAdapter = ConcatAdapter(dateDecorAdapter, dateAdapter)
 
         if (!libraryViewModel.dateItemList.hasActiveObservers()) {
@@ -64,5 +66,4 @@ class DateFragment : Fragment() {
 
         return rootView
     }
-
 }

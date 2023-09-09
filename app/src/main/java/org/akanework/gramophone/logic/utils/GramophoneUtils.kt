@@ -1,7 +1,10 @@
 package org.akanework.gramophone.logic.utils
 
+/**
+ * [GramophoneUtils] contains some methods for internal
+ * calculation.
+ */
 object GramophoneUtils {
-
     /**
      * [convertDurationToTimeStamp] makes a string format
      * of duration (presumably long) converts into timestamp
@@ -18,5 +21,4 @@ object GramophoneUtils {
         }
         return "$minutes:$seconds"
     }
-
 }

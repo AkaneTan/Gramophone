@@ -22,7 +22,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @UnstableApi
 class GeneralSubFragment : Fragment() {
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +34,7 @@ class GeneralSubFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
@@ -49,32 +48,52 @@ class GeneralSubFragment : Fragment() {
         when (item) {
             1 -> {
                 // Albums
-                itemList = libraryViewModel.albumItemList.value!![position].songList.toMutableList()
+                itemList =
+                    libraryViewModel
+                        .albumItemList
+                        .value!![position]
+                        .songList
+                        .toMutableList()
             }
 
             2 -> {
                 // Artists
                 itemList =
-                    libraryViewModel.artistItemList.value!![position].songList.toMutableList()
+                    libraryViewModel
+                        .artistItemList
+                        .value!![position]
+                        .songList
+                        .toMutableList()
             }
 
             3 -> {
                 // Genres
-                itemList = libraryViewModel.genreItemList.value!![position].songList.toMutableList()
+                itemList =
+                    libraryViewModel
+                        .genreItemList
+                        .value!![position]
+                        .songList
+                        .toMutableList()
             }
 
             4 -> {
                 // Dates
-                itemList = libraryViewModel.dateItemList.value!![position].songList.toMutableList()
+                itemList =
+                    libraryViewModel
+                        .dateItemList
+                        .value!![position]
+                        .songList
+                        .toMutableList()
             }
         }
 
         val songAdapter = SongAdapter(itemList, requireActivity() as MainActivity)
-        val songDecorAdapter = SongDecorAdapter(
-            requireContext(),
-            itemList.size,
-            songAdapter
-        )
+        val songDecorAdapter =
+            SongDecorAdapter(
+                requireContext(),
+                itemList.size,
+                songAdapter,
+            )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = concatAdapter

@@ -13,23 +13,28 @@ import org.akanework.gramophone.R
 class GenreDecorAdapter(
     private val context: Context,
     private var genreCount: Int,
-    private val genreAdapter: GenreAdapter
+    private val genreAdapter: GenreAdapter,
 ) : RecyclerView.Adapter<GenreDecorAdapter.ViewHolder>() {
-
     private var sortStatus = 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val songText = genreCount.toString() + ' ' +
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
+        val songText =
+            genreCount.toString() + ' ' +
                 if (genreCount <= 1) context.getString(R.string.genre) else context.getString(R.string.genres)
         holder.songCounter.text = songText
         holder.sortButton.setOnClickListener {
-
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_artist)
 
@@ -69,7 +74,9 @@ class GenreDecorAdapter(
 
     override fun getItemCount(): Int = 1
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val sortButton: MaterialButton = view.findViewById(R.id.sort)
         val songCounter: TextView = view.findViewById(R.id.song_counter)
     }
