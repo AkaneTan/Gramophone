@@ -44,6 +44,9 @@ class GramophonePlaybackService : MediaSessionService() {
                 ),
                 getShuffleCommandButton(
                     SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY)
+                ),
+                getCloseButton(
+                    SessionCommand(Constants.PLAYBACK_CLOSE, Bundle.EMPTY)
                 )
             )
 
@@ -57,7 +60,7 @@ class GramophonePlaybackService : MediaSessionService() {
             MediaSession
                 .Builder(this, player)
                 .setCallback(callback)
-                .setCustomLayout(ImmutableList.of(customCommands[0]))
+                .setCustomLayout(ImmutableList.of(customCommands[0], customCommands[2]))
                 .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader(/* context= */ this)))
                 .setSessionActivity(
                     getActivity(
@@ -89,6 +92,13 @@ class GramophonePlaybackService : MediaSessionService() {
             .setIconResId(if (isOn) R.drawable.ic_shuffle else R.drawable.ic_shuffle_on)
             .build()
     }
+
+    private fun getCloseButton(sessionCommand: SessionCommand): CommandButton =
+        CommandButton.Builder()
+            .setDisplayName(getString(R.string.close))
+            .setSessionCommand(sessionCommand)
+            .setIconResId(R.drawable.ic_close)
+            .build()
 
     override fun onDestroy() {
         // When destroying, we should release server side player
@@ -131,12 +141,14 @@ class GramophonePlaybackService : MediaSessionService() {
                 // Enable shuffling.
                 session.player.shuffleModeEnabled = true
                 // Change the custom layout to contain the `Disable shuffling` command.
-                session.setCustomLayout(ImmutableList.of(customCommands[1]))
+                session.setCustomLayout(ImmutableList.of(customCommands[1], customCommands[2]))
             } else if (Constants.PLAYBACK_SHUFFLE_ACTION_OFF == customCommand.customAction) {
                 // Disable shuffling.
                 session.player.shuffleModeEnabled = false
                 // Change the custom layout to contain the `Enable shuffling` command.
-                session.setCustomLayout(ImmutableList.of(customCommands[0]))
+                session.setCustomLayout(ImmutableList.of(customCommands[0], customCommands[2]))
+            } else if (Constants.PLAYBACK_CLOSE == customCommand.customAction) {
+                session.player.clearMediaItems()
             }
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
         }
