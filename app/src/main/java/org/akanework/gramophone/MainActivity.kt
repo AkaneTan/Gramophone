@@ -420,10 +420,21 @@ class MainActivity : AppCompatActivity() {
             updateLibrary()
         }
 
-        val params = window.attributes
-        params.layoutInDisplayCutoutMode =
-            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-        window.attributes = params
+        if (android
+                .os
+                .Build
+                .VERSION
+                .SDK_INT >=
+            android
+                .os
+                .Build
+                .VERSION_CODES
+                .P) {
+            val params = window.attributes
+            params.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.attributes = params
+        }
 
         // Set content Views.
         WindowCompat.setDecorFitsSystemWindows(window, false)
