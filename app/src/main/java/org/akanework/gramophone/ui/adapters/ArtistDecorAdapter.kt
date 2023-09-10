@@ -85,6 +85,7 @@ class ArtistDecorAdapter(
                                 itemCount = it1.size
                             }
                             updateSongCounter(itemCount)
+                            artistAdapter.setClickEventToAlbumArtist()
                         } else {
                             isDisplayingAlbumArtist = false
                             var itemCount = 0
@@ -96,6 +97,7 @@ class ArtistDecorAdapter(
                                 itemCount = it1.size
                             }
                             updateSongCounter(itemCount)
+                            artistAdapter.setClickEventToAlbumArtist(true)
                         }
                     }
                 }

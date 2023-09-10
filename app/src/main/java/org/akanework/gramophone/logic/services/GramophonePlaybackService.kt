@@ -9,7 +9,6 @@ import android.os.CountDownTimer
 import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.ExoPlayer
@@ -23,6 +22,7 @@ import androidx.media3.session.SessionResult
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.SettableFuture
 import org.akanework.gramophone.Constants
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
@@ -190,6 +190,13 @@ class GramophonePlaybackService : MediaSessionService() {
                 }
             }
             return Futures.immediateFuture(sessionResult)
+        }
+
+        override fun onPlaybackResumption(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
+            return SettableFuture.create()
         }
     }
 

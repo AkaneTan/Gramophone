@@ -27,10 +27,14 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class ArtistAdapter(
     private val artistList: MutableList<MediaStoreUtils.Artist>,
+    private val albumArtistList: MutableList<MediaStoreUtils.Artist>,
     private val context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<ArtistAdapter.ViewHolder>() {
+
+    private var isAlbumArtist = false
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -78,8 +82,16 @@ class ArtistAdapter(
                         arguments =
                             Bundle().apply {
                                 putInt("Position", position)
-                                putInt("Item", 2)
-                                putString("Title", artistList[position].title)
+                                putInt("Item",
+                                    if (!isAlbumArtist)
+                                        2
+                                    else
+                                        5)
+                                putString("Title",
+                                    if (!isAlbumArtist)
+                                        artistList[position].title
+                                    else
+                                        albumArtistList[position].title)
                             }
                     },
                 ).commit()
@@ -95,7 +107,10 @@ class ArtistAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItems(
                             mediaController.currentMediaItemIndex + 1,
-                            artistList[holder.bindingAdapterPosition].songList,
+                            if (!isAlbumArtist)
+                                artistList[holder.bindingAdapterPosition].songList
+                            else
+                                albumArtistList[holder.bindingAdapterPosition].songList,
                         )
                     }
 
@@ -163,6 +178,10 @@ class ArtistAdapter(
         artistList.clear()
         artistList.addAll(newList)
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun setClickEventToAlbumArtist(reverse: Boolean = false) {
+        isAlbumArtist = !reverse
     }
 
     private class SongDiffCallback(

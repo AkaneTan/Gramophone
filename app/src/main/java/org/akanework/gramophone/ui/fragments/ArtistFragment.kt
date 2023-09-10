@@ -1,6 +1,7 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,9 +35,14 @@ class ArtistFragment : Fragment() {
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
         val artistList = mutableListOf<MediaStoreUtils.Artist>()
         artistList.addAll(libraryViewModel.artistItemList.value!!)
+        val albumArtistList = mutableListOf<MediaStoreUtils.Artist>()
+        albumArtistList.addAll(libraryViewModel.albumArtistItemList.value!!)
+        Log.d("ArtistFragment", "Value: ${libraryViewModel.albumArtistItemList.value}")
+
         val artistAdapter =
             ArtistAdapter(
                 artistList,
+                albumArtistList,
                 requireContext(),
                 requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,

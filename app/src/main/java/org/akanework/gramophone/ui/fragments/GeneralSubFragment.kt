@@ -85,6 +85,16 @@ class GeneralSubFragment : Fragment() {
                         .songList
                         .toMutableList()
             }
+
+            5 -> {
+                // Album artists
+                itemList =
+                    libraryViewModel
+                        .albumArtistItemList
+                        .value!![position]
+                        .songList
+                        .toMutableList()
+            }
         }
 
         val songAdapter = SongAdapter(itemList, requireActivity() as MainActivity)
