@@ -25,7 +25,7 @@ A media3 music player with up-to-date md3 phonograph designs.
 
 ## Installation
 You can download the latest version of the app from the [releases page](https://github.com/AkaneTan/Gramophone/releases).
-it
+
 ## Building
 To build this app, you will need the latest beta version of android studio and a fast network. Simply clone it and build it.
 
