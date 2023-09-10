@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "org.akanework.gramophone"
-        minSdk = 31
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "0.0.1"
