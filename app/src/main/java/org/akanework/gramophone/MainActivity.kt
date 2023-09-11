@@ -20,7 +20,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -35,10 +34,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.color.MaterialColors
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.Slider
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
@@ -52,8 +48,6 @@ import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.playOrPause
-import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
-import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
@@ -94,9 +88,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
     private lateinit var standardBottomSheet: FrameLayout
     private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
 
-    private lateinit var drawerLayout: DrawerLayout
     private lateinit var previewPlayer: RelativeLayout
-    private lateinit var navigationView: NavigationView
 
     private var isUserTracking = false
     private var runnableRunning = false
@@ -186,11 +178,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                 standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             }, 200)
         }
-    }
-
-    fun navigateDrawer(int: Int) {
-        drawerLayout.open()
-        navigationView.setCheckedItem(tabs.getValue(int))
     }
 
     // When the slider is dragged by user, mark it
@@ -311,10 +298,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
 
-        // Initialize layouts.
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.navigation_view)
-
         standardBottomSheet = findViewById(R.id.player_layout)
         standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
 
@@ -426,72 +409,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                 },
                 200,
             )
-        }
-
-        navigationView.setNavigationItemSelectedListener {
-            val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
-            when (it.itemId) {
-                in tabs.values -> {
-                    viewPager2.setCurrentItem(tabs.entries
-                        .find { entry -> entry.value == it.itemId }!!.key, true)
-                    drawerLayout.close()
-                }
-
-                R.id.refresh -> {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        updateLibraryWithInCoroutine()
-                        withContext(Dispatchers.Main) {
-                            val snackBar =
-                                Snackbar.make(
-                                    fragmentContainerView,
-                                    getString(
-                                        R.string.refreshed_songs,
-                                        libraryViewModel.mediaItemList.value!!.size,
-                                    ),
-                                    Snackbar.LENGTH_LONG,
-                                )
-                            snackBar.setAction(R.string.dismiss) {
-                                snackBar.dismiss()
-                            }
-                            snackBar.setBackgroundTint(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorSurface,
-                                ),
-                            )
-                            snackBar.setActionTextColor(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorPrimary,
-                                ),
-                            )
-                            snackBar.setTextColor(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorOnSurface,
-                                ),
-                            )
-                            snackBar.anchorView = standardBottomSheet
-                            snackBar.show()
-                        }
-                    }
-                    drawerLayout.close()
-                }
-
-                R.id.settings -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .addToBackStack("SETTINGS")
-                        .replace(R.id.container, SettingsFragment())
-                        .commit()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        drawerLayout.close()
-                    }, 50)
-                }
-
-                else -> throw IllegalStateException()
-            }
-            true
         }
 
         standardBottomSheetBehavior.addBottomSheetCallback(
