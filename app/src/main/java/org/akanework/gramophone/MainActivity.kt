@@ -3,6 +3,7 @@ package org.akanework.gramophone
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,6 +24,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
@@ -49,6 +51,8 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.playOrPause
+import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -58,9 +62,10 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [ViewPager2] is categorized inside a separate fragment.
  */
 @UnstableApi
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Player.Listener {
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
+    private val handler = Handler(Looper.getMainLooper())
 
     private lateinit var sessionToken: SessionToken
     private lateinit var controllerFuture: ListenableFuture<MediaController>
@@ -94,83 +99,33 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
 
     private var isUserTracking = false
-    private var runnableRunning = 0
+    private var runnableRunning = false
 
-    private val playerListener =
-        object : Player.Listener {
-            override fun onMediaItemTransition(
-                mediaItem: MediaItem?,
-                reason: Int,
-            ) {
-                super.onMediaItemTransition(mediaItem, reason)
-                updateSongInfo(mediaItem)
-            }
-
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-                bottomSheetShuffleButton.isChecked = shuffleModeEnabled
-            }
-
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                super.onIsPlayingChanged(isPlaying)
-                val instance = controllerFuture.get()
-                Log.d("TAG", "isPlaying, $isPlaying")
-                if (isPlaying) {
-                    bottomSheetPreviewControllerButton.icon =
-                        AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
-                    bottomSheetFullControllerButton.icon =
-                        AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
-                } else if (instance.playbackState != 2) {
-                    Log.d("TAG", "Triggered, ${instance.playbackState}")
-                    bottomSheetPreviewControllerButton.icon =
-                        AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
-                    bottomSheetFullControllerButton.icon =
-                        AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
-                }
-                if (isPlaying) {
-                    val positionRunnable =
-                        object : Runnable {
-                            override fun run() {
-                                val position =
-                                    GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
-                                Log.d("TAG", position)
-                                if (runnableRunning == 1) {
-                                    val duration =
-                                        libraryViewModel.durationItemList.value?.get(
-                                            instance.currentMediaItem?.mediaId?.toLong(),
-                                        )
-                                    if (duration != null && !isUserTracking) {
-                                        bottomSheetFullSlider.value =
-                                            instance.currentPosition.toFloat() / duration.toFloat()
-                                        bottomSheetFullPosition.text = position
-                                    }
-                                }
-                                if (instance.isPlaying) {
-                                    Handler(Looper.getMainLooper()).postDelayed(this, 500)
-                                } else {
-                                    runnableRunning--
-                                }
-                                Log.d("TAG", "Runnable: $runnableRunning")
-                            }
-                        }
-                    if (runnableRunning == 0) {
-                        Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
-                        runnableRunning++
-                    }
+    private val positionRunnable = object : Runnable {
+        override fun run() {
+            val instance = controllerFuture.get()!!
+            val position =
+                GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
+            if (runnableRunning) {
+                val duration =
+                    libraryViewModel.durationItemList.value?.get(
+                        instance.currentMediaItem?.mediaId?.toLong(),
+                    )
+                if (duration != null && !isUserTracking) {
+                    bottomSheetFullSlider.value =
+                        instance.currentPosition.toFloat() / duration.toFloat()
+                    bottomSheetFullPosition.text = position
                 }
             }
-
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
-                Log.d("TAG", "PlaybackState: $playbackState")
+            if (instance.isPlaying) {
+                handler.postDelayed(this, instance.currentPosition % 1000)
+            } else {
+                runnableRunning = false
             }
         }
-
-    fun setBottomPlayerPreviewVisible() {
-        previewPlayer.visibility = View.VISIBLE
     }
 
-    fun updateSongInfo(mediaItem: MediaItem?) {
+    private fun updateSongInfo(mediaItem: MediaItem?) {
         Log.d("TAG", "${!controllerFuture.get().isPlaying}")
         val instance = controllerFuture.get()
         if (instance.mediaItemCount != 0) {
@@ -235,29 +190,7 @@ class MainActivity : AppCompatActivity() {
 
     fun navigateDrawer(int: Int) {
         drawerLayout.open()
-        when (int) {
-            0 -> {
-                navigationView.setCheckedItem(R.id.songs)
-            }
-
-            1 -> {
-                navigationView.setCheckedItem(R.id.albums)
-            }
-
-            2 -> {
-                navigationView.setCheckedItem(R.id.artists)
-            }
-
-            3 -> {
-                navigationView.setCheckedItem(R.id.genres)
-            }
-
-            4 -> {
-                navigationView.setCheckedItem(R.id.dates)
-            }
-
-            else -> throw IllegalStateException()
-        }
+        navigationView.setCheckedItem(tabs.getValue(int))
     }
 
     // When the slider is dragged by user, mark it
@@ -282,21 +215,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private fun alreadyHasTimer(controller: MediaController) : Boolean = controller.sendCustomCommand(
-        SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
-        Bundle.EMPTY).get().extras.getInt("duration") != 0
-
-    private fun queryTimerDuration(controller: MediaController) : Int = controller.sendCustomCommand(
-        SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
+    private fun queryTimerDuration(controller: MediaController) : Int =
+        controller.sendCustomCommand(
+            SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
         Bundle.EMPTY).get().extras.getInt("duration")
 
-    private fun setTimer(controller: MediaController, value: Int) = controller.sendCustomCommand(
-        SessionCommand(Constants.SERVICE_ADD_TIMER, Bundle.EMPTY).apply {
-              customExtras.putInt("duration", value)
-        }, Bundle.EMPTY)
+    private fun alreadyHasTimer(controller: MediaController) : Boolean =
+        queryTimerDuration(controller) > 0
 
-    private fun releaseTimer(controller: MediaController) = controller.sendCustomCommand(
-        SessionCommand(Constants.SERVICE_CLEAR_TIMER, Bundle.EMPTY), Bundle.EMPTY)
+    private fun setTimer(controller: MediaController, value: Int) =
+        controller.sendCustomCommand(
+            SessionCommand(Constants.SERVICE_SET_TIMER, Bundle.EMPTY).apply {
+              customExtras.putInt("duration", value)
+            }, Bundle.EMPTY)
 
     private val sessionListener: MediaController.Listener = object : MediaController.Listener {
         override fun onCustomCommand(
@@ -304,7 +235,7 @@ class MainActivity : AppCompatActivity() {
             command: SessionCommand,
             args: Bundle
         ): ListenableFuture<SessionResult> {
-            if (command.customAction == Constants.SERVICE_IS_STOPPED_BY_TIMER) {
+            if (command.customAction == Constants.SERVICE_TIMER_CHANGED) {
                 bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
             }
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
@@ -322,63 +253,12 @@ class MainActivity : AppCompatActivity() {
         controllerFuture.addListener(
             {
                 val controller = controllerFuture.get()
-                controller.addListener(playerListener)
-
-                bottomSheetShuffleButton.isChecked = controller.shuffleModeEnabled
+                controller.addListener(this)
                 bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
-                when (controller.repeatMode) {
-                    Player.REPEAT_MODE_ALL -> {
-                        bottomSheetLoopButton.isChecked = true
-                        bottomSheetLoopButton.icon =
-                            AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                    }
-
-                    Player.REPEAT_MODE_OFF -> {
-                        bottomSheetLoopButton.isChecked = false
-                        bottomSheetLoopButton.icon =
-                            AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                    }
-
-                    Player.REPEAT_MODE_ONE -> {
-                        bottomSheetLoopButton.isChecked = true
-                        bottomSheetLoopButton.icon =
-                            AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
-                    }
-                }
+                onRepeatModeChanged(controller.repeatMode)
+                onShuffleModeEnabledChanged(controller.shuffleModeEnabled)
                 updateSongInfo(controller.currentMediaItem)
-                if (controllerFuture.get().isPlaying) {
-                    val positionRunnable =
-                        object : Runnable {
-                            private val instance = controllerFuture.get()
-
-                            override fun run() {
-                                val position =
-                                    GramophoneUtils.convertDurationToTimeStamp(instance!!.currentPosition)
-                                Log.d("TAG", position)
-                                if (runnableRunning == 1) {
-                                    val duration =
-                                        libraryViewModel.durationItemList.value?.get(
-                                            instance.currentMediaItem?.mediaId?.toLong(),
-                                        )
-                                    if (duration != null && !isUserTracking) {
-                                        bottomSheetFullSlider.value =
-                                            instance.currentPosition.toFloat() / duration.toFloat()
-                                        bottomSheetFullPosition.text = position
-                                    }
-                                }
-                                if (instance.isPlaying) {
-                                    Handler(Looper.getMainLooper()).postDelayed(this, 500)
-                                } else {
-                                    runnableRunning--
-                                }
-                                Log.d("TAG", "Runnable: $runnableRunning")
-                            }
-                        }
-                    if (runnableRunning == 0) {
-                        Handler(Looper.getMainLooper()).postDelayed(positionRunnable, 500)
-                        runnableRunning++
-                    }
-                }
+                onIsPlayingChanged(controller.isPlaying)
             },
             MoreExecutors.directExecutor(),
         )
@@ -420,16 +300,7 @@ class MainActivity : AppCompatActivity() {
             updateLibrary()
         }
 
-        if (android
-                .os
-                .Build
-                .VERSION
-                .SDK_INT >=
-            android
-                .os
-                .Build
-                .VERSION_CODES
-                .P) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val params = window.attributes
             params.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -485,7 +356,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomSheetTimerButton.setOnClickListener {
-            bottomSheetTimerButton.isChecked = true
             val controller = controllerFuture.get()
             val picker =
                 MaterialTimePicker
@@ -497,61 +367,26 @@ class MainActivity : AppCompatActivity() {
                     .build()
             picker.addOnPositiveButtonClickListener {
                 val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-                Log.d("TAG", "destinationTime: $destinationTime")
-                val clickController = controllerFuture.get()
-                if (destinationTime != 0) {
-                    setTimer(clickController, destinationTime)
-                } else {
-                    releaseTimer(clickController)
-                }
-            }
-            picker.addOnDismissListener {
-                bottomSheetTimerButton.isChecked = alreadyHasTimer(controllerFuture.get())
+                setTimer(controllerFuture.get(), destinationTime)
             }
             picker.show(supportFragmentManager, "timer")
         }
 
         bottomSheetLoopButton.setOnClickListener {
             val instance = controllerFuture.get()
-            when (instance.repeatMode) {
-                Player.REPEAT_MODE_ALL -> {
-                    bottomSheetLoopButton.isChecked = true
-                    bottomSheetLoopButton.icon =
-                        AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
-                    instance.repeatMode = Player.REPEAT_MODE_ONE
-                }
-
-                Player.REPEAT_MODE_OFF -> {
-                    bottomSheetLoopButton.isChecked = true
-                    bottomSheetLoopButton.icon =
-                        AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                    instance.repeatMode = Player.REPEAT_MODE_ALL
-                }
-
-                Player.REPEAT_MODE_ONE -> {
-                    bottomSheetLoopButton.isChecked = false
-                    bottomSheetLoopButton.icon =
-                        AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
-                    instance.repeatMode = Player.REPEAT_MODE_OFF
-                }
+            instance.repeatMode = when (instance.repeatMode) {
+                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+                Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
+                else -> throw IllegalStateException()
             }
         }
 
         bottomSheetPreviewControllerButton.setOnClickListener {
-            val instance = controllerFuture.get()
-            if (instance.isPlaying) {
-                instance.pause()
-            } else {
-                instance.play()
-            }
+            controllerFuture.get().playOrPause()
         }
         bottomSheetFullControllerButton.setOnClickListener {
-            val instance = controllerFuture.get()
-            if (instance.isPlaying) {
-                instance.pause()
-            } else {
-                instance.play()
-            }
+            controllerFuture.get().playOrPause()
         }
         bottomSheetPreviewNextButton.setOnClickListener {
             controllerFuture.get().seekToNextMediaItem()
@@ -563,13 +398,7 @@ class MainActivity : AppCompatActivity() {
             controllerFuture.get().seekToNextMediaItem()
         }
         bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
-            controllerFuture.get().sendCustomCommand(
-                SessionCommand(
-                    if (isChecked)
-                        Constants.PLAYBACK_SHUFFLE_ACTION_ON
-                    else
-                        Constants.PLAYBACK_SHUFFLE_ACTION_OFF,
-                    Bundle.EMPTY), Bundle.EMPTY)
+            controllerFuture.get().shuffleModeEnabled = isChecked
         }
 
         bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
@@ -602,28 +431,9 @@ class MainActivity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
             when (it.itemId) {
-                R.id.songs -> {
-                    viewPager2.setCurrentItem(0, true)
-                    drawerLayout.close()
-                }
-
-                R.id.albums -> {
-                    viewPager2.setCurrentItem(1, true)
-                    drawerLayout.close()
-                }
-
-                R.id.artists -> {
-                    viewPager2.setCurrentItem(2, true)
-                    drawerLayout.close()
-                }
-
-                R.id.genres -> {
-                    viewPager2.setCurrentItem(3, true)
-                    drawerLayout.close()
-                }
-
-                R.id.dates -> {
-                    viewPager2.setCurrentItem(4, true)
+                in tabs.values -> {
+                    viewPager2.setCurrentItem(tabs.entries
+                        .find { entry -> entry.key == it.itemId }!!.key, true)
                     drawerLayout.close()
                 }
 
@@ -646,37 +456,19 @@ class MainActivity : AppCompatActivity() {
                             snackBar.setBackgroundTint(
                                 MaterialColors.getColor(
                                     snackBar.view,
-                                    com
-                                        .google
-                                        .android
-                                        .material
-                                        .R
-                                        .attr
-                                        .colorSurface,
+                                    com.google.android.material.R.attr.colorSurface,
                                 ),
                             )
                             snackBar.setActionTextColor(
                                 MaterialColors.getColor(
                                     snackBar.view,
-                                    com
-                                        .google
-                                        .android
-                                        .material
-                                        .R
-                                        .attr
-                                        .colorPrimary,
+                                    com.google.android.material.R.attr.colorPrimary,
                                 ),
                             )
                             snackBar.setTextColor(
                                 MaterialColors.getColor(
                                     snackBar.view,
-                                    com
-                                        .google
-                                        .android
-                                        .material
-                                        .R
-                                        .attr
-                                        .colorOnSurface,
+                                    com.google.android.material.R.attr.colorOnSurface,
                                 ),
                             )
                             snackBar.anchorView = standardBottomSheet
@@ -702,13 +494,14 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        val bottomSheetCallback =
+        standardBottomSheetBehavior.addBottomSheetCallback(
             object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onStateChanged(
                     bottomSheet: View,
                     newState: Int,
                 ) {
-                    if (newState == BottomSheetBehavior.STATE_COLLAPSED && previewPlayer.isVisible) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED
+                            && previewPlayer.isVisible) {
                         fullPlayer.visibility = View.GONE
                         previewPlayer.alpha = 1f
                     } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
@@ -727,20 +520,9 @@ class MainActivity : AppCompatActivity() {
                     fullPlayer.alpha = slideOffset
                 }
             }
+        )
 
-        standardBottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
-
-        if (android
-                .os
-                .Build
-                .VERSION
-                .SDK_INT >=
-            android
-                .os
-                .Build
-                .VERSION_CODES
-                .TIRAMISU
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.READ_MEDIA_AUDIO,
@@ -767,6 +549,64 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    override fun onMediaItemTransition(
+        mediaItem: MediaItem?,
+        reason: Int,
+    ) {
+        updateSongInfo(mediaItem)
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        bottomSheetShuffleButton.isChecked = shuffleModeEnabled
+    }
+
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        when (repeatMode) {
+            Player.REPEAT_MODE_ALL -> {
+                bottomSheetLoopButton.isChecked = true
+                bottomSheetLoopButton.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+            }
+
+            Player.REPEAT_MODE_ONE -> {
+                bottomSheetLoopButton.isChecked = true
+                bottomSheetLoopButton.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_repeat_one)
+            }
+
+            Player.REPEAT_MODE_OFF -> {
+                bottomSheetLoopButton.isChecked = false
+                bottomSheetLoopButton.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_repeat)
+            }
+        }
+    }
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        val instance = controllerFuture.get()
+        if (isPlaying) {
+            bottomSheetPreviewControllerButton.icon =
+                AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+            bottomSheetFullControllerButton.icon =
+                AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
+        } else if (instance.playbackState != STATE_BUFFERING) {
+            bottomSheetPreviewControllerButton.icon =
+                AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+            bottomSheetFullControllerButton.icon =
+                AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
+        }
+        if (isPlaying) {
+            if (!runnableRunning) {
+                Handler(Looper.getMainLooper()).postDelayed(positionRunnable, instance.currentPosition % 1000)
+                runnableRunning = true
+            }
+        }
+    }
+
+    fun setBottomPlayerPreviewVisible() {
+        previewPlayer.visibility = View.VISIBLE
     }
 
     override fun onRequestPermissionsResult(
@@ -802,7 +642,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         val instance = controllerFuture.get()
-        instance.removeListener(playerListener)
+        instance.removeListener(this)
         controllerFuture.get().release()
     }
 }

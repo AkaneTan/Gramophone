@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -25,6 +26,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class ArtistAdapter(
     private val artistList: MutableList<MediaStoreUtils.Artist>,
     private val albumArtistList: MutableList<MediaStoreUtils.Artist>,
@@ -97,7 +99,7 @@ class ArtistAdapter(
                 ).commit()
         }
 
-        holder.moreButton.setOnClickListener { it ->
+        holder.moreButton.setOnClickListener {
             val popupMenu = PopupMenu(it.context, it)
             popupMenu.inflate(R.menu.more_menu_less)
 

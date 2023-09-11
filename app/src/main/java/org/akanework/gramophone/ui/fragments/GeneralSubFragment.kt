@@ -20,7 +20,7 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-@UnstableApi
+@androidx.annotation.OptIn(UnstableApi::class)
 class GeneralSubFragment : Fragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 

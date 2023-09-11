@@ -5,10 +5,11 @@ import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.ExoPlayer
@@ -32,55 +33,55 @@ import org.akanework.gramophone.R
  * It's using exoplayer2 as its player backend.
  */
 @UnstableApi
-class GramophonePlaybackService : MediaSessionService() {
+class GramophonePlaybackService : MediaSessionService(), Player.Listener {
 
     private var mediaSession: MediaSession? = null
     private lateinit var customCommands: List<CommandButton>
+    private lateinit var handler: Handler
 
-    var timer: CountDownTimer? = null
+    private val timer: Runnable = Runnable {
+        mediaSession?.player?.pause()
+        timerDuration = 0
+    }
+
     var timerDuration = 0
+        set(value) {
+            field = value
+            if (value > 0) {
+                handler.postDelayed(timer, value.toLong())
+            } else {
+                handler.removeCallbacks(timer)
+            }
+            mediaSession?.broadcastCustomCommand(
+                SessionCommand(Constants.SERVICE_TIMER_CHANGED, Bundle.EMPTY),
+                Bundle.EMPTY
+            )
+        }
 
     override fun onCreate() {
-
         customCommands =
             listOf(
-                getShuffleCommandButton(
-                    SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_ON, Bundle.EMPTY)
-                ),
-                getShuffleCommandButton(
-                    SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY)
-                ),
-                getCloseButton(
-                    SessionCommand(Constants.PLAYBACK_CLOSE, Bundle.EMPTY)
-                )
+                CommandButton.Builder() // shuffle currently disabled, click will enable
+                    .setDisplayName(getString(R.string.shuffle))
+                    .setSessionCommand(
+                        SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_ON, Bundle.EMPTY))
+                    .setIconResId(R.drawable.ic_shuffle)
+                    .build(),
+                CommandButton.Builder() // shuffle currently enabled, click will disable
+                    .setDisplayName(getString(R.string.shuffle))
+                    .setSessionCommand(
+                        SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY))
+                    .setIconResId(R.drawable.ic_shuffle_on)
+                    .build(),
+                CommandButton.Builder()
+                    .setDisplayName(getString(R.string.close))
+                    .setSessionCommand(SessionCommand(Constants.PLAYBACK_CLOSE, Bundle.EMPTY))
+                    .setIconResId(R.drawable.ic_close)
+                    .build()
             )
+        handler = Handler(Looper.getMainLooper())
 
-        // Create an exoplayer2 instance here for server side.
         val player = ExoPlayer.Builder(this).build()
-
-        val callback = CustomMediaSessionCallback()
-        val notificationProvider = DefaultMediaNotificationProvider(this)
-        setMediaNotificationProvider(notificationProvider)
-        notificationProvider.setSmallIcon(R.drawable.ic_gramophone)
-        // Create a mediaSession here so we can connect to our
-        // client later.
-        mediaSession =
-            MediaSession
-                .Builder(this, player)
-                .setCallback(callback)
-                .setCustomLayout(ImmutableList.of(customCommands[0], customCommands[2]))
-                .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader(/* context= */ this)))
-                .setSessionActivity(
-                    getActivity(
-                        this,
-                        0,
-                        Intent(this, MainActivity::class.java),
-                        FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT,
-                    ),
-                ).build()
-
-        // Set AudioAttributes here so media3 can manage audio
-        // focus correctly.
         val audioAttributes: AudioAttributes =
             AudioAttributes
                 .Builder()
@@ -89,24 +90,28 @@ class GramophonePlaybackService : MediaSessionService() {
                 .build()
         player.setAudioAttributes(audioAttributes, true)
 
+        val callback = CustomMediaSessionCallback()
+        val notificationProvider = DefaultMediaNotificationProvider(this)
+        setMediaNotificationProvider(notificationProvider)
+        notificationProvider.setSmallIcon(R.drawable.ic_gramophone)
+        mediaSession =
+            MediaSession
+                .Builder(this, player)
+                .setCallback(callback)
+                .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader(/* context= */ this)))
+                .setSessionActivity(
+                    getActivity(
+                        this,
+                        0,
+                        Intent(this, MainActivity::class.java),
+                        FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT,
+                    ),
+                )
+                .build()
+        onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
+        mediaSession!!.player.addListener(this)
         super.onCreate()
     }
-
-    private fun getShuffleCommandButton(sessionCommand: SessionCommand): CommandButton {
-        val isOn = sessionCommand.customAction == Constants.PLAYBACK_SHUFFLE_ACTION_ON
-        return CommandButton.Builder()
-            .setDisplayName(getString(R.string.shuffle))
-            .setSessionCommand(sessionCommand)
-            .setIconResId(if (isOn) R.drawable.ic_shuffle else R.drawable.ic_shuffle_on)
-            .build()
-    }
-
-    private fun getCloseButton(sessionCommand: SessionCommand): CommandButton =
-        CommandButton.Builder()
-            .setDisplayName(getString(R.string.close))
-            .setSessionCommand(sessionCommand)
-            .setIconResId(R.drawable.ic_close)
-            .build()
 
     override fun onDestroy() {
         // When destroying, we should release server side player
@@ -116,27 +121,27 @@ class GramophonePlaybackService : MediaSessionService() {
             release()
             mediaSession = null
         }
-
         super.onDestroy()
     }
 
     // This onGetSession is a necessary method override needed by
     // MediaSessionService.
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession?
+            = mediaSession
 
     private inner class CustomMediaSessionCallback: MediaSession.Callback {
         // Configure commands available to the controller in onConnect()
-        override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
+        override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo)
+                : MediaSession.ConnectionResult {
             val availableSessionCommands =
                 MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
             for (commandButton in customCommands) {
                 // Add custom command to available session commands.
                 commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
             }
-            availableSessionCommands.add(SessionCommand(Constants.SERVICE_ADD_TIMER, Bundle.EMPTY))
-            availableSessionCommands.add(SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY))
-            availableSessionCommands.add(SessionCommand(Constants.SERVICE_CLEAR_TIMER, Bundle.EMPTY))
-            availableSessionCommands.add(SessionCommand(Constants.SERVICE_IS_STOPPED_BY_TIMER, Bundle.EMPTY))
+            availableSessionCommands.add(SessionCommand(Constants.SERVICE_SET_TIMER, Bundle.EMPTY))
+            availableSessionCommands.add(
+                SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY))
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
                 .setAvailableSessionCommands(availableSessionCommands.build())
                 .build()
@@ -148,79 +153,50 @@ class GramophonePlaybackService : MediaSessionService() {
             customCommand: SessionCommand,
             args: Bundle
         ): ListenableFuture<SessionResult> {
-            Log.d("PlaybackService", "onCustomCommand")
-            val sessionResult: SessionResult
-            when (customCommand.customAction) {
+            return Futures.immediateFuture(when (customCommand.customAction) {
                 Constants.PLAYBACK_SHUFFLE_ACTION_ON -> {
-                    // Enable shuffling.
                     session.player.shuffleModeEnabled = true
-                    // Change the custom layout to contain the `Disable shuffling` command.
-                    session.setCustomLayout(ImmutableList.of(customCommands[1], customCommands[2]))
-                    sessionResult = SessionResult(SessionResult.RESULT_SUCCESS)
+                    SessionResult(SessionResult.RESULT_SUCCESS)
                 }
                 Constants.PLAYBACK_SHUFFLE_ACTION_OFF -> {
-                    // Disable shuffling.
                     session.player.shuffleModeEnabled = false
-                    // Change the custom layout to contain the `Enable shuffling` command.
-                    session.setCustomLayout(ImmutableList.of(customCommands[0], customCommands[2]))
-                    sessionResult = SessionResult(SessionResult.RESULT_SUCCESS)
+                    SessionResult(SessionResult.RESULT_SUCCESS)
                 }
                 Constants.PLAYBACK_CLOSE -> {
                     session.player.clearMediaItems()
-                    sessionResult = SessionResult(SessionResult.RESULT_SUCCESS)
+                    SessionResult(SessionResult.RESULT_SUCCESS)
                 }
-                Constants.SERVICE_ADD_TIMER -> {
-                    Log.d("PlaybackService", "SERVICE_ADD_TIMER")
-                    sessionResult = SessionResult(SessionResult.RESULT_SUCCESS)
-                    setUpTimer(customCommand.customExtras.getInt("duration"))
-                }
-                Constants.SERVICE_CLEAR_TIMER -> {
-                    Log.d("PlaybackService", "SERVICE_CLEAR_TIMER")
-                    sessionResult = SessionResult(SessionResult.RESULT_SUCCESS)
-                    timer?.cancel()
-                    timer = null
-                    timerDuration = 0
+                Constants.SERVICE_SET_TIMER -> {
+                    // 0 = clear timer
+                    timerDuration = customCommand.customExtras.getInt("duration")
+                    SessionResult(SessionResult.RESULT_SUCCESS)
                 }
                 Constants.SERVICE_QUERY_TIMER -> {
-                    Log.d("PlaybackService", "SERVICE_QUERY_TIMER")
-                    sessionResult = SessionResult(SessionResult.RESULT_SUCCESS)
-                    sessionResult.extras.putInt("duration", timerDuration)
-                } else -> {
-                    sessionResult = SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
+                    SessionResult(SessionResult.RESULT_SUCCESS).also {
+                        it.extras.putInt("duration", timerDuration)
+                    }
                 }
-            }
-            return Futures.immediateFuture(sessionResult)
+                else -> {
+                    SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
+                }
+            })
         }
 
         override fun onPlaybackResumption(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo
         ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
-            return SettableFuture.create()
+            return SettableFuture.create() // TODO implement this
         }
     }
 
-    private fun setUpTimer(destinationTime: Int) {
-        timerDuration = destinationTime
-        timer =
-            object : CountDownTimer(destinationTime.toLong(), 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    androidx.media3.common.util.Log.d("TAG", "TICK, $millisUntilFinished")
-                }
-
-                override fun onFinish() {
-                    mediaSession?.player?.pause()
-                    timerDuration = 0
-                    timer = null
-
-                    mediaSession?.connectedControllers?.forEach {
-                        mediaSession!!.sendCustomCommand(it,
-                            SessionCommand(Constants.SERVICE_IS_STOPPED_BY_TIMER, Bundle.EMPTY),
-                            Bundle.EMPTY
-                        )
-                    }
-                }
-            }
-        timer!!.start()
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        if (shuffleModeEnabled) {
+            // Change the custom layout to contain the `Disable shuffling` command.
+            mediaSession?.setCustomLayout(ImmutableList.of(customCommands[1], customCommands[2]))
+        } else {
+            // Change the custom layout to contain the `Enable shuffling` command.
+            mediaSession?.setCustomLayout(ImmutableList.of(customCommands[0], customCommands[2]))
+        }
     }
 }

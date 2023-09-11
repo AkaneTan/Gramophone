@@ -18,15 +18,10 @@ import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
-@UnstableApi
+@androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : Fragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-
     private lateinit var viewPager2: ViewPager2
-
-    fun navigateViewPager(index: Int) {
-        viewPager2.setCurrentItem(index, true)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,15 +74,7 @@ class ViewPagerFragment : Fragment() {
         // Connect ViewPager2.
         viewPager2.adapter = ViewPager2Adapter(childFragmentManager, lifecycle)
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text =
-                when (position) {
-                    0 -> getString(R.string.category_songs)
-                    1 -> getString(R.string.category_albums)
-                    2 -> getString(R.string.category_artists)
-                    3 -> getString(R.string.category_genres)
-                    4 -> getString(R.string.category_dates)
-                    else -> "Unknown"
-                }
+            tab.text = getString(ViewPager2Adapter.getLabelResId(position))
         }.attach()
 
         return rootView

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +24,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * when you open the application. It displays information
  * about songs.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class SongFragment : Fragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 

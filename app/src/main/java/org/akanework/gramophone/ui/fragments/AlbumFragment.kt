@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
@@ -21,6 +22,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [AlbumFragment] displays information about your albums.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class AlbumFragment : Fragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 

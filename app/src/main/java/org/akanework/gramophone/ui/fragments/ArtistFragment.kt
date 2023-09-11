@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [ArtistFragment] displays information about artists.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class ArtistFragment : Fragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 

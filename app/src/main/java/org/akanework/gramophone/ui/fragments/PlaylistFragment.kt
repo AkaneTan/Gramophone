@@ -16,7 +16,6 @@ class PlaylistFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_playlist, container, false)
-        return rootView
+        return inflater.inflate(R.layout.fragment_playlist, container, false)
     }
 }

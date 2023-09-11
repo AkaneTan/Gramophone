@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -25,6 +26,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 /**
  * [GenreAdapter] is an adapter for displaying artists.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class GenreAdapter(
     private val genreList: MutableList<MediaStoreUtils.Genre>,
     private val context: Context,
@@ -85,7 +87,7 @@ class GenreAdapter(
                 ).commit()
         }
 
-        holder.moreButton.setOnClickListener { it ->
+        holder.moreButton.setOnClickListener {
             val popupMenu = PopupMenu(it.context, it)
             popupMenu.inflate(R.menu.more_menu_less)
 

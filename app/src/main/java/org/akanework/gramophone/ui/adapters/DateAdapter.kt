@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -25,6 +26,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 /**
  * [DateAdapter] is an adapter for displaying artists.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class DateAdapter(
     private val dateList: MutableList<MediaStoreUtils.Date>,
     private val context: Context,
@@ -90,7 +92,7 @@ class DateAdapter(
                 ).commit()
         }
 
-        holder.moreButton.setOnClickListener { it ->
+        holder.moreButton.setOnClickListener {
             val popupMenu = PopupMenu(it.context, it)
             popupMenu.inflate(R.menu.more_menu_less)
 

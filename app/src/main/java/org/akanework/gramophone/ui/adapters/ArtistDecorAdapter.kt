@@ -17,7 +17,7 @@ class ArtistDecorAdapter(
     private val context: Context,
     private var artistCount: Int,
     private val artistAdapter: ArtistAdapter,
-    private val mainActivity: MainActivity
+    mainActivity: MainActivity
 ) : RecyclerView.Adapter<ArtistDecorAdapter.ViewHolder>() {
     private var sortStatus = 0
     private var isDisplayingAlbumArtist = false

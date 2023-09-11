@@ -17,10 +17,6 @@ class AlbumDecorAdapter(
 ) : RecyclerView.Adapter<AlbumDecorAdapter.ViewHolder>() {
     private var sortStatus = 0
 
-    companion object {
-        const val VIEW_TYPE_ALBUM_DECOR = 0
-    }
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,

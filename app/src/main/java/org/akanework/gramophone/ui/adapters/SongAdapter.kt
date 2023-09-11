@@ -30,7 +30,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [SongAdapter] is an adapter for displaying songs.
  */
-@UnstableApi
+@androidx.annotation.OptIn(UnstableApi::class)
 class SongAdapter(
     private val songList: MutableList<MediaItem>,
     private val mainActivity: MainActivity,
@@ -45,7 +45,7 @@ class SongAdapter(
                 .inflate(R.layout.adapter_list_card, parent, false),
         )
 
-    val viewModel: LibraryViewModel by mainActivity.viewModels()
+    private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
     override fun getItemCount(): Int = songList.size
 

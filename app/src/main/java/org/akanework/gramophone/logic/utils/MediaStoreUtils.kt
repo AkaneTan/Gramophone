@@ -3,6 +3,7 @@ package org.akanework.gramophone.logic.utils
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
@@ -77,10 +78,9 @@ object MediaStoreUtils {
      * @return
      */
     fun getAllSongs(context: Context): LibraryStoreClass {
-
         val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
         val projection =
-            arrayOf(
+            arrayListOf(
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ARTIST,
@@ -92,9 +92,12 @@ object MediaStoreUtils {
                 MediaStore.Audio.Media.MIME_TYPE,
                 MediaStore.Audio.Media.DISC_NUMBER,
                 MediaStore.Audio.Media.TRACK,
-                MediaStore.Audio.Media.GENRE,
                 MediaStore.Audio.Media.DURATION,
-            )
+            ).apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    add(MediaStore.Audio.Media.GENRE)
+                }
+            }.toTypedArray()
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
 
         // Initialize list and maps.
@@ -131,7 +134,8 @@ object MediaStoreUtils {
             val mimeTypeColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
             val discNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DISC_NUMBER)
             val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
-            val genreColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE)
+            val genreColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE) else null
             val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
 
             while (it.moveToNext()) {
@@ -149,7 +153,7 @@ object MediaStoreUtils {
                 var discNumber = it.getInt(discNumberColumn)
                 var trackNumber = it.getInt(trackNumberColumn)
                 val duration = it.getLong(durationColumn)
-                val genre = it.getStringOrNull(genreColumn)
+                val genre = genreColumn?.let { col -> it.getStringOrNull(col) }
 
                 // Since we're using glide, we can get album cover with a uri.
                 val artworkUri = Uri.parse("content://media/external/audio/albumart")
@@ -195,7 +199,7 @@ object MediaStoreUtils {
                 albumArtistMap.getOrPut(
                     albumArtist ?: unknownArtist
                 ) { mutableListOf() }.add(songs.last())
-                genreMap.getOrPut(genre) { mutableListOf() }.add(songs.last())
+                genre?.let { col -> genreMap.getOrPut(col) { mutableListOf() }.add(songs.last()) }
                 dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
                 durationMap[id] = duration
                 fileUriMap[id] = path.toUri()
