@@ -25,6 +25,11 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class ArtistFragment : BaseFragment() {
+
+    companion object {
+        const val TAG = "ArtistFragment"
+    }
+
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -40,7 +45,7 @@ class ArtistFragment : BaseFragment() {
         artistList.addAll(libraryViewModel.artistItemList.value!!)
         val albumArtistList = mutableListOf<MediaStoreUtils.Artist>()
         albumArtistList.addAll(libraryViewModel.albumArtistItemList.value!!)
-        Log.d("ArtistFragment", "Value: ${libraryViewModel.albumArtistItemList.value}")
+        Log.d(TAG, "Value: ${libraryViewModel.albumArtistItemList.value}")
 
         val artistAdapter =
             ArtistAdapter(
