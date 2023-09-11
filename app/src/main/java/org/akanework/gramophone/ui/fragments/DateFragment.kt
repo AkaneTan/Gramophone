@@ -10,6 +10,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.transition.MaterialSharedAxis
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
@@ -22,7 +23,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [DateFragment] displays information about your song's dates.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class DateFragment : Fragment() {
+class DateFragment : BaseFragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

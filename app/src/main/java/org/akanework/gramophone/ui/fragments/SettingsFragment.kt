@@ -11,13 +11,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 
-class SettingsFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
-    }
+class SettingsFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,

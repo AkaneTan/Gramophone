@@ -19,15 +19,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class ViewPagerFragment : Fragment() {
+class ViewPagerFragment : BaseFragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private lateinit var viewPager2: ViewPager2
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

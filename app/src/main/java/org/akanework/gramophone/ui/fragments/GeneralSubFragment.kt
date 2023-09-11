@@ -21,15 +21,8 @@ import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class GeneralSubFragment : Fragment() {
+class GeneralSubFragment : BaseFragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

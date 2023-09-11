@@ -10,7 +10,7 @@ import org.akanework.gramophone.R
 /**
  * [PlaylistFragment] displays your playlists.
  */
-class PlaylistFragment : Fragment() {
+class PlaylistFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
