@@ -8,6 +8,7 @@ import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -57,23 +59,23 @@ class SearchFragment : BaseFragment() {
             build()
         }
 
-        editText.addTextChangedListener {
-            if (editText.text.isNullOrBlank()) {
+        editText.addTextChangedListener { text ->
+            if (text.isNullOrBlank()) {
                 songAdapter.updateList(mutableListOf())
                 songDecorAdapter.updateSongCounter(0)
             } else {
-                CoroutineScope(Dispatchers.Default).launch {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     val filteredList =
                         libraryViewModel.mediaItemList.value?.filter {
-                            val isMatchingTitle = it.mediaMetadata.title!!.contains(editText.text, true)
+                            val isMatchingTitle = it.mediaMetadata.title!!.contains(text, true)
                             val isMatchingAlbum =
-                                it.mediaMetadata.albumTitle!!.contains(editText.text, true)
+                                it.mediaMetadata.albumTitle!!.contains(text, true)
                             val isMatchingArtist =
-                                it.mediaMetadata.artist!!.contains(editText.text, true)
+                                it.mediaMetadata.artist!!.contains(text, true)
                             isMatchingTitle || isMatchingAlbum || isMatchingArtist
                         }
-                    if (filteredList != null) {
-                        withContext(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
+                        if (filteredList != null) {
                             if (filteredList.isNotEmpty()) {
                                 songDecorAdapter.updateSongCounter(filteredList.size)
                             } else {
@@ -86,10 +88,17 @@ class SearchFragment : BaseFragment() {
             }
         }
 
+
         returnButton.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
         return rootView
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewLifecycleOwner.lifecycleScope.cancel()
+    }
+
 }
