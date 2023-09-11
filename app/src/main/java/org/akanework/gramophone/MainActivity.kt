@@ -433,7 +433,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             when (it.itemId) {
                 in tabs.values -> {
                     viewPager2.setCurrentItem(tabs.entries
-                        .find { entry -> entry.key == it.itemId }!!.key, true)
+                        .find { entry -> entry.value == it.itemId }!!.key, true)
                     drawerLayout.close()
                 }
 
