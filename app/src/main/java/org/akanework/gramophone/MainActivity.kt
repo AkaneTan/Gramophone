@@ -122,23 +122,16 @@ class MainActivity : AppCompatActivity(), Player.Listener {
     }
 
     private fun updateSongInfo(mediaItem: MediaItem?) {
-        Log.d(TAG, "Update song info state: ${!controllerFuture.get().isPlaying}")
         val instance = controllerFuture.get()
         if (instance.mediaItemCount != 0) {
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    Log.d(
-                        TAG,
-                        "PlaybackState: ${instance.playbackState}, isPlaying: ${instance.isPlaying}",
-                    )
                     if (instance.isPlaying) {
-                        Log.d(TAG, "updateSongInfo: Song is playing!")
                         bottomSheetPreviewControllerButton.icon =
                             AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
                         bottomSheetFullControllerButton.icon =
                             AppCompatResources.getDrawable(applicationContext, R.drawable.pause_art)
                     } else if (instance.playbackState != 2) {
-                        Log.d(TAG, "updateSongInfo: Song is paused!")
                         bottomSheetPreviewControllerButton.icon =
                             AppCompatResources.getDrawable(applicationContext, R.drawable.play_art)
                         bottomSheetFullControllerButton.icon =
@@ -253,8 +246,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             },
             MoreExecutors.directExecutor(),
         )
-
-        Log.d(TAG, "onStart executed")
         super.onStart()
     }
 

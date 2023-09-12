@@ -1,6 +1,8 @@
 package org.akanework.gramophone.logic.utils
 
 import android.content.res.Resources
+import android.net.Uri
+import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 
 /**
@@ -14,4 +16,8 @@ fun MediaController.playOrPause() {
 	} else {
 		play()
 	}
+}
+
+fun MediaItem.getUri(): Uri {
+	return localConfiguration!!.uri
 }

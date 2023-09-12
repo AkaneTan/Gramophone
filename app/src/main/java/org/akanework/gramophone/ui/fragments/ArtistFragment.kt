@@ -45,7 +45,6 @@ class ArtistFragment : BaseFragment() {
         artistList.addAll(libraryViewModel.artistItemList.value!!)
         val albumArtistList = mutableListOf<MediaStoreUtils.Artist>()
         albumArtistList.addAll(libraryViewModel.albumArtistItemList.value!!)
-        Log.d(TAG, "Value: ${libraryViewModel.albumArtistItemList.value}")
 
         val artistAdapter =
             ArtistAdapter(
