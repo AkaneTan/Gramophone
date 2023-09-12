@@ -58,16 +58,18 @@ class PlaylistAdapter(
                 }
         holder.songArtist.text = songText
 
-        Glide
-            .with(holder.songCover.context)
-            .load(
-                playlistList[position]
-                    .songList
-                    .first()
-                    .mediaMetadata
-                    .artworkUri,
-            ).placeholder(R.drawable.ic_default_cover_date)
-            .into(holder.songCover)
+        if (playlistList[position].songList.isNotEmpty()) {
+            Glide
+                .with(holder.songCover.context)
+                .load(
+                    playlistList[position]
+                        .songList
+                        .first()
+                        .mediaMetadata
+                        .artworkUri,
+                ).placeholder(R.drawable.ic_default_cover_date)
+                .into(holder.songCover)
+        }
 
         holder.itemView.setOnClickListener {
             fragmentManager
