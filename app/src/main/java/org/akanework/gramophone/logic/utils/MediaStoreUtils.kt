@@ -180,6 +180,8 @@ object MediaStoreUtils {
                         .setMediaMetadata(
                             MediaMetadata
                                 .Builder()
+                                .setIsBrowsable(false)
+                                .setIsPlayable(true)
                                 .setTitle(title)
                                 .setArtist(artist)
                                 .setAlbumTitle(album)
