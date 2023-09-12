@@ -2,6 +2,7 @@ package org.akanework.gramophone
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -23,6 +24,7 @@ import androidx.core.view.isVisible
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
@@ -38,6 +40,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.google.common.util.concurrent.UncaughtExceptionHandlers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,6 +49,8 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import kotlin.system.exitProcess
+
 
 /**
  * [MainActivity] is our main and only activity which
@@ -257,6 +262,18 @@ class MainActivity : AppCompatActivity(), Player.Listener {
     @SuppressLint("StringFormatMatches")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
+            val exceptionMessage = android.util.Log.getStackTraceString(paramThrowable)
+
+            val intent = Intent(this, BugHandlerActivity::class.java).setAction("bug_handle")
+            intent.putExtra("exception_message", exceptionMessage)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+
+            android.os.Process.killProcess(android.os.Process.myPid())
+            exitProcess(10)
+        }
 
         ActivityCompat.postponeEnterTransition(this)
 

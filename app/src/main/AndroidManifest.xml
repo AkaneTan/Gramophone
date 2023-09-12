@@ -12,7 +12,6 @@
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:node="remove" />
 
-
     <application
         android:name=".GramophoneApplication"
         android:allowBackup="true"
@@ -24,6 +23,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gramophone"
         tools:targetApi="s">
+        <activity
+            android:name=".BugHandlerActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="bug_handle" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".logic.services.GramophonePlaybackService"
@@ -48,13 +54,13 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="androidx.media3.session.MediaButtonReceiver"
+        <receiver
+            android:name="androidx.media3.session.MediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
