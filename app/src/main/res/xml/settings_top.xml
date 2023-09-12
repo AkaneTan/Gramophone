@@ -2,8 +2,6 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:layout="@layout/settings_top_app_bar"/>
-    <PreferenceCategory
         android:title="@string/settings_category_info">
         <Preference
             android:title="@string/settings_app_name"
