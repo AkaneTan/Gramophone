@@ -327,6 +327,11 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                 val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
                 setTimer(controllerFuture.get(), destinationTime)
             }
+            picker.addOnDismissListener {
+                if (!alreadyHasTimer(controllerFuture.get())) {
+                    bottomSheetTimerButton.isChecked = false
+                }
+            }
             picker.show(supportFragmentManager, "timer")
         }
 
