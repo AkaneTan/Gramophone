@@ -5,6 +5,21 @@ plugins {
 }
 
 android {
+
+    fun String.runCommand(
+        workingDir: File = File("."),
+        timeoutAmount: Long = 60,
+        timeoutUnit: TimeUnit = TimeUnit.SECONDS
+    ): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
+        .directory(workingDir)
+        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .redirectError(ProcessBuilder.Redirect.PIPE)
+        .start()
+        .apply { waitFor(timeoutAmount, timeoutUnit) }
+        .run {
+            inputStream.bufferedReader().readText().trim()
+        }
+
     namespace = "org.akanework.gramophone"
     compileSdk = 34
     android.buildFeatures.buildConfig = true
@@ -14,7 +29,8 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "0.0.1"
+        versionName = "1.0.0" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
+        setProperty("archivesBaseName", "Gramophone-$versionName")
     }
 
     buildTypes {
