@@ -1,5 +1,6 @@
 package org.akanework.gramophone.logic.utils
 
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
@@ -15,6 +16,7 @@ import org.akanework.gramophone.R
  * [MediaStoreUtils] contains all the methods for reading
  * from mediaStore.
  */
+@Suppress("DEPRECATION")
 object MediaStoreUtils {
 
     /**
@@ -56,6 +58,15 @@ object MediaStoreUtils {
     )
 
     /**
+     * [Playlist] stores playlist information.
+     */
+    data class Playlist(
+        val id: Long,
+        val title: String,
+        val songList: List<Long>
+    )
+
+    /**
      * [LibraryStoreClass] collects above metadata classes
      * together for more convenient reading/writing.
      */
@@ -69,6 +80,7 @@ object MediaStoreUtils {
         val durationList: MutableMap<Long, Long>,
         val fileUriList: MutableMap<Long, Uri>,
         val mimeTypeList: MutableMap<Long, String>,
+        val playlistList: MutableList<Playlist>
     )
 
     /**
@@ -266,6 +278,8 @@ object MediaStoreUtils {
                 }.sortedByDescending { it.title }
                 .toMutableList()
 
+        val playlistList = getPlaylists(context)
+
         return LibraryStoreClass(
             songs,
             sortedAlbumList,
@@ -276,6 +290,77 @@ object MediaStoreUtils {
             durationMap,
             fileUriMap,
             mimeTypeMap,
+            playlistList
         )
     }
+
+    /**
+     * Retrieves a list of playlists with their associated songs.
+     */
+    fun getPlaylists(context: Context): MutableList<Playlist> {
+        val playlists = mutableListOf<Playlist>()
+
+        // Define the content resolver
+        val contentResolver: ContentResolver = context.contentResolver
+
+        // Define the URI for playlists
+        val playlistUri: Uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
+
+        // Define the projection (columns to retrieve)
+        val projection = arrayOf(
+            MediaStore.Audio.Playlists._ID,
+            MediaStore.Audio.Playlists.NAME
+        )
+
+        // Query the playlists
+        val cursor = contentResolver.query(playlistUri, projection, null, null, null)
+
+        cursor?.use {
+            while (it.moveToNext()) {
+                val playlistId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists._ID))
+                val playlistName = it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME))
+
+                // Retrieve the list of songs for each playlist
+                val songs = getSongsInPlaylist(contentResolver, playlistId)
+
+                // Create a Playlist object and add it to the list
+                val playlist = Playlist(playlistId, playlistName, songs)
+                playlists.add(playlist)
+            }
+        }
+
+        cursor?.close()
+        return playlists
+    }
+
+    /**
+     * Retrieves the list of songs in a playlist.
+     */
+    private fun getSongsInPlaylist(contentResolver: ContentResolver, playlistId: Long): List<Long> {
+        val songs = mutableListOf<Long>()
+
+        // Define the URI for playlist members (songs in the playlist)
+        val uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId)
+
+        // Define the projection (columns to retrieve)
+        val projection = arrayOf(
+            MediaStore.Audio.Playlists.Members._ID,
+        )
+
+        // Query the songs in the playlist
+        val cursor = contentResolver.query(uri, projection, null, null, null)
+
+        cursor?.use {
+            while (it.moveToNext()) {
+                val audioId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members._ID))
+
+                // Create a MediaItem and add it to the list
+                songs.add(audioId)
+            }
+        }
+
+        cursor?.close()
+        return songs
+    }
+
 }
