@@ -20,11 +20,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
@@ -43,10 +41,9 @@ import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -253,22 +250,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
 
     private fun updateLibrary() {
         CoroutineScope(Dispatchers.Default).launch {
-            updateLibraryWithInCoroutine()
-        }
-    }
-
-    private suspend fun updateLibraryWithInCoroutine() {
-        val pairObject = MediaStoreUtils.getAllSongs(applicationContext)
-        withContext(Dispatchers.Main) {
-            libraryViewModel.mediaItemList.value = pairObject.songList
-            libraryViewModel.albumItemList.value = pairObject.albumList
-            libraryViewModel.artistItemList.value = pairObject.artistList
-            libraryViewModel.albumArtistItemList.value = pairObject.albumArtistList
-            libraryViewModel.genreItemList.value = pairObject.genreList
-            libraryViewModel.dateItemList.value = pairObject.dateList
-            libraryViewModel.durationItemList.value = pairObject.durationList
-            libraryViewModel.fileUriList.value = pairObject.fileUriList
-            libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
+            updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
         }
     }
 
@@ -322,8 +304,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
 
         previewPlayer = findViewById(R.id.preview_player)
         val fullPlayer = findViewById<RelativeLayout>(R.id.full_player)
-
-        val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
 
         standardBottomSheet.setOnClickListener {
             if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {

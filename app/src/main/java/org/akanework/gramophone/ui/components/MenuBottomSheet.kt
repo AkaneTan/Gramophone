@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.fragments.SearchFragment
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -41,7 +42,7 @@ class MenuBottomSheet : BottomSheetDialogFragment() {
 
         refreshButton.setOnClickListener {
             CoroutineScope(Dispatchers.Default).launch {
-                updateLibraryWithInCoroutine()
+                updateLibraryWithInCoroutine(libraryViewModel, requireContext())
                 withContext(Dispatchers.Main) {
                     val snackBar =
                         Snackbar.make(
@@ -111,21 +112,6 @@ class MenuBottomSheet : BottomSheetDialogFragment() {
         }
 
         return rootView
-    }
-
-    private suspend fun updateLibraryWithInCoroutine() {
-        val pairObject = MediaStoreUtils.getAllSongs(requireContext())
-        withContext(Dispatchers.Main) {
-            libraryViewModel.mediaItemList.value = pairObject.songList
-            libraryViewModel.albumItemList.value = pairObject.albumList
-            libraryViewModel.artistItemList.value = pairObject.artistList
-            libraryViewModel.albumArtistItemList.value = pairObject.albumArtistList
-            libraryViewModel.genreItemList.value = pairObject.genreList
-            libraryViewModel.dateItemList.value = pairObject.dateList
-            libraryViewModel.durationItemList.value = pairObject.durationList
-            libraryViewModel.fileUriList.value = pairObject.fileUriList
-            libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
-        }
     }
 
 }

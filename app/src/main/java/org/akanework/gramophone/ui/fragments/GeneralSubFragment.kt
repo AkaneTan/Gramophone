@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.transition.MaterialSharedAxis
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
@@ -84,6 +82,16 @@ class GeneralSubFragment : BaseFragment() {
                 itemList =
                     libraryViewModel
                         .albumArtistItemList
+                        .value!![position]
+                        .songList
+                        .toMutableList()
+            }
+
+            6 -> {
+                // Playlists
+                itemList =
+                    libraryViewModel
+                        .playlistList
                         .value!![position]
                         .songList
                         .toMutableList()

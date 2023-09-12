@@ -6,11 +6,15 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
  * [MediaStoreUtils] contains all the methods for reading
@@ -63,7 +67,7 @@ object MediaStoreUtils {
     data class Playlist(
         val id: Long,
         val title: String,
-        val songList: List<Long>
+        val songList: List<MediaItem>
     )
 
     /**
@@ -278,7 +282,9 @@ object MediaStoreUtils {
                 }.sortedByDescending { it.title }
                 .toMutableList()
 
-        val playlistList = getPlaylists(context)
+        val playlistList = getPlaylists(context, songs)
+
+        Log.d("PLAYLIST", "$playlistList")
 
         return LibraryStoreClass(
             songs,
@@ -297,7 +303,7 @@ object MediaStoreUtils {
     /**
      * Retrieves a list of playlists with their associated songs.
      */
-    fun getPlaylists(context: Context): MutableList<Playlist> {
+    fun getPlaylists(context: Context, songList: MutableList<MediaItem>): MutableList<Playlist> {
         val playlists = mutableListOf<Playlist>()
 
         // Define the content resolver
@@ -321,7 +327,7 @@ object MediaStoreUtils {
                 val playlistName = it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME))
 
                 // Retrieve the list of songs for each playlist
-                val songs = getSongsInPlaylist(contentResolver, playlistId)
+                val songs = getSongsInPlaylist(contentResolver, playlistId, songList)
 
                 // Create a Playlist object and add it to the list
                 val playlist = Playlist(playlistId, playlistName, songs)
@@ -336,15 +342,15 @@ object MediaStoreUtils {
     /**
      * Retrieves the list of songs in a playlist.
      */
-    private fun getSongsInPlaylist(contentResolver: ContentResolver, playlistId: Long): List<Long> {
-        val songs = mutableListOf<Long>()
+    private fun getSongsInPlaylist(contentResolver: ContentResolver, playlistId: Long, songList: MutableList<MediaItem>): List<MediaItem> {
+        val songs = mutableListOf<MediaItem>()
 
         // Define the URI for playlist members (songs in the playlist)
         val uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId)
 
         // Define the projection (columns to retrieve)
         val projection = arrayOf(
-            MediaStore.Audio.Playlists.Members._ID,
+            MediaStore.Audio.Playlists.Members.AUDIO_ID,
         )
 
         // Query the songs in the playlist
@@ -352,15 +358,35 @@ object MediaStoreUtils {
 
         cursor?.use {
             while (it.moveToNext()) {
-                val audioId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members._ID))
-
+                val audioId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID))
                 // Create a MediaItem and add it to the list
-                songs.add(audioId)
+                val song = songList.find { it1 ->
+                    it1.mediaId.toLong() == audioId
+                }
+                if (song != null) {
+                    songs.add(song)
+                }
             }
         }
 
         cursor?.close()
         return songs
+    }
+
+    suspend fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context) {
+        val pairObject = MediaStoreUtils.getAllSongs(context)
+        withContext(Dispatchers.Main) {
+            libraryViewModel.mediaItemList.value = pairObject.songList
+            libraryViewModel.albumItemList.value = pairObject.albumList
+            libraryViewModel.artistItemList.value = pairObject.artistList
+            libraryViewModel.albumArtistItemList.value = pairObject.albumArtistList
+            libraryViewModel.genreItemList.value = pairObject.genreList
+            libraryViewModel.dateItemList.value = pairObject.dateList
+            libraryViewModel.durationItemList.value = pairObject.durationList
+            libraryViewModel.fileUriList.value = pairObject.fileUriList
+            libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
+            libraryViewModel.playlistList.value = pairObject.playlistList
+        }
     }
 
 }

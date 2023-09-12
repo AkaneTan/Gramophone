@@ -38,4 +38,8 @@ class LibraryViewModel : ViewModel() {
         MutableLiveData(
             mutableMapOf(),
         )
+    val playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>> =
+        MutableLiveData(
+            mutableListOf(),
+        )
 }

@@ -4,18 +4,59 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.media3.common.util.UnstableApi
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.adapters.PlaylistAdapter
+import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
- * [PlaylistFragment] displays your playlists.
+ * [PlaylistFragment] displays playlist information.
  */
+@androidx.annotation.OptIn(UnstableApi::class)
 class PlaylistFragment : BaseFragment() {
+
+    companion object {
+        const val TAG = "PlaylistFragment"
+    }
+
+    private val libraryViewModel: LibraryViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.fragment_playlist, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_playlist, container, false)
+        val playlistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+
+        playlistRecyclerView.layoutManager = LinearLayoutManager(activity)
+        val playlistList = mutableListOf<MediaStoreUtils.Playlist>()
+        playlistList.addAll(libraryViewModel.playlistList.value!!)
+
+        val playlistAdapter =
+            PlaylistAdapter(
+                playlistList,
+                requireContext(),
+                requireActivity().supportFragmentManager,
+                requireActivity() as MainActivity,
+            )
+
+        if (!libraryViewModel.playlistList.hasActiveObservers()) {
+            libraryViewModel.playlistList.observe(viewLifecycleOwner) { mediaItems ->
+                playlistAdapter.updateList(mediaItems)
+            }
+        }
+
+       playlistRecyclerView.adapter = playlistAdapter
+
+        FastScrollerBuilder(playlistRecyclerView).build()
+
+        return rootView
     }
 }
