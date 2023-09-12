@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
 import androidx.media3.common.util.UnstableApi
@@ -67,8 +68,10 @@ class PlaylistAdapter(
                         .first()
                         .mediaMetadata
                         .artworkUri,
-                ).placeholder(R.drawable.ic_default_cover_date)
+                ).placeholder(R.drawable.ic_default_cover_playlist)
                 .into(holder.songCover)
+        } else {
+            holder.songCover.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_default_cover_playlist))
         }
 
         holder.itemView.setOnClickListener {
