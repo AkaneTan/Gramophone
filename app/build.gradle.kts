@@ -49,6 +49,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.media3:media3-exoplayer:1.1.1")
     implementation("androidx.media3:media3-session:1.1.1")
+    implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("me.zhanghai.android.fastscroll:library:1.2.0")
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout="@layout/settings_top_app_bar"/>
+    <PreferenceCategory
+        android:title="@string/settings_category_info">
+        <Preference
+            android:title="@string/settings_app_name"
+            android:summary="@string/app_name"
+            android:icon="@drawable/widgets_art" />
+        <Preference
+            android:key="app_version"
+            android:title="@string/settings_version"
+            android:summary="@string/unknown_version"
+            android:icon="@drawable/ic_conversion_path"/>
+        <Preference
+            android:title="@string/settings_contributors"
+            android:summary="@string/settings_contributors_detail"
+            android:icon="@drawable/artist_art"/>
+    </PreferenceCategory>
+</PreferenceScreen>

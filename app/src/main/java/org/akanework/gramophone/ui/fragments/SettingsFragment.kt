@@ -1,33 +1,27 @@
 package org.akanework.gramophone.ui.fragments
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.transition.MaterialSharedAxis
+import androidx.preference.Preference
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 
-class SettingsFragment : BaseFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
-        val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
-        val versionText = rootView.findViewById<TextView>(R.id.version)
-
-        topAppBar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
-
-        versionText.text = BuildConfig.VERSION_NAME
-
-        return rootView
+class SettingsFragment : BasePreferenceFragment() {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.settings_top, rootKey)
+        val versionPrefs = findPreference<Preference>("app_version")
+        versionPrefs!!.summary = BuildConfig.VERSION_NAME
     }
+
+    override fun setDivider(divider: Drawable?) {
+        super.setDivider(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    override fun setDividerHeight(height: Int) {
+        super.setDividerHeight(0)
+    }
+
 }
