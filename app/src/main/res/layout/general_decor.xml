@@ -21,7 +21,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="end|center_vertical"
-        android:backgroundTint="@android:color/transparent"
+        android:background="@drawable/rp_buttons"
         android:insetLeft="0dp"
         android:insetTop="0dp"
         android:insetRight="0dp"

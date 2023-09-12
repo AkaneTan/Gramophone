@@ -7,7 +7,8 @@
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground"
     android:paddingStart="16dp"
-    android:paddingEnd="4dp">
+    android:paddingEnd="4dp"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,7 +60,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="end|center_vertical"
-        android:backgroundTint="?attr/colorSurface"
+        android:background="@drawable/rp_buttons"
         android:insetLeft="0dp"
         android:insetTop="0dp"
         android:insetRight="0dp"
