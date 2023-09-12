@@ -37,6 +37,7 @@
                 android:layout_gravity="center_vertical"
                 android:backgroundTint="@android:color/transparent"
                 android:hint="@string/search"
+                android:singleLine="true"
                 android:textColorHint="?attr/colorOnSurfaceVariant"
                 android:textSize="20sp" />
 

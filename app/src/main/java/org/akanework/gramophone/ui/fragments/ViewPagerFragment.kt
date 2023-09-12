@@ -15,13 +15,14 @@ import com.google.android.material.transition.MaterialSharedAxis
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
+import org.akanework.gramophone.ui.components.MenuBottomSheet
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : BaseFragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private lateinit var viewPager2: ViewPager2
+    private var viewPager2: ViewPager2? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,15 +63,23 @@ class ViewPagerFragment : BaseFragment() {
 
         // Handle click for navigationIcon.
         topAppBar.setNavigationOnClickListener {
-            (requireActivity() as MainActivity).navigateDrawer(viewPager2.currentItem)
+            val menuBottomSheet = MenuBottomSheet()
+            menuBottomSheet.show(requireActivity().supportFragmentManager, "MENU")
         }
 
         // Connect ViewPager2.
-        viewPager2.adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
-        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = getString(ViewPager2Adapter.getLabelResId(position))
-        }.attach()
+        viewPager2?.adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+        if (viewPager2 != null) {
+            TabLayoutMediator(tabLayout, viewPager2!!) { tab, position ->
+                tab.text = getString(ViewPager2Adapter.getLabelResId(position))
+            }.attach()
+        }
 
         return rootView
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewPager2 = null
     }
 }
