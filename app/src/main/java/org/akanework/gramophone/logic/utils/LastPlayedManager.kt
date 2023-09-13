@@ -56,13 +56,16 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 		editor.apply()
 	}
 
-	fun restore(): MediaItemsWithStartPosition {
+	fun restore(): MediaItemsWithStartPosition? {
 		val lastPlayedLst = prefs.getStringSet("last_played_lst", null)
 		val lastPlayedGrp = prefs.getString("last_played_grp", null)
 		val lastPlayedIdx = prefs.getInt("last_played_idx", 0)
 		val lastPlayedPos = prefs.getLong("last_played_pos", 0)
+		if (lastPlayedGrp == null || lastPlayedLst == null) {
+			return null
+		}
 		return MediaItemsWithStartPosition(
-			PrefsListUtils.parse(lastPlayedLst!!, lastPlayedGrp!!)
+			PrefsListUtils.parse(lastPlayedLst, lastPlayedGrp)
 				.map {
 					val b = SafeDelimitedStringDecat(":", it)
 					val mediaId = b.readStringUnsafe()

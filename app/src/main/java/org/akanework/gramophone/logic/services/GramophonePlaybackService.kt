@@ -78,11 +78,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                     .setSessionCommand(
                         SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_shuffle_on)
-                    .build(),
-                CommandButton.Builder()
-                    .setDisplayName(getString(R.string.close))
-                    .setSessionCommand(SessionCommand(Constants.PLAYBACK_CLOSE, Bundle.EMPTY))
-                    .setIconResId(R.drawable.ic_close)
                     .build()
             )
         handler = Handler(Looper.getMainLooper())
@@ -116,8 +111,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
         if (!mediaSession!!.player.isPlaying) {
             handler.post {
                 val restoreInstance = lastPlayedManager.restore()
-                player.setMediaItems(restoreInstance.mediaItems)
-                player.seekTo(restoreInstance.startIndex, restoreInstance.startPositionMs)
+                if (restoreInstance != null) {
+                    player.setMediaItems(restoreInstance.mediaItems)
+                    player.seekTo(restoreInstance.startIndex, restoreInstance.startPositionMs)
+                }
             }
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
@@ -174,10 +171,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                 session.player.shuffleModeEnabled = false
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
-            Constants.PLAYBACK_CLOSE -> {
-                session.player.clearMediaItems()
-                SessionResult(SessionResult.RESULT_SUCCESS)
-            }
             Constants.SERVICE_SET_TIMER -> {
                 // 0 = clear timer
                 timerDuration = customCommand.customExtras.getInt("duration")
@@ -220,10 +213,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         if (shuffleModeEnabled) {
             // Change the custom layout to contain the `Disable shuffling` command.
-            mediaSession!!.setCustomLayout(ImmutableList.of(customCommands[1], customCommands[2]))
+            mediaSession!!.setCustomLayout(ImmutableList.of(customCommands[1]))
         } else {
             // Change the custom layout to contain the `Enable shuffling` command.
-            mediaSession!!.setCustomLayout(ImmutableList.of(customCommands[0], customCommands[2]))
+            mediaSession!!.setCustomLayout(ImmutableList.of(customCommands[0]))
         }
     }
 
