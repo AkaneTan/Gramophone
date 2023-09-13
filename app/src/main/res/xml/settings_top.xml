@@ -21,6 +21,7 @@
         android:title="@string/settings_category_appearance">
         <SwitchPreferenceCompat
             android:key="dark_mode"
+            android:icon="@drawable/daynight_art"
             android:title="@string/settings_dark_mode"
             android:summary="@string/settings_dark_mode_summary"
             android:widgetLayout="@layout/preference_material_switch"/>
