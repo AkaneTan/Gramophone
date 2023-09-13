@@ -71,16 +71,8 @@ class SongAdapter(
             mediaController.prepare()
             mediaController.play()
             if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    mainActivity.setBottomPlayerPreviewVisible()
-
-                    if (standardBottomSheetBehavior.isHideable) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            standardBottomSheetBehavior.isHideable = false
-                        }, 300)
-                    }
-                }, 200)
+                standardBottomSheetBehavior.isHideable = false
+                standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
 
