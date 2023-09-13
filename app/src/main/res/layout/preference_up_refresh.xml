@@ -17,7 +17,7 @@
         android:layout_height="18dp"
         android:src="@drawable/ic_refresh"
         android:layout_gravity="center_vertical"
-        app:tint="?attr/colorOnPrimaryContainer"/>
+        app:tint="?attr/colorOnSurface"/>
 
     <TextView
         android:layout_gravity="center_vertical"
@@ -25,7 +25,7 @@
         android:layout_marginEnd="48dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="16sp"
         android:text="@string/home_menu_refresh"
         style="@style/HeadlineTextAppearance" />
@@ -35,7 +35,7 @@
         android:layout_height="18dp"
         android:layout_marginEnd="22dp"
         android:layout_gravity="center_vertical|end"
-        app:tint="?attr/colorOnPrimaryContainer"
+        app:tint="?attr/colorOnSurface"
         android:src="@drawable/ic_chevron_right" />
 
 </FrameLayout>
