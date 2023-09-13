@@ -36,7 +36,7 @@
                 android:id="@+id/playlists"
                 android:checkable="true"
                 android:icon="@drawable/ic_playlist_play"
-                android:title="@string/category_dates"
+                android:title="@string/category_playlists"
                 app:showAsAction="ifRoom" />
         </menu>
     </item>
