@@ -17,7 +17,6 @@
             android:layout_height="?attr/actionBarSize"
             android:paddingEnd="2dp"
             app:navigationIcon="@drawable/bug_art"
-            app:navigationIconTint="?attr/colorOnSurface"
             app:title="@string/gramophone_crashed"
             app:titleTextAppearance="@style/HeadlineTextAppearance"
             tools:ignore="RtlSymmetry" />

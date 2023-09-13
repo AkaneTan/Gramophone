@@ -22,7 +22,6 @@
             app:layout_scrollEffect="compress"
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="?attr/colorOnSurface"
             tools:ignore="RtlSymmetry"
             tools:title="Example Album" />
 

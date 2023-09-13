@@ -23,7 +23,6 @@
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:menu="@menu/home_menu"
             app:navigationIcon="@drawable/ic_menu"
-            app:navigationIconTint="?attr/colorOnSurface"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/HeadlineTextAppearance"
             tools:ignore="RtlSymmetry" />
