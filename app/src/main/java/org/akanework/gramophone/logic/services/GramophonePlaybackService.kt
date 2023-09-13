@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -112,6 +113,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                 )
                 .build()
         lastPlayedManager = LastPlayedManager(this, mediaSession!!)
+        if (!mediaSession!!.player.isPlaying) {
+            handler.post {
+                val restoreInstance = lastPlayedManager.restore()
+                player.setMediaItems(restoreInstance.mediaItems)
+                player.seekTo(restoreInstance.startIndex, restoreInstance.startPositionMs)
+            }
+        }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
         mediaSession!!.player.addListener(this)
         super.onCreate()
