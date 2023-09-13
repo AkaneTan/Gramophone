@@ -446,9 +446,4 @@ abstract class PlayerFragment : BaseFragment(), Player.Listener {
 		}
 	}
 
-	override fun onDestroyView() {
-
-		super.onDestroyView()
-	}
-
 }
