@@ -112,7 +112,7 @@ class GeneralSubFragment : BaseFragment() {
         FastScrollerBuilder(recyclerView).build()
 
         topAppBar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            (requireActivity() as MainActivity).getPlayerUiFragmentManager().popBackStack()
         }
 
         topAppBar.title = title
