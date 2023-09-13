@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape
             android:shape="rectangle"
-            android:tint="?attr/colorSurfaceContainer">
+            android:tint="?attr/colorPrimaryContainer">
             <corners android:topLeftRadius="28dp"
                      android:topRightRadius="28dp"
                      android:bottomRightRadius="4dp"
