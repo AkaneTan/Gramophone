@@ -39,7 +39,6 @@ class AlbumFragment : BaseFragment() {
         val albumAdapter =
             AlbumAdapter(
                 albumList,
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
             )
         val albumDecorAdapter =

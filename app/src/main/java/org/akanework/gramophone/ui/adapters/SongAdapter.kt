@@ -103,11 +103,11 @@ class SongAdapter(
                             if (positionAlbum != null) {
                                 withContext(Dispatchers.Main) {
                                     mainActivity
-                                        .supportFragmentManager
+                                        .getPlayerUiFragmentManager()
                                         .beginTransaction()
                                         .addToBackStack("SUBFRAG")
                                         .replace(
-                                            R.id.container,
+                                            R.id.fragment_player_ui,
                                             GeneralSubFragment().apply {
                                                 arguments =
                                                     Bundle().apply {
@@ -142,11 +142,11 @@ class SongAdapter(
                             if (positionArtist != null) {
                                 withContext(Dispatchers.Main) {
                                     mainActivity
-                                        .supportFragmentManager
+                                        .getPlayerUiFragmentManager()
                                         .beginTransaction()
                                         .addToBackStack("SUBFRAG")
                                         .replace(
-                                            R.id.container,
+                                            R.id.fragment_player_ui,
                                             GeneralSubFragment().apply {
                                                 arguments =
                                                     Bundle().apply {

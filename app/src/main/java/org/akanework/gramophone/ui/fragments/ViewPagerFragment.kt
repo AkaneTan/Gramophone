@@ -17,7 +17,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class ViewPagerFragment : PlayerFragment() {
+class ViewPagerFragment : BaseFragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private var viewPager2: ViewPager2? = null
 
@@ -27,7 +27,6 @@ class ViewPagerFragment : PlayerFragment() {
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_viewpager, container, false)
-        onCreateBottomSheet(rootView)
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
 
