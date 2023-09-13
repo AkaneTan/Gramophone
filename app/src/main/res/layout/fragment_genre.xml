@@ -12,7 +12,7 @@
         android:clipToPadding="false"
         android:paddingTop="4dp"
         android:paddingBottom="@dimen/recyclerview_bottom_padding"
-        android:scrollbarStyle="outsideOverlay"
+        android:overScrollMode="never"
         tools:listitem="@layout/adapter_list_card" />
 
 </FrameLayout>
