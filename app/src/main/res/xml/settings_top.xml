@@ -17,4 +17,12 @@
             android:summary="@string/settings_contributors_detail"
             android:icon="@drawable/artist_art"/>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/settings_category_appearance">
+        <SwitchPreferenceCompat
+            android:key="dark_mode"
+            android:title="@string/settings_dark_mode"
+            android:summary="@string/settings_dark_mode_summary"
+            android:widgetLayout="@layout/preference_material_switch"/>
+    </PreferenceCategory>
 </PreferenceScreen>

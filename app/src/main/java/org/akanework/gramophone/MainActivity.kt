@@ -1,7 +1,9 @@
 package org.akanework.gramophone
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -9,12 +11,14 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.util.UnstableApi
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigation.NavigationView
@@ -64,6 +68,14 @@ class MainActivity : AppCompatActivity() {
 
             android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(10)
+        }
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val isDarkModeEnabled = prefs.getBoolean("dark_mode", false)
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
 
         ActivityCompat.postponeEnterTransition(this)
