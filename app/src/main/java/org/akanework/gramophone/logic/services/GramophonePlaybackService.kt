@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -45,6 +44,20 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
 
+    private fun getRepeatCommand() =
+        when (mediaSession?.player!!.repeatMode) {
+            Player.REPEAT_MODE_OFF -> customCommands[2]
+            Player.REPEAT_MODE_ALL -> customCommands[3]
+            Player.REPEAT_MODE_ONE -> customCommands[4]
+            else -> throw IllegalArgumentException()
+        }
+
+    private fun getShufflingCommand() =
+        if (mediaSession?.player!!.shuffleModeEnabled)
+            customCommands[1]
+        else
+            customCommands[0]
+
     private val timer: Runnable = Runnable {
         mediaSession?.player?.pause()
         timerDuration = 0
@@ -78,7 +91,25 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                     .setSessionCommand(
                         SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_shuffle_on)
-                    .build()
+                    .build(),
+                CommandButton.Builder() // repeat currently disabled, click will repeat all
+                    .setDisplayName(getString(R.string.repeat_mode))
+                    .setSessionCommand(
+                        SessionCommand(Constants.PLAYBACK_REPEAT_ALL, Bundle.EMPTY))
+                    .setIconResId(R.drawable.ic_repeat)
+                    .build(),
+                CommandButton.Builder() // repeat all currently enabled, click will repeat one
+                    .setDisplayName(getString(R.string.repeat_mode))
+                    .setSessionCommand(
+                        SessionCommand(Constants.PLAYBACK_REPEAT_ONE, Bundle.EMPTY))
+                    .setIconResId(R.drawable.ic_repeat_on)
+                    .build(),
+                CommandButton.Builder() // repeat one currently enabled, click will disable
+                    .setDisplayName(getString(R.string.repeat_mode))
+                    .setSessionCommand(
+                        SessionCommand(Constants.PLAYBACK_REPEAT_OFF, Bundle.EMPTY))
+                    .setIconResId(R.drawable.ic_repeat_one_on)
+                    .build(),
             )
         handler = Handler(Looper.getMainLooper())
 
@@ -181,6 +212,18 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                     it.extras.putInt("duration", timerDuration)
                 }
             }
+            Constants.PLAYBACK_REPEAT_OFF -> {
+                session.player.repeatMode = Player.REPEAT_MODE_OFF
+                SessionResult(SessionResult.RESULT_SUCCESS)
+            }
+            Constants.PLAYBACK_REPEAT_ONE -> {
+                session.player.repeatMode = Player.REPEAT_MODE_ONE
+                SessionResult(SessionResult.RESULT_SUCCESS)
+            }
+            Constants.PLAYBACK_REPEAT_ALL -> {
+                session.player.repeatMode = Player.REPEAT_MODE_ALL
+                SessionResult(SessionResult.RESULT_SUCCESS)
+            }
             else -> {
                 SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
             }
@@ -211,13 +254,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        if (shuffleModeEnabled) {
-            // Change the custom layout to contain the `Disable shuffling` command.
-            mediaSession!!.setCustomLayout(ImmutableList.of(customCommands[1]))
-        } else {
-            // Change the custom layout to contain the `Enable shuffling` command.
-            mediaSession!!.setCustomLayout(ImmutableList.of(customCommands[0]))
-        }
+        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+        mediaSession!!.setCustomLayout(ImmutableList.of(getShufflingCommand(), getRepeatCommand()))
+    }
+
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        super.onRepeatModeChanged(repeatMode)
+        mediaSession!!.setCustomLayout(ImmutableList.of(getShufflingCommand(), getRepeatCommand()))
     }
 
     // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
