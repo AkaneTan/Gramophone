@@ -40,7 +40,6 @@ import org.akanework.gramophone.logic.utils.LastPlayedManager
 class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
 
     private var mediaSession: MediaLibrarySession? = null
-    private var beCarefulWhenSaving = false
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
@@ -125,9 +124,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
     override fun onDestroy() {
         // When destroying, we should release server side player
         // alongside with the mediaSession.
-        if (!beCarefulWhenSaving) {
-            lastPlayedManager.save()
-        }
+        lastPlayedManager.save()
         mediaSession!!.player.release()
         mediaSession!!.release()
         mediaSession = null
@@ -192,7 +189,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
         controller: MediaSession.ControllerInfo
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
-        beCarefulWhenSaving = true
         handler.post {
             settable.set(lastPlayedManager.restore())
         }
@@ -204,9 +200,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        if (isPlaying && beCarefulWhenSaving) {
-            beCarefulWhenSaving = false
-        }
         lastPlayedManager.save()
     }
 
