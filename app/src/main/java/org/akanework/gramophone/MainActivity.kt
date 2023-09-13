@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     )
                 if (duration != null && !isUserTracking) {
                     bottomSheetFullSlider.value =
-                        instance.currentPosition.toFloat() / duration.toFloat()
+                        (instance.currentPosition.toFloat() / duration.toFloat()).coerceAtMost(1f)
                     bottomSheetFullPosition.text = position
                 }
             }
@@ -143,11 +143,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     }
                     if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                         standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                        previewPlayer.alpha = 1f
-                        previewPlayer.visibility = View.VISIBLE
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            standardBottomSheetBehavior.isHideable = false
-                        }, 200)
+                        standardBottomSheetBehavior.isHideable = false
                     }
                 },
                 200,
@@ -175,9 +171,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             if (!standardBottomSheetBehavior.isHideable) {
                 standardBottomSheetBehavior.isHideable = true
             }
-            Handler(Looper.getMainLooper()).postDelayed({
-                standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            }, 200)
+            standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
@@ -327,8 +321,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         standardBottomSheet.setOnClickListener {
             if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                fullPlayer.visibility = View.VISIBLE
-                previewPlayer.visibility = View.GONE
             }
         }
 
@@ -401,13 +393,10 @@ class MainActivity : AppCompatActivity(), Player.Listener {
 
         bottomSheetFullSlideUpButton.setOnClickListener {
             standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    fullPlayer.visibility = View.GONE
-                    previewPlayer.visibility = View.VISIBLE
-                },
-                200,
-            )
+        }
+
+        val bottomSheetBackCallback = onBackPressedDispatcher.addCallback(this) {
+            standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         standardBottomSheetBehavior.addBottomSheetCallback(
@@ -416,16 +405,31 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     bottomSheet: View,
                     newState: Int,
                 ) {
-                    if (newState == BottomSheetBehavior.STATE_COLLAPSED
-                            && previewPlayer.isVisible) {
-                        fullPlayer.visibility = View.GONE
-                        previewPlayer.alpha = 1f
-                    } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        fullPlayer.visibility = View.VISIBLE
-                        previewPlayer.visibility = View.VISIBLE
-                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        previewPlayer.visibility = View.GONE
+                    when (newState) {
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                            fullPlayer.visibility = View.GONE
+                            previewPlayer.visibility = View.VISIBLE
+                            previewPlayer.alpha = 1f
+                        }
+
+                        BottomSheetBehavior.STATE_DRAGGING,
+                        BottomSheetBehavior.STATE_SETTLING,
+                        BottomSheetBehavior.STATE_HALF_EXPANDED -> {
+                            fullPlayer.visibility = View.VISIBLE
+                            previewPlayer.visibility = View.VISIBLE
+                        }
+
+                        BottomSheetBehavior.STATE_EXPANDED -> {
+                            previewPlayer.visibility = View.GONE
+                            fullPlayer.visibility = View.VISIBLE
+                        }
+
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            previewPlayer.visibility = View.GONE
+                            fullPlayer.visibility = View.GONE
+                        }
                     }
+                    bottomSheetBackCallback.isEnabled = newState == BottomSheetBehavior.STATE_EXPANDED
                 }
 
                 override fun onSlide(
@@ -451,24 +455,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     Constants.PERMISSION_READ_MEDIA_AUDIO,
                 )
             }
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT
-            ) {
-                if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            fullPlayer.visibility = View.GONE
-                            previewPlayer.visibility = View.VISIBLE
-                        },
-                        200,
-                    )
-                } else if (isTaskRoot) {
-                    moveTaskToBack(true)
-                } else {
-                    supportFragmentManager.popBackStack()
-                }
-            }
         } else {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -481,22 +467,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     Constants.PERMISSION_READ_EXTERNAL_STORAGE,
                 )
-            }
-            onBackPressedDispatcher.addCallback(this) {
-                if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            fullPlayer.visibility = View.GONE
-                            previewPlayer.visibility = View.VISIBLE
-                        },
-                        200,
-                    )
-                } else if (isTaskRoot) {
-                    moveTaskToBack(true)
-                } else {
-                    supportFragmentManager.popBackStack()
-                }
             }
         }
     }
