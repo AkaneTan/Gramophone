@@ -22,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Gramophone"
-        tools:targetApi="s">
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="tiramisu">
         <activity
             android:name=".BugHandlerActivity"
             android:exported="false">

@@ -14,6 +14,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -449,6 +451,24 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     Constants.PERMISSION_READ_MEDIA_AUDIO,
                 )
             }
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+                if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            fullPlayer.visibility = View.GONE
+                            previewPlayer.visibility = View.VISIBLE
+                        },
+                        200,
+                    )
+                } else if (isTaskRoot) {
+                    moveTaskToBack(true)
+                } else {
+                    supportFragmentManager.popBackStack()
+                }
+            }
         } else {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -461,6 +481,22 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     Constants.PERMISSION_READ_EXTERNAL_STORAGE,
                 )
+            }
+            onBackPressedDispatcher.addCallback(this) {
+                if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            fullPlayer.visibility = View.GONE
+                            previewPlayer.visibility = View.VISIBLE
+                        },
+                        200,
+                    )
+                } else if (isTaskRoot) {
+                    moveTaskToBack(true)
+                } else {
+                    supportFragmentManager.popBackStack()
+                }
             }
         }
     }
