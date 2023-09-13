@@ -166,8 +166,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 	private fun updateSongInfo(mediaItem: MediaItem?) {
 		val instance = controllerFuture.get()
 		if (instance.mediaItemCount != 0) {
-			Handler(Looper.getMainLooper()).postDelayed(
-				{
+			handler.postDelayed({
 					if (instance.isPlaying) {
 						bottomSheetPreviewControllerButton.icon =
 							AppCompatResources.getDrawable(requireContext(), R.drawable.pause_art)
@@ -441,7 +440,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		}
 		if (isPlaying) {
 			if (!runnableRunning) {
-				Handler(Looper.getMainLooper()).postDelayed(positionRunnable, instance.currentPosition % 1000)
+				handler.postDelayed(positionRunnable, instance.currentPosition % 1000)
 				runnableRunning = true
 			}
 		}

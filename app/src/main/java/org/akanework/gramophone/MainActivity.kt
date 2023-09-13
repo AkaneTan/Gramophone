@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
+            val playerLayout = fragmentContainerView.findViewById<View>(R.id.player_layout)
             when (it.itemId) {
                 in tabs.values -> {
                     viewPager2.setCurrentItem(tabs.entries
@@ -130,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                                     com.google.android.material.R.attr.colorOnSurface,
                                 ),
                             )
-                            // snackBar.anchorView = standardBottomSheet TODO
+                            snackBar.anchorView = playerLayout
                             snackBar.show()
                         }
                     }
