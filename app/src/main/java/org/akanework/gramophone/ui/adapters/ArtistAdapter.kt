@@ -31,7 +31,6 @@ class ArtistAdapter(
     private val artistList: MutableList<MediaStoreUtils.Artist>,
     private val albumArtistList: MutableList<MediaStoreUtils.Artist>,
     private val context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<ArtistAdapter.ViewHolder>() {
 
@@ -75,11 +74,12 @@ class ArtistAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            fragmentManager
+            mainActivity
+                .getPlayerUiFragmentManager()
                 .beginTransaction()
                 .addToBackStack("SUBFRAG")
                 .replace(
-                    R.id.container,
+                    R.id.fragment_player_ui,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {

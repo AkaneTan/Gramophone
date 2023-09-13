@@ -19,7 +19,7 @@ import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class GeneralSubFragment : PlayerFragment() {
+class GeneralSubFragment : BaseFragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -28,7 +28,6 @@ class GeneralSubFragment : PlayerFragment() {
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
-        onCreateBottomSheet(rootView)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val bundle = requireArguments()
         val title = bundle.getString("Title")

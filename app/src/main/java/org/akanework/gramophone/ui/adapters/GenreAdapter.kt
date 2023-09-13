@@ -30,7 +30,6 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class GenreAdapter(
     private val genreList: MutableList<MediaStoreUtils.Genre>,
     private val context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<GenreAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
@@ -71,11 +70,12 @@ class GenreAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            fragmentManager
+            mainActivity
+                .getPlayerUiFragmentManager()
                 .beginTransaction()
                 .addToBackStack("SUBFRAG")
                 .replace(
-                    R.id.container,
+                    R.id.fragment_player_ui,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {

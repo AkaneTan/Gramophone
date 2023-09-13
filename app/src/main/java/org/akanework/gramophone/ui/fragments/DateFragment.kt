@@ -41,7 +41,6 @@ class DateFragment : BaseFragment() {
             DateAdapter(
                 dateList,
                 requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
             )
         val dateDecorAdapter =

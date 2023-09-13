@@ -43,7 +43,6 @@ class PlaylistFragment : BaseFragment() {
             PlaylistAdapter(
                 playlistList,
                 requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
             )
 

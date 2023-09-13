@@ -16,7 +16,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/container"
-            android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
+            android:name="org.akanework.gramophone.ui.fragments.PlayerUiFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

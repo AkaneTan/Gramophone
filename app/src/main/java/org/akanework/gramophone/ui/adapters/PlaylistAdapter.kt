@@ -27,7 +27,6 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class PlaylistAdapter(
     private val playlistList: MutableList<MediaStoreUtils.Playlist>,
     private val context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<PlaylistAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
@@ -75,11 +74,12 @@ class PlaylistAdapter(
         }
 
         holder.itemView.setOnClickListener {
-            fragmentManager
+            mainActivity
+                .getPlayerUiFragmentManager()
                 .beginTransaction()
                 .addToBackStack("SUBFRAG")
                 .replace(
-                    R.id.container,
+                    R.id.fragment_player_ui,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {
