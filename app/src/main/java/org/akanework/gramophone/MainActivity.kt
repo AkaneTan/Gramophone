@@ -11,11 +11,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentContainerView
 import androidx.media3.common.util.UnstableApi
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
+import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
+import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.fragments.ViewPagerFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.system.exitProcess
@@ -26,6 +35,13 @@ class MainActivity : AppCompatActivity() {
 
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+
+    fun navigateDrawer(int: Int) {
+        drawerLayout.open()
+        navigationView.setCheckedItem(tabs.getValue(int))
+    }
 
     private fun updateLibrary() {
         CoroutineScope(Dispatchers.Default).launch {
@@ -65,6 +81,75 @@ class MainActivity : AppCompatActivity() {
         // Set content Views.
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
+
+        // Initialize layouts.
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.navigation_view)
+        val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
+
+        navigationView.setNavigationItemSelectedListener {
+            val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
+            when (it.itemId) {
+                in tabs.values -> {
+                    viewPager2.setCurrentItem(tabs.entries
+                        .find { entry -> entry.value == it.itemId }!!.key, true)
+                    drawerLayout.close()
+                }
+
+                R.id.refresh -> {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        updateLibraryWithInCoroutine(libraryViewModel, applicationContext)
+                        withContext(Dispatchers.Main) {
+                            val snackBar =
+                                Snackbar.make(
+                                    fragmentContainerView,
+                                    getString(
+                                        R.string.refreshed_songs,
+                                        libraryViewModel.mediaItemList.value!!.size,
+                                    ),
+                                    Snackbar.LENGTH_LONG,
+                                )
+                            snackBar.setAction(R.string.dismiss) {
+                                snackBar.dismiss()
+                            }
+                            snackBar.setBackgroundTint(
+                                MaterialColors.getColor(
+                                    snackBar.view,
+                                    com.google.android.material.R.attr.colorSurface,
+                                ),
+                            )
+                            snackBar.setActionTextColor(
+                                MaterialColors.getColor(
+                                    snackBar.view,
+                                    com.google.android.material.R.attr.colorPrimary,
+                                ),
+                            )
+                            snackBar.setTextColor(
+                                MaterialColors.getColor(
+                                    snackBar.view,
+                                    com.google.android.material.R.attr.colorOnSurface,
+                                ),
+                            )
+                            // snackBar.anchorView = standardBottomSheet TODO
+                            snackBar.show()
+                        }
+                    }
+                    drawerLayout.close()
+                }
+
+                R.id.settings -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .addToBackStack("SETTINGS")
+                        .replace(R.id.container, SettingsFragment())
+                        .commit()
+                    drawerLayout.close()
+                }
+
+                else -> throw IllegalStateException()
+            }
+            true
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(

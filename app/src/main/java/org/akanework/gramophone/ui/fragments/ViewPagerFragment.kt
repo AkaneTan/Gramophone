@@ -13,7 +13,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
-import org.akanework.gramophone.ui.components.MenuBottomSheet
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
@@ -62,8 +61,7 @@ class ViewPagerFragment : PlayerFragment() {
 
         // Handle click for navigationIcon.
         topAppBar.setNavigationOnClickListener {
-            val menuBottomSheet = MenuBottomSheet()
-            menuBottomSheet.show(requireActivity().supportFragmentManager, "MENU")
+            (requireActivity() as MainActivity).navigateDrawer(viewPager2!!.currentItem)
         }
 
         // Connect ViewPager2.
