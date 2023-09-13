@@ -11,10 +11,10 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
-		returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
-		exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
-		reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+		enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
+		returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
+		exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
+		reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
 	}
 
 }
