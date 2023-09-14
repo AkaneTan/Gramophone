@@ -167,17 +167,6 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		val instance = controllerFuture.get()
 		if (instance.mediaItemCount != 0) {
 			handler.postDelayed({
-					if (instance.isPlaying) {
-						bottomSheetPreviewControllerButton.icon =
-							AppCompatResources.getDrawable(requireContext(), R.drawable.pause_art)
-						bottomSheetFullControllerButton.icon =
-							AppCompatResources.getDrawable(requireContext(), R.drawable.pause_art)
-					} else if (instance.playbackState != 2) {
-						bottomSheetPreviewControllerButton.icon =
-							AppCompatResources.getDrawable(requireContext(), R.drawable.play_art)
-						bottomSheetFullControllerButton.icon =
-							AppCompatResources.getDrawable(requireContext(), R.drawable.play_art)
-					}
 					if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
 						standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 						standardBottomSheetBehavior.isHideable = false
