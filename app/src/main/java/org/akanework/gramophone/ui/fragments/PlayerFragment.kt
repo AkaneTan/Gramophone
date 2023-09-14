@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -34,11 +33,9 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
-import org.akanework.gramophone.logic.utils.getViewDragHelper
+import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
-import org.akanework.gramophone.logic.utils.setStateWithoutAnimation
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
-import java.lang.RuntimeException
 
 open class PlayerFragment : BaseFragment(), Player.Listener {
 
@@ -67,7 +64,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 	private lateinit var bottomSheetFullSlider: Slider
 
 	private lateinit var standardBottomSheet: FrameLayout
-	private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+	private lateinit var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>
 
 	private var isUserTracking = false
 	private var runnableRunning = false
@@ -119,6 +116,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 			standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
 		}
 		super.onStart()
+		android.util.Log.e("hi","$waitedForContainer")
 		sessionToken =
 			SessionToken(requireContext(), ComponentName(requireContext(), GramophonePlaybackService::class.java))
 		controllerFuture =
@@ -215,13 +213,13 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		} else {
 			newState = BottomSheetBehavior.STATE_HIDDEN
 		}
-		if (!waitedForContainer) {
-			standardBottomSheetBehavior.setStateWithoutAnimation(newState)
-		} else {
-			standardBottomSheetBehavior.state = newState
-		}
-		if (!waitedForContainer) {
-			waitedForContainer = true
+		handler.post {
+			if (!waitedForContainer) {
+				standardBottomSheetBehavior.setStateWithoutAnimation(newState)
+				waitedForContainer = true
+			} else {
+				standardBottomSheetBehavior.state = newState
+			}
 		}
 	}
 
@@ -256,7 +254,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 
 		// Initialize layouts.
 		standardBottomSheet = view.findViewById(R.id.player_layout)
-		standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
+		standardBottomSheetBehavior = MyBottomSheetBehavior.from(standardBottomSheet)
 
 		bottomSheetPreviewCover = view.findViewById(R.id.preview_album_cover)
 		bottomSheetPreviewTitle = view.findViewById(R.id.preview_song_name)

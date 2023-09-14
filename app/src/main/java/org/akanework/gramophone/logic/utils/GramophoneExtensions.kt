@@ -22,24 +22,3 @@ fun MediaController.playOrPause() {
 		play()
 	}
 }
-
-// based on https://stackoverflow.com/a/63474805
-private object BottomSheetUtil {
-	val viewDragHelper: Field = BottomSheetBehavior::class.java
-		.getDeclaredField("viewDragHelper")
-		.apply { isAccessible = true }
-	val mScroller: Field = ViewDragHelper::class.java
-		.getDeclaredField("mScroller")
-		.apply { isAccessible = true }
-}
-
-fun BottomSheetBehavior<*>.getViewDragHelper(): ViewDragHelper? =
-	BottomSheetUtil.viewDragHelper.get(this) as? ViewDragHelper?
-
-private fun ViewDragHelper.getScroller(): OverScroller? =
-	BottomSheetUtil.mScroller.get(this) as? OverScroller?
-
-fun BottomSheetBehavior<*>.setStateWithoutAnimation(state: Int) {
-	setState(state)
-	getViewDragHelper()!!.getScroller()!!.abortAnimation()
-}
