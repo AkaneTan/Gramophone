@@ -30,6 +30,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class DateAdapter(
     private val dateList: MutableList<MediaStoreUtils.Date>,
     private val context: Context,
+    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<DateAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
@@ -75,12 +76,11 @@ class DateAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            mainActivity
-                .getPlayerUiFragmentManager()
+            fragmentManager
                 .beginTransaction()
                 .addToBackStack("SUBFRAG")
                 .replace(
-                    R.id.fragment_player_ui,
+                    R.id.container,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {

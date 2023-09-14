@@ -25,6 +25,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 @androidx.annotation.OptIn(UnstableApi::class)
 class AlbumAdapter(
     private val albumList: MutableList<MediaStoreUtils.Album>,
+    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
@@ -58,12 +59,11 @@ class AlbumAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            mainActivity
-                .getPlayerUiFragmentManager()
+            fragmentManager
                 .beginTransaction()
                 .addToBackStack("SUBFRAG")
                 .replace(
-                    R.id.fragment_player_ui,
+                    R.id.container,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {

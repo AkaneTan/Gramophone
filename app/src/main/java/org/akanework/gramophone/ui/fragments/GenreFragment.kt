@@ -42,6 +42,7 @@ class GenreFragment : BaseFragment() {
             GenreAdapter(
                 genreList,
                 requireContext(),
+                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
             )
         val genreDecorAdapter =

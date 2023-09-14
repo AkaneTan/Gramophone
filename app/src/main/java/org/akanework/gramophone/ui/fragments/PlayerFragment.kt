@@ -36,7 +36,7 @@ import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
-abstract class PlayerFragment : BaseFragment(), Player.Listener {
+open class PlayerFragment : BaseFragment(), Player.Listener {
 
 	private val handler = Handler(Looper.getMainLooper())
 	private val libraryViewModel: LibraryViewModel by activityViewModels()
@@ -291,7 +291,7 @@ abstract class PlayerFragment : BaseFragment(), Player.Listener {
 					bottomSheetTimerButton.isChecked = false
 				}
 			}
-			picker.show(childFragmentManager, "timer")
+			picker.show(requireActivity().supportFragmentManager, "timer")
 		}
 
 		bottomSheetLoopButton.setOnClickListener {

@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
-import org.akanework.gramophone.ui.fragments.PlayerUiFragment
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.fragments.ViewPagerFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -225,10 +224,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPlayerUiFragment() = (supportFragmentManager.fragments
-        .find { it is PlayerUiFragment } as PlayerUiFragment?)!!
-
-    fun getPlayer() = getPlayerUiFragment().getPlayer()
-
-    fun getPlayerUiFragmentManager() = getPlayerUiFragment().childFragmentManager
+    fun getPlayer() = (supportFragmentManager.fragments
+        .find { it is ViewPagerFragment } as ViewPagerFragment?)!!.getPlayer()
 }

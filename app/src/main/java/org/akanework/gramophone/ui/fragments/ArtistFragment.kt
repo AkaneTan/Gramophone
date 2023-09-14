@@ -51,6 +51,7 @@ class ArtistFragment : BaseFragment() {
                 artistList,
                 albumArtistList,
                 requireContext(),
+                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
             )
         val artistDecorAdapter =
