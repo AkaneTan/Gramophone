@@ -9,6 +9,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.activity.BackEventCompat
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
@@ -368,9 +370,24 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 			standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 		}
 
-		val bottomSheetBackCallback = activity?.onBackPressedDispatcher?.addCallback(this) {
-			standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+		val bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
+			override fun handleOnBackStarted(backEvent: BackEventCompat) {
+				standardBottomSheetBehavior.startBackProgress(backEvent)
+			}
+
+			override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+				standardBottomSheetBehavior.updateBackProgress(backEvent)
+			}
+
+			override fun handleOnBackPressed() {
+				standardBottomSheetBehavior.handleBackInvoked()
+			}
+
+			override fun handleOnBackCancelled() {
+				standardBottomSheetBehavior.cancelBackProgress()
+			}
 		}
+		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, bottomSheetBackCallback)
 
 		standardBottomSheetBehavior.addBottomSheetCallback(
 			object : BottomSheetBehavior.BottomSheetCallback() {
@@ -384,6 +401,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 							previewPlayer.visibility = View.VISIBLE
 							previewPlayer.alpha = 1f
 							fullPlayer.alpha = 0f
+							bottomSheetBackCallback.isEnabled = false
 						}
 
 						BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING -> {
@@ -391,11 +409,12 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 							previewPlayer.visibility = View.VISIBLE
 						}
 
-						BottomSheetBehavior.STATE_EXPANDED -> {
+						BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_HALF_EXPANDED -> {
 							previewPlayer.visibility = View.GONE
 							fullPlayer.visibility = View.VISIBLE
 							previewPlayer.alpha = 0f
 							fullPlayer.alpha = 1f
+							bottomSheetBackCallback.isEnabled = true
 						}
 
 						BottomSheetBehavior.STATE_HIDDEN -> {
@@ -403,11 +422,9 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 							fullPlayer.visibility = View.GONE
 							previewPlayer.alpha = 0f
 							fullPlayer.alpha = 0f
+							bottomSheetBackCallback.isEnabled = false
 						}
-
-						BottomSheetBehavior.STATE_HALF_EXPANDED -> {} // do we need to use this?
 					}
-					bottomSheetBackCallback?.isEnabled = newState == BottomSheetBehavior.STATE_EXPANDED
 				}
 
 				override fun onSlide(

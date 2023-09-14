@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gramophone"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="tiramisu">
+        tools:targetApi="upside_down_cake">
         <activity
             android:name=".BugHandlerActivity"
             android:exported="false">
