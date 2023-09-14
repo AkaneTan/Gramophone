@@ -35,13 +35,16 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.system.exitProcess
 
 
-@UnstableApi
 class MainActivity : AppCompatActivity() {
 
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+
+    // This is basically a hack to work around the fact fragment result API doesn't deliver info
+    // until fragment is in STARTED state, but we need it earlier.
+    var waitForContainer = false
 
     fun navigateDrawer(int: Int) {
         drawerLayout.open()

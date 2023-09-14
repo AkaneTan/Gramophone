@@ -77,12 +77,14 @@ class ArtistAdapter(
         holder.itemView.setOnClickListener {
             fragmentManager
                 .beginTransaction()
+                .setReorderingAllowed(true)
                 .addToBackStack("SUBFRAG")
                 .replace(
                     R.id.container,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {
+                                putBoolean("WaitForContainer", true)
                                 putInt("Position", position)
                                 putInt("Item",
                                     if (!isAlbumArtist)

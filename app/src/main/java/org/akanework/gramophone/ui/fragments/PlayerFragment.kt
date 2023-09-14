@@ -14,7 +14,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
@@ -29,13 +28,14 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import org.akanework.gramophone.Constants
+import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.playOrPause
+import org.akanework.gramophone.logic.utils.setStateWithoutAnimation
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-@androidx.annotation.OptIn(UnstableApi::class)
 open class PlayerFragment : BaseFragment(), Player.Listener {
 
 	private val handler = Handler(Looper.getMainLooper())
@@ -69,6 +69,8 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 
 	private var isUserTracking = false
 	private var runnableRunning = false
+	private var waitForContainer = false
+	private var waitedForContainer = true
 
 	private lateinit var sessionToken: SessionToken
 	private lateinit var controllerFuture: ListenableFuture<MediaController>
@@ -97,7 +99,23 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		}
 	}
 
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		// Case 1: We got started by another PlayerFragment
+		waitForContainer = arguments?.getBoolean("WaitForContainer") ?: false
+		if (waitForContainer) {
+			waitedForContainer = false
+		}
+	}
+
 	override fun onStart() {
+		// Case 2: We start another player fragment, and get restarted in back stack after user is done
+		if ((requireActivity() as MainActivity).waitForContainer) {
+			waitedForContainer = false
+		}
+		(requireActivity() as MainActivity).waitForContainer = waitForContainer
+		standardBottomSheetBehavior.isHideable = true
+		standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
 		sessionToken =
 			SessionToken(requireContext(), ComponentName(requireContext(), GramophonePlaybackService::class.java))
 		controllerFuture =
@@ -112,8 +130,9 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 				bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
 				onRepeatModeChanged(controller.repeatMode)
 				onShuffleModeEnabledChanged(controller.shuffleModeEnabled)
-				updateSongInfo(controller.currentMediaItem)
 				onIsPlayingChanged(controller.isPlaying)
+				updateSongInfo(controller.currentMediaItem)
+				handler.post { startPostponedEnterTransition() }
 			},
 			MoreExecutors.directExecutor(),
 		)
@@ -166,14 +185,6 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 	private fun updateSongInfo(mediaItem: MediaItem?) {
 		val instance = controllerFuture.get()
 		if (instance.mediaItemCount != 0) {
-			handler.postDelayed({
-					if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-						standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-						standardBottomSheetBehavior.isHideable = false
-					}
-				},
-				200,
-			)
 			Glide
 				.with(bottomSheetPreviewCover)
 				.load(mediaItem?.mediaMetadata?.artworkUri)
@@ -193,11 +204,33 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 					?.mediaId
 					?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
 					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
-		} else {
-			if (!standardBottomSheetBehavior.isHideable) {
+		}
+		handler.post {
+			var newState = standardBottomSheetBehavior.state
+			var hideable = standardBottomSheetBehavior.isHideable
+			if (instance.mediaItemCount != 0) {
+				if (newState != BottomSheetBehavior.STATE_EXPANDED) {
+					newState = BottomSheetBehavior.STATE_COLLAPSED
+					hideable = false
+				}
+			} else {
+				hideable = true
+				newState = BottomSheetBehavior.STATE_HIDDEN
+			}
+			if (hideable) {
 				standardBottomSheetBehavior.isHideable = true
 			}
-			standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+			if (!waitedForContainer) {
+				standardBottomSheetBehavior.setStateWithoutAnimation(newState)
+			} else {
+				standardBottomSheetBehavior.state = newState
+			}
+			if (!hideable) {
+				standardBottomSheetBehavior.isHideable = false
+			}
+			if (!waitedForContainer) {
+				waitedForContainer = true
+			}
 		}
 	}
 
@@ -223,37 +256,41 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 			}
 		}
 
-	protected fun onCreateBottomSheet(
-		rootView: View
-	) {
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		if (waitForContainer) {
+			postponeEnterTransition()
+		}
+
 		// Initialize layouts.
-		standardBottomSheet = rootView.findViewById(R.id.player_layout)
+		standardBottomSheet = view.findViewById(R.id.player_layout)
 		standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
 
-		bottomSheetPreviewCover = rootView.findViewById(R.id.preview_album_cover)
-		bottomSheetPreviewTitle = rootView.findViewById(R.id.preview_song_name)
-		bottomSheetPreviewSubtitle = rootView.findViewById(R.id.preview_artist_name)
-		bottomSheetPreviewControllerButton = rootView.findViewById(R.id.preview_control)
-		bottomSheetPreviewNextButton = rootView.findViewById(R.id.preview_next)
+		bottomSheetPreviewCover = view.findViewById(R.id.preview_album_cover)
+		bottomSheetPreviewTitle = view.findViewById(R.id.preview_song_name)
+		bottomSheetPreviewSubtitle = view.findViewById(R.id.preview_artist_name)
+		bottomSheetPreviewControllerButton = view.findViewById(R.id.preview_control)
+		bottomSheetPreviewNextButton = view.findViewById(R.id.preview_next)
 
-		bottomSheetFullCover = rootView.findViewById(R.id.full_sheet_cover)
-		bottomSheetFullTitle = rootView.findViewById(R.id.full_song_name)
-		bottomSheetFullSubtitle = rootView.findViewById(R.id.full_song_artist)
-		bottomSheetFullPreviousButton = rootView.findViewById(R.id.sheet_previous_song)
-		bottomSheetFullControllerButton = rootView.findViewById(R.id.sheet_mid_button)
-		bottomSheetFullNextButton = rootView.findViewById(R.id.sheet_next_song)
-		bottomSheetFullPosition = rootView.findViewById(R.id.position)
-		bottomSheetFullDuration = rootView.findViewById(R.id.duration)
-		bottomSheetFullSlider = rootView.findViewById(R.id.slider)
-		bottomSheetFullSlideUpButton = rootView.findViewById(R.id.slide_down)
-		bottomSheetShuffleButton = rootView.findViewById(R.id.sheet_random)
-		bottomSheetLoopButton = rootView.findViewById(R.id.sheet_loop)
-		bottomSheetLyricButton = rootView.findViewById(R.id.lyrics)
-		bottomSheetTimerButton = rootView.findViewById(R.id.timer)
-		bottomSheetPlaylistButton = rootView.findViewById(R.id.playlist)
+		bottomSheetFullCover = view.findViewById(R.id.full_sheet_cover)
+		bottomSheetFullTitle = view.findViewById(R.id.full_song_name)
+		bottomSheetFullSubtitle = view.findViewById(R.id.full_song_artist)
+		bottomSheetFullPreviousButton = view.findViewById(R.id.sheet_previous_song)
+		bottomSheetFullControllerButton = view.findViewById(R.id.sheet_mid_button)
+		bottomSheetFullNextButton = view.findViewById(R.id.sheet_next_song)
+		bottomSheetFullPosition = view.findViewById(R.id.position)
+		bottomSheetFullDuration = view.findViewById(R.id.duration)
+		bottomSheetFullSlider = view.findViewById(R.id.slider)
+		bottomSheetFullSlideUpButton = view.findViewById(R.id.slide_down)
+		bottomSheetShuffleButton = view.findViewById(R.id.sheet_random)
+		bottomSheetLoopButton = view.findViewById(R.id.sheet_loop)
+		bottomSheetLyricButton = view.findViewById(R.id.lyrics)
+		bottomSheetTimerButton = view.findViewById(R.id.timer)
+		bottomSheetPlaylistButton = view.findViewById(R.id.playlist)
 
-		previewPlayer = rootView.findViewById(R.id.preview_player)
-		val fullPlayer = rootView.findViewById<RelativeLayout>(R.id.full_player)
+		previewPlayer = view.findViewById(R.id.preview_player)
+		val fullPlayer = view.findViewById<RelativeLayout>(R.id.full_player)
 
 		standardBottomSheet.setOnClickListener {
 			if (standardBottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -378,6 +415,12 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 					bottomSheet: View,
 					slideOffset: Float,
 				) {
+					if (slideOffset < 0) {
+						// hidden state
+						previewPlayer.alpha = 1 - (-1 * slideOffset)
+						fullPlayer.alpha = 0f
+						return
+					}
 					previewPlayer.alpha = 1 - (slideOffset)
 					fullPlayer.alpha = slideOffset
 				}
@@ -386,7 +429,6 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 
 		standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 	}
-
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
 		bottomSheetShuffleButton.isChecked = shuffleModeEnabled

@@ -35,7 +35,7 @@ import org.akanework.gramophone.logic.utils.LastPlayedManager
  * [GramophonePlaybackService] is a server service.
  * It's using exoplayer2 as its player backend.
  */
-@UnstableApi
+@androidx.annotation.OptIn(UnstableApi::class)
 class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
 
     private var mediaSession: MediaLibrarySession? = null

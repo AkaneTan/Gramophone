@@ -105,12 +105,14 @@ class SongAdapter(
                                     mainActivity
                                         .supportFragmentManager
                                         .beginTransaction()
+                                        .setReorderingAllowed(true)
                                         .addToBackStack("SUBFRAG")
                                         .replace(
                                             R.id.container,
                                             GeneralSubFragment().apply {
                                                 arguments =
                                                     Bundle().apply {
+                                                        putBoolean("WaitForContainer", true)
                                                         putInt("Position", positionAlbum)
                                                         putInt("Item", 1)
                                                         putString(
@@ -144,12 +146,14 @@ class SongAdapter(
                                     mainActivity
                                         .supportFragmentManager
                                         .beginTransaction()
+                                        .setReorderingAllowed(true)
                                         .addToBackStack("SUBFRAG")
                                         .replace(
                                             R.id.container,
                                             GeneralSubFragment().apply {
                                                 arguments =
                                                     Bundle().apply {
+                                                        putBoolean("WaitForContainer", true)
                                                         putInt("Position", positionArtist)
                                                         putInt("Item", 2)
                                                         putString(

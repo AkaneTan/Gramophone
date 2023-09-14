@@ -284,8 +284,6 @@ object MediaStoreUtils {
 
         val playlistList = getPlaylists(context, songs)
 
-        Log.d("PLAYLIST", "$playlistList")
-
         return LibraryStoreClass(
             songs,
             sortedAlbumList,
