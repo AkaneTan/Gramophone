@@ -10,11 +10,16 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -123,6 +128,42 @@ class PlaylistAdapter(
         val songTitle: TextView = view.findViewById(R.id.title)
         val songArtist: TextView = view.findViewById(R.id.artist)
         val moreButton: MaterialButton = view.findViewById(R.id.more)
+    }
+
+    fun sortBy(selector: (MediaStoreUtils.Playlist) -> String) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val wasSongList = mutableListOf<MediaStoreUtils.Playlist>()
+            wasSongList.addAll(playlistList)
+            // Sorting in the background using coroutines
+            playlistList.sortBy { selector(it) }
+
+            val diffResult = DiffUtil.calculateDiff(
+                SongDiffCallback(
+                    wasSongList,
+                    playlistList
+                )
+            )
+            // Update the UI on the main thread
+            withContext(Dispatchers.Main) {
+                diffResult.dispatchUpdatesTo(this@PlaylistAdapter)
+            }
+        }
+    }
+
+    fun sortByDescendingInt(selector: (MediaStoreUtils.Playlist) -> Int) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val wasArtistList = mutableListOf<MediaStoreUtils.Playlist>()
+            wasArtistList.addAll(playlistList)
+
+            // Sorting in the background using coroutines
+            playlistList.sortByDescending { selector(it) }
+            val diffResult = DiffUtil.calculateDiff(SongDiffCallback(wasArtistList, playlistList))
+
+            // Update the UI on the main thread
+            withContext(Dispatchers.Main) {
+                diffResult.dispatchUpdatesTo(this@PlaylistAdapter)
+            }
+        }
     }
 
     fun updateList(newList: MutableList<MediaStoreUtils.Playlist>) {
