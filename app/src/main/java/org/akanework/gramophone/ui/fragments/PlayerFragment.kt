@@ -149,6 +149,17 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		reason: Int,
 	) {
 		updateSongInfo(mediaItem)
+		val instance = controllerFuture.get()
+		val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
+		val duration =
+			libraryViewModel.durationItemList.value?.get(
+				instance.currentMediaItem?.mediaId?.toLong(),
+			)
+		if (duration != null && !isUserTracking) {
+			bottomSheetFullSlider.value =
+				(instance.currentPosition.toFloat() / duration.toFloat()).coerceAtMost(1f)
+			bottomSheetFullPosition.text = position
+		}
 	}
 
 	private fun queryTimerDuration(controller: MediaController) : Int =
