@@ -112,11 +112,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		if ((requireActivity() as MainActivity).waitForContainer) {
 			waitedForContainer = false
 		}
-		if (standardBottomSheetBehavior.getViewDragHelper() != null) {
-			standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
-		}
 		super.onStart()
-		android.util.Log.e("hi","$waitedForContainer")
 		sessionToken =
 			SessionToken(requireContext(), ComponentName(requireContext(), GramophonePlaybackService::class.java))
 		controllerFuture =
