@@ -69,7 +69,6 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 
 	private var isUserTracking = false
 	private var runnableRunning = false
-	private var waitForContainer = false
 	private var waitedForContainer = true
 
 	private lateinit var sessionToken: SessionToken
@@ -110,12 +109,13 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 
 	override fun onStart() {
 		// Case 2: We start another player fragment, and get restarted in back stack after user is done
+		// Note: keep this line before super.onStart() to avoid value being overwritten in BaseFragment
 		if ((requireActivity() as MainActivity).waitForContainer) {
 			waitedForContainer = false
 		}
-		(requireActivity() as MainActivity).waitForContainer = waitForContainer
 		standardBottomSheetBehavior.isHideable = true
 		standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
+		super.onStart()
 		sessionToken =
 			SessionToken(requireContext(), ComponentName(requireContext(), GramophonePlaybackService::class.java))
 		controllerFuture =
@@ -136,7 +136,6 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 			},
 			MoreExecutors.directExecutor(),
 		)
-		super.onStart()
 	}
 
 	override fun onStop() {
