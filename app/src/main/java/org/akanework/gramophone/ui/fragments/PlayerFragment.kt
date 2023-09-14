@@ -314,9 +314,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 				setTimer(controllerFuture.get(), destinationTime)
 			}
 			picker.addOnDismissListener {
-				if (!alreadyHasTimer(controllerFuture.get())) {
-					bottomSheetTimerButton.isChecked = false
-				}
+				bottomSheetTimerButton.isChecked = alreadyHasTimer(controllerFuture.get())
 			}
 			picker.show(requireActivity().supportFragmentManager, "timer")
 		}
