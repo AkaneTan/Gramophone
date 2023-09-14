@@ -43,6 +43,15 @@ class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet)
 		setState(state)
 		getViewDragHelper()!!.getScroller()!!.abortAnimation()
 	}
+
+	@SuppressLint("RestrictedApi")
+	override fun handleBackInvoked() {
+		if (state != STATE_HIDDEN) {
+			setHideableInternal(false)
+		}
+		super.handleBackInvoked()
+		setHideableInternal(true)
+	}
 }
 
 
