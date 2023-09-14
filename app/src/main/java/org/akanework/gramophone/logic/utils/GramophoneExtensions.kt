@@ -1,6 +1,9 @@
 package org.akanework.gramophone.logic.utils
 
 import android.content.res.Resources
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.widget.OverScroller
 import androidx.customview.widget.ViewDragHelper
 import androidx.media3.session.MediaController
@@ -37,6 +40,17 @@ private fun ViewDragHelper.getScroller(): OverScroller? =
 	BottomSheetUtil.mScroller.get(this) as? OverScroller?
 
 fun BottomSheetBehavior<*>.setStateWithoutAnimation(state: Int) {
-	setState(state)
-	getViewDragHelper()?.getScroller()?.abortAnimation()
+	val h = Handler(Looper.myLooper()!!)
+	val r = object : Runnable {
+		override fun run() {
+			if (getViewDragHelper() == null) {
+				Log.i("GramophoneExtensions","Trying to disable animation later. This message should never spam.")
+				h.post(this)
+				return
+			}
+			setState(state)
+			getViewDragHelper()!!.getScroller()!!.abortAnimation()
+		}
+	}
+	r.run()
 }

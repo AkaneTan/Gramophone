@@ -13,6 +13,7 @@ import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -441,7 +442,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 			}
 		)
 
-		standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+		standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
 	}
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {

@@ -63,17 +63,11 @@ class SongAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            val standardBottomSheet = mainActivity.findViewById<FrameLayout>(R.id.player_layout)
-            val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
             val mediaController = mainActivity.getPlayer()
             mediaController.setMediaItems(songList)
             mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
             mediaController.prepare()
             mediaController.play()
-            if (standardBottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
-                standardBottomSheetBehavior.isHideable = false
-                standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            }
         }
 
         holder.moreButton.setOnClickListener { it ->
