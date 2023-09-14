@@ -230,4 +230,6 @@ class MainActivity : AppCompatActivity() {
 
     fun getPlayer() = (supportFragmentManager.fragments
         .find { it is PlayerFragment } as PlayerFragment?)!!.getPlayer()
+    fun hasPlayer() = (supportFragmentManager.fragments
+        .find { it is PlayerFragment } as PlayerFragment?) != null
 }

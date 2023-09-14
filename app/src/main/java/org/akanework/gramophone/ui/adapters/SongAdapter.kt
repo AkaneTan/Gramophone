@@ -63,11 +63,17 @@ class SongAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            val mediaController = mainActivity.getPlayer()
-            mediaController.setMediaItems(songList)
-            mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
-            mediaController.prepare()
-            mediaController.play()
+            val r = {
+                val mediaController = mainActivity.getPlayer()
+                mediaController.setMediaItems(songList)
+                mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
+                mediaController.prepare()
+                mediaController.play()
+            }
+            if (!mainActivity.hasPlayer()) {
+                mainActivity.supportFragmentManager.popBackStackImmediate()
+                Handler(Looper.myLooper()!!).postDelayed(r, 500)
+            } else r()
         }
 
         holder.moreButton.setOnClickListener { it ->
@@ -77,11 +83,17 @@ class SongAdapter(
             popupMenu.setOnMenuItemClickListener { it1 ->
                 when (it1.itemId) {
                     R.id.play_next -> {
-                        val mediaController = mainActivity.getPlayer()
-                        mediaController.addMediaItem(
-                            mediaController.currentMediaItemIndex + 1,
-                            songList[holder.bindingAdapterPosition],
-                        )
+                        val r = {
+                            val mediaController = mainActivity.getPlayer()
+                            mediaController.addMediaItem(
+                                mediaController.currentMediaItemIndex + 1,
+                                songList[holder.bindingAdapterPosition],
+                            )
+                        }
+                        if (!mainActivity.hasPlayer()) {
+                            mainActivity.supportFragmentManager.popBackStackImmediate()
+                            Handler(Looper.myLooper()!!).postDelayed(r, 500)
+                        } else r()
                     }
 
                     R.id.album -> {

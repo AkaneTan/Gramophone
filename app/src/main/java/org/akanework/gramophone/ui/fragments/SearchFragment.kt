@@ -59,9 +59,6 @@ class SearchFragment : BaseFragment() {
             build()
         }
 
-        rootView.post {
-            editText.showSoftKeyboard()
-        }
         editText.addTextChangedListener { text ->
             if (text.isNullOrBlank()) {
                 songAdapter.updateList(mutableListOf())
@@ -93,10 +90,22 @@ class SearchFragment : BaseFragment() {
 
         returnButton.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
-            requireActivity().closeKeyboard()
         }
 
         return rootView
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().closeKeyboard()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val editText = requireView().findViewById<EditText>(R.id.edit_text)
+        requireView().post {
+            editText.showSoftKeyboard()
+        }
     }
 
     override fun onDestroyView() {
