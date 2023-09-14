@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.UnstableApi
@@ -14,8 +13,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.transition.MaterialSharedAxis
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -23,7 +20,7 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.px
+import org.akanework.gramophone.logic.utils.dp
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -55,7 +52,7 @@ class SearchFragment : BaseFragment() {
         recyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {
-            setPadding(0, 0, 0, (66).px)
+            setPadding(0, 0, 0, (66).dp)
             build()
         }
 

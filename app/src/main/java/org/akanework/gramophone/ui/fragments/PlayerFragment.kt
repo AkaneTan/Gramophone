@@ -11,9 +11,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.doOnPreDraw
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -35,9 +34,11 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
+import org.akanework.gramophone.logic.utils.getViewDragHelper
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.logic.utils.setStateWithoutAnimation
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import java.lang.RuntimeException
 
 open class PlayerFragment : BaseFragment(), Player.Listener {
 
@@ -67,8 +68,6 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 
 	private lateinit var standardBottomSheet: FrameLayout
 	private lateinit var standardBottomSheetBehavior: BottomSheetBehavior<FrameLayout>
-
-	private lateinit var previewPlayer: RelativeLayout
 
 	private var isUserTracking = false
 	private var runnableRunning = false
@@ -116,8 +115,9 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		if ((requireActivity() as MainActivity).waitForContainer) {
 			waitedForContainer = false
 		}
-		standardBottomSheetBehavior.isHideable = true
-		standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
+		if (standardBottomSheetBehavior.getViewDragHelper() != null) {
+			standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
+		}
 		super.onStart()
 		sessionToken =
 			SessionToken(requireContext(), ComponentName(requireContext(), GramophonePlaybackService::class.java))
@@ -207,32 +207,21 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 					?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
 					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
 		}
-		handler.post {
-			var newState = standardBottomSheetBehavior.state
-			var hideable = standardBottomSheetBehavior.isHideable
-			if (instance.mediaItemCount != 0) {
-				if (newState != BottomSheetBehavior.STATE_EXPANDED) {
-					newState = BottomSheetBehavior.STATE_COLLAPSED
-					hideable = false
-				}
-			} else {
-				hideable = true
-				newState = BottomSheetBehavior.STATE_HIDDEN
+		var newState = standardBottomSheetBehavior.state
+		if (instance.mediaItemCount != 0) {
+			if (newState != BottomSheetBehavior.STATE_EXPANDED) {
+				newState = BottomSheetBehavior.STATE_COLLAPSED
 			}
-			if (hideable) {
-				standardBottomSheetBehavior.isHideable = true
-			}
-			if (!waitedForContainer) {
-				standardBottomSheetBehavior.setStateWithoutAnimation(newState)
-			} else {
-				standardBottomSheetBehavior.state = newState
-			}
-			if (!hideable) {
-				standardBottomSheetBehavior.isHideable = false
-			}
-			if (!waitedForContainer) {
-				waitedForContainer = true
-			}
+		} else {
+			newState = BottomSheetBehavior.STATE_HIDDEN
+		}
+		if (!waitedForContainer) {
+			standardBottomSheetBehavior.setStateWithoutAnimation(newState)
+		} else {
+			standardBottomSheetBehavior.state = newState
+		}
+		if (!waitedForContainer) {
+			waitedForContainer = true
 		}
 	}
 
@@ -291,7 +280,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 		bottomSheetTimerButton = view.findViewById(R.id.timer)
 		bottomSheetPlaylistButton = view.findViewById(R.id.playlist)
 
-		previewPlayer = view.findViewById(R.id.preview_player)
+		val previewPlayer = view.findViewById<RelativeLayout>(R.id.preview_player)
 		val fullPlayer = view.findViewById<RelativeLayout>(R.id.full_player)
 
 		standardBottomSheet.setOnClickListener {
@@ -441,8 +430,7 @@ open class PlayerFragment : BaseFragment(), Player.Listener {
 				}
 			}
 		)
-
-		standardBottomSheetBehavior.setStateWithoutAnimation(BottomSheetBehavior.STATE_HIDDEN)
+		standardBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 	}
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {

@@ -14,7 +14,7 @@ import java.lang.reflect.Field
  * This file contains some extension methods that made
  * For Gramophone.
  */
-val Int.px: Int get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+val Int.dp: Int get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 fun MediaController.playOrPause() {
 	if (isPlaying) {
 		pause()
@@ -33,24 +33,13 @@ private object BottomSheetUtil {
 		.apply { isAccessible = true }
 }
 
-private fun BottomSheetBehavior<*>.getViewDragHelper(): ViewDragHelper? =
+fun BottomSheetBehavior<*>.getViewDragHelper(): ViewDragHelper? =
 	BottomSheetUtil.viewDragHelper.get(this) as? ViewDragHelper?
 
 private fun ViewDragHelper.getScroller(): OverScroller? =
 	BottomSheetUtil.mScroller.get(this) as? OverScroller?
 
 fun BottomSheetBehavior<*>.setStateWithoutAnimation(state: Int) {
-	val h = Handler(Looper.myLooper()!!)
-	val r = object : Runnable {
-		override fun run() {
-			if (getViewDragHelper() == null) {
-				Log.i("GramophoneExtensions","Trying to disable animation later. This message should never spam.")
-				h.post(this)
-				return
-			}
-			setState(state)
-			getViewDragHelper()!!.getScroller()!!.abortAnimation()
-		}
-	}
-	r.run()
+	setState(state)
+	getViewDragHelper()!!.getScroller()!!.abortAnimation()
 }
