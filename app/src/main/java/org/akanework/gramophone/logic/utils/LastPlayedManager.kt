@@ -6,6 +6,8 @@ import android.util.Base64
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackParameters
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
@@ -53,6 +55,10 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 		editor.putString("last_played_grp", lastPlayed.second)
 		editor.putInt("last_played_idx", data.startIndex)
 		editor.putLong("last_played_pos", data.startPositionMs)
+		editor.putInt("repeat_mode", mediaSession.player.repeatMode)
+		editor.putBoolean("shuffle", mediaSession.player.shuffleModeEnabled)
+		editor.putFloat("speed", mediaSession.player.playbackParameters.speed)
+		editor.putFloat("pitch", mediaSession.player.playbackParameters.pitch)
 		editor.apply()
 	}
 
@@ -64,6 +70,12 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 		if (lastPlayedGrp == null || lastPlayedLst == null) {
 			return null
 		}
+		mediaSession.player.repeatMode = prefs.getInt("repeat_mode", Player.REPEAT_MODE_OFF)
+		mediaSession.player.shuffleModeEnabled = prefs.getBoolean("shuffle", false)
+		mediaSession.player.playbackParameters = PlaybackParameters(
+			prefs.getFloat("speed", 1f),
+			prefs.getFloat("pitch", 1f)
+		)
 		return MediaItemsWithStartPosition(
 			PrefsListUtils.parse(lastPlayedLst, lastPlayedGrp)
 				.map {
