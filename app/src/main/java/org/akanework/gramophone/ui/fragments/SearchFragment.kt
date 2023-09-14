@@ -1,9 +1,11 @@
 package org.akanework.gramophone.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
@@ -20,10 +22,13 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.closeKeyboard
 import org.akanework.gramophone.logic.utils.dp
+import org.akanework.gramophone.logic.utils.showSoftKeyboard
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class SearchFragment : BaseFragment() {
@@ -56,6 +61,9 @@ class SearchFragment : BaseFragment() {
             build()
         }
 
+        rootView.post {
+            editText.showSoftKeyboard()
+        }
         editText.addTextChangedListener { text ->
             if (text.isNullOrBlank()) {
                 songAdapter.updateList(mutableListOf())
@@ -85,9 +93,9 @@ class SearchFragment : BaseFragment() {
             }
         }
 
-
         returnButton.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
+            requireActivity().closeKeyboard()
         }
 
         return rootView
