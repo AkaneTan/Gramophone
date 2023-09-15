@@ -1,6 +1,7 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.SongAdapter
@@ -27,6 +29,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class SongFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private val songList = mutableListOf<MediaItem>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +40,6 @@ class SongFragment : BaseFragment(false) {
         val songRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         songRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val songList = mutableListOf<MediaItem>()
         songList.addAll(libraryViewModel.mediaItemList.value!!)
         val songAdapter = SongAdapter(songList, requireActivity() as MainActivity)
         val songDecorAdapter =
@@ -61,8 +63,20 @@ class SongFragment : BaseFragment(false) {
 
         songRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(songRecyclerView).build()
+        FastScrollerBuilder(songRecyclerView).apply {
+            setPopupTextProvider(SongPopupTextProvider())
+            build()
+        }
 
         return rootView
+    }
+
+    inner class SongPopupTextProvider : PopupTextProvider {
+        override fun getPopupText(position: Int): CharSequence {
+            if (position != 0) {
+                return songList[position - 1].mediaMetadata.title?.first().toString()
+            }
+            return "-"
+        }
     }
 }

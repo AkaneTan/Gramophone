@@ -8,6 +8,7 @@ import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.closeKeyboard
@@ -31,6 +33,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class SearchFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private var filteredList: List<MediaItem>? = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +59,7 @@ class SearchFragment : BaseFragment(false) {
 
         FastScrollerBuilder(recyclerView).apply {
             setPadding(0, 0, 0, (66).dp)
+            setPopupTextProvider(SongPopupTextProvider())
             build()
         }
 
@@ -65,7 +69,7 @@ class SearchFragment : BaseFragment(false) {
                 songDecorAdapter.updateSongCounter(0)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                    val filteredList =
+                    filteredList =
                         libraryViewModel.mediaItemList.value?.filter {
                             val isMatchingTitle = it.mediaMetadata.title!!.contains(text, true)
                             val isMatchingAlbum =
@@ -76,12 +80,12 @@ class SearchFragment : BaseFragment(false) {
                         }
                     withContext(Dispatchers.Main) {
                         if (filteredList != null) {
-                            if (filteredList.isNotEmpty()) {
-                                songDecorAdapter.updateSongCounter(filteredList.size)
+                            if (filteredList!!.isNotEmpty()) {
+                                songDecorAdapter.updateSongCounter(filteredList!!.size)
                             } else {
                                 songDecorAdapter.updateSongCounter(0)
                             }
-                            songAdapter.updateList(filteredList.toMutableList())
+                            songAdapter.updateList(filteredList!!.toMutableList())
                         }
                     }
                 }
@@ -111,6 +115,15 @@ class SearchFragment : BaseFragment(false) {
     override fun onDestroyView() {
         super.onDestroyView()
         viewLifecycleOwner.lifecycleScope.cancel()
+    }
+
+    inner class SongPopupTextProvider : PopupTextProvider {
+        override fun getPopupText(position: Int): CharSequence {
+            if (position != 0 && filteredList != null) {
+                return filteredList!![position - 1].mediaMetadata.title?.first().toString()
+            }
+            return "-"
+        }
     }
 
 }
