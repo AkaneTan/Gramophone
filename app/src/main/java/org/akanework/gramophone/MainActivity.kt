@@ -33,6 +33,7 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInC
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
+import org.akanework.gramophone.ui.fragments.SearchFragment
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.system.exitProcess
@@ -169,6 +170,27 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.container, SettingsFragment())
                         .commit()
                     drawerLayout.close()
+                }
+
+                R.id.search -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .addToBackStack("SEARCH")
+                        .replace(R.id.container, SearchFragment())
+                        .commit()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        drawerLayout.close()
+                    }, 50)
+                }
+
+                R.id.shuffle -> {
+                    libraryViewModel.mediaItemList.value?.let { it1 ->
+                        val controller = getPlayer()
+                        controller.setMediaItems(it1)
+                        controller.shuffleModeEnabled = true
+                        controller.prepare()
+                        controller.play()
+                    }
                 }
 
                 else -> throw IllegalStateException()
