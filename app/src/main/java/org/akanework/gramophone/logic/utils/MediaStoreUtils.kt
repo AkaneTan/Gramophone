@@ -11,6 +11,7 @@ import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
@@ -93,7 +94,7 @@ object MediaStoreUtils {
      * @param context
      * @return
      */
-    fun getAllSongs(context: Context): LibraryStoreClass {
+    private fun getAllSongs(context: Context): LibraryStoreClass {
         val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
         val projection =
             arrayListOf(
@@ -115,6 +116,8 @@ object MediaStoreUtils {
                 }
             }.toTypedArray()
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val limitValue = prefs.getInt("mediastore_filter", 0)
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
@@ -186,42 +189,44 @@ object MediaStoreUtils {
                     trackNumber %= 100
                 }
 
-                // Build our mediaItem.
-                songs.add(
-                    MediaItem
-                        .Builder()
-                        .setUri(Uri.parse(path))
-                        .setMediaId(id.toString())
-                        .setMimeType(mimeType)
-                        .setMediaMetadata(
-                            MediaMetadata
-                                .Builder()
-                                .setIsBrowsable(false)
-                                .setIsPlayable(true)
-                                .setTitle(title)
-                                .setArtist(artist)
-                                .setAlbumTitle(album)
-                                .setAlbumArtist(albumArtist)
-                                .setArtworkUri(imgUri)
-                                .setTrackNumber(trackNumber)
-                                .setDiscNumber(discNumber)
-                                .setRecordingYear(year)
-                                .setReleaseYear(year)
-                                .build(),
-                        ).build(),
-                )
+                if (duration > limitValue * 1000) {
+                    // Build our mediaItem.
+                    songs.add(
+                        MediaItem
+                            .Builder()
+                            .setUri(Uri.parse(path))
+                            .setMediaId(id.toString())
+                            .setMimeType(mimeType)
+                            .setMediaMetadata(
+                                MediaMetadata
+                                    .Builder()
+                                    .setIsBrowsable(false)
+                                    .setIsPlayable(true)
+                                    .setTitle(title)
+                                    .setArtist(artist)
+                                    .setAlbumTitle(album)
+                                    .setAlbumArtist(albumArtist)
+                                    .setArtworkUri(imgUri)
+                                    .setTrackNumber(trackNumber)
+                                    .setDiscNumber(discNumber)
+                                    .setRecordingYear(year)
+                                    .setReleaseYear(year)
+                                    .build(),
+                            ).build(),
+                    )
 
-                // Build our metadata maps/lists.
-                albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
-                artistMap.getOrPut(artist) { mutableListOf() }.add(songs.last())
-                albumArtistMap.getOrPut(
-                    albumArtist ?: unknownArtist
-                ) { mutableListOf() }.add(songs.last())
-                genre?.let { col -> genreMap.getOrPut(col) { mutableListOf() }.add(songs.last()) }
-                dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
-                durationMap[id] = duration
-                fileUriMap[id] = path.toUri()
-                mimeTypeMap[id] = mimeType
+                    // Build our metadata maps/lists.
+                    albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
+                    artistMap.getOrPut(artist) { mutableListOf() }.add(songs.last())
+                    albumArtistMap.getOrPut(
+                        albumArtist ?: unknownArtist
+                    ) { mutableListOf() }.add(songs.last())
+                    genre?.let { col -> genreMap.getOrPut(col) { mutableListOf() }.add(songs.last()) }
+                    dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
+                    durationMap[id] = duration
+                    fileUriMap[id] = path.toUri()
+                    mimeTypeMap[id] = mimeType
+                }
             }
         }
         cursor?.close()
@@ -301,7 +306,7 @@ object MediaStoreUtils {
     /**
      * Retrieves a list of playlists with their associated songs.
      */
-    fun getPlaylists(context: Context, songList: MutableList<MediaItem>): MutableList<Playlist> {
+    private fun getPlaylists(context: Context, songList: MutableList<MediaItem>): MutableList<Playlist> {
         val playlists = mutableListOf<Playlist>()
 
         // Define the content resolver
@@ -372,7 +377,7 @@ object MediaStoreUtils {
     }
 
     suspend fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context) {
-        val pairObject = MediaStoreUtils.getAllSongs(context)
+        val pairObject = getAllSongs(context)
         withContext(Dispatchers.Main) {
             libraryViewModel.mediaItemList.value = pairObject.songList
             libraryViewModel.albumItemList.value = pairObject.albumList

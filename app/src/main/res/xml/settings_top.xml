@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:title="@string/settings_category_info">
         <Preference
@@ -25,5 +25,15 @@
             android:title="@string/settings_dark_mode"
             android:summary="@string/settings_dark_mode_summary"
             android:widgetLayout="@layout/preference_material_switch"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/settings_category_behavior">
+        <SeekBarPreference
+            android:key="mediastore_filter"
+            android:title="@string/settings_mediastore_filter"
+            android:summary="@string/settings_mediastore_filter_summary"
+            android:max="120"
+            android:icon="@drawable/filter_art"
+            app:showSeekBarValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>
