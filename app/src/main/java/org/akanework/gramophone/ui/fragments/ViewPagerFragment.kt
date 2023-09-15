@@ -38,7 +38,7 @@ class ViewPagerFragment : BaseFragment(true) {
                     libraryViewModel.mediaItemList.value?.let { it1 ->
                         val controller = (requireActivity() as MainActivity).getPlayer()
                         controller.setMediaItems(it1)
-                        controller.seekToDefaultPosition(Random.nextInt(0, it1.size))
+                        controller.shuffleModeEnabled = true
                         controller.prepare()
                         controller.play()
                     }
