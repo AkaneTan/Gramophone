@@ -1,12 +1,14 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.MainActivity
@@ -17,10 +19,10 @@ class ArtistDecorAdapter(
     private val context: Context,
     private var artistCount: Int,
     private val artistAdapter: ArtistAdapter,
-    mainActivity: MainActivity
+    mainActivity: MainActivity,
+    private val prefs: SharedPreferences
 ) : RecyclerView.Adapter<ArtistDecorAdapter.ViewHolder>() {
     private var sortStatus = 0
-    private var isDisplayingAlbumArtist = false
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
     override fun onCreateViewHolder(
@@ -43,7 +45,8 @@ class ArtistDecorAdapter(
         holder.sortButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_artist_only)
-            popupMenu.menu.findItem(R.id.album_artist).isChecked = isDisplayingAlbumArtist
+            popupMenu.menu.findItem(R.id.album_artist).isChecked =
+                prefs.getBoolean("isDisplayingAlbumArtist", false)
 
             when (sortStatus) {
                 0 -> {
@@ -74,8 +77,8 @@ class ArtistDecorAdapter(
                     }
 
                     R.id.album_artist -> {
-                        if (!isDisplayingAlbumArtist) {
-                            isDisplayingAlbumArtist = true
+                        if (!prefs.getBoolean("isDisplayingAlbumArtist", false)) {
+                            prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
                             var itemCount = 0
                             menuItem.isChecked = !menuItem.isChecked
                             viewModel.albumArtistItemList.value?.let { it1 ->
@@ -87,7 +90,7 @@ class ArtistDecorAdapter(
                             updateSongCounter(itemCount)
                             artistAdapter.setClickEventToAlbumArtist()
                         } else {
-                            isDisplayingAlbumArtist = false
+                            prefs.edit().putBoolean("isDisplayingAlbumArtist", false).apply()
                             var itemCount = 0
                             menuItem.isChecked = !menuItem.isChecked
                             viewModel.artistItemList.value?.let { it1 ->
@@ -123,4 +126,17 @@ class ArtistDecorAdapter(
     }
 
     fun isCounterEmpty(): Boolean = artistCount == 0
+
+    fun updateListToAlbumArtist() {
+        prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
+        var itemCount = 0
+        viewModel.albumArtistItemList.value?.let { it1 ->
+            artistAdapter.updateList(
+                it1
+            )
+            itemCount = it1.size
+        }
+        updateSongCounter(itemCount)
+        artistAdapter.setClickEventToAlbumArtist()
+    }
 }

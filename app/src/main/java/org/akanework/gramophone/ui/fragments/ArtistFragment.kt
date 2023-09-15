@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +40,7 @@ class ArtistFragment : BaseFragment(false) {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_artist, container, false)
         val artistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
         val artistList = mutableListOf<MediaStoreUtils.Artist>()
@@ -60,8 +62,13 @@ class ArtistFragment : BaseFragment(false) {
                 libraryViewModel.artistItemList.value!!.size,
                 artistAdapter,
                 requireActivity() as MainActivity,
+                prefs
             )
         val concatAdapter = ConcatAdapter(artistDecorAdapter, artistAdapter)
+
+        if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
+            artistDecorAdapter.updateListToAlbumArtist()
+        }
 
         if (!libraryViewModel.artistItemList.hasActiveObservers()) {
             libraryViewModel.artistItemList.observe(viewLifecycleOwner) { mediaItems ->
@@ -70,6 +77,9 @@ class ArtistFragment : BaseFragment(false) {
                         artistDecorAdapter.updateSongCounter(mediaItems.size)
                     }
                     artistAdapter.updateList(mediaItems)
+                    if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
+                        artistDecorAdapter.updateListToAlbumArtist()
+                    }
                 }
             }
         }
