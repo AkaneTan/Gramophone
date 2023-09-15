@@ -16,6 +16,14 @@
             android:title="@string/settings_contributors"
             android:summary="@string/settings_contributors_detail"
             android:icon="@drawable/artist_art"/>
+        <Preference
+            android:title="@string/settings_repository"
+            android:icon="@drawable/ic_language"
+            android:summary="https://github.com/AkaneTan/Gramophone">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/AkaneTan/Gramophone" />
+        </Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_appearance">
