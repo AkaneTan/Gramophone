@@ -18,12 +18,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.getUri
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -170,6 +173,36 @@ class SongAdapter(
                     }
 
                     R.id.details -> {
+                        val rootView = MaterialAlertDialogBuilder(mainActivity)
+                            .setTitle(R.string.dialog_information)
+                            .setView(R.layout.dialog_info_song)
+                            .setNeutralButton(R.string.dismiss) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                        rootView.findViewById<TextInputEditText>(R.id.title)!!
+                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.title)
+                        rootView.findViewById<TextInputEditText>(R.id.artist)!!
+                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.artist)
+                        rootView.findViewById<TextInputEditText>(R.id.album)!!
+                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.albumTitle)
+                        rootView.findViewById<TextInputEditText>(R.id.album_artist)!!
+                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.albumArtist)
+                        rootView.findViewById<TextInputEditText>(R.id.track_number)!!
+                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.trackNumber.toString())
+                        val year = songList[holder.bindingAdapterPosition].mediaMetadata.releaseYear.toString()
+                        if (year != "0") {
+                            rootView.findViewById<TextInputEditText>(R.id.year)!!
+                                .setText(year)
+                        }
+                        val genre = songList[holder.bindingAdapterPosition].mediaMetadata.genre.toString()
+                        if (genre != "null") {
+                            rootView.findViewById<TextInputEditText>(R.id.genre)!!
+                                .setText(genre)
+                        }
+                        rootView.findViewById<TextInputEditText>(R.id.path)!!
+                            .setText(songList[holder.bindingAdapterPosition].getUri().toString())
+
                     }
                     /*
                     R.id.share -> {
