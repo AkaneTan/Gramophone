@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -26,6 +27,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class GenreFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private val genreList = mutableListOf<MediaStoreUtils.Genre>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +38,7 @@ class GenreFragment : BaseFragment(false) {
         val genreRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         genreRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val genreList = mutableListOf<MediaStoreUtils.Genre>()
+        genreList.clear()
         genreList.addAll(libraryViewModel.genreItemList.value!!)
         val genreAdapter =
             GenreAdapter(
@@ -66,9 +68,21 @@ class GenreFragment : BaseFragment(false) {
 
         genreRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(genreRecyclerView).build()
+        FastScrollerBuilder(genreRecyclerView).apply {
+            setPopupTextProvider(GenrePopupTextProvider())
+            build()
+        }
 
         return rootView
+    }
+
+    inner class GenrePopupTextProvider : PopupTextProvider {
+        override fun getPopupText(position: Int): CharSequence {
+            if (position != 0) {
+                return genreList[position - 1].title.first().toString()
+            }
+            return "-"
+        }
     }
 
 }

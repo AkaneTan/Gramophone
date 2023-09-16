@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.ui.adapters.ArtistDecorAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -29,6 +29,7 @@ class PlaylistFragment : BaseFragment(false) {
     }
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private val playlistList = mutableListOf<MediaStoreUtils.Playlist>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +40,7 @@ class PlaylistFragment : BaseFragment(false) {
         val playlistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         playlistRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val playlistList = mutableListOf<MediaStoreUtils.Playlist>()
+        playlistList.clear()
         playlistList.addAll(libraryViewModel.playlistList.value!!)
 
         val playlistAdapter =
@@ -65,10 +66,22 @@ class PlaylistFragment : BaseFragment(false) {
             }
         }
 
-       playlistRecyclerView.adapter = concatAdapter
+        playlistRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(playlistRecyclerView).build()
+        FastScrollerBuilder(playlistRecyclerView).apply {
+            setPopupTextProvider(PlaylistPopupTextProvider())
+            build()
+        }
 
         return rootView
+    }
+
+    inner class PlaylistPopupTextProvider : PopupTextProvider {
+        override fun getPopupText(position: Int): CharSequence {
+            if (position != 0) {
+                return playlistList[position - 1].title.first().toString()
+            }
+            return "-"
+        }
     }
 }

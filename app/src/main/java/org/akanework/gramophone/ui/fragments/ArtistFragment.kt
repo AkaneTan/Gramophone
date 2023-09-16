@@ -1,19 +1,17 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.transition.MaterialSharedAxis
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -32,6 +30,7 @@ class ArtistFragment : BaseFragment(false) {
     }
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private val artistList = mutableListOf<MediaStoreUtils.Artist>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,7 +42,7 @@ class ArtistFragment : BaseFragment(false) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val artistList = mutableListOf<MediaStoreUtils.Artist>()
+        artistList.clear()
         artistList.addAll(libraryViewModel.artistItemList.value!!)
         val albumArtistList = mutableListOf<MediaStoreUtils.Artist>()
         albumArtistList.addAll(libraryViewModel.albumArtistItemList.value!!)
@@ -86,8 +85,20 @@ class ArtistFragment : BaseFragment(false) {
 
         artistRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(artistRecyclerView).build()
+        FastScrollerBuilder(artistRecyclerView).apply {
+            setPopupTextProvider(ArtistPopupTextProvider())
+            build()
+        }
 
         return rootView
+    }
+
+    inner class ArtistPopupTextProvider : PopupTextProvider {
+        override fun getPopupText(position: Int): CharSequence {
+            if (position != 0) {
+                return artistList[position - 1].title.first().toString()
+            }
+            return "-"
+        }
     }
 }

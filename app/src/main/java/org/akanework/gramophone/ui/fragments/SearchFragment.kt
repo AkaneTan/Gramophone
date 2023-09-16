@@ -33,7 +33,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class SearchFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private var filteredList: List<MediaItem>? = listOf()
+    private val filteredList: MutableList<MediaItem> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,24 +69,26 @@ class SearchFragment : BaseFragment(false) {
                 songDecorAdapter.updateSongCounter(0)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                    filteredList =
-                        libraryViewModel.mediaItemList.value?.filter {
-                            val isMatchingTitle = it.mediaMetadata.title!!.contains(text, true)
-                            val isMatchingAlbum =
-                                it.mediaMetadata.albumTitle!!.contains(text, true)
-                            val isMatchingArtist =
-                                it.mediaMetadata.artist!!.contains(text, true)
-                            isMatchingTitle || isMatchingAlbum || isMatchingArtist
-                        }
+                    filteredList.clear()
+                    libraryViewModel.mediaItemList.value?.filter {
+                        val isMatchingTitle = it.mediaMetadata.title!!.contains(text, true)
+                        val isMatchingAlbum =
+                            it.mediaMetadata.albumTitle!!.contains(text, true)
+                        val isMatchingArtist =
+                            it.mediaMetadata.artist!!.contains(text, true)
+                        isMatchingTitle || isMatchingAlbum || isMatchingArtist
+                    }?.let {
+                        filteredList.addAll(
+                            it
+                        )
+                    }
                     withContext(Dispatchers.Main) {
-                        if (filteredList != null) {
-                            if (filteredList!!.isNotEmpty()) {
-                                songDecorAdapter.updateSongCounter(filteredList!!.size)
-                            } else {
-                                songDecorAdapter.updateSongCounter(0)
-                            }
-                            songAdapter.updateList(filteredList!!.toMutableList())
+                        if (filteredList.isNotEmpty()) {
+                            songDecorAdapter.updateSongCounter(filteredList.size)
+                        } else {
+                            songDecorAdapter.updateSongCounter(0)
                         }
+                        songAdapter.updateList(filteredList.toMutableList())
                     }
                 }
             }
@@ -119,8 +121,8 @@ class SearchFragment : BaseFragment(false) {
 
     inner class SongPopupTextProvider : PopupTextProvider {
         override fun getPopupText(position: Int): CharSequence {
-            if (position != 0 && filteredList != null) {
-                return filteredList!![position - 1].mediaMetadata.title?.first().toString()
+            if (position != 0) {
+                return filteredList[position - 1].mediaMetadata.title?.first().toString()
             }
             return "-"
         }
