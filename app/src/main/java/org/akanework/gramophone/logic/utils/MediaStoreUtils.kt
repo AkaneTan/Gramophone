@@ -107,7 +107,6 @@ object MediaStoreUtils {
                 MediaStore.Audio.Media.YEAR,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.MIME_TYPE,
-                MediaStore.Audio.Media.DISC_NUMBER,
                 MediaStore.Audio.Media.TRACK,
                 MediaStore.Audio.Media.DURATION,
             ).apply {
@@ -151,7 +150,6 @@ object MediaStoreUtils {
             val yearColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR)
             val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
             val mimeTypeColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
-            val discNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DISC_NUMBER)
             val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
             val genreColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                 it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE) else null
@@ -169,7 +167,7 @@ object MediaStoreUtils {
                 val year = it.getInt(yearColumn)
                 val albumId = it.getLong(albumIdColumn)
                 val mimeType = it.getString(mimeTypeColumn)
-                var discNumber = it.getInt(discNumberColumn)
+                var discNumber = 0
                 var trackNumber = it.getInt(trackNumberColumn)
                 val duration = it.getLong(durationColumn)
                 val genre = genreColumn?.let { col -> it.getStringOrNull(col) }
