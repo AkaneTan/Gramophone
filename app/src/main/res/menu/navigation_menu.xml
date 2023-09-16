@@ -33,6 +33,12 @@
                 android:title="@string/category_dates"
                 app:showAsAction="ifRoom" />
             <item
+                android:id="@+id/folders"
+                android:checkable="true"
+                android:icon="@drawable/folder_art"
+                android:title="@string/folders"
+                app:showAsAction="ifRoom" />
+            <item
                 android:id="@+id/playlists"
                 android:checkable="true"
                 android:icon="@drawable/ic_playlist_play"

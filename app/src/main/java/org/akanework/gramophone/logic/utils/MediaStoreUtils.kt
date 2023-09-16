@@ -86,7 +86,35 @@ object MediaStoreUtils {
         val mimeTypeList: MutableMap<Long, String>,
         val playlistList: MutableList<Playlist>,
         val addDateList: MutableMap<Long, Long>,
+        val folderStructure: FileNode
     )
+
+    data class FileNode(
+        val folderName: String,
+        val folderList: MutableList<FileNode>,
+        val songList: MutableList<MediaItem>,
+    )
+
+    private fun handleMediaItem(mediaItem: MediaItem, path: String, rootNode: FileNode) {
+        val rootFolderIndex = path.indexOf('/', 1)
+
+        if (rootFolderIndex != -1) {
+            val folderName = path.substring(1, rootFolderIndex)
+            val remainingPath = path.substring(rootFolderIndex)
+
+            val existingFolder = rootNode.folderList.find { it.folderName == folderName }
+
+            if (existingFolder != null) {
+                handleMediaItem(mediaItem, remainingPath, existingFolder)
+            } else {
+                val newFolder = FileNode(folderName = folderName, mutableListOf(), mutableListOf())
+                rootNode.folderList.add(newFolder)
+                handleMediaItem(mediaItem, remainingPath, newFolder)
+            }
+        } else {
+            rootNode.songList.add(mediaItem)
+        }
+    }
 
     /**
      * [getAllSongs] gets all of your songs from your local disk.
@@ -118,6 +146,7 @@ object MediaStoreUtils {
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val limitValue = prefs.getInt("mediastore_filter",  context.resources.getInteger(R.integer.filter_default_sec))
+        val root = FileNode(folderName = "storage", mutableListOf(), mutableListOf())
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
@@ -215,6 +244,7 @@ object MediaStoreUtils {
                                     .setReleaseYear(year)
                                     .build(),
                             ).build(),
+
                     )
 
                     // Build our metadata maps/lists.
@@ -229,6 +259,7 @@ object MediaStoreUtils {
                     fileUriMap[id] = path.toUri()
                     mimeTypeMap[id] = mimeType
                     addDateMap[id] = addDate
+                    handleMediaItem(songs.last(), path.toString(), root)
                 }
             }
         }
@@ -303,7 +334,8 @@ object MediaStoreUtils {
             fileUriMap,
             mimeTypeMap,
             playlistList,
-            addDateMap
+            addDateMap,
+            root
         )
     }
 
@@ -394,6 +426,7 @@ object MediaStoreUtils {
             libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
             libraryViewModel.playlistList.value = pairObject.playlistList
             libraryViewModel.addDateMap.value = pairObject.addDateList
+            libraryViewModel.folderStructure.value = pairObject.folderStructure
         }
     }
 

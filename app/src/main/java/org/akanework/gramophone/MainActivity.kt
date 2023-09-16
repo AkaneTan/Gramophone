@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateLibrary() {
         CoroutineScope(Dispatchers.Default).launch {
             updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
+
         }
     }
 

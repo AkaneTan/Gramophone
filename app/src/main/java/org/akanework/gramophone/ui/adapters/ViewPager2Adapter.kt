@@ -8,6 +8,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.fragments.AlbumFragment
 import org.akanework.gramophone.ui.fragments.ArtistFragment
 import org.akanework.gramophone.ui.fragments.DateFragment
+import org.akanework.gramophone.ui.fragments.FolderFragment
 import org.akanework.gramophone.ui.fragments.GenreFragment
 import org.akanework.gramophone.ui.fragments.PlaylistFragment
 import org.akanework.gramophone.ui.fragments.SongFragment
@@ -26,7 +27,8 @@ class ViewPager2Adapter(
             Pair(2, R.id.artists),
             Pair(3, R.id.genres),
             Pair(4, R.id.dates),
-            Pair(5, R.id.playlists)
+            Pair(5, R.id.folders),
+            Pair(6, R.id.playlists)
         )
 
         fun getLabelResId(position: Int): Int =
@@ -36,6 +38,7 @@ class ViewPager2Adapter(
                 R.id.artists -> R.string.category_artists
                 R.id.genres -> R.string.category_genres
                 R.id.dates -> R.string.category_dates
+                R.id.folders -> R.string.folders
                 R.id.playlists -> R.string.category_playlists
                 else -> throw IllegalArgumentException("Invalid position: $position")
             }
@@ -50,6 +53,7 @@ class ViewPager2Adapter(
             R.id.artists -> ArtistFragment()
             R.id.genres -> GenreFragment()
             R.id.dates -> DateFragment()
+            R.id.folders -> FolderFragment()
             R.id.playlists -> PlaylistFragment()
             else -> throw IllegalArgumentException("Invalid position: $position")
         }
