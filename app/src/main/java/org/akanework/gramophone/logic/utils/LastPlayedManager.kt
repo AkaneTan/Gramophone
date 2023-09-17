@@ -3,7 +3,6 @@ package org.akanework.gramophone.logic.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters

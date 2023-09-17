@@ -14,7 +14,6 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
-import kotlin.random.Random
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : BaseFragment(true) {

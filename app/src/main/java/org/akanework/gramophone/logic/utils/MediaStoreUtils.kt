@@ -6,7 +6,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem

@@ -4,18 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
-import android.widget.OverScroller
-import androidx.customview.widget.ViewDragHelper
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import java.lang.reflect.Field
 
 /**
  * This file contains some extension methods that made
