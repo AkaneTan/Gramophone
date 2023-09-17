@@ -3,6 +3,7 @@ package org.akanework.gramophone.logic.utils
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -115,7 +116,7 @@ object MediaStoreUtils {
             }.toTypedArray()
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val limitValue = prefs.getInt("mediastore_filter", R.integer.filter_default_sec)
+        val limitValue = prefs.getInt("mediastore_filter",  context.resources.getInteger(R.integer.filter_default_sec))
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
