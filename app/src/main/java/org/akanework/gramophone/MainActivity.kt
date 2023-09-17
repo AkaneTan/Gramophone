@@ -97,7 +97,9 @@ class MainActivity : AppCompatActivity() {
             FragmentLifecycleCallbacks() {
             override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
                 super.onFragmentStarted(fm, f)
-                getPlayerSheet().visible = ((f as BaseFragment).wantsPlayer)
+                if (f is BaseFragment) {
+                    getPlayerSheet().visible = f.wantsPlayer
+                }
             }
         }, false)
 
