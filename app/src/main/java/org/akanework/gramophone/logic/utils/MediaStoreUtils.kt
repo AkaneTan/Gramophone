@@ -120,7 +120,7 @@ object MediaStoreUtils {
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
-        val albumMap = mutableMapOf<Pair<String, Int>, MutableList<MediaItem>>()
+        val albumMap = mutableMapOf<Pair<String?, Int>, MutableList<MediaItem>>()
         val artistMap = mutableMapOf<String, MutableList<MediaItem>>()
         val albumArtistMap = mutableMapOf<String, MutableList<MediaItem>>()
         val genreMap = mutableMapOf<String?, MutableList<MediaItem>>()
@@ -159,7 +159,7 @@ object MediaStoreUtils {
                 val id = it.getLong(idColumn)
                 val title = it.getString(titleColumn)
                 val artist = it.getString(artistColumn)
-                val album = it.getString(albumColumn)
+                val album = it.getStringOrNull(albumColumn)
                 val albumArtist =
                     it.getString(albumArtistColumn)
                         ?: null
@@ -245,7 +245,7 @@ object MediaStoreUtils {
                                 .toString()
                     Album(
                         index.toLong(),
-                        albumTitle,
+                        albumTitle ?: context.getString(R.string.unknown_album),
                         albumArtist.toString(),
                         albumYear,
                         sortedAlbumSongs,
