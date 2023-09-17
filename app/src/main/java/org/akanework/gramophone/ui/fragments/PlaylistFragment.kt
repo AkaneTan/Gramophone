@@ -22,7 +22,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [PlaylistFragment] displays playlist information.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class PlaylistFragment : BaseFragment() {
+class PlaylistFragment : BaseFragment(false) {
 
     companion object {
         const val TAG = "PlaylistFragment"

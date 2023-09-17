@@ -29,7 +29,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class SearchFragment : BaseFragment() {
+class SearchFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

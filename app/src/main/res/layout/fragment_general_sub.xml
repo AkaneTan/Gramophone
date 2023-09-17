@@ -41,6 +41,4 @@
             android:paddingBottom="@dimen/recyclerview_bottom_padding" />
     </FrameLayout>
 
-    <include layout="@layout/bottom_sheet" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

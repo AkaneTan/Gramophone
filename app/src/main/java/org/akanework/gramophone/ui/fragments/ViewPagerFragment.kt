@@ -17,7 +17,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class ViewPagerFragment : PlayerFragment() {
+class ViewPagerFragment : BaseFragment(true) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private var viewPager2: ViewPager2? = null
 

@@ -7,9 +7,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
 import org.akanework.gramophone.MainActivity
 
-abstract class BaseFragment : Fragment() {
-
-	protected var waitForContainer = false // used by PlayerFragment, all other fragment sets false
+abstract class BaseFragment(val wantsPlayer: Boolean) : Fragment() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -18,11 +16,6 @@ abstract class BaseFragment : Fragment() {
 		returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
 		exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
 		reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
-	}
-
-	override fun onStart() {
-		super.onStart()
-		(requireActivity() as MainActivity).waitForContainer = waitForContainer
 	}
 
 	// https://github.com/material-components/material-components-android/issues/1984#issuecomment-1089710991

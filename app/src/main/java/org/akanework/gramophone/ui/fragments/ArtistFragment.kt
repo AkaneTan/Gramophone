@@ -24,7 +24,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [ArtistFragment] displays information about artists.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class ArtistFragment : BaseFragment() {
+class ArtistFragment : BaseFragment(false) {
 
     companion object {
         const val TAG = "ArtistFragment"

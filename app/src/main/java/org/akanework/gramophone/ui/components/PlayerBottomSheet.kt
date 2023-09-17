@@ -17,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -50,17 +49,8 @@ class PlayerBottomSheet private constructor(
 	constructor(context: Context, attributeSet: AttributeSet?)
 			: this(context, attributeSet, 0, 0)
 
-	private val activity
-		get() = context as MainActivity
-	private val lifecycleOwner: LifecycleOwner
-		get() = activity // TODO use fragment?
-
-	private val libraryViewModel: LibraryViewModel by activity.viewModels()
-
-	private val handler = Handler(Looper.getMainLooper())
-	private lateinit var sessionToken: SessionToken
-	private lateinit var controllerFuture: ListenableFuture<MediaController>
-
+	private var sessionToken: SessionToken? = null
+	private var controllerFuture: ListenableFuture<MediaController>? = null
 	private val touchListener: Slider.OnSliderTouchListener
 	private val bottomSheetPreviewCover: ImageView
 	private val bottomSheetPreviewTitle: TextView
@@ -83,9 +73,18 @@ class PlayerBottomSheet private constructor(
 	private val bottomSheetTimerButton: MaterialButton
 	private val bottomSheetFullSlider: Slider
 	private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
+	private var bottomSheetBackCallback: OnBackPressedCallback? = null
 	private val fullPlayer: RelativeLayout
 	private val previewPlayer: RelativeLayout
 
+	private val activity
+		get() = context as MainActivity
+	private val lifecycleOwner: LifecycleOwner
+		get() = activity // TODO use fragment?
+	private val libraryViewModel: LibraryViewModel by activity.viewModels()
+	private val handler = Handler(Looper.getMainLooper())
+	private val instance: MediaController
+		get() = controllerFuture!!.get()
 	private var isUserTracking = false
 	private var runnableRunning = false
 	private var ready = false
@@ -99,8 +98,22 @@ class PlayerBottomSheet private constructor(
 			field = value
 			if (ready) onUiReadyListener?.run()
 		}
-
-	private var bottomSheetBackCallback: OnBackPressedCallback? = null
+	var visible = false
+		set(value) {
+			if (field != value) {
+				field = value
+				standardBottomSheetBehavior?.state =
+					if (controllerFuture?.isDone == true
+							&& controllerFuture!!.get().mediaItemCount != 0 && value) {
+						if (standardBottomSheetBehavior?.state
+							!= BottomSheetBehavior.STATE_EXPANDED)
+							BottomSheetBehavior.STATE_COLLAPSED
+						else BottomSheetBehavior.STATE_EXPANDED
+					} else {
+						BottomSheetBehavior.STATE_HIDDEN
+					}
+			}
+		}
 
 	init {
 		inflate(context, R.layout.bottom_sheet_impl, this)
@@ -138,7 +151,6 @@ class PlayerBottomSheet private constructor(
 				// when the number is too big (like when toValue
 				// used the duration directly) we might encounter
 				// some performance problem.
-				val instance = controllerFuture.get()
 				val mediaId = instance.currentMediaItem?.mediaId
 				if (mediaId != null) {
 					instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
@@ -154,27 +166,25 @@ class PlayerBottomSheet private constructor(
 		}
 
 		bottomSheetTimerButton.setOnClickListener {
-			val controller = controllerFuture.get()
 			val picker =
 				MaterialTimePicker
 					.Builder()
-					.setHour(queryTimerDuration(controller) / 3600 / 1000)
-					.setMinute((queryTimerDuration(controller) % (3600 * 1000)) / (60 * 1000))
+					.setHour(queryTimerDuration(instance) / 3600 / 1000)
+					.setMinute((queryTimerDuration(instance) % (3600 * 1000)) / (60 * 1000))
 					.setTimeFormat(TimeFormat.CLOCK_24H)
 					.setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
 					.build()
 			picker.addOnPositiveButtonClickListener {
 				val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-				setTimer(controllerFuture.get(), destinationTime)
+				setTimer(instance, destinationTime)
 			}
 			picker.addOnDismissListener {
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(controllerFuture.get())
+				bottomSheetTimerButton.isChecked = alreadyHasTimer(instance)
 			}
 			picker.show(activity.supportFragmentManager, "timer")
 		}
 
 		bottomSheetLoopButton.setOnClickListener {
-			val instance = controllerFuture.get()
 			instance.repeatMode = when (instance.repeatMode) {
 				Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
 				Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
@@ -184,27 +194,26 @@ class PlayerBottomSheet private constructor(
 		}
 
 		bottomSheetPreviewControllerButton.setOnClickListener {
-			controllerFuture.get().playOrPause()
+			instance.playOrPause()
 		}
 		bottomSheetFullControllerButton.setOnClickListener {
-			controllerFuture.get().playOrPause()
+			instance.playOrPause()
 		}
 		bottomSheetPreviewNextButton.setOnClickListener {
-			controllerFuture.get().seekToNextMediaItem()
+			instance.seekToNextMediaItem()
 		}
 		bottomSheetFullPreviousButton.setOnClickListener {
-			controllerFuture.get().seekToPreviousMediaItem()
+			instance.seekToPreviousMediaItem()
 		}
 		bottomSheetFullNextButton.setOnClickListener {
-			controllerFuture.get().seekToNextMediaItem()
+			instance.seekToNextMediaItem()
 		}
 		bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
-			controllerFuture.get().shuffleModeEnabled = isChecked
+			instance.shuffleModeEnabled = isChecked
 		}
 
 		bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
 			if (isUser) {
-				val instance = controllerFuture.get()
 				val dest =
 					instance.currentMediaItem?.mediaId?.let {
 						libraryViewModel.durationItemList.value?.get(it.toLong())
@@ -277,7 +286,6 @@ class PlayerBottomSheet private constructor(
 
 	private val positionRunnable = object : Runnable {
 		override fun run() {
-			val instance = controllerFuture.get()!!
 			val position =
 				GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
 			if (runnableRunning) {
@@ -336,14 +344,13 @@ class PlayerBottomSheet private constructor(
 		onStop(lifecycleOwner)
 	}
 
-	fun getPlayer(): MediaController = controllerFuture.get()
+	fun getPlayer(): MediaController = instance
 
 	override fun onMediaItemTransition(
 		mediaItem: MediaItem?,
 		reason: Int,
 	) {
 		updateSongInfo(mediaItem)
-		val instance = controllerFuture.get()
 		val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
 		val duration =
 			libraryViewModel.durationItemList.value?.get(
@@ -386,7 +393,6 @@ class PlayerBottomSheet private constructor(
 	}
 
 	private fun updateSongInfo(mediaItem: MediaItem?) {
-		val instance = controllerFuture.get()
 		if (instance.mediaItemCount != 0) {
 			Glide
 				.with(bottomSheetPreviewCover)
@@ -409,7 +415,7 @@ class PlayerBottomSheet private constructor(
 					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
 		}
 		var newState = standardBottomSheetBehavior!!.state
-		if (instance.mediaItemCount != 0) {
+		if (instance.mediaItemCount != 0 && visible) {
 			if (newState != BottomSheetBehavior.STATE_EXPANDED) {
 				newState = BottomSheetBehavior.STATE_COLLAPSED
 			}
@@ -430,18 +436,17 @@ class PlayerBottomSheet private constructor(
 			SessionToken(context, ComponentName(context, GramophonePlaybackService::class.java))
 		controllerFuture =
 			MediaController
-				.Builder(context, sessionToken)
+				.Builder(context, sessionToken!!)
 				.setListener(sessionListener)
 				.buildAsync()
-		controllerFuture.addListener(
+		controllerFuture!!.addListener(
 			{
-				val controller = controllerFuture.get()
-				controller.addListener(this)
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
-				onRepeatModeChanged(controller.repeatMode)
-				onShuffleModeEnabledChanged(controller.shuffleModeEnabled)
-				onIsPlayingChanged(controller.isPlaying)
-				updateSongInfo(controller.currentMediaItem)
+				instance.addListener(this)
+				bottomSheetTimerButton.isChecked = alreadyHasTimer(instance)
+				onRepeatModeChanged(instance.repeatMode)
+				onShuffleModeEnabledChanged(instance.shuffleModeEnabled)
+				onIsPlayingChanged(instance.isPlaying)
+				updateSongInfo(instance.currentMediaItem)
 				handler.post { ready = true }
 			},
 			MoreExecutors.directExecutor(),
@@ -450,9 +455,8 @@ class PlayerBottomSheet private constructor(
 
 	override fun onStop(owner: LifecycleOwner) {
 		super.onStop(owner)
-		val instance = controllerFuture.get()
 		instance.removeListener(this)
-		controllerFuture.get().release()
+		instance.release()
 	}
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
@@ -482,7 +486,6 @@ class PlayerBottomSheet private constructor(
 	}
 
 	override fun onIsPlayingChanged(isPlaying: Boolean) {
-		val instance = controllerFuture.get()
 		if (isPlaying) {
 			bottomSheetPreviewControllerButton.icon =
 				AppCompatResources.getDrawable(context, R.drawable.pause_art)

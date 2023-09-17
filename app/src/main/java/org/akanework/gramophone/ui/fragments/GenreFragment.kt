@@ -24,7 +24,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [GenreFragment] displays information about your song's genres.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class GenreFragment : BaseFragment() {
+class GenreFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

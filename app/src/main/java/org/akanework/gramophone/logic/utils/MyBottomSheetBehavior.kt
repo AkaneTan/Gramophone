@@ -18,6 +18,10 @@ class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet)
 		}
 	}
 
+	init {
+		state = STATE_HIDDEN
+	}
+
 	@SuppressLint("RestrictedApi")
 	override fun isHideableWhenDragging(): Boolean {
 		return false

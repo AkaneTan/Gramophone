@@ -23,7 +23,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [DateFragment] displays information about your song's dates.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class DateFragment : BaseFragment() {
+class DateFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

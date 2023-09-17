@@ -1,12 +1,12 @@
 package org.akanework.gramophone
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
@@ -16,8 +16,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
-import androidx.media3.common.util.UnstableApi
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.MaterialColors
@@ -29,23 +31,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
-import org.akanework.gramophone.ui.fragments.PlayerFragment
+import org.akanework.gramophone.ui.components.PlayerBottomSheet
+import org.akanework.gramophone.ui.fragments.BaseFragment
 import org.akanework.gramophone.ui.fragments.SettingsFragment
-import org.akanework.gramophone.ui.fragments.ViewPagerFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
 
+    private val handler = Handler(Looper.getMainLooper())
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-
-    // This is basically a hack to work around the fact fragment result API doesn't deliver info
-    // until fragment is in STARTED state, but we need it earlier.
-    var waitForContainer = false
 
     fun navigateDrawer(int: Int) {
         drawerLayout.open()
@@ -77,9 +76,9 @@ class MainActivity : AppCompatActivity() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val isDarkModeEnabled = prefs.getBoolean("dark_mode", false)
         if (isDarkModeEnabled) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
 
         ActivityCompat.postponeEnterTransition(this)
@@ -94,6 +93,14 @@ class MainActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             window.attributes = params
         }
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(object :
+            FragmentLifecycleCallbacks() {
+            override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+                super.onFragmentStarted(fm, f)
+                getPlayerSheet().visible = ((f as BaseFragment).wantsPlayer)
+            }
+        }, false)
 
         // Set content Views.
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -228,8 +235,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getPlayer() = (supportFragmentManager.fragments
-        .find { it is PlayerFragment } as PlayerFragment?)!!.getPlayer()
-    fun hasPlayer() = (supportFragmentManager.fragments
-        .find { it is PlayerFragment } as PlayerFragment?) != null
+    private fun getPlayerSheet() = findViewById<PlayerBottomSheet>(R.id.player_layout)
+    fun getPlayer() = getPlayerSheet().getPlayer()
 }

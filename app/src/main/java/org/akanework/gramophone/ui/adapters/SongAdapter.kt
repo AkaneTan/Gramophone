@@ -63,17 +63,12 @@ class SongAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            val r = {
-                val mediaController = mainActivity.getPlayer()
-                mediaController.setMediaItems(songList)
-                mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
-                mediaController.prepare()
-                mediaController.play()
-            }
-            if (!mainActivity.hasPlayer()) {
-                mainActivity.supportFragmentManager.popBackStackImmediate()
-                Handler(Looper.myLooper()!!).postDelayed(r, 500)
-            } else r()
+            mainActivity.supportFragmentManager.popBackStack()
+            val mediaController = mainActivity.getPlayer()
+            mediaController.setMediaItems(songList)
+            mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
+            mediaController.prepare()
+            mediaController.play()
         }
 
         holder.moreButton.setOnClickListener { it ->
@@ -83,17 +78,12 @@ class SongAdapter(
             popupMenu.setOnMenuItemClickListener { it1 ->
                 when (it1.itemId) {
                     R.id.play_next -> {
-                        val r = {
-                            val mediaController = mainActivity.getPlayer()
-                            mediaController.addMediaItem(
-                                mediaController.currentMediaItemIndex + 1,
-                                songList[holder.bindingAdapterPosition],
-                            )
-                        }
-                        if (!mainActivity.hasPlayer()) {
-                            mainActivity.supportFragmentManager.popBackStackImmediate()
-                            Handler(Looper.myLooper()!!).postDelayed(r, 500)
-                        } else r()
+                        mainActivity.supportFragmentManager.popBackStack()
+                        val mediaController = mainActivity.getPlayer()
+                        mediaController.addMediaItem(
+                            mediaController.currentMediaItemIndex + 1,
+                            songList[holder.bindingAdapterPosition],
+                        )
                     }
 
                     R.id.album -> {

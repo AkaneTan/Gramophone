@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.R
 
-class SettingsFragment : BaseFragment() {
+class SettingsFragment : BaseFragment(false) {
 
     override fun onCreateView(
         inflater: LayoutInflater,

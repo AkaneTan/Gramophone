@@ -25,7 +25,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * about songs.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class SongFragment : BaseFragment() {
+class SongFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

@@ -23,7 +23,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [AlbumFragment] displays information about your albums.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class AlbumFragment : BaseFragment() {
+class AlbumFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
