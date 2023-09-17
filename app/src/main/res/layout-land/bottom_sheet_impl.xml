@@ -124,26 +124,29 @@
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toTopOf="parent" />
 
+			<!-- LANDSCAPE changed constraints here -->
 			<ImageView
 				android:id="@+id/full_sheet_cover"
 				android:layout_width="0dp"
 				android:layout_height="0dp"
 				android:contentDescription="@string/album"
 				android:src="@drawable/ic_default_cover"
-				app:layout_constraintBottom_toTopOf="@+id/controls"
-				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintEnd_toStartOf="@id/controls"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
 
+			<!-- LANDSCAPE changed constraints here -->
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/controls"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:background="?attr/colorSurface"
 				android:elevation="0dp"
-				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintBottom_toTopOf="@id/controls"
+				app:layout_constraintTop_toBottomOf="@id/slide_down"
 				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintStart_toStartOf="parent">
+				app:layout_constraintStart_toEndOf="@id/full_sheet_cover">
 
 				<LinearLayout
 					android:id="@+id/textLayout"

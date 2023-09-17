@@ -15,6 +15,7 @@ import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
@@ -74,7 +75,7 @@ class PlayerBottomSheet private constructor(
 	private val bottomSheetFullSlider: Slider
 	private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
 	private var bottomSheetBackCallback: OnBackPressedCallback? = null
-	private val fullPlayer: RelativeLayout
+	private val fullPlayer: ConstraintLayout
 	private val previewPlayer: RelativeLayout
 
 	private val activity
