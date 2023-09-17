@@ -16,6 +16,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
@@ -141,6 +143,11 @@ class PlayerBottomSheet private constructor(
 		bottomSheetPlaylistButton = findViewById(R.id.playlist)
 		previewPlayer = findViewById(R.id.preview_player)
 		fullPlayer = findViewById(R.id.full_player)
+		ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+			val statusBarSize = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+			fullPlayer.setPadding(statusBarSize.left, statusBarSize.top, statusBarSize.right, statusBarSize.bottom)
+			return@setOnApplyWindowInsetsListener insets
+		}
 
 		touchListener = object : Slider.OnSliderTouchListener {
 			override fun onStartTrackingTouch(slider: Slider) {

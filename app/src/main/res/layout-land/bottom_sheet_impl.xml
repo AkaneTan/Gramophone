@@ -102,13 +102,12 @@
 		android:layout_height="match_parent">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginBottom="56dp"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
 			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintBottom_toBottomOf="@id/actionBar"
-			android:background="?attr/colorSurface"
+			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			android:elevation="0dp">
 
 			<com.google.android.material.button.MaterialButton
@@ -129,22 +128,22 @@
 				android:id="@+id/full_sheet_cover"
 				android:layout_width="0dp"
 				android:layout_height="0dp"
+				android:layout_marginHorizontal="10dp"
 				android:contentDescription="@string/album"
 				android:src="@drawable/ic_default_cover"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toStartOf="@id/controls"
 				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
+				app:layout_constraintTop_toBottomOf="@+id/slide_down"  />
 
 			<!-- LANDSCAPE changed constraints here -->
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/controls"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:background="?attr/colorSurface"
 				android:elevation="0dp"
-				app:layout_constraintBottom_toTopOf="@id/controls"
-				app:layout_constraintTop_toBottomOf="@id/slide_down"
+				android:layout_margin="10dp"
+				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toEndOf="@id/full_sheet_cover">
 
@@ -191,8 +190,6 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_above="@id/duration_frame"
-					android:layout_marginStart="4dp"
-					android:layout_marginEnd="4dp"
 					android:value="0"
 					app:labelBehavior="gone"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
@@ -299,7 +296,7 @@
 		</androidx.constraintlayout.widget.ConstraintLayout>
 
 		<LinearLayout
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:id="@+id/actionBar"
 			android:gravity="end"
