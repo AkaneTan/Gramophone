@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -40,8 +39,7 @@ import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
-
-    private val handler = Handler(Looper.getMainLooper())
+    
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
@@ -114,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
-            val playerLayout = fragmentContainerView.findViewById<View>(R.id.player_layout)
+            val playerLayout = getPlayerSheet()
             when (it.itemId) {
                 in tabs.values -> {
                     viewPager2.setCurrentItem(tabs.entries
