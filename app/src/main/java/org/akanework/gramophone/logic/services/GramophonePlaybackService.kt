@@ -13,7 +13,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.SimpleExoPlayer
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
@@ -30,6 +32,7 @@ import org.akanework.gramophone.Constants
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.LastPlayedManager
+
 
 /**
  * [GramophonePlaybackService] is a server service.
@@ -112,7 +115,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
             )
         handler = Handler(Looper.getMainLooper())
 
-        val player = ExoPlayer.Builder(this).build()
+        val renderersFactory = DefaultRenderersFactory(this)
+        renderersFactory.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+
+        val player = ExoPlayer.Builder(this, renderersFactory).build()
         val audioAttributes: AudioAttributes =
             AudioAttributes
                 .Builder()
