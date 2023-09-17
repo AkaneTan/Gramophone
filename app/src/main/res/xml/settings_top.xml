@@ -41,6 +41,7 @@
             android:title="@string/settings_mediastore_filter"
             android:summary="@string/settings_mediastore_filter_summary"
             android:max="120"
+            android:defaultValue="@integer/filter_default_sec"
             android:icon="@drawable/filter_art"
             app:showSeekBarValue="true" />
     </PreferenceCategory>
