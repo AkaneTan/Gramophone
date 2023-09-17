@@ -102,12 +102,14 @@
 		android:layout_height="match_parent">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/player_content"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintTop_toTopOf="parent"
 			app:layout_constraintBottom_toTopOf="@id/actionBar"
+			android:background="?attr/colorSurface"
 			android:elevation="0dp">
 
 			<com.google.android.material.button.MaterialButton
@@ -300,7 +302,6 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/actionBar"
 			android:gravity="end"
-			android:background="?attr/colorSurface"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent">

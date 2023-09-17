@@ -143,9 +143,10 @@ class PlayerBottomSheet private constructor(
 		bottomSheetPlaylistButton = findViewById(R.id.playlist)
 		previewPlayer = findViewById(R.id.preview_player)
 		fullPlayer = findViewById(R.id.full_player)
+		val playerContent = findViewById<ConstraintLayout>(R.id.player_content)
 		ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
 			val statusBarSize = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-			fullPlayer.setPadding(statusBarSize.left, statusBarSize.top, statusBarSize.right, statusBarSize.bottom)
+			playerContent.setPadding(statusBarSize.left, statusBarSize.top, statusBarSize.right, statusBarSize.bottom)
 			return@setOnApplyWindowInsetsListener insets
 		}
 
