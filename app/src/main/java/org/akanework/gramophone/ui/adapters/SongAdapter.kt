@@ -76,7 +76,6 @@ class SongAdapter(
             popupMenu.setOnMenuItemClickListener { it1 ->
                 when (it1.itemId) {
                     R.id.play_next -> {
-                        mainActivity.supportFragmentManager.popBackStack()
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItem(
                             mediaController.currentMediaItemIndex + 1,
