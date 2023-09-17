@@ -66,7 +66,6 @@ class SongAdapter(
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
-            mainActivity.supportFragmentManager.popBackStack()
             val mediaController = mainActivity.getPlayer()
             mediaController.setMediaItems(songList)
             mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
