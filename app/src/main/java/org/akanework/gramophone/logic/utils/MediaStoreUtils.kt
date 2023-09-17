@@ -115,7 +115,7 @@ object MediaStoreUtils {
             }.toTypedArray()
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val limitValue = prefs.getInt("mediastore_filter", 0)
+        val limitValue = prefs.getInt("mediastore_filter", R.integer.filter_default_sec)
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
