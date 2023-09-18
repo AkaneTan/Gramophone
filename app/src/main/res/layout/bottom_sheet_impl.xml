@@ -138,8 +138,7 @@
 				app:layout_constraintDimensionRatio="H,1:1"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/slide_down"
-				app:layout_constraintBottom_toTopOf="@+id/controls" />
+				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
 
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/controls"
