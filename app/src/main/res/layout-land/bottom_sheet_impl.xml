@@ -140,7 +140,6 @@
 				android:layout_marginTop="18dp"
 				android:contentDescription="@string/album"
 				android:src="@drawable/ic_default_cover"
-				app:layout_constraintDimensionRatio="1:1"
 				android:layout_marginBottom="25dp"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toStartOf="@id/controls"
