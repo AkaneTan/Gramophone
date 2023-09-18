@@ -105,27 +105,31 @@
 			android:id="@+id/player_content"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			android:background="?attr/colorSurface"
-			android:elevation="0dp">
+			android:elevation="0dp"
+			app:layout_constraintBottom_toTopOf="@id/actionBar"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent">
 
 			<com.google.android.material.button.MaterialButton
 				android:id="@+id/slide_down"
 				android:layout_width="52dp"
 				android:layout_height="52dp"
-				android:background="@drawable/rp_buttons"
-				android:layout_marginTop="16dp"
 				android:layout_marginHorizontal="18dp"
+				android:layout_marginTop="16dp"
+				android:background="@drawable/rp_buttons"
 				app:icon="@drawable/ic_expand_more"
 				app:iconGravity="textStart"
 				app:iconPadding="0dp"
 				app:iconSize="28dp"
 				app:iconTint="?attr/colorOnSurface"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintHorizontal_bias="0.0"
+				app:layout_constraintVertical_bias="0.0"
 				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toTopOf="parent" />
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintBottom_toTopOf="@+id/full_sheet_cover"/>
 
 			<ImageView
 				android:id="@+id/full_sheet_cover"
@@ -135,34 +139,35 @@
 				android:layout_marginTop="18dp"
 				android:contentDescription="@string/album"
 				android:src="@drawable/ic_default_cover"
-				app:layout_constraintDimensionRatio="H,1:1"
+				app:layout_constraintDimensionRatio="1:1"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/slide_down"
-				app:layout_constraintBottom_toTopOf="@+id/controls" />
+				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
 
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/controls"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:elevation="0dp"
 				android:layout_marginBottom="10dp"
-				app:layout_constraintTop_toBottomOf="@id/full_sheet_cover"
+				android:layout_weight="1"
+				android:elevation="0dp"
+				app:layout_constraintHeight_min="230dp"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintStart_toStartOf="parent">
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/full_sheet_cover">
 
 				<LinearLayout
 					android:id="@+id/textLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:orientation="vertical"
 					android:layout_marginHorizontal="18dp"
 					android:layout_marginBottom="6dp"
-					app:layout_constraintTop_toTopOf="parent"
+					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent">
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toTopOf="parent">
 
 					<org.akanework.gramophone.ui.components.MarqueeTextView
 						android:id="@+id/full_song_name"
@@ -192,27 +197,27 @@
 					android:id="@+id/slider"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:value="0"
 					android:layout_marginHorizontal="5dp"
 					android:layout_marginBottom="0.5dp"
+					android:value="0"
 					app:labelBehavior="gone"
-					app:layout_constraintTop_toBottomOf="@id/textLayout"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/textLayout"
 					app:thumbRadius="8dp"
-					tools:value="0.5"/>
+					tools:value="0.5" />
 
 				<FrameLayout
 					android:id="@+id/duration_frame"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="18dp"
-					app:layout_constraintVertical_bias="0.0"
-					app:layout_constraintTop_toBottomOf="@id/slider"
 					app:layout_constraintBottom_toTopOf="@id/sheet_mid_button"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent">
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/slider"
+					app:layout_constraintVertical_bias="0.0">
 
 					<TextView
 						android:id="@+id/position"
@@ -241,12 +246,12 @@
 					android:layout_width="84dp"
 					android:layout_height="84dp"
 					android:layout_centerHorizontal="true"
+					android:layout_marginTop="18dp"
 					android:backgroundTint="?attr/colorSecondaryContainer"
 					android:insetLeft="0dp"
 					android:insetTop="0dp"
 					android:insetRight="0dp"
 					android:insetBottom="0dp"
-					android:layout_marginTop="18dp"
 					app:icon="@drawable/play_art"
 					app:iconGravity="textStart"
 					app:iconPadding="0dp"
@@ -262,13 +267,13 @@
 					android:layout_width="84dp"
 					android:layout_height="84dp"
 					android:layout_gravity="center"
+					android:layout_marginEnd="8dp"
 					android:layout_toStartOf="@id/sheet_mid_button"
 					android:background="@drawable/rp_buttons_dynamic"
 					android:insetLeft="0dp"
 					android:insetTop="0dp"
 					android:insetRight="0dp"
 					android:insetBottom="0dp"
-					android:layout_marginEnd="8dp"
 					app:icon="@drawable/previous_art"
 					app:iconGravity="textStart"
 					app:iconPadding="0dp"
@@ -285,13 +290,13 @@
 					android:layout_width="84dp"
 					android:layout_height="84dp"
 					android:layout_gravity="center"
+					android:layout_marginStart="8dp"
 					android:layout_toEndOf="@id/sheet_mid_button"
 					android:background="@drawable/rp_buttons_dynamic"
 					android:insetLeft="0dp"
 					android:insetTop="0dp"
 					android:insetRight="0dp"
 					android:insetBottom="0dp"
-					android:layout_marginStart="8dp"
 					app:icon="@drawable/next_art"
 					app:iconGravity="textStart"
 					app:iconPadding="0dp"
