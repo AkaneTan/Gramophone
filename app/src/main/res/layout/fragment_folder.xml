@@ -7,7 +7,6 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/browser"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="org.akanework.gramophone.ui.fragments.FolderBrowserFragment" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>
