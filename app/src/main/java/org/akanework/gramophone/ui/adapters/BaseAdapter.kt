@@ -57,36 +57,52 @@ abstract class BaseAdapter<T>(
 
 	fun sort(selector: Comparator<T>) {
 		sorter = selector
-		sort()
-	}
-
-	private fun sort() {
-		// Sorting in the background using coroutines
 		CoroutineScope(Dispatchers.Default).launch {
-			val newList = ArrayList(rawList)
-			newList.sortWith { o1, o2 ->
-				if (isPinned(o1) && !isPinned(o2)) -1
-				else if (!isPinned(o1) && isPinned(o2)) 1
-				else sorter.compare(o1, o2)
-			}
-			val apply = updateListSorted(newList)
+			val apply = sort()
 			withContext(Dispatchers.Main) {
 				apply()
 			}
 		}
 	}
 
-	private fun updateListSorted(newList: MutableList<T>): () -> Unit {
-		val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
-		list.clear()
-		list.addAll(newList)
-		return { diffResult.dispatchUpdatesTo(this) }
+	private fun sort(srcList: MutableList<T>? = null): () -> Unit {
+		// Sorting in the background using coroutines
+		val newList = ArrayList(srcList ?: rawList)
+		newList.sortWith { o1, o2 ->
+			if (isPinned(o1) && !isPinned(o2)) -1
+			else if (!isPinned(o1) && isPinned(o2)) 1
+			else sorter.compare(o1, o2)
+		}
+		val apply = updateListSorted(newList)
+		return {
+			if (srcList != null) {
+				rawList.clear()
+				rawList.addAll(srcList)
+			}
+			apply()
+		}
 	}
 
-	fun updateList(newList: MutableList<T>) {
-		rawList.clear()
-		rawList.addAll(newList)
-		sort()
+	private fun updateListSorted(newList: MutableList<T>): () -> Unit {
+		val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
+		return {
+			list.clear()
+			list.addAll(newList)
+			diffResult.dispatchUpdatesTo(this)
+		}
+	}
+
+	//TODO unhardcode now after fixing threading
+	fun updateList(newList: MutableList<T>, now: Boolean = true) {
+		if (now) sort(newList)()
+		else {
+			CoroutineScope(Dispatchers.Default).launch {
+				val apply = sort(newList)
+				withContext(Dispatchers.Main) {
+					apply()
+				}
+			}
+		}
 	}
 
 	protected abstract fun toId(item: T): String
