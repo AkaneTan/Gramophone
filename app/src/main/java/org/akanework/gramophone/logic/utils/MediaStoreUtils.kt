@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import java.util.stream.Collectors
 
 /**
  * [MediaStoreUtils] contains all the methods for reading
@@ -67,7 +69,8 @@ object MediaStoreUtils {
     data class Playlist(
         val id: Long,
         val title: String,
-        val songList: List<MediaItem>
+        val songList: List<MediaItem>,
+        val virtual: Boolean
     )
 
     /**
@@ -85,7 +88,6 @@ object MediaStoreUtils {
         val fileUriList: MutableMap<Long, Uri>,
         val mimeTypeList: MutableMap<Long, String>,
         val playlistList: MutableList<Playlist>,
-        val addDateList: MutableMap<Long, Long>,
         val folderStructure: FileNode
     )
 
@@ -158,7 +160,6 @@ object MediaStoreUtils {
         val durationMap = mutableMapOf<Long, Long>()
         val fileUriMap = mutableMapOf<Long, Uri>()
         val mimeTypeMap = mutableMapOf<Long, String>()
-        val addDateMap = mutableMapOf<Long, Long>()
         val unknownGenre = context.getString(R.string.unknown_genre)
         val unknownArtist = context.getString(R.string.unknown_artist)
         val cursor =
@@ -242,6 +243,9 @@ object MediaStoreUtils {
                                     .setDiscNumber(discNumber)
                                     .setRecordingYear(year)
                                     .setReleaseYear(year)
+                                    .setExtras(Bundle().apply {
+                                        putLong("AddDate", addDate)
+                                    })
                                     .build(),
                             ).build(),
 
@@ -261,7 +265,6 @@ object MediaStoreUtils {
                     durationMap[id] = duration
                     fileUriMap[id] = path.toUri()
                     mimeTypeMap[id] = mimeType
-                    addDateMap[id] = addDate
                     handleMediaItem(songs.last(), path.toString(), root)
                 }
             }
@@ -269,6 +272,7 @@ object MediaStoreUtils {
         cursor?.close()
 
         // Sort all the lists/albums.
+        // TODO sort in UI
         val sortedAlbumList: MutableList<Album> =
             albumMap
                 .entries
@@ -325,6 +329,7 @@ object MediaStoreUtils {
                 .toMutableList()
 
         val playlistList = getPlaylists(context, songs)
+            .sortedByDescending { it.title }.toMutableList()
 
         return LibraryStoreClass(
             songs,
@@ -337,7 +342,6 @@ object MediaStoreUtils {
             fileUriMap,
             mimeTypeMap,
             playlistList,
-            addDateMap,
             root
         )
     }
@@ -347,6 +351,14 @@ object MediaStoreUtils {
      */
     private fun getPlaylists(context: Context, songList: MutableList<MediaItem>): MutableList<Playlist> {
         val playlists = mutableListOf<Playlist>()
+        val minAddDate = (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60) // TODO setting
+
+        playlists.add(Playlist(-1, context.getString(R.string.recently_added),
+            songList
+                .filter { (it.mediaMetadata.extras?.getLong("AddDate") ?: 0) >= minAddDate }
+                .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }
+                .toMutableList(),
+            true))
 
         // Define the content resolver
         val contentResolver: ContentResolver = context.contentResolver
@@ -372,7 +384,7 @@ object MediaStoreUtils {
                 val songs = getSongsInPlaylist(contentResolver, playlistId, songList)
 
                 // Create a Playlist object and add it to the list
-                val playlist = Playlist(playlistId, playlistName, songs)
+                val playlist = Playlist(playlistId, playlistName, songs, false)
                 playlists.add(playlist)
             }
         }
@@ -428,20 +440,8 @@ object MediaStoreUtils {
             libraryViewModel.fileUriList.value = pairObject.fileUriList
             libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
             libraryViewModel.playlistList.value = pairObject.playlistList
-            libraryViewModel.addDateMap.value = pairObject.addDateList
             libraryViewModel.folderStructure.value = pairObject.folderStructure
         }
     }
 
-    fun findTopTwelveIDsByAddDate(addDateList: MutableMap<Long, Long>, mediaItemList: List<MediaItem>): MutableList<MediaItem> {
-        val topTwelveKeys = addDateList.asSequence()
-            .sortedByDescending { it.value }
-            .take(12)
-            .map { it.key }
-            .toList()
-
-        return topTwelveKeys.mapNotNull { key ->
-            mediaItemList.find { item -> item.mediaId.toLong() == key }
-        }.toMutableList()
-    }
 }

@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     fun navigateDrawer(int: Int) {
         drawerLayout.open()
-        navigationView.setCheckedItem(tabs.getValue(int))
+        navigationView.setCheckedItem(tabs[int])
     }
 
     private fun updateLibrary() {
@@ -149,9 +149,9 @@ class MainActivity : AppCompatActivity() {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
             val playerLayout = getPlayerSheet()
             when (it.itemId) {
-                in tabs.values -> {
-                    viewPager2.setCurrentItem(tabs.entries
-                        .find { entry -> entry.value == it.itemId }!!.key, true)
+                in tabs -> {
+                    viewPager2.setCurrentItem(tabs.indices
+                        .find { entry -> tabs[entry] == it.itemId }!!, true)
                     drawerLayout.close()
                 }
 

@@ -42,10 +42,6 @@ class LibraryViewModel : ViewModel() {
         MutableLiveData(
             mutableListOf(),
         )
-    val addDateMap: MutableLiveData<MutableMap<Long, Long>> =
-        MutableLiveData(
-            mutableMapOf()
-        )
     val folderStructure: MutableLiveData<MediaStoreUtils.FileNode> =
         MutableLiveData(
             MediaStoreUtils.FileNode("storage", mutableListOf(), mutableListOf())

@@ -129,40 +129,23 @@ class PlaylistAdapter(
         val moreButton: MaterialButton = view.findViewById(R.id.more)
     }
 
-    fun sortBy(selector: (MediaStoreUtils.Playlist) -> String) {
+    fun sort(selector: Comparator<MediaStoreUtils.Playlist>) {
         CoroutineScope(Dispatchers.Default).launch {
             val wasSongList = mutableListOf<MediaStoreUtils.Playlist>()
             wasSongList.addAll(playlistList)
             // Sorting in the background using coroutines
-            playlistList.sortBy { selector(it) }
-            val pinnedRecentPlaylist = playlistList.find { it.id == (10000000).toLong() }
-            val pinnedRecentPlaylistIndex = playlistList.indexOf(pinnedRecentPlaylist)
-            playlistList.removeAt(pinnedRecentPlaylistIndex)
-            if (pinnedRecentPlaylist != null) {
-                playlistList.add(0, pinnedRecentPlaylist)
+            playlistList.sortWith { o1, o2 ->
+                return@sortWith if (o1.virtual && !o2.virtual) -1
+                else if (!o1.virtual && o2.virtual) 1
+                else selector.compare(o1, o2)
             }
+
             val diffResult = DiffUtil.calculateDiff(
                 SongDiffCallback(
                     wasSongList,
                     playlistList
                 )
             )
-            // Update the UI on the main thread
-            withContext(Dispatchers.Main) {
-                diffResult.dispatchUpdatesTo(this@PlaylistAdapter)
-            }
-        }
-    }
-
-    fun sortByDescendingInt(selector: (MediaStoreUtils.Playlist) -> Int) {
-        CoroutineScope(Dispatchers.Default).launch {
-            val wasArtistList = mutableListOf<MediaStoreUtils.Playlist>()
-            wasArtistList.addAll(playlistList)
-
-            // Sorting in the background using coroutines
-            playlistList.sortByDescending { selector(it) }
-            val diffResult = DiffUtil.calculateDiff(SongDiffCallback(wasArtistList, playlistList))
-
             // Update the UI on the main thread
             withContext(Dispatchers.Main) {
                 diffResult.dispatchUpdatesTo(this@PlaylistAdapter)

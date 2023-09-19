@@ -21,18 +21,18 @@ class ViewPager2Adapter(
     lifecycle: Lifecycle,
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
     companion object {
-        val tabs: Map<Int, /* res id */ Int> = mapOf(
-            Pair(0, R.id.songs),
-            Pair(1, R.id.albums),
-            Pair(2, R.id.artists),
-            Pair(3, R.id.genres),
-            Pair(4, R.id.dates),
-            Pair(5, R.id.folders),
-            Pair(6, R.id.playlists)
+        val tabs: ArrayList</* res id */ Int> = arrayListOf(
+            R.id.songs,
+            R.id.albums,
+            R.id.artists,
+            R.id.genres,
+            R.id.dates,
+            // R.id.folders,
+            R.id.playlists
         )
 
         fun getLabelResId(position: Int): Int =
-            when (tabs.getValue(position)) {
+            when (tabs[position]) {
                 R.id.songs -> R.string.category_songs
                 R.id.albums -> R.string.category_albums
                 R.id.artists -> R.string.category_artists
@@ -47,7 +47,7 @@ class ViewPager2Adapter(
     override fun getItemCount(): Int = tabs.count()
 
     override fun createFragment(position: Int): Fragment =
-        when (tabs.getValue(position)) {
+        when (tabs[position]) {
             R.id.songs -> SongFragment()
             R.id.albums -> AlbumFragment()
             R.id.artists -> ArtistFragment()

@@ -35,6 +35,7 @@
             <item
                 android:id="@+id/folders"
                 android:checkable="true"
+                android:visible="false"
                 android:icon="@drawable/folder_art"
                 android:title="@string/folders"
                 app:showAsAction="ifRoom" />
