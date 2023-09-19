@@ -19,7 +19,8 @@ import org.akanework.gramophone.ui.adapters.GenreAdapter
 import org.akanework.gramophone.ui.adapters.GenreDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-class FolderFragment : BaseFragment(false) {
+@androidx.annotation.OptIn(UnstableApi::class)
+class FolderBrowserFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -27,7 +28,7 @@ class FolderFragment : BaseFragment(false) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_folder, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_folder_browser, container, false)
 
         return rootView
     }

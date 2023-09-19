@@ -4,10 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/browser"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="org.akanework.gramophone.ui.fragments.FolderBrowserFragment" />
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="@dimen/recyclerview_bottom_padding"
+        android:scrollbars="none" />
 
 </FrameLayout>
