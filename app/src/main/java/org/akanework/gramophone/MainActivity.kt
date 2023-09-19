@@ -82,10 +82,6 @@ class MainActivity : AppCompatActivity() {
 
         ActivityCompat.postponeEnterTransition(this)
 
-        if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-            updateLibrary()
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val params = window.attributes
             params.layoutInDisplayCutoutMode =
@@ -106,6 +102,42 @@ class MainActivity : AppCompatActivity() {
         // Set content Views.
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_MEDIA_AUDIO,
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Ask if was denied.
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
+                    Constants.PERMISSION_READ_MEDIA_AUDIO,
+                )
+            } else {
+                if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
+                    updateLibrary()
+                }
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Ask if was denied.
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    Constants.PERMISSION_READ_EXTERNAL_STORAGE,
+                )
+            } else {
+                if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
+                    updateLibrary()
+                }
+            }
+        }
 
         // Initialize layouts.
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -196,34 +228,6 @@ class MainActivity : AppCompatActivity() {
                 else -> throw IllegalStateException()
             }
             true
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.READ_MEDIA_AUDIO,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Ask if was denied.
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
-                    Constants.PERMISSION_READ_MEDIA_AUDIO,
-                )
-            }
-        } else {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Ask if was denied.
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    Constants.PERMISSION_READ_EXTERNAL_STORAGE,
-                )
-            }
         }
     }
 
