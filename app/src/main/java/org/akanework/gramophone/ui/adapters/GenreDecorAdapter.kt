@@ -52,7 +52,7 @@ class GenreDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            genreAdapter.sortBy { it2 -> it2.title }
+                            genreAdapter.sortAlphanumeric { it2 -> it2.title }
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -60,7 +60,7 @@ class GenreDecorAdapter(
 
                     R.id.size -> {
                         if (!menuItem.isChecked) {
-                            genreAdapter.sortByDescendingInt { it2 -> it2.songList.size }
+                            genreAdapter.sort(compareByDescending { it2 -> it2.songList.size })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }

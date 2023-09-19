@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
-import java.util.stream.Collectors
 
 /**
  * [MediaStoreUtils] contains all the methods for reading
@@ -25,53 +24,58 @@ import java.util.stream.Collectors
 @Suppress("DEPRECATION")
 object MediaStoreUtils {
 
+    interface Item {
+        val id: Long
+        val title: String
+    }
+
     /**
      * [Album] stores Album metadata.
      */
     data class Album(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val artist: String,
         val albumYear: Int,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Artist] stores Artist metadata.
      */
     data class Artist(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Genre] stores Genre metadata.
      */
     data class Genre(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Date] stores Date metadata.
      */
     data class Date(
-        val id: Long,
-        val title: Int,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Playlist] stores playlist information.
      */
     data class Playlist(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
         val virtual: Boolean
-    )
+    ) : Item
 
     /**
      * [LibraryStoreClass] collects above metadata classes
@@ -324,7 +328,7 @@ object MediaStoreUtils {
                 .entries
                 .mapIndexed { index, (year, songsByYear) ->
                     val sortedDateSongs = songsByYear.sortedBy { it.mediaMetadata.title.toString() }
-                    Date(index.toLong(), year, sortedDateSongs)
+                    Date(index.toLong(), year.toString(), sortedDateSongs)
                 }.sortedByDescending { it.title }
                 .toMutableList()
 

@@ -41,8 +41,8 @@ class ArtistDecorAdapter(
             artistCount.toString() + ' ' +
                 if (artistCount <= 1) context.getString(R.string.artist) else context.getString(R.string.artists)
         holder.songCounter.text = songText
-        holder.sortButton.setOnClickListener {
-            val popupMenu = PopupMenu(context, it)
+        holder.sortButton.setOnClickListener { v ->
+            val popupMenu = PopupMenu(context, v)
             popupMenu.inflate(R.menu.sort_menu_artist_only)
             popupMenu.menu.findItem(R.id.album_artist).isChecked =
                 prefs.getBoolean("isDisplayingAlbumArtist", false)
@@ -61,7 +61,7 @@ class ArtistDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            artistAdapter.sortBy { it2 -> it2.title }
+                            artistAdapter.sortAlphanumeric { it.title }
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -69,7 +69,7 @@ class ArtistDecorAdapter(
 
                     R.id.size -> {
                         if (!menuItem.isChecked) {
-                            artistAdapter.sortByDescendingInt { it2 -> it2.songList.size }
+                            artistAdapter.sort(compareByDescending { it2 -> it2.songList.size })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
