@@ -22,25 +22,12 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class FolderBrowserFragment(val fileNode: MediaStoreUtils.FileNode? = null) : Fragment() {
+class FolderBrowserFragment(private val fileNode: MediaStoreUtils.FileNode? = null)
+    : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private lateinit var folderAdapter: FolderAdapter
     private lateinit var songAdapter: SongAdapter
     private lateinit var concatAdapter: ConcatAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val colorBackground = MaterialColors.getColor(view, android.R.attr.colorBackground)
-        view.setBackgroundColor(colorBackground)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
