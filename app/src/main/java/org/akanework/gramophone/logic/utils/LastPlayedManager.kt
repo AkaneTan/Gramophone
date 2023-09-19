@@ -2,6 +2,7 @@ package org.akanework.gramophone.logic.utils
 
 import android.content.Context
 import android.net.Uri
+import android.os.Bundle
 import android.util.Base64
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -34,6 +35,7 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 		val lastPlayed = PrefsListUtils.dump(
 			data.mediaItems.map {
 				val b = SafeDelimitedStringConcat(":")
+				// add new entries at the bottom and remember they are null for upgrade path
 				b.writeStringUnsafe(it.mediaId)
 				b.writeUri(it.localConfiguration?.uri)
 				b.writeStringSafe(it.localConfiguration?.mimeType)
@@ -48,6 +50,7 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 				b.writeInt(it.mediaMetadata.releaseYear)
 				b.writeBool(it.mediaMetadata.isBrowsable)
 				b.writeBool(it.mediaMetadata.isPlayable)
+				b.writeLong(it.mediaMetadata.extras?.getLong("AddDate"))
 				b.toString()
 			})
 		editor.putStringSet("last_played_lst", lastPlayed.first)
@@ -93,6 +96,7 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 					val releaseYear = b.readInt()
 					val isBrowsable = b.readBool()
 					val isPlayable = b.readBool()
+					val addDate = b.readLong()
 					MediaItem.Builder()
 						.setUri(uri)
 						.setMediaId(mediaId!!)
@@ -111,6 +115,11 @@ class LastPlayedManager(private val context: Context, private val mediaSession: 
 								.setReleaseYear(releaseYear)
 								.setIsBrowsable(isBrowsable)
 								.setIsPlayable(isPlayable)
+								.setExtras(Bundle().apply {
+									if (addDate != null) {
+										putLong("AddDate", addDate)
+									}
+								})
 								.build())
 						.build()
 				},
@@ -144,6 +153,7 @@ private class SafeDelimitedStringConcat(private val delimiter: String) {
 	fun writeBase64(b: ByteArray?) = append(b?.let { Base64.encodeToString(it, Base64.DEFAULT) })
 	fun writeStringSafe(s: CharSequence?) = writeBase64(s?.toString()?.toByteArray(StandardCharsets.UTF_8))
 	fun writeInt(i: Int?) = append(i?.toString())
+	fun writeLong(i: Long?) = append(i?.toString())
 	fun writeBool(b: Boolean?) = append(b?.toString())
 	fun writeUri(u: Uri?) = writeStringSafe(u?.toString())
 }
@@ -153,6 +163,7 @@ private class SafeDelimitedStringDecat(delimiter: String, str: String) {
 	private var pos = 0
 
 	private fun read(): String? {
+		if (pos == items.size) return null
 		return items[pos++].ifEmpty { null }
 	}
 
@@ -160,6 +171,7 @@ private class SafeDelimitedStringDecat(delimiter: String, str: String) {
 	fun readBase64(): ByteArray? = read()?.let { Base64.decode(it, Base64.DEFAULT) }
 	fun readStringSafe(): String? = readBase64()?.toString(StandardCharsets.UTF_8)
 	fun readInt(): Int? = read()?.toInt()
+	fun readLong(): Long? = read()?.toLong()
 	fun readBool(): Boolean? = read()?.toBooleanStrict()
 	fun readUri(): Uri? = Uri.parse(readStringSafe())
 }
