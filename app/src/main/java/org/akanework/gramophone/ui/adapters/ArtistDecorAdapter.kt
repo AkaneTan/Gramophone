@@ -61,7 +61,7 @@ class ArtistDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            artistAdapter.sortAlphanumeric { it.title }
+                            artistAdapter.sort(BaseAdapter.SupportComparator.createAlphanumericComparator { it.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }

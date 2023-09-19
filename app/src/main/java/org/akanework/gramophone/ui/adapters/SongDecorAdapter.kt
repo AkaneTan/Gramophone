@@ -56,7 +56,8 @@ class SongDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortAlphanumeric { it2 -> it2.mediaMetadata.title.toString() }
+                            songAdapter.sort(BaseAdapter.SupportComparator
+                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.title!! })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -64,7 +65,8 @@ class SongDecorAdapter(
 
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortAlphanumeric { it2 -> it2.mediaMetadata.artist.toString() }
+                            songAdapter.sort(BaseAdapter.SupportComparator
+                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.artist!! })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
@@ -72,7 +74,8 @@ class SongDecorAdapter(
 
                     R.id.album -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortAlphanumeric { it2 -> it2.mediaMetadata.albumTitle.toString() }
+                            songAdapter.sort(BaseAdapter.SupportComparator
+                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.albumTitle!! })
                             menuItem.isChecked = true
                             sortStatus = 2
                         }
@@ -94,7 +97,6 @@ class SongDecorAdapter(
     }
 
     fun updateSongCounter(count: Int) {
-        sortStatus = 0
         songCount = count
         notifyItemChanged(0)
     }

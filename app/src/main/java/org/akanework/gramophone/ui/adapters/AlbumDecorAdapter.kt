@@ -53,7 +53,7 @@ class AlbumDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            albumAdapter.sortAlphanumeric { it.title }
+                            albumAdapter.sort(BaseAdapter.SupportComparator.createAlphanumericComparator { it.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -61,7 +61,7 @@ class AlbumDecorAdapter(
 
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
-                            albumAdapter.sortAlphanumeric { it.artist }
+                            albumAdapter.sort(BaseAdapter.SupportComparator.createAlphanumericComparator { it.artist })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }

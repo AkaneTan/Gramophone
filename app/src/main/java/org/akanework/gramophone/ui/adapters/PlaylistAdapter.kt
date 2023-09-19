@@ -65,7 +65,6 @@ class PlaylistAdapter(
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {
-                                putBoolean("WaitForContainer", true)
                                 putInt("Position", position)
                                 putInt("Item", 6)
                                 putString("Title", holder.title.text as String)
@@ -95,6 +94,10 @@ class PlaylistAdapter(
             }
             popupMenu.show()
         }
+    }
+
+    override fun isPinned(item: MediaStoreUtils.Playlist): Boolean {
+        return item.virtual
     }
 
 }

@@ -16,8 +16,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class ArtistAdapter(
-    private val artistList: MutableList<MediaStoreUtils.Artist>,
-    private val albumArtistList: MutableList<MediaStoreUtils.Artist>,
+    artistList: MutableList<MediaStoreUtils.Artist>,
     private val context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
@@ -29,10 +28,10 @@ class ArtistAdapter(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.title.text = artistList[position].title
+        holder.title.text = list[position].title
         val songText =
-            artistList[position].songList.size.toString() + ' ' +
-                if (artistList[position].songList.size <= 1) {
+            list[position].songList.size.toString() + ' ' +
+                if (list[position].songList.size <= 1) {
                     context.getString(R.string.song)
                 } else {
                     context.getString(R.string.songs)
@@ -42,7 +41,7 @@ class ArtistAdapter(
         Glide
             .with(holder.songCover.context)
             .load(
-                artistList[position]
+                list[position]
                     .songList
                     .first()
                     .mediaMetadata
@@ -66,11 +65,7 @@ class ArtistAdapter(
                                         2
                                     else
                                         5)
-                                putString("Title",
-                                    if (!isAlbumArtist)
-                                        artistList[position].title
-                                    else
-                                        albumArtistList[position].title)
+                                putString("Title", list[position].title)
                             }
                     },
                 ).commit()
@@ -86,10 +81,7 @@ class ArtistAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItems(
                             mediaController.currentMediaItemIndex + 1,
-                            if (!isAlbumArtist)
-                                artistList[holder.bindingAdapterPosition].songList
-                            else
-                                albumArtistList[holder.bindingAdapterPosition].songList,
+                                list[holder.bindingAdapterPosition].songList,
                         )
                     }
 

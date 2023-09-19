@@ -52,7 +52,8 @@ class DateDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            dateAdapter.sort(compareByDescending { it2 -> it2.title })
+                            dateAdapter.sort(BaseAdapter.SupportComparator
+                                .createAlphanumericComparator(true) { it2 -> it2.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }

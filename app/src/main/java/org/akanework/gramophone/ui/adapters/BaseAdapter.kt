@@ -17,10 +17,16 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils
 
 abstract class BaseAdapter<T>(
 	private val layout: Int,
-	private val rawList: MutableList<T>
+	initialList: MutableList<T>,
+	private var sorter: Comparator<T>
 ) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
 
-	protected val list = ArrayList<T>(rawList.size)
+	private val rawList = ArrayList<T>(initialList.size)
+	protected val list = ArrayList<T>(initialList.size)
+
+	init {
+		updateList(initialList)
+	}
 
 	inner class ViewHolder(
 		view: View,
@@ -44,23 +50,40 @@ abstract class BaseAdapter<T>(
 		)
 
 	fun sort(selector: Comparator<T>) {
+		sorter = selector
+		sort()
+	}
+
+	private fun sort() {
 		// Sorting in the background using coroutines
 		CoroutineScope(Dispatchers.Default).launch {
 			val newList = ArrayList(rawList)
-			newList.sortWith(selector)
-			updateList(newList)
+			newList.sortWith { o1, o2 ->
+				if (isPinned(o1) && !isPinned(o2)) -1
+				else if (!isPinned(o1) && isPinned(o2)) 1
+				else sorter.compare(o1, o2)
+			}
+			updateListSorted(newList)
 		}
 	}
 
-
-	fun updateList(newList: MutableList<T>) {
+	private fun updateListSorted(newList: MutableList<T>) {
 		val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
 		list.clear()
 		list.addAll(newList)
 		diffResult.dispatchUpdatesTo(this)
 	}
 
+	fun updateList(newList: MutableList<T>) {
+		rawList.clear()
+		rawList.addAll(newList)
+		sort()
+	}
+
 	protected abstract fun toId(item: T): String
+	protected open fun isPinned(item: T): Boolean {
+		return false
+	}
 
 	private inner class SongDiffCallback(
 		private val oldList: MutableList<T>,
@@ -81,19 +104,13 @@ abstract class BaseAdapter<T>(
 		) = oldList[oldItemPosition] == newList[newItemPosition]
 	}
 
-	fun sortAlphanumeric(inverted: Boolean = false, converter: (T) -> CharSequence) {
-		sort(SupportComparator(AlphaNumericComparator(), inverted) { converter(it).toString() })
-	}
-
 	abstract class ItemAdapter<T : MediaStoreUtils.Item>(layout: Int,
-	                                                     rawList: MutableList<T>
-	) : BaseAdapter<T>(layout, rawList) {
+	                                                     rawList: MutableList<T>,
+	                                                     sorter: Comparator<T>
+	                                                     = SupportComparator.createAlphanumericComparator { it.title }
+	) : BaseAdapter<T>(layout, rawList, sorter) {
 		override fun toId(item: T): String {
 			return item.id.toString()
-		}
-
-		init {
-			sortAlphanumeric { it.title }
 		}
 	}
 
@@ -109,6 +126,10 @@ abstract class BaseAdapter<T>(
 			fun <T> createInversionComparator(cmp: Comparator<T>, invert: Boolean = false):
 					Comparator<T> {
 				return SupportComparator(cmp, invert) { it }
+			}
+
+			fun <T> createAlphanumericComparator(inverted: Boolean = false, converter: (T) -> CharSequence): Comparator<T> {
+				return SupportComparator(AlphaNumericComparator(), inverted) { converter(it).toString() }
 			}
 		}
 	}

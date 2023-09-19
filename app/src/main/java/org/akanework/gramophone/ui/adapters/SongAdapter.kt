@@ -33,7 +33,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class SongAdapter(
     songList: MutableList<MediaItem>,
     private val mainActivity: MainActivity,
-) : BaseAdapter<MediaItem>(R.layout.adapter_list_card, songList) {
+) : BaseAdapter<MediaItem>(R.layout.adapter_list_card, songList,
+    SupportComparator.createAlphanumericComparator { it.mediaMetadata.title!! }) {
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
     override fun onBindViewHolder(
@@ -203,9 +204,5 @@ class SongAdapter(
 
     override fun toId(item: MediaItem): String {
         return item.mediaId
-    }
-
-    init {
-        sortAlphanumeric { it.mediaMetadata.title!! }
     }
 }
