@@ -11,6 +11,7 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.AlphaNumericComparator
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -63,15 +64,18 @@ abstract class BaseAdapter<T>(
 				else if (!isPinned(o1) && isPinned(o2)) 1
 				else sorter.compare(o1, o2)
 			}
-			updateListSorted(newList)
+			val apply = updateListSorted(newList)
+			withContext(Dispatchers.Main) {
+				apply()
+			}
 		}
 	}
 
-	private fun updateListSorted(newList: MutableList<T>) {
+	private fun updateListSorted(newList: MutableList<T>): () -> Unit {
 		val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
 		list.clear()
 		list.addAll(newList)
-		diffResult.dispatchUpdatesTo(this)
+		return { diffResult.dispatchUpdatesTo(this) }
 	}
 
 	fun updateList(newList: MutableList<T>) {
