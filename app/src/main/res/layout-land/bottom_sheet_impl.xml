@@ -352,6 +352,7 @@
 				android:insetTop="0dp"
 				android:insetRight="0dp"
 				android:insetBottom="0dp"
+				android:visibility="gone"
 				app:icon="@drawable/subtitles_art"
 				app:iconGravity="textStart"
 				app:iconPadding="0dp"
