@@ -15,6 +15,7 @@
  */
 package org.akanework.gramophone.logic.utils;
 
+import java.math.BigInteger;
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
@@ -174,13 +175,12 @@ public class AlphaNumericComparator implements Comparator<String> {
 			}
 		} else {
 			result.append(s.charAt(index));
-			index++;
 		}
 		return result.toString();
 	}
 
 	private int compareDigits(String s1, String s2) {
-		return Integer.parseInt(s1) - Integer.parseInt(s2);
+		return new BigInteger(s1).compareTo(new BigInteger(s2));
 	}
 
 	private int compareCollatedStrings(String s1, String s2) {
