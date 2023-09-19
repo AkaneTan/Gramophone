@@ -27,7 +27,7 @@ class ViewPager2Adapter(
             R.id.artists,
             R.id.genres,
             R.id.dates,
-            // R.id.folders,
+            R.id.folders,
             R.id.playlists
         )
 
