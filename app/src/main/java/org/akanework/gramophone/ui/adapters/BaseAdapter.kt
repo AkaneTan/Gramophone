@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.AlphaNumericComparator
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import java.util.Collections
 
 abstract class BaseAdapter<T>(
 	private val layout: Int,
@@ -36,6 +37,10 @@ abstract class BaseAdapter<T>(
 		val title: TextView = view.findViewById(R.id.title)
 		val subTitle: TextView = view.findViewById(R.id.artist)
 		val moreButton: MaterialButton = view.findViewById(R.id.more)
+	}
+
+	fun getList(): List<T> {
+		return Collections.unmodifiableList(list)
 	}
 
 	override fun getItemCount(): Int = list.size
