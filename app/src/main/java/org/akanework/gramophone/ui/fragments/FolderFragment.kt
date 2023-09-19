@@ -23,7 +23,6 @@ import org.akanework.gramophone.ui.adapters.GenreDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class FolderFragment : BaseFragment(false) {
-    private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
 
-abstract class BaseFragment(val wantsPlayer: Boolean) : Fragment() {
+abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

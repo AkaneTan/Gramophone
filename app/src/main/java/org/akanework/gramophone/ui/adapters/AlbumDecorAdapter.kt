@@ -9,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.SupportComparator
 
 class AlbumDecorAdapter(
     private val context: Context,
@@ -34,8 +35,8 @@ class AlbumDecorAdapter(
             albumCount.toString() + ' ' +
                 if (albumCount <= 1) context.getString(R.string.album) else context.getString(R.string.albums)
         holder.songCounter.text = songText
-        holder.sortButton.setOnClickListener {
-            val popupMenu = PopupMenu(context, it)
+        holder.sortButton.setOnClickListener { v ->
+            val popupMenu = PopupMenu(context, v)
             popupMenu.inflate(R.menu.sort_menu_songs)
             popupMenu.menu.findItem(R.id.album).isVisible = false
 
@@ -53,7 +54,7 @@ class AlbumDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            albumAdapter.sortBy { it2 -> it2.title }
+                            albumAdapter.sort(SupportComparator.createAlphanumericComparator { it.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -61,7 +62,7 @@ class AlbumDecorAdapter(
 
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
-                            albumAdapter.sortBy { it2 -> it2.artist }
+                            albumAdapter.sort(SupportComparator.createAlphanumericComparator { it.artist })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }

@@ -90,7 +90,7 @@ class PlayerBottomSheet private constructor(
 	private val activity
 		get() = context as MainActivity
 	private val lifecycleOwner: LifecycleOwner
-		get() = activity // TODO use fragment?
+		get() = activity
 	private val libraryViewModel: LibraryViewModel by activity.viewModels()
 	private val handler = Handler(Looper.getMainLooper())
 	private val instance: MediaController

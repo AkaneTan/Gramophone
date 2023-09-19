@@ -50,7 +50,6 @@ class ArtistFragment : BaseFragment(false) {
         val artistAdapter =
             ArtistAdapter(
                 artistList,
-                albumArtistList,
                 requireContext(),
                 requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,

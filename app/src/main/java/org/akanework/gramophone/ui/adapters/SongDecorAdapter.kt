@@ -9,11 +9,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.SupportComparator
 
 class SongDecorAdapter(
     private val context: Context,
     private var songCount: Int,
     private val songAdapter: SongAdapter,
+    private val canSort: Boolean,
 ) : RecyclerView.Adapter<SongDecorAdapter.ViewHolder>() {
     private var sortStatus = 0
 
@@ -34,6 +36,7 @@ class SongDecorAdapter(
             songCount.toString() + ' ' +
                 if (songCount <= 1) context.getString(R.string.song) else context.getString(R.string.songs)
         holder.songCounter.text = songText
+        if (!canSort) holder.sortButton.visibility = View.GONE else
         holder.sortButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_songs)
@@ -56,7 +59,9 @@ class SongDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.title.toString() }
+                            songAdapter.sort(
+                                SupportComparator
+                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.title!! })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -64,7 +69,9 @@ class SongDecorAdapter(
 
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.artist.toString() }
+                            songAdapter.sort(
+                                SupportComparator
+                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.artist!! })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
@@ -72,7 +79,9 @@ class SongDecorAdapter(
 
                     R.id.album -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.albumTitle.toString() }
+                            songAdapter.sort(
+                                SupportComparator
+                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.albumTitle!! })
                             menuItem.isChecked = true
                             sortStatus = 2
                         }
@@ -94,7 +103,6 @@ class SongDecorAdapter(
     }
 
     fun updateSongCounter(count: Int) {
-        sortStatus = 0
         songCount = count
         notifyItemChanged(0)
     }

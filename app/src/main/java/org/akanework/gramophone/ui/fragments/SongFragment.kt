@@ -27,6 +27,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class SongFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private val songList = mutableListOf<MediaItem>()
+    private lateinit var songAdapter: SongAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,12 +40,13 @@ class SongFragment : BaseFragment(false) {
         songRecyclerView.layoutManager = LinearLayoutManager(activity)
         songList.clear()
         songList.addAll(libraryViewModel.mediaItemList.value!!)
-        val songAdapter = SongAdapter(songList, requireActivity() as MainActivity)
+        songAdapter = SongAdapter(songList, requireActivity() as MainActivity, true)
         val songDecorAdapter =
             SongDecorAdapter(
                 requireContext(),
                 libraryViewModel.mediaItemList.value!!.size,
                 songAdapter,
+                true,
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 
@@ -72,7 +74,7 @@ class SongFragment : BaseFragment(false) {
     inner class SongPopupTextProvider : PopupTextProvider {
         override fun getPopupText(position: Int): CharSequence {
             if (position != 0) {
-                return songList[position - 1].mediaMetadata.title?.first().toString()
+                return songAdapter.getFrozenList()[position - 1].mediaMetadata.title?.first().toString()
             }
             return "-"
         }

@@ -22,17 +22,12 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class FolderBrowserFragment(val fileNode: MediaStoreUtils.FileNode? = null) : Fragment() {
+class FolderBrowserFragment(private val fileNode: MediaStoreUtils.FileNode? = null)
+    : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private lateinit var folderAdapter: FolderAdapter
     private lateinit var songAdapter: SongAdapter
     private lateinit var concatAdapter: ConcatAdapter
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val colorBackground = MaterialColors.getColor(view, android.R.attr.colorBackground)
-        view.setBackgroundColor(colorBackground)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,15 +47,16 @@ class FolderBrowserFragment(val fileNode: MediaStoreUtils.FileNode? = null) : Fr
                     .first().folderList
                     .first().folderList
                     .first().songList,
-                    requireActivity() as MainActivity)
+                    requireActivity() as MainActivity,
+                    false)
             } else {
                 folderAdapter = FolderAdapter(mutableListOf(), requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
+                songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity, false)
             }
             concatAdapter = ConcatAdapter(folderAdapter, songAdapter)
         } else {
             folderAdapter = FolderAdapter(fileNode.folderList, requireParentFragment().childFragmentManager)
-            songAdapter = SongAdapter(fileNode.songList, requireActivity() as MainActivity)
+            songAdapter = SongAdapter(fileNode.songList, requireActivity() as MainActivity, false)
             concatAdapter = ConcatAdapter(FolderPopAdapter(requireParentFragment().childFragmentManager), folderAdapter, songAdapter)
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

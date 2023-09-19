@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
-import java.util.stream.Collectors
 
 /**
  * [MediaStoreUtils] contains all the methods for reading
@@ -25,53 +24,82 @@ import java.util.stream.Collectors
 @Suppress("DEPRECATION")
 object MediaStoreUtils {
 
+    interface Item {
+        val id: Long
+        val title: String
+    }
+
     /**
      * [Album] stores Album metadata.
      */
     data class Album(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val artist: String,
         val albumYear: Int,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Artist] stores Artist metadata.
      */
     data class Artist(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Genre] stores Genre metadata.
      */
     data class Genre(
-        val id: Long,
-        val title: String,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Date] stores Date metadata.
      */
     data class Date(
-        val id: Long,
-        val title: Int,
+        override val id: Long,
+        override val title: String,
         val songList: List<MediaItem>,
-    )
+    ) : Item
 
     /**
      * [Playlist] stores playlist information.
      */
-    data class Playlist(
-        val id: Long,
-        val title: String,
-        val songList: List<MediaItem>,
+    open class Playlist(
+        override val id: Long,
+        override val title: String,
+        open val songList: List<MediaItem>,
         val virtual: Boolean
-    )
+    ) : Item
+
+    class RecentlyPlayed(id: Long, title: String, songList: List<MediaItem>)
+        : Playlist(id, title, songList
+            .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 },
+        true) {
+        private val rawList: List<MediaItem> = super.songList
+        private var filteredList: List<MediaItem>? = null
+        var minAddDate: Long = 0
+            set(value) {
+                if (field != value) {
+                    field = value
+                    filteredList = null
+                }
+            }
+        override val songList: List<MediaItem>
+            get() {
+                if (filteredList == null) {
+                    filteredList = rawList.filter {
+                        (it.mediaMetadata.extras?.getLong("AddDate") ?: 0) >= minAddDate
+                    }
+                }
+                return filteredList!!.toMutableList()
+            }
+    }
 
     /**
      * [LibraryStoreClass] collects above metadata classes
@@ -272,16 +300,14 @@ object MediaStoreUtils {
         cursor?.close()
 
         // Sort all the lists/albums.
-        // TODO sort in UI
-        val sortedAlbumList: MutableList<Album> =
+        val albumList: MutableList<Album> =
             albumMap
                 .entries
                 .mapIndexed { index, (key, value) ->
                     val (albumTitle, albumYear) = key
-                    val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber }
                     val albumArtist =
-                        sortedAlbumSongs.first().mediaMetadata.albumArtist
-                            ?: sortedAlbumSongs
+                        value.first().mediaMetadata.albumArtist
+                            ?: value
                                 .first()
                                 .mediaMetadata
                                 .artist
@@ -291,57 +317,26 @@ object MediaStoreUtils {
                         albumTitle ?: context.getString(R.string.unknown_album),
                         albumArtist.toString(),
                         albumYear,
-                        sortedAlbumSongs,
+                        value,
                     )
-                }.sortedWith(compareBy({ it.title }, { it.albumYear }))
+                }
                 .toMutableList()
-        val sortedArtistList: MutableList<Artist> =
-            artistMap
-                .entries
-                .mapIndexed { index, (artistName, songsByArtist) ->
-                    val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
-                    Artist(index.toLong(), artistName, sortedArtistSongs)
-                }.sortedBy { it.title }
-                .toMutableList()
-        val sortedAlbumArtistList: MutableList<Artist> =
-            albumArtistMap
-                .entries
-                .mapIndexed { index, (artistName, songsByArtist) ->
-                    val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
-                    Artist(index.toLong(), artistName, sortedArtistSongs)
-                }.sortedBy { it.title }
-                .toMutableList()
-        val sortedGenreList: MutableList<Genre> =
-            genreMap
-                .entries
-                .mapIndexed { index, (genreTitle, songsByGenre) ->
-                    val sortedGenreSongs = songsByGenre.sortedBy { it.mediaMetadata.title.toString() }
-                    Genre(index.toLong(), genreTitle!!, sortedGenreSongs)
-                }.sortedBy { it.title }
-                .toMutableList()
-        val sortedDateList: MutableList<Date> =
-            dateMap
-                .entries
-                .mapIndexed { index, (year, songsByYear) ->
-                    val sortedDateSongs = songsByYear.sortedBy { it.mediaMetadata.title.toString() }
-                    Date(index.toLong(), year, sortedDateSongs)
-                }.sortedByDescending { it.title }
-                .toMutableList()
-
-        val playlistList = getPlaylists(context, songs)
-            .sortedByDescending { it.title }.toMutableList()
 
         return LibraryStoreClass(
             songs,
-            sortedAlbumList,
-            sortedAlbumArtistList,
-            sortedArtistList,
-            sortedGenreList,
-            sortedDateList,
+            albumList,
+            albumArtistMap.entries.mapIndexed { index, (cat, songs) ->
+                Artist(index.toLong(), cat, songs) }.toMutableList(),
+            artistMap.entries.mapIndexed { index, (cat, songs) ->
+                Artist(index.toLong(), cat, songs) }.toMutableList(),
+            genreMap.entries.mapIndexed { index, (cat, songs) ->
+                Genre(index.toLong(), cat.toString(), songs) }.toMutableList(),
+            dateMap.entries.mapIndexed { index, (cat, songs) ->
+                Date(index.toLong(), cat.toString(), songs) }.toMutableList(),
             durationMap,
             fileUriMap,
             mimeTypeMap,
-            playlistList,
+            getPlaylists(context, songs),
             root
         )
     }
@@ -351,14 +346,14 @@ object MediaStoreUtils {
      */
     private fun getPlaylists(context: Context, songList: MutableList<MediaItem>): MutableList<Playlist> {
         val playlists = mutableListOf<Playlist>()
-        val minAddDate = (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60) // TODO setting
-
-        playlists.add(Playlist(-1, context.getString(R.string.recently_added),
-            songList
-                .filter { (it.mediaMetadata.extras?.getLong("AddDate") ?: 0) >= minAddDate }
-                .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }
-                .toMutableList(),
-            true))
+        playlists.add(
+            RecentlyPlayed(-1,
+                context.getString(R.string.recently_added),
+                songList.toMutableList())
+                .apply {
+                    // TODO setting?
+                    minAddDate = (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60)
+                })
 
         // Define the content resolver
         val contentResolver: ContentResolver = context.contentResolver

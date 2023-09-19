@@ -44,12 +44,13 @@ class SearchFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
+        val songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity, false)
         val songDecorAdapter =
             SongDecorAdapter(
                 requireContext(),
                 0,
                 songAdapter,
+                false,
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)

@@ -9,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.SupportComparator
 
 class PlaylistDecorAdapter(
     private val context: Context,
@@ -52,7 +53,7 @@ class PlaylistDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sort(compareBy { it2 -> it2.title })
+                            songAdapter.sort(SupportComparator.createAlphanumericComparator { it2 -> it2.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
