@@ -52,7 +52,7 @@ class PlaylistDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sort(compareBy { it2 -> it2.title })
+                            songAdapter.sortAlphanumeric { it2 -> it2.title }
                             menuItem.isChecked = true
                             sortStatus = 0
                         }

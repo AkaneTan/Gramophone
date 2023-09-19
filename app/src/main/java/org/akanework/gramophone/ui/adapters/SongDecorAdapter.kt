@@ -56,7 +56,7 @@ class SongDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.title.toString() }
+                            songAdapter.sortAlphanumeric { it2 -> it2.mediaMetadata.title.toString() }
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -64,7 +64,7 @@ class SongDecorAdapter(
 
                     R.id.artist -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.artist.toString() }
+                            songAdapter.sortAlphanumeric { it2 -> it2.mediaMetadata.artist.toString() }
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
@@ -72,7 +72,7 @@ class SongDecorAdapter(
 
                     R.id.album -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sortBy { it2 -> it2.mediaMetadata.albumTitle.toString() }
+                            songAdapter.sortAlphanumeric { it2 -> it2.mediaMetadata.albumTitle.toString() }
                             menuItem.isChecked = true
                             sortStatus = 2
                         }

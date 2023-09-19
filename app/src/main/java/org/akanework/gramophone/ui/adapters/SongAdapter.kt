@@ -31,39 +31,27 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class SongAdapter(
-    private val songList: MutableList<MediaItem>,
+    songList: MutableList<MediaItem>,
     private val mainActivity: MainActivity,
-) : RecyclerView.Adapter<SongAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int,
-    ): ViewHolder =
-        ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.adapter_list_card, parent, false),
-        )
+) : BaseAdapter<MediaItem>(R.layout.adapter_list_card, songList) {
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
-
-    override fun getItemCount(): Int = songList.size
-
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.songTitle.text = songList[position].mediaMetadata.title
-        holder.songArtist.text = songList[position].mediaMetadata.artist
+        holder.title.text = list[position].mediaMetadata.title
+        holder.subTitle.text = list[position].mediaMetadata.artist
 
         Glide
             .with(holder.songCover.context)
-            .load(songList[position].mediaMetadata.artworkUri)
+            .load(list[position].mediaMetadata.artworkUri)
             .placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
 
         holder.itemView.setOnClickListener {
             val mediaController = mainActivity.getPlayer()
-            mediaController.setMediaItems(songList)
+            mediaController.setMediaItems(list)
             mediaController.seekToDefaultPosition(holder.bindingAdapterPosition)
             mediaController.prepare()
             mediaController.play()
@@ -79,7 +67,7 @@ class SongAdapter(
                         val mediaController = mainActivity.getPlayer()
                         mediaController.addMediaItem(
                             mediaController.currentMediaItemIndex + 1,
-                            songList[holder.bindingAdapterPosition],
+                            list[holder.bindingAdapterPosition],
                         )
                     }
 
@@ -87,7 +75,7 @@ class SongAdapter(
                         CoroutineScope(Dispatchers.Default).launch {
                             val positionAlbum =
                                 viewModel.albumItemList.value?.indexOfFirst {
-                                    val currentItem = songList[holder.bindingAdapterPosition]
+                                    val currentItem = list[holder.bindingAdapterPosition]
                                     val isMatching =
                                         (it.title == currentItem.mediaMetadata.albumTitle) &&
                                             (it.songList.contains(currentItem))
@@ -105,7 +93,6 @@ class SongAdapter(
                                             GeneralSubFragment().apply {
                                                 arguments =
                                                     Bundle().apply {
-                                                        putBoolean("WaitForContainer", true)
                                                         putInt("Position", positionAlbum)
                                                         putInt("Item", 1)
                                                         putString(
@@ -128,7 +115,7 @@ class SongAdapter(
                         CoroutineScope(Dispatchers.Default).launch {
                             val positionArtist =
                                 viewModel.artistItemList.value?.indexOfFirst {
-                                    val currentItem = songList[holder.bindingAdapterPosition]
+                                    val currentItem = list[holder.bindingAdapterPosition]
                                     val isMatching =
                                         (it.title == currentItem.mediaMetadata.artist) &&
                                             (it.songList.contains(currentItem))
@@ -175,27 +162,27 @@ class SongAdapter(
                             }
                             .show()
                         rootView.findViewById<TextInputEditText>(R.id.title)!!
-                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.title)
+                            .setText(list[holder.bindingAdapterPosition].mediaMetadata.title)
                         rootView.findViewById<TextInputEditText>(R.id.artist)!!
-                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.artist)
+                            .setText(list[holder.bindingAdapterPosition].mediaMetadata.artist)
                         rootView.findViewById<TextInputEditText>(R.id.album)!!
-                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.albumTitle)
+                            .setText(list[holder.bindingAdapterPosition].mediaMetadata.albumTitle)
                         rootView.findViewById<TextInputEditText>(R.id.album_artist)!!
-                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.albumArtist)
+                            .setText(list[holder.bindingAdapterPosition].mediaMetadata.albumArtist)
                         rootView.findViewById<TextInputEditText>(R.id.track_number)!!
-                            .setText(songList[holder.bindingAdapterPosition].mediaMetadata.trackNumber.toString())
-                        val year = songList[holder.bindingAdapterPosition].mediaMetadata.releaseYear.toString()
+                            .setText(list[holder.bindingAdapterPosition].mediaMetadata.trackNumber.toString())
+                        val year = list[holder.bindingAdapterPosition].mediaMetadata.releaseYear.toString()
                         if (year != "0") {
                             rootView.findViewById<TextInputEditText>(R.id.year)!!
                                 .setText(year)
                         }
-                        val genre = songList[holder.bindingAdapterPosition].mediaMetadata.genre.toString()
+                        val genre = list[holder.bindingAdapterPosition].mediaMetadata.genre.toString()
                         if (genre != "null") {
                             rootView.findViewById<TextInputEditText>(R.id.genre)!!
                                 .setText(genre)
                         }
                         rootView.findViewById<TextInputEditText>(R.id.path)!!
-                            .setText(songList[holder.bindingAdapterPosition].getUri().toString())
+                            .setText(list[holder.bindingAdapterPosition].getUri().toString())
 
                     }
                     /*
@@ -214,53 +201,11 @@ class SongAdapter(
         }
     }
 
-    inner class ViewHolder(
-        view: View,
-    ) : RecyclerView.ViewHolder(view) {
-        val songCover: ImageView = view.findViewById(R.id.cover)
-        val songTitle: TextView = view.findViewById(R.id.title)
-        val songArtist: TextView = view.findViewById(R.id.artist)
-        val moreButton: MaterialButton = view.findViewById(R.id.more)
+    override fun toId(item: MediaItem): String {
+        return item.mediaId
     }
 
-    fun sortBy(selector: (MediaItem) -> String) {
-        CoroutineScope(Dispatchers.Default).launch {
-            val wasSongList = mutableListOf<MediaItem>()
-            wasSongList.addAll(songList)
-            // Sorting in the background using coroutines
-            songList.sortBy { selector(it) }
-
-            val diffResult = DiffUtil.calculateDiff(SongDiffCallback(wasSongList, songList))
-            // Update the UI on the main thread
-            withContext(Dispatchers.Main) {
-                diffResult.dispatchUpdatesTo(this@SongAdapter)
-            }
-        }
-    }
-
-    fun updateList(newList: MutableList<MediaItem>) {
-        val diffResult = DiffUtil.calculateDiff(SongDiffCallback(songList, newList))
-        songList.clear()
-        songList.addAll(newList)
-        diffResult.dispatchUpdatesTo(this)
-    }
-
-    private class SongDiffCallback(
-        private val oldList: List<MediaItem>,
-        private val newList: List<MediaItem>,
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize() = oldList.size
-
-        override fun getNewListSize() = newList.size
-
-        override fun areItemsTheSame(
-            oldItemPosition: Int,
-            newItemPosition: Int,
-        ) = oldList[oldItemPosition].mediaId == newList[newItemPosition].mediaId
-
-        override fun areContentsTheSame(
-            oldItemPosition: Int,
-            newItemPosition: Int,
-        ) = oldList[oldItemPosition] == newList[newItemPosition]
+    init {
+        sortAlphanumeric { it.mediaMetadata.title!! }
     }
 }

@@ -52,7 +52,7 @@ class DateDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            dateAdapter.sortByDescending { it2 -> it2.title.toString() }
+                            dateAdapter.sort(compareByDescending { it2 -> it2.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -60,7 +60,7 @@ class DateDecorAdapter(
 
                     R.id.size -> {
                         if (!menuItem.isChecked) {
-                            dateAdapter.sortByDescendingInt { it2 -> it2.songList.size }
+                            dateAdapter.sort(compareByDescending { it2 -> it2.songList.size })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
