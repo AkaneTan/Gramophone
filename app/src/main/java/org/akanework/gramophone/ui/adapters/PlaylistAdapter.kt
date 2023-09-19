@@ -135,7 +135,12 @@ class PlaylistAdapter(
             wasSongList.addAll(playlistList)
             // Sorting in the background using coroutines
             playlistList.sortBy { selector(it) }
-
+            val pinnedRecentPlaylist = playlistList.find { it.id == (10000000).toLong() }
+            val pinnedRecentPlaylistIndex = playlistList.indexOf(pinnedRecentPlaylist)
+            playlistList.removeAt(pinnedRecentPlaylistIndex)
+            if (pinnedRecentPlaylist != null) {
+                playlistList.add(0, pinnedRecentPlaylist)
+            }
             val diffResult = DiffUtil.calculateDiff(
                 SongDiffCallback(
                     wasSongList,

@@ -1,6 +1,7 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,14 @@ class PlaylistFragment : BaseFragment(false) {
 
         playlistRecyclerView.layoutManager = LinearLayoutManager(activity)
         playlistList.clear()
+        playlistList.add(
+            MediaStoreUtils.Playlist(10000000, getString(R.string.recently_added),
+                MediaStoreUtils.findTopTwelveIDsByAddDate(
+                    libraryViewModel.addDateMap.value!!,
+                    libraryViewModel.mediaItemList.value!!
+                )
+            )
+        )
         playlistList.addAll(libraryViewModel.playlistList.value!!)
 
         val playlistAdapter =
@@ -54,7 +63,7 @@ class PlaylistFragment : BaseFragment(false) {
         val playlistDecorAdapter =
             PlaylistDecorAdapter(
                 requireContext(),
-                libraryViewModel.playlistList.value!!.size,
+                libraryViewModel.playlistList.value!!.size + 1,
                 playlistAdapter
             )
 
@@ -62,7 +71,18 @@ class PlaylistFragment : BaseFragment(false) {
 
         if (!libraryViewModel.playlistList.hasActiveObservers()) {
             libraryViewModel.playlistList.observe(viewLifecycleOwner) { mediaItems ->
-                playlistAdapter.updateList(mediaItems)
+                playlistDecorAdapter.updateSongCounter(mediaItems.size + 1)
+                val newList = mutableListOf<MediaStoreUtils.Playlist>()
+                newList.add(
+                    MediaStoreUtils.Playlist(10000000, getString(R.string.recently_added),
+                        MediaStoreUtils.findTopTwelveIDsByAddDate(
+                            libraryViewModel.addDateMap.value!!,
+                            libraryViewModel.mediaItemList.value!!
+                        )
+                    )
+                )
+                newList.addAll(mediaItems)
+                playlistAdapter.updateList(newList)
             }
         }
 

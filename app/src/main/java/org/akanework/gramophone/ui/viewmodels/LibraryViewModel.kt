@@ -42,4 +42,8 @@ class LibraryViewModel : ViewModel() {
         MutableLiveData(
             mutableListOf(),
         )
+    val addDateMap: MutableLiveData<MutableMap<Long, Long>> =
+        MutableLiveData(
+            mutableMapOf()
+        )
 }

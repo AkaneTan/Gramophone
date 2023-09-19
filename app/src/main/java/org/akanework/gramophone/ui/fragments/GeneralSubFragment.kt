@@ -14,6 +14,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -89,12 +90,22 @@ class GeneralSubFragment : BaseFragment(true) {
 
             6 -> {
                 // Playlists
-                itemList =
-                    libraryViewModel
-                        .playlistList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+                if (position > 0) {
+                    itemList =
+                        libraryViewModel
+                            .playlistList
+                            .value!![position - 1]
+                            .songList
+                            .toMutableList()
+                } else if (position == 0){
+                    itemList =
+                        MediaStoreUtils.Playlist(10000000, getString(R.string.recently_added),
+                            MediaStoreUtils.findTopTwelveIDsByAddDate(
+                                libraryViewModel.addDateMap.value!!,
+                                libraryViewModel.mediaItemList.value!!
+                            )
+                        ).songList.toMutableList()
+                }
             }
         }
 

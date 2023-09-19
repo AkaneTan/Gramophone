@@ -3,7 +3,6 @@ package org.akanework.gramophone.logic.utils
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -85,7 +84,8 @@ object MediaStoreUtils {
         val durationList: MutableMap<Long, Long>,
         val fileUriList: MutableMap<Long, Uri>,
         val mimeTypeList: MutableMap<Long, String>,
-        val playlistList: MutableList<Playlist>
+        val playlistList: MutableList<Playlist>,
+        val addDateList: MutableMap<Long, Long>,
     )
 
     /**
@@ -109,6 +109,7 @@ object MediaStoreUtils {
                 MediaStore.Audio.Media.MIME_TYPE,
                 MediaStore.Audio.Media.TRACK,
                 MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.DATE_ADDED,
             ).apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     add(MediaStore.Audio.Media.GENRE)
@@ -128,6 +129,7 @@ object MediaStoreUtils {
         val durationMap = mutableMapOf<Long, Long>()
         val fileUriMap = mutableMapOf<Long, Uri>()
         val mimeTypeMap = mutableMapOf<Long, String>()
+        val addDateMap = mutableMapOf<Long, Long>()
         val unknownGenre = context.getString(R.string.unknown_genre)
         val unknownArtist = context.getString(R.string.unknown_artist)
         val cursor =
@@ -154,6 +156,7 @@ object MediaStoreUtils {
             val genreColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                 it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE) else null
             val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+            val addDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
 
             while (it.moveToNext()) {
                 val id = it.getLong(idColumn)
@@ -171,6 +174,7 @@ object MediaStoreUtils {
                 var trackNumber = it.getInt(trackNumberColumn)
                 val duration = it.getLong(durationColumn)
                 val genre = genreColumn?.let { col -> it.getStringOrNull(col) }
+                val addDate = it.getLong(addDateColumn)
 
                 // Since we're using glide, we can get album cover with a uri.
                 val artworkUri = Uri.parse("content://media/external/audio/albumart")
@@ -224,6 +228,7 @@ object MediaStoreUtils {
                     durationMap[id] = duration
                     fileUriMap[id] = path.toUri()
                     mimeTypeMap[id] = mimeType
+                    addDateMap[id] = addDate
                 }
             }
         }
@@ -297,7 +302,8 @@ object MediaStoreUtils {
             durationMap,
             fileUriMap,
             mimeTypeMap,
-            playlistList
+            playlistList,
+            addDateMap
         )
     }
 
@@ -387,7 +393,19 @@ object MediaStoreUtils {
             libraryViewModel.fileUriList.value = pairObject.fileUriList
             libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
             libraryViewModel.playlistList.value = pairObject.playlistList
+            libraryViewModel.addDateMap.value = pairObject.addDateList
         }
     }
 
+    fun findTopTwelveIDsByAddDate(addDateList: MutableMap<Long, Long>, mediaItemList: List<MediaItem>): MutableList<MediaItem> {
+        val topTwelveKeys = addDateList.asSequence()
+            .sortedByDescending { it.value }
+            .take(12)
+            .map { it.key }
+            .toList()
+
+        return topTwelveKeys.mapNotNull { key ->
+            mediaItemList.find { item -> item.mediaId.toLong() == key }
+        }.toMutableList()
+    }
 }
