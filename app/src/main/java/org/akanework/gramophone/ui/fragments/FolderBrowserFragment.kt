@@ -51,15 +51,20 @@ class FolderBrowserFragment(val fileNode: MediaStoreUtils.FileNode? = null) : Fr
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         if (fileNode == null) {
-            folderAdapter = FolderAdapter(libraryViewModel.folderStructure.value!!.folderList
-                .first().folderList
-                .first().folderList
-                .first().folderList, requireParentFragment().childFragmentManager)
-            songAdapter = SongAdapter(libraryViewModel.folderStructure.value!!.folderList
-                .first().folderList
-                .first().folderList
-                .first().songList,
-                requireActivity() as MainActivity)
+            if (libraryViewModel.folderStructure.value!!.folderList.isNotEmpty()) {
+                folderAdapter = FolderAdapter(libraryViewModel.folderStructure.value!!.folderList
+                    .first().folderList
+                    .first().folderList
+                    .first().folderList, requireParentFragment().childFragmentManager)
+                songAdapter = SongAdapter(libraryViewModel.folderStructure.value!!.folderList
+                    .first().folderList
+                    .first().folderList
+                    .first().songList,
+                    requireActivity() as MainActivity)
+            } else {
+                folderAdapter = FolderAdapter(mutableListOf(), requireParentFragment().childFragmentManager)
+                songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
+            }
             concatAdapter = ConcatAdapter(folderAdapter, songAdapter)
         } else {
             folderAdapter = FolderAdapter(fileNode.folderList, requireParentFragment().childFragmentManager)
