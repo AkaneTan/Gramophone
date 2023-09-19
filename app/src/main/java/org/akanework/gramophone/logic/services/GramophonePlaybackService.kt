@@ -253,12 +253,12 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-        mediaSession!!.setCustomLayout(ImmutableList.of(getShufflingCommand(), getRepeatCommand()))
+        mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
     }
 
     override fun onRepeatModeChanged(repeatMode: Int) {
         super.onRepeatModeChanged(repeatMode)
-        mediaSession!!.setCustomLayout(ImmutableList.of(getShufflingCommand(), getRepeatCommand()))
+        mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
     }
 
     // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
