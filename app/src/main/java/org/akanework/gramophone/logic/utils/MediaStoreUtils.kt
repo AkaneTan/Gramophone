@@ -254,6 +254,9 @@ object MediaStoreUtils {
                         albumArtist ?: unknownArtist
                     ) { mutableListOf() }.add(songs.last())
                     genre?.let { col -> genreMap.getOrPut(col) { mutableListOf() }.add(songs.last()) }
+                    if (genre == null) {
+                        genreMap.getOrPut(unknownGenre) { mutableListOf() }.add(songs.last())
+                    }
                     dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
                     durationMap[id] = duration
                     fileUriMap[id] = path.toUri()
@@ -309,7 +312,7 @@ object MediaStoreUtils {
                 .entries
                 .mapIndexed { index, (genreTitle, songsByGenre) ->
                     val sortedGenreSongs = songsByGenre.sortedBy { it.mediaMetadata.title.toString() }
-                    Genre(index.toLong(), genreTitle ?: unknownGenre, sortedGenreSongs)
+                    Genre(index.toLong(), genreTitle!!, sortedGenreSongs)
                 }.sortedBy { it.title }
                 .toMutableList()
         val sortedDateList: MutableList<Date> =
