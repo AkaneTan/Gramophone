@@ -201,7 +201,9 @@ class MainActivity : AppCompatActivity() {
                         .addToBackStack("SETTINGS")
                         .replace(R.id.container, SettingsFragment())
                         .commit()
-                    drawerLayout.close()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        drawerLayout.close()
+                    }, 50)
                 }
 
                 R.id.search -> {
