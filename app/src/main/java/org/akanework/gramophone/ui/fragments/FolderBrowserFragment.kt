@@ -1,6 +1,7 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +18,14 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.FolderAdapter
 import org.akanework.gramophone.ui.adapters.FolderPopAdapter
-import org.akanework.gramophone.ui.adapters.FolderSongAdapter
+import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class FolderBrowserFragment(val fileNode: MediaStoreUtils.FileNode? = null) : Fragment() {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private lateinit var folderAdapter: FolderAdapter
-    private lateinit var songAdapter: FolderSongAdapter
+    private lateinit var songAdapter: SongAdapter
     private lateinit var concatAdapter: ConcatAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,19 +56,19 @@ class FolderBrowserFragment(val fileNode: MediaStoreUtils.FileNode? = null) : Fr
                     .first().folderList
                     .first().folderList
                     .first().folderList, requireParentFragment().childFragmentManager)
-                songAdapter = FolderSongAdapter(libraryViewModel.folderStructure.value!!.folderList
+                songAdapter = SongAdapter(libraryViewModel.folderStructure.value!!.folderList
                     .first().folderList
                     .first().folderList
                     .first().songList,
                     requireActivity() as MainActivity)
             } else {
                 folderAdapter = FolderAdapter(mutableListOf(), requireParentFragment().childFragmentManager)
-                songAdapter = FolderSongAdapter(mutableListOf(), requireActivity() as MainActivity)
+                songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
             }
             concatAdapter = ConcatAdapter(folderAdapter, songAdapter)
         } else {
             folderAdapter = FolderAdapter(fileNode.folderList, requireParentFragment().childFragmentManager)
-            songAdapter = FolderSongAdapter(fileNode.songList, requireActivity() as MainActivity)
+            songAdapter = SongAdapter(fileNode.songList, requireActivity() as MainActivity)
             concatAdapter = ConcatAdapter(FolderPopAdapter(requireParentFragment().childFragmentManager), folderAdapter, songAdapter)
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

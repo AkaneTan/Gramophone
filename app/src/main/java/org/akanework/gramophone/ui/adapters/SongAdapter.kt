@@ -30,7 +30,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * [SongAdapter] is an adapter for displaying songs.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-open class SongAdapter(
+class SongAdapter(
     private val songList: MutableList<MediaItem>,
     private val mainActivity: MainActivity,
 ) : RecyclerView.Adapter<SongAdapter.ViewHolder>() {
