@@ -27,12 +27,14 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_appearance">
-        <SwitchPreferenceCompat
-            android:key="dark_mode"
+        <DropDownPreference
+            android:key="theme_mode"
             android:icon="@drawable/daynight_art"
-            android:title="@string/settings_dark_mode"
-            android:summary="@string/settings_dark_mode_summary"
-            android:widgetLayout="@layout/preference_material_switch"/>
+            android:title="@string/settings_app_theme"
+            android:entries="@array/theme_switch"
+            android:entryValues="@array/theme_switch_val"
+            android:defaultValue="0"
+            app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_behavior">
