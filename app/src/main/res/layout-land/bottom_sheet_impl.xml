@@ -175,7 +175,6 @@
 						android:id="@+id/full_song_name"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:gravity="center"
 						android:textColor="?attr/colorOnSurface"
 						android:textFontWeight="600"
 						android:textSize="22sp"
@@ -186,10 +185,9 @@
 						android:id="@+id/full_song_artist"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:gravity="center"
 						android:textColor="?attr/colorOnSurfaceVariant"
-						android:textFontWeight="500"
-						android:textSize="20sp"
+						android:textFontWeight="400"
+						android:textSize="16sp"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
 
