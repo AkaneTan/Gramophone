@@ -2,8 +2,8 @@
 <resources>
 
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="textAllCaps">true</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textFontWeight">700</item>
