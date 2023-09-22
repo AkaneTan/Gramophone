@@ -23,12 +23,16 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -36,6 +40,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.Constants
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
@@ -43,6 +48,8 @@ import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
+import org.akanework.gramophone.ui.adapters.PlaylistAdapter
+import org.akanework.gramophone.ui.adapters.PlaylistCardAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class PlayerBottomSheet private constructor(
@@ -200,6 +207,18 @@ class PlayerBottomSheet private constructor(
 				Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
 				else -> throw IllegalStateException()
 			}
+		}
+
+		bottomSheetPlaylistButton.setOnClickListener {
+			val playlistBottomSheet = BottomSheetDialog(context)
+			playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
+			val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerview)!!
+			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), instance)
+			recyclerView.layoutManager = LinearLayoutManager(context)
+			recyclerView.adapter = playlistAdapter
+			recyclerView.scrollToPosition(instance.currentMediaItemIndex)
+			FastScrollerBuilder(recyclerView).useMd2Style().build()
+			playlistBottomSheet.show()
 		}
 
 		bottomSheetPreviewControllerButton.setOnClickListener {
@@ -512,5 +531,13 @@ class PlayerBottomSheet private constructor(
 				runnableRunning = true
 			}
 		}
+	}
+
+	private fun dumpPlaylist(): MutableList<MediaItem> {
+		val items = mutableListOf<MediaItem>()
+		for (i in 0 until instance.mediaItemCount) {
+			items.add(instance.getMediaItemAt(i))
+		}
+		return items
 	}
 }
