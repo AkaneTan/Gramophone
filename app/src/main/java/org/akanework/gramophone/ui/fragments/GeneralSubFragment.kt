@@ -109,7 +109,7 @@ class GeneralSubFragment : BaseFragment(true) {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(recyclerView).build()
+        FastScrollerBuilder(recyclerView).useMd2Style().build()
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

@@ -68,6 +68,7 @@ class GenreFragment : BaseFragment(false) {
 
         FastScrollerBuilder(genreRecyclerView).apply {
             setPopupTextProvider(GenrePopupTextProvider())
+            useMd2Style()
             build()
         }
 

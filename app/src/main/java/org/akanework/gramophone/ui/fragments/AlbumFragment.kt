@@ -69,6 +69,7 @@ class AlbumFragment : BaseFragment(false) {
 
         FastScrollerBuilder(albumRecyclerView).apply {
             setPopupTextProvider(AlbumPopupTextProvider())
+            useMd2Style()
             build()
         }
 

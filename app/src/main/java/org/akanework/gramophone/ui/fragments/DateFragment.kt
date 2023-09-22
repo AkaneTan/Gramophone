@@ -63,7 +63,7 @@ class DateFragment : BaseFragment(false) {
 
         dateRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(dateRecyclerView).build()
+        FastScrollerBuilder(dateRecyclerView).useMd2Style().build()
 
         return rootView
     }

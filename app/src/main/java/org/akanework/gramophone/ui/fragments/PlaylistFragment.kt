@@ -70,6 +70,7 @@ class PlaylistFragment : BaseFragment(false) {
 
         FastScrollerBuilder(playlistRecyclerView).apply {
             setPopupTextProvider(PlaylistPopupTextProvider())
+            useMd2Style()
             build()
         }
 

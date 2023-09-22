@@ -60,6 +60,7 @@ class SearchFragment : BaseFragment(false) {
         FastScrollerBuilder(recyclerView).apply {
             setPadding(0, 0, 0, (66).dp)
             setPopupTextProvider(SongPopupTextProvider())
+            useMd2Style()
             build()
         }
 
