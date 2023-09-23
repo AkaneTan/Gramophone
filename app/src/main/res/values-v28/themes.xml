@@ -6,7 +6,7 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textFontWeight">600</item>
+        <item name="android:textFontWeight">700</item>
     </style>
 
     <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">
