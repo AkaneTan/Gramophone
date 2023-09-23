@@ -34,6 +34,8 @@
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
             app:tabContentStart="60dp"
+            app:tabIndicator="@drawable/ic_indicator"
+            app:tabIndicatorHeight="2.5dp"
             app:tabMode="scrollable"
             app:tabTextAppearance="@style/TabTextAppearance">
 

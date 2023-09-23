@@ -87,7 +87,6 @@ class ArtistFragment : BaseFragment(false) {
 
         FastScrollerBuilder(artistRecyclerView).apply {
             setPopupTextProvider(ArtistPopupTextProvider())
-            useMd2Style()
             build()
         }
 

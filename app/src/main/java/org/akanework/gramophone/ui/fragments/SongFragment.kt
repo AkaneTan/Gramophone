@@ -63,7 +63,6 @@ class SongFragment : BaseFragment(false) {
 
         FastScrollerBuilder(songRecyclerView).apply {
             setPopupTextProvider(SongPopupTextProvider())
-            useMd2Style()
             build()
         }
 
