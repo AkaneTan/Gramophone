@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
-            app:tabContentStart="57dp"
+            app:tabContentStart="60dp"
             app:tabMode="scrollable"
             app:tabTextAppearance="@style/TabTextAppearance">
 
