@@ -16,8 +16,8 @@ class AlbumDecorAdapter(
     context: Context,
     albumCount: Int,
     albumAdapter: AlbumAdapter,
-) : BaseDecorAdapter<AlbumAdapter, MediaStoreUtils.Album>
-    (context, albumCount, albumAdapter, R.plurals.albums, true) {
+) : BaseDecorAdapter<AlbumAdapter, MediaStoreUtils.Album>(context, albumCount, albumAdapter) {
+    override val pluralStr = R.plurals.albums
     private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {

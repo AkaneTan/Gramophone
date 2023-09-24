@@ -12,11 +12,12 @@ import org.akanework.gramophone.R
 
 abstract class BaseDecorAdapter<T : BaseAdapter<U>, U>(
 	protected val context: Context,
-	protected var count: Int,
+	private var count: Int,
 	protected val adapter: T,
-	private val pluralStr: Int,
-	private val canSort: Boolean,
+	private val canSort: Boolean = true,
 	) : RecyclerView.Adapter<BaseDecorAdapter<T, U>.ViewHolder>() {
+
+	protected abstract val pluralStr: Int
 
 	override fun onCreateViewHolder(
 		parent: ViewGroup,

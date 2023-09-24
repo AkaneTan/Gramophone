@@ -13,7 +13,8 @@ class SongDecorAdapter(
     songAdapter: SongAdapter,
     canSort: Boolean,
 ) : BaseDecorAdapter<SongAdapter, MediaItem>
-    (context, songCount, songAdapter, R.plurals.songs, canSort) {
+    (context, songCount, songAdapter, canSort) {
+    override val pluralStr = R.plurals.songs
     private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {

@@ -16,8 +16,8 @@ class GenreDecorAdapter(
     context: Context,
     genreCount: Int,
     genreAdapter: GenreAdapter,
-) : BaseDecorAdapter<GenreAdapter, MediaStoreUtils.Genre>
-    (context, genreCount, genreAdapter, R.plurals.items, true) {
+) : BaseDecorAdapter<GenreAdapter, MediaStoreUtils.Genre>(context, genreCount, genreAdapter) {
+    override val pluralStr = R.plurals.items
     private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {

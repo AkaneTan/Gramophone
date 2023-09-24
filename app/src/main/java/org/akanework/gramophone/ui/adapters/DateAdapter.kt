@@ -1,6 +1,7 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
@@ -17,87 +18,67 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 @androidx.annotation.OptIn(UnstableApi::class)
 class DateAdapter(
     dateList: MutableList<MediaStoreUtils.Date>,
-    private val context: Context,
+    context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Date>(R.layout.adapter_list_card_larger, dateList) {
+) : BaseAdapter.ItemAdapter<MediaStoreUtils.Date>
+    (context, dateList) {
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int,
-    ) {
-        holder.title.text =
-            if (list[position].title == "0") {
-                context.getString(R.string.unknown_year)
-            } else {
-                list[position].title
-            }
-        val songText =
-            list[position].songList.size.toString() + ' ' +
-                if (list[position].songList.size <= 1) {
-                    context.getString(R.string.song)
-                } else {
-                    context.getString(R.string.songs)
-                }
-        holder.subTitle.text = songText
+    override val layout = R.layout.adapter_list_card_larger
+    override val defaultCover = R.drawable.ic_default_cover_date
 
-        Glide
-            .with(holder.songCover.context)
-            .load(
-                list[position]
-                    .songList
-                    .first()
-                    .mediaMetadata
-                    .artworkUri,
-            ).placeholder(R.drawable.ic_default_cover_date)
-            .into(holder.songCover)
-
-        holder.itemView.setOnClickListener {
-            fragmentManager
-                .beginTransaction()
-                .addToBackStack("SUBFRAG")
-                .replace(
-                    R.id.container,
-                    GeneralSubFragment().apply {
-                        arguments =
-                            Bundle().apply {
-                                putInt("Position", toRawPos(position))
-                                putInt("Item", 4)
-                                putString("Title", holder.title.text as String)
-                            }
-                    },
-                ).commit()
+    override fun titleOf(item: MediaStoreUtils.Date): String {
+        return if (item.title == "0") {
+            context.getString(R.string.unknown_year)
+        } else {
+            item.title
         }
+    }
 
-        holder.moreButton.setOnClickListener {
-            val popupMenu = PopupMenu(it.context, it)
-            popupMenu.inflate(R.menu.more_menu_less)
+    override fun onClick(item: MediaStoreUtils.Date) {
+        fragmentManager
+            .beginTransaction()
+            .addToBackStack("SUBFRAG")
+            .replace(
+                R.id.container,
+                GeneralSubFragment().apply {
+                    arguments =
+                        Bundle().apply {
+                            putInt("Position", toRawPos(item))
+                            putInt("Item", 4)
+                            putString("Title", item.title)
+                        }
+                },
+            ).commit()
+    }
 
-            popupMenu.setOnMenuItemClickListener { it1 ->
-                when (it1.itemId) {
-                    R.id.play_next -> {
-                        val mediaController = mainActivity.getPlayer()
-                        mediaController.addMediaItems(
-                            mediaController.currentMediaItemIndex + 1,
-                            list[holder.bindingAdapterPosition].songList,
-                        )
-                    }
+    override fun onMenu(item: MediaStoreUtils.Date, popupMenu: PopupMenu) {
+        popupMenu.inflate(R.menu.more_menu_less)
 
-                    R.id.details -> {
-                    }
-                    /*
-                    R.id.share -> {
-                        val builder = ShareCompat.IntentBuilder(mainActivity)
-                        val mimeTypes = mutableSetOf<String>()
-                        builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
-                        mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
-                        builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
-                     } */
-                     */
+        popupMenu.setOnMenuItemClickListener { it1 ->
+            when (it1.itemId) {
+                R.id.play_next -> {
+                    val mediaController = mainActivity.getPlayer()
+                    mediaController.addMediaItems(
+                        mediaController.currentMediaItemIndex + 1,
+                        item.songList,
+                    )
                 }
-                true
+
+                R.id.details -> {
+                    // TODO
+                }
+                /*
+				R.id.share -> {
+					val builder = ShareCompat.IntentBuilder(mainActivity)
+					val mimeTypes = mutableSetOf<String>()
+					builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+					mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+					builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
+				 } */
+				 */
             }
-            popupMenu.show()
+            true
         }
     }
 

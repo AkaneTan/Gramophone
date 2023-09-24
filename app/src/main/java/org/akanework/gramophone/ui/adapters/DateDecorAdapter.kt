@@ -16,8 +16,8 @@ class DateDecorAdapter(
     context: Context,
     dateCount: Int,
     dateAdapter: DateAdapter,
-) : BaseDecorAdapter<DateAdapter, MediaStoreUtils.Date>
-    (context, dateCount, dateAdapter, R.plurals.items, true) {
+) : BaseDecorAdapter<DateAdapter, MediaStoreUtils.Date>(context, dateCount, dateAdapter) {
+    override val pluralStr = R.plurals.items
     private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {

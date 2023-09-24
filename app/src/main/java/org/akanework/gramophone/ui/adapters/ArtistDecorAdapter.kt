@@ -21,8 +21,8 @@ class ArtistDecorAdapter(
     artistCount: Int,
     artistAdapter: ArtistAdapter,
     private val prefs: SharedPreferences
-) : BaseDecorAdapter<ArtistAdapter, MediaStoreUtils.Artist>
-    (context, artistCount, artistAdapter, R.plurals.artists, true) {
+) : BaseDecorAdapter<ArtistAdapter, MediaStoreUtils.Artist>(context, artistCount, artistAdapter) {
+    override val pluralStr = R.plurals.artists
     private var sortStatus = 0
     private val viewModel: LibraryViewModel by (context as MainActivity).viewModels()
 

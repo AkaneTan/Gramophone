@@ -27,6 +27,7 @@ object MediaStoreUtils {
     interface Item {
         val id: Long
         val title: String
+        val songList: List<MediaItem>
     }
 
     /**
@@ -37,7 +38,7 @@ object MediaStoreUtils {
         override val title: String,
         val artist: String,
         val albumYear: Int,
-        val songList: List<MediaItem>,
+        override val songList: List<MediaItem>,
     ) : Item
 
     /**
@@ -46,7 +47,7 @@ object MediaStoreUtils {
     data class Artist(
         override val id: Long,
         override val title: String,
-        val songList: List<MediaItem>,
+        override val songList: List<MediaItem>,
     ) : Item
 
     /**
@@ -55,7 +56,7 @@ object MediaStoreUtils {
     data class Genre(
         override val id: Long,
         override val title: String,
-        val songList: List<MediaItem>,
+        override val songList: List<MediaItem>,
     ) : Item
 
     /**
@@ -64,7 +65,7 @@ object MediaStoreUtils {
     data class Date(
         override val id: Long,
         override val title: String,
-        val songList: List<MediaItem>,
+        override val songList: List<MediaItem>,
     ) : Item
 
     /**
@@ -73,7 +74,7 @@ object MediaStoreUtils {
     open class Playlist(
         override val id: Long,
         override val title: String,
-        open val songList: List<MediaItem>,
+        override val songList: List<MediaItem>,
         val virtual: Boolean
     ) : Item
 

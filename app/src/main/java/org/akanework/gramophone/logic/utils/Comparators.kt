@@ -10,6 +10,10 @@ class SupportComparator<T, U>(private val cmp: Comparator<U>,
 	}
 
 	companion object {
+		fun <T> createDummyComparator(): Comparator<T> {
+			return Comparator { _, _ -> 0 }
+		}
+
 		fun <T> createInversionComparator(cmp: Comparator<T>, invert: Boolean = false):
 				Comparator<T> {
 			return SupportComparator(cmp, invert) { it }

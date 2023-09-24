@@ -17,7 +17,8 @@ class PlaylistDecorAdapter(
     count: Int,
     adapter: PlaylistAdapter,
 ) : BaseDecorAdapter<PlaylistAdapter, MediaStoreUtils.Playlist>
-    (context, count, adapter, R.plurals.playlists, true) {
+    (context, count, adapter) {
+    override val pluralStr = R.plurals.playlists
     private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {

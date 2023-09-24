@@ -18,80 +18,56 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 @androidx.annotation.OptIn(UnstableApi::class)
 class PlaylistAdapter(
     playlistList: MutableList<MediaStoreUtils.Playlist>,
-    private val context: Context,
+    context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Playlist>(R.layout.adapter_list_card_larger, playlistList) {
+) : BaseAdapter.ItemAdapter<MediaStoreUtils.Playlist>
+    (context, playlistList) {
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int,
-    ) {
-        holder.title.text =
-            list[position].title.ifEmpty {
-                context.getString(R.string.unknown_playlist)
-            }
-        val songText =
-            list[position].songList.size.toString() + ' ' +
-                if (list[position].songList.size <= 1) {
-                    context.getString(R.string.song)
-                } else {
-                    context.getString(R.string.songs)
-                }
-        holder.subTitle.text = songText
+    override val layout = R.layout.adapter_list_card_larger
+    override val defaultCover = R.drawable.ic_default_cover_playlist
 
-        if (list[position].songList.isNotEmpty()) {
-            Glide
-                .with(holder.songCover.context)
-                .load(
-                    list[position]
-                        .songList
-                        .first()
-                        .mediaMetadata
-                        .artworkUri,
-                ).placeholder(R.drawable.ic_default_cover_playlist)
-                .into(holder.songCover)
-        } else {
-            holder.songCover.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_default_cover_playlist))
+    override fun titleOf(item: MediaStoreUtils.Playlist): String {
+        return item.title.ifEmpty {
+            context.getString(R.string.unknown_playlist)
         }
+    }
 
-        holder.itemView.setOnClickListener {
-            fragmentManager
-                .beginTransaction()
-                .addToBackStack("SUBFRAG")
-                .replace(
-                    R.id.container,
-                    GeneralSubFragment().apply {
-                        arguments =
-                            Bundle().apply {
-                                putInt("Position", toRawPos(position))
-                                putInt("Item", 6)
-                                putString("Title", holder.title.text as String)
-                            }
-                    },
-                ).commit()
-        }
+    override fun onClick(item: MediaStoreUtils.Playlist) {
+        fragmentManager
+            .beginTransaction()
+            .addToBackStack("SUBFRAG")
+            .replace(
+                R.id.container,
+                GeneralSubFragment().apply {
+                    arguments =
+                        Bundle().apply {
+                            putInt("Position", toRawPos(item))
+                            putInt("Item", 6)
+                            putString("Title", item.title)
+                        }
+                },
+            ).commit()
+    }
 
-        holder.moreButton.setOnClickListener {
-            val popupMenu = PopupMenu(it.context, it)
-            popupMenu.inflate(R.menu.more_menu_less)
+    override fun onMenu(item: MediaStoreUtils.Playlist, popupMenu: PopupMenu) {
+        popupMenu.inflate(R.menu.more_menu_less)
 
-            popupMenu.setOnMenuItemClickListener { it1 ->
-                when (it1.itemId) {
-                    R.id.play_next -> {
-                        val mediaController = mainActivity.getPlayer()
-                        mediaController.addMediaItems(
-                            mediaController.currentMediaItemIndex + 1,
-                            list[holder.bindingAdapterPosition].songList,
-                        )
-                    }
-
-                    R.id.details -> {
-                    }
+        popupMenu.setOnMenuItemClickListener { it1 ->
+            when (it1.itemId) {
+                R.id.play_next -> {
+                    val mediaController = mainActivity.getPlayer()
+                    mediaController.addMediaItems(
+                        mediaController.currentMediaItemIndex + 1,
+                        item.songList,
+                    )
                 }
-                true
+
+                R.id.details -> {
+                    // TODO
+                }
             }
-            popupMenu.show()
+            true
         }
     }
 
