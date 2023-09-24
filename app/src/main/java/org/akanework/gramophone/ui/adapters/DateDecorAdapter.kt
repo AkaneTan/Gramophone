@@ -9,32 +9,25 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.SupportComparator
 
 class DateDecorAdapter(
-    private val context: Context,
-    private var dateCount: Int,
-    private val dateAdapter: DateAdapter,
-) : RecyclerView.Adapter<DateDecorAdapter.ViewHolder>() {
+    context: Context,
+    dateCount: Int,
+    dateAdapter: DateAdapter,
+) : BaseDecorAdapter<DateAdapter, MediaStoreUtils.Date>(context, dateCount, dateAdapter) {
     private var sortStatus = 0
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int,
-    ): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
-        return ViewHolder(view)
-    }
 
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
         val songText =
-            dateCount.toString() + ' ' +
-                if (dateCount <= 1) context.getString(R.string.item) else context.getString(R.string.items)
-        holder.songCounter.text = songText
+            count.toString() + ' ' +
+                if (count <= 1) context.getString(R.string.item) else context.getString(R.string.items)
+        holder.counter.text = songText
         holder.sortButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_artist)
@@ -53,7 +46,7 @@ class DateDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            dateAdapter.sort(
+                            adapter.sort(
                                 SupportComparator
                                 .createAlphanumericComparator(true) { it2 -> it2.title })
                             menuItem.isChecked = true
@@ -63,7 +56,7 @@ class DateDecorAdapter(
 
                     R.id.size -> {
                         if (!menuItem.isChecked) {
-                            dateAdapter.sort(compareByDescending { it2 -> it2.songList.size })
+                            adapter.sort(compareByDescending { it2 -> it2.songList.size })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
@@ -75,20 +68,4 @@ class DateDecorAdapter(
         }
     }
 
-    override fun getItemCount(): Int = 1
-
-    inner class ViewHolder(
-        view: View,
-    ) : RecyclerView.ViewHolder(view) {
-        val sortButton: MaterialButton = view.findViewById(R.id.sort)
-        val songCounter: TextView = view.findViewById(R.id.song_counter)
-    }
-
-    fun updateSongCounter(count: Int) {
-        sortStatus = 0
-        dateCount = count
-        notifyItemChanged(0)
-    }
-
-    fun isCounterEmpty(): Boolean = dateCount == 0
 }

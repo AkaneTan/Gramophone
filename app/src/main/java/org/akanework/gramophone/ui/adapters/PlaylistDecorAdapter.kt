@@ -9,32 +9,24 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.SupportComparator
 
 class PlaylistDecorAdapter(
-    private val context: Context,
-    private var songCount: Int,
-    private val songAdapter: PlaylistAdapter,
-) : RecyclerView.Adapter<PlaylistDecorAdapter.ViewHolder>() {
+    context: Context,
+    count: Int,
+    adapter: PlaylistAdapter,
+) : BaseDecorAdapter<PlaylistAdapter, MediaStoreUtils.Playlist>(context, count, adapter) {
     private var sortStatus = 0
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int,
-    ): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
-        return ViewHolder(view)
-    }
 
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
         val songText =
-            songCount.toString() + ' ' +
-                if (songCount <= 1) context.getString(R.string.item) else context.getString(R.string.items)
-        holder.songCounter.text = songText
+            count.toString() + ' ' +
+                if (count <= 1) context.getString(R.string.item) else context.getString(R.string.items)
+        holder.counter.text = songText
         holder.sortButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_artist)
@@ -53,7 +45,7 @@ class PlaylistDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sort(SupportComparator.createAlphanumericComparator { it2 -> it2.title })
+                            adapter.sort(SupportComparator.createAlphanumericComparator { it2 -> it2.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }
@@ -61,7 +53,7 @@ class PlaylistDecorAdapter(
 
                     R.id.size -> {
                         if (!menuItem.isChecked) {
-                            songAdapter.sort(compareByDescending { it2 -> it2.songList.size })
+                            adapter.sort(compareByDescending { it2 -> it2.songList.size })
                             menuItem.isChecked = true
                             sortStatus = 1
                         }
@@ -72,21 +64,4 @@ class PlaylistDecorAdapter(
             popupMenu.show()
         }
     }
-
-    override fun getItemCount(): Int = 1
-
-    inner class ViewHolder(
-        view: View,
-    ) : RecyclerView.ViewHolder(view) {
-        val sortButton: MaterialButton = view.findViewById(R.id.sort)
-        val songCounter: TextView = view.findViewById(R.id.song_counter)
-    }
-
-    fun updateSongCounter(count: Int) {
-        sortStatus = 0
-        songCount = count
-        notifyItemChanged(0)
-    }
-
-    fun isCounterEmpty(): Boolean = songCount == 0
 }

@@ -53,9 +53,7 @@ class DateFragment : BaseFragment(false) {
         if (!libraryViewModel.dateItemList.hasActiveObservers()) {
             libraryViewModel.dateItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    if (mediaItems.size != dateList.size || dateDecorAdapter.isCounterEmpty()) {
-                        dateDecorAdapter.updateSongCounter(mediaItems.size)
-                    }
+                    dateDecorAdapter.updateSongCounter(mediaItems.size)
                     dateAdapter.updateList(mediaItems)
                 }
             }

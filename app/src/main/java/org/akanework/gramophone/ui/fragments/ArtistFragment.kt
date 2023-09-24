@@ -59,7 +59,6 @@ class ArtistFragment : BaseFragment(false) {
                 requireContext(),
                 libraryViewModel.artistItemList.value!!.size,
                 artistAdapter,
-                requireActivity() as MainActivity,
                 prefs
             )
         val concatAdapter = ConcatAdapter(artistDecorAdapter, artistAdapter)
