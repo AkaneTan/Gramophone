@@ -15,6 +15,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.AlbumDecorAdapter
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -66,19 +67,10 @@ class AlbumFragment : BaseFragment(false) {
         albumRecyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(albumRecyclerView).apply {
-            setPopupTextProvider(AlbumPopupTextProvider())
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(albumAdapter))
             build()
         }
 
         return rootView
-    }
-
-    inner class AlbumPopupTextProvider : PopupTextProvider {
-        override fun getPopupText(position: Int): CharSequence {
-            if (position != 0) {
-                return albumList[position - 1].title.first().toString()
-            }
-            return "-"
-        }
     }
 }

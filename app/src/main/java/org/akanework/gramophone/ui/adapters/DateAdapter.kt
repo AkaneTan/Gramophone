@@ -28,11 +28,7 @@ class DateAdapter(
     override val defaultCover = R.drawable.ic_default_cover_date
 
     override fun titleOf(item: MediaStoreUtils.Date): String {
-        return if (item.title == "0") {
-            context.getString(R.string.unknown_year)
-        } else {
-            item.title
-        }
+        return item.title ?: context.getString(R.string.unknown_year)
     }
 
     override fun onClick(item: MediaStoreUtils.Date) {
@@ -46,7 +42,7 @@ class DateAdapter(
                         Bundle().apply {
                             putInt("Position", toRawPos(item))
                             putInt("Item", 4)
-                            putString("Title", item.title)
+                            putString("Title", titleOf(item))
                         }
                 },
             ).commit()
@@ -80,6 +76,10 @@ class DateAdapter(
             }
             true
         }
+    }
+
+    override fun isPinned(item: MediaStoreUtils.Date): Boolean {
+        return item.title == null
     }
 
 }

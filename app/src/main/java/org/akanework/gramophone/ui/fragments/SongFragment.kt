@@ -14,6 +14,7 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -62,19 +63,10 @@ class SongFragment : BaseFragment(false) {
         songRecyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(songRecyclerView).apply {
-            setPopupTextProvider(SongPopupTextProvider())
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(songAdapter))
             build()
         }
 
         return rootView
-    }
-
-    inner class SongPopupTextProvider : PopupTextProvider {
-        override fun getPopupText(position: Int): CharSequence {
-            if (position != 0) {
-                return songAdapter.getFrozenList()[position - 1].mediaMetadata.title?.first().toString()
-            }
-            return "-"
-        }
     }
 }

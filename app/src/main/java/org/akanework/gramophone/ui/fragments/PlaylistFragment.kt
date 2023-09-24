@@ -14,6 +14,7 @@ import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -23,10 +24,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class PlaylistFragment : BaseFragment(false) {
-
-    companion object {
-        const val TAG = "PlaylistFragment"
-    }
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private val playlistList = mutableListOf<MediaStoreUtils.Playlist>()
@@ -69,19 +66,10 @@ class PlaylistFragment : BaseFragment(false) {
         playlistRecyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(playlistRecyclerView).apply {
-            setPopupTextProvider(PlaylistPopupTextProvider())
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(playlistAdapter))
             build()
         }
 
         return rootView
-    }
-
-    inner class PlaylistPopupTextProvider : PopupTextProvider {
-        override fun getPopupText(position: Int): CharSequence {
-            if (position != 0) {
-                return playlistList[position - 1].title.first().toString()
-            }
-            return "-"
-        }
     }
 }

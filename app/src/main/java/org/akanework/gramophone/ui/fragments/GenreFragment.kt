@@ -14,6 +14,7 @@ import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.GenreAdapter
 import org.akanework.gramophone.ui.adapters.GenreDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -65,20 +66,11 @@ class GenreFragment : BaseFragment(false) {
         genreRecyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(genreRecyclerView).apply {
-            setPopupTextProvider(GenrePopupTextProvider())
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(genreAdapter))
             build()
         }
 
         return rootView
-    }
-
-    inner class GenrePopupTextProvider : PopupTextProvider {
-        override fun getPopupText(position: Int): CharSequence {
-            if (position != 0) {
-                return genreList[position - 1].title.first().toString()
-            }
-            return "-"
-        }
     }
 
 }

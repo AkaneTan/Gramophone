@@ -20,8 +20,12 @@ class AlbumAdapter(
 
     override val layout = R.layout.adapter_grid_card
 
+    override fun titleOf(item: MediaStoreUtils.Album): String {
+        return item.title ?: context.getString(R.string.unknown_album)
+    }
+
     override fun subTitleOf(item: MediaStoreUtils.Album): String {
-        return item.artist
+        return item.artist ?: context.getString(R.string.unknown_artist)
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {
@@ -71,4 +75,7 @@ class AlbumAdapter(
         }
     }
 
+    override fun isPinned(item: MediaStoreUtils.Album): Boolean {
+        return item.title == null
+    }
 }

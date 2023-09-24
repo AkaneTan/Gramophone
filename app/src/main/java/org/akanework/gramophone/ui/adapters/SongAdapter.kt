@@ -38,11 +38,15 @@ class SongAdapter(
     }
 
     override fun subTitleOf(item: MediaItem): String {
-        return item.mediaMetadata.artist.toString()
+        return item.mediaMetadata.artist?.toString() ?: context.getString(R.string.unknown_artist)
     }
 
     override fun coverOf(item: MediaItem): Uri? {
         return item.mediaMetadata.artworkUri
+    }
+
+    fun albumOf(item: MediaItem): String {
+        return item.mediaMetadata.albumTitle?.toString() ?: context.getString(R.string.unknown_album)
     }
 
     override fun onClick(item: MediaItem) {
@@ -125,12 +129,7 @@ class SongAdapter(
                                                     putInt("Item", 2)
                                                     putString(
                                                         "Title",
-                                                        viewModel
-                                                            .artistItemList
-                                                            .value
-                                                            ?.get(
-                                                                positionArtist,
-                                                            )?.title,
+                                                        titleOf(item),
                                                     )
                                                 }
                                         },

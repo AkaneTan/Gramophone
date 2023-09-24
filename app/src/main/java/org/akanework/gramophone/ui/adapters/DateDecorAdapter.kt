@@ -39,7 +39,7 @@ class DateDecorAdapter(
                     if (!menuItem.isChecked) {
                         adapter.sort(
                             SupportComparator
-                                .createAlphanumericComparator(true) { it2 -> it2.title })
+                                .createAlphanumericComparator(true) { it2 -> adapter.titleOf(it2) })
                         menuItem.isChecked = true
                         sortStatus = 0
                     }

@@ -27,6 +27,10 @@ class GenreAdapter(
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_genre
 
+    override fun titleOf(item: MediaStoreUtils.Genre): String {
+        return item.title ?: context.getString(R.string.unknown_genre)
+    }
+
     override fun onClick(item: MediaStoreUtils.Genre) {
         fragmentManager
             .beginTransaction()
@@ -38,7 +42,7 @@ class GenreAdapter(
                         Bundle().apply {
                             putInt("Position", toRawPos(item))
                             putInt("Item", 3)
-                            putString("Title", item.title)
+                            putString("Title", titleOf(item))
                         }
                 },
             ).commit()
@@ -71,5 +75,9 @@ class GenreAdapter(
             }
             true
         }
+    }
+
+    override fun isPinned(item: MediaStoreUtils.Genre): Boolean {
+        return item.title == null
     }
 }

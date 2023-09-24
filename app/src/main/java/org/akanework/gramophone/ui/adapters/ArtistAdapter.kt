@@ -27,6 +27,10 @@ class ArtistAdapter(
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_artist
 
+    override fun titleOf(item: MediaStoreUtils.Artist): String {
+        return item.title ?: context.getString(R.string.unknown_artist)
+    }
+
     override fun onClick(item: MediaStoreUtils.Artist) {
         fragmentManager
             .beginTransaction()
@@ -42,7 +46,7 @@ class ArtistAdapter(
                                     2
                                 else
                                     5)
-                            putString("Title", item.title)
+                            putString("Title", titleOf(item))
                         }
                 },
             ).commit()
@@ -77,6 +81,10 @@ class ArtistAdapter(
             }
             true
         }
+    }
+
+    override fun isPinned(item: MediaStoreUtils.Artist): Boolean {
+        return item.title == null
     }
 
     fun setClickEventToAlbumArtist(reverse: Boolean = false) {

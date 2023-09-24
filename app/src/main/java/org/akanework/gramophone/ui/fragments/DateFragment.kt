@@ -13,6 +13,7 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.DateAdapter
 import org.akanework.gramophone.ui.adapters.DateDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -61,7 +62,10 @@ class DateFragment : BaseFragment(false) {
 
         dateRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(dateRecyclerView).build()
+        FastScrollerBuilder(dateRecyclerView).apply {
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(dateAdapter))
+            build()
+        }
 
         return rootView
     }

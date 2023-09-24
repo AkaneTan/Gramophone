@@ -40,7 +40,7 @@ class SongDecorAdapter(
                     if (!menuItem.isChecked) {
                         adapter.sort(
                             SupportComparator
-                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.title!! })
+                                .createAlphanumericComparator { it2 -> adapter.titleOf(it2) })
                         menuItem.isChecked = true
                         sortStatus = 0
                     }
@@ -50,7 +50,7 @@ class SongDecorAdapter(
                     if (!menuItem.isChecked) {
                         adapter.sort(
                             SupportComparator
-                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.artist!! })
+                                .createAlphanumericComparator { it2 -> adapter.subTitleOf(it2) })
                         menuItem.isChecked = true
                         sortStatus = 1
                     }
@@ -60,7 +60,7 @@ class SongDecorAdapter(
                     if (!menuItem.isChecked) {
                         adapter.sort(
                             SupportComparator
-                                .createAlphanumericComparator { it2 -> it2.mediaMetadata.albumTitle!! })
+                                .createAlphanumericComparator { it2 -> adapter.albumOf(it2) })
                         menuItem.isChecked = true
                         sortStatus = 2
                     }

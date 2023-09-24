@@ -37,7 +37,7 @@ class GenreDecorAdapter(
             when (menuItem.itemId) {
                 R.id.name -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(SupportComparator.createAlphanumericComparator { it2 -> it2.title })
+                        adapter.sort(SupportComparator.createAlphanumericComparator { it2 -> adapter.titleOf(it2) })
                         menuItem.isChecked = true
                         sortStatus = 0
                     }

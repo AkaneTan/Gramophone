@@ -17,6 +17,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
 import org.akanework.gramophone.ui.adapters.ArtistDecorAdapter
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
@@ -82,19 +83,10 @@ class ArtistFragment : BaseFragment(false) {
         artistRecyclerView.adapter = concatAdapter
 
         FastScrollerBuilder(artistRecyclerView).apply {
-            setPopupTextProvider(ArtistPopupTextProvider())
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(artistAdapter))
             build()
         }
 
         return rootView
-    }
-
-    inner class ArtistPopupTextProvider : PopupTextProvider {
-        override fun getPopupText(position: Int): CharSequence {
-            if (position != 0) {
-                return artistList[position - 1].title.first().toString()
-            }
-            return "-"
-        }
     }
 }

@@ -2,11 +2,9 @@ package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
 import android.os.Bundle
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
 import androidx.media3.common.util.UnstableApi
-import com.bumptech.glide.Glide
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -28,9 +26,10 @@ class PlaylistAdapter(
     override val defaultCover = R.drawable.ic_default_cover_playlist
 
     override fun titleOf(item: MediaStoreUtils.Playlist): String {
-        return item.title.ifEmpty {
-            context.getString(R.string.unknown_playlist)
+        if (item is MediaStoreUtils.RecentlyAdded) {
+            return context.getString(R.string.recently_added)
         }
+        return item.title ?: context.getString(R.string.unknown_playlist)
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
@@ -44,7 +43,7 @@ class PlaylistAdapter(
                         Bundle().apply {
                             putInt("Position", toRawPos(item))
                             putInt("Item", 6)
-                            putString("Title", item.title)
+                            putString("Title", titleOf(item))
                         }
                 },
             ).commit()

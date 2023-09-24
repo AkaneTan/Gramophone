@@ -25,6 +25,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.closeKeyboard
 import org.akanework.gramophone.logic.utils.dp
 import org.akanework.gramophone.logic.utils.showSoftKeyboard
+import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -60,7 +61,7 @@ class SearchFragment : BaseFragment(false) {
 
         FastScrollerBuilder(recyclerView).apply {
             setPadding(0, 0, 0, (66).dp)
-            setPopupTextProvider(SongPopupTextProvider())
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(songAdapter))
             build()
         }
 
@@ -72,11 +73,11 @@ class SearchFragment : BaseFragment(false) {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     filteredList.clear()
                     libraryViewModel.mediaItemList.value?.filter {
-                        val isMatchingTitle = it.mediaMetadata.title!!.contains(text, true)
+                        val isMatchingTitle = it.mediaMetadata.title?.contains(text, true) ?: false
                         val isMatchingAlbum =
-                            it.mediaMetadata.albumTitle!!.contains(text, true)
+                            it.mediaMetadata.albumTitle?.contains(text, true) ?: false
                         val isMatchingArtist =
-                            it.mediaMetadata.artist!!.contains(text, true)
+                            it.mediaMetadata.artist?.contains(text, true) ?: false
                         isMatchingTitle || isMatchingAlbum || isMatchingArtist
                     }?.let {
                         filteredList.addAll(
@@ -118,15 +119,6 @@ class SearchFragment : BaseFragment(false) {
     override fun onDestroyView() {
         super.onDestroyView()
         viewLifecycleOwner.lifecycleScope.cancel()
-    }
-
-    inner class SongPopupTextProvider : PopupTextProvider {
-        override fun getPopupText(position: Int): CharSequence {
-            if (position != 0) {
-                return filteredList[position - 1].mediaMetadata.title?.first().toString()
-            }
-            return "-"
-        }
     }
 
 }

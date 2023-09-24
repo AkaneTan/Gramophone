@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.SupportComparator
@@ -135,10 +136,10 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	protected abstract fun toId(item: T): String
-	protected abstract fun titleOf(item: T): String
-	protected abstract fun subTitleOf(item: T): String
-	protected abstract fun coverOf(item: T): Uri?
+	abstract fun toId(item: T): String
+	abstract fun titleOf(item: T): String
+	abstract fun subTitleOf(item: T): String
+	abstract fun coverOf(item: T): Uri?
 	protected abstract fun onClick(item: T)
 	protected abstract fun onMenu(item: T, popupMenu: PopupMenu)
 	protected open fun isPinned(item: T): Boolean {
@@ -175,10 +176,6 @@ abstract class BaseAdapter<T>(
 			return item.id.toString()
 		}
 
-		override fun titleOf(item: T): String {
-			return item.title
-		}
-
 		override fun subTitleOf(item: T): String {
 			return context.resources.getQuantityString(
 				R.plurals.songs, item.songList.size, item.songList.size)
@@ -189,6 +186,18 @@ abstract class BaseAdapter<T>(
 				.firstOrNull()
 				?.mediaMetadata
 				?.artworkUri
+		}
+	}
+
+	open class BasePopupTextProvider<T>(private val adapter: BaseAdapter<T>) : PopupTextProvider {
+		final override fun getPopupText(position: Int): CharSequence {
+			return (if (position != 0)
+				getTitleFor(adapter.list[position])?.first()?.toString()
+			else null) ?: "-"
+		}
+
+		open fun getTitleFor(item: T): String? {
+			return adapter.titleOf(item)
 		}
 	}
 
