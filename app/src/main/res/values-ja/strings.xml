@@ -51,7 +51,7 @@
     <string name="playlist">個のプレイリスト</string>
     <string name="playlists">個のプレイリスト</string>
     <string name="recently_added">最近追加をした曲</string>
-    <string name="refreshed_songs">%1$s 件の曲を更新しました</string>
+    <string name="refreshed_songs">%1$s 件の曲を更新しました。</string>
     <string name="repeat_mode">リピートモード</string>
     <string name="search">検索</string>
     <string name="settings_app_name">アプリ名</string>
