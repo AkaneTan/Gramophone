@@ -62,6 +62,7 @@
     <string name="settings_contributors_detail">AkaneTan, 123Duo3, nift4, Re*Index.(ot_inc)</string>
     <string name="settings_dark_mode">ダークモードを強制する</string>
     <string name="settings_dark_mode_summary">Gramophone でダークモードを有効化します。</string>
+    <string name="settings_app_theme">アプリのテーマ</string>
     <string name="settings_mediastore_filter">MediaStore のフィルター</string>
     <string name="settings_mediastore_filter_summary">設定した秒数より短い曲を絞り込みます。(再スキャンが必要になります)</string>
     <string name="settings_repository">リポジトリ</string>
