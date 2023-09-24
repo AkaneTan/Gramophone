@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="theme_switch">
-        <item>Follow system</item>
-        <item>Dark</item>
-        <item>Light</item>
+    <string-array name="theme_switch" translatable="false">>
+        <item>@string/follow_system</item>
+        <item>@string/dark</item>
+        <item>@string/light</item>
     </string-array>
 
-    <string-array name="theme_switch_val">
+    <string-array name="theme_switch_val" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>

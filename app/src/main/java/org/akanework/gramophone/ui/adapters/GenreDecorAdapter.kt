@@ -16,52 +16,42 @@ class GenreDecorAdapter(
     context: Context,
     genreCount: Int,
     genreAdapter: GenreAdapter,
-) : BaseDecorAdapter<GenreAdapter, MediaStoreUtils.Genre>(context, genreCount, genreAdapter) {
+) : BaseDecorAdapter<GenreAdapter, MediaStoreUtils.Genre>
+    (context, genreCount, genreAdapter, R.plurals.items, true) {
     private var sortStatus = 0
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int,
-    ) {
-        val songText =
-            count.toString() + ' ' +
-                if (count <= 1) context.getString(R.string.genre) else context.getString(R.string.genres)
-        holder.counter.text = songText
-        holder.sortButton.setOnClickListener {
-            val popupMenu = PopupMenu(context, it)
-            popupMenu.inflate(R.menu.sort_menu_artist)
+    override fun onSortButtonPressed(popupMenu: PopupMenu) {
+        popupMenu.inflate(R.menu.sort_menu_artist)
 
-            when (sortStatus) {
-                0 -> {
-                    popupMenu.menu.findItem(R.id.name).isChecked = true
-                }
-
-                1 -> {
-                    popupMenu.menu.findItem(R.id.size).isChecked = true
-                }
+        when (sortStatus) {
+            0 -> {
+                popupMenu.menu.findItem(R.id.name).isChecked = true
             }
 
-            popupMenu.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.name -> {
-                        if (!menuItem.isChecked) {
-                            adapter.sort(SupportComparator.createAlphanumericComparator { it2 -> it2.title })
-                            menuItem.isChecked = true
-                            sortStatus = 0
-                        }
-                    }
+            1 -> {
+                popupMenu.menu.findItem(R.id.size).isChecked = true
+            }
+        }
 
-                    R.id.size -> {
-                        if (!menuItem.isChecked) {
-                            adapter.sort(compareByDescending { it2 -> it2.songList.size })
-                            menuItem.isChecked = true
-                            sortStatus = 1
-                        }
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.name -> {
+                    if (!menuItem.isChecked) {
+                        adapter.sort(SupportComparator.createAlphanumericComparator { it2 -> it2.title })
+                        menuItem.isChecked = true
+                        sortStatus = 0
                     }
                 }
-                true
+
+                R.id.size -> {
+                    if (!menuItem.isChecked) {
+                        adapter.sort(compareByDescending { it2 -> it2.songList.size })
+                        menuItem.isChecked = true
+                        sortStatus = 1
+                    }
+                }
             }
-            popupMenu.show()
+            true
         }
     }
 }

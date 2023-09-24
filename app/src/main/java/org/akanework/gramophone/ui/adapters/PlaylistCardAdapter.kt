@@ -16,7 +16,7 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.FolderBrowserFragment
 
 class PlaylistCardAdapter(private val playlist: MutableList<MediaItem>,
-    val instance: MediaController)
+                          private val instance: MediaController)
     : RecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistCardAdapter.ViewHolder =
         ViewHolder(
@@ -34,10 +34,10 @@ class PlaylistCardAdapter(private val playlist: MutableList<MediaItem>,
             .placeholder(R.drawable.ic_default_cover)
             .into(holder.songCover)
         holder.closeButton.setOnClickListener {
-            val position = holder.bindingAdapterPosition
-            playlist.removeAt(position)
-            notifyItemRemoved(position)
-            instance.removeMediaItem(position)
+            val pos = holder.bindingAdapterPosition
+            playlist.removeAt(pos)
+            notifyItemRemoved(pos)
+            instance.removeMediaItem(pos)
         }
     }
 

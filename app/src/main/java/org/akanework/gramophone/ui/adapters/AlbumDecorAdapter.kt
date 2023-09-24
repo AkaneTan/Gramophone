@@ -16,54 +16,43 @@ class AlbumDecorAdapter(
     context: Context,
     albumCount: Int,
     albumAdapter: AlbumAdapter,
-) : BaseDecorAdapter<AlbumAdapter, MediaStoreUtils.Album>(context, albumCount, albumAdapter) {
+) : BaseDecorAdapter<AlbumAdapter, MediaStoreUtils.Album>
+    (context, albumCount, albumAdapter, R.plurals.albums, true) {
     private var sortStatus = 0
 
+    override fun onSortButtonPressed(popupMenu: PopupMenu) {
+        popupMenu.inflate(R.menu.sort_menu_songs)
+        popupMenu.menu.findItem(R.id.album).isVisible = false
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int,
-    ) {
-        val songText =
-            count.toString() + ' ' +
-                if (count <= 1) context.getString(R.string.album) else context.getString(R.string.albums)
-        holder.counter.text = songText
-        holder.sortButton.setOnClickListener { v ->
-            val popupMenu = PopupMenu(context, v)
-            popupMenu.inflate(R.menu.sort_menu_songs)
-            popupMenu.menu.findItem(R.id.album).isVisible = false
-
-            when (sortStatus) {
-                0 -> {
-                    popupMenu.menu.findItem(R.id.name).isChecked = true
-                }
-
-                1 -> {
-                    popupMenu.menu.findItem(R.id.artist).isChecked = true
-                }
+        when (sortStatus) {
+            0 -> {
+                popupMenu.menu.findItem(R.id.name).isChecked = true
             }
 
-            popupMenu.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.name -> {
-                        if (!menuItem.isChecked) {
-                            adapter.sort(SupportComparator.createAlphanumericComparator { it.title })
-                            menuItem.isChecked = true
-                            sortStatus = 0
-                        }
-                    }
+            1 -> {
+                popupMenu.menu.findItem(R.id.artist).isChecked = true
+            }
+        }
 
-                    R.id.artist -> {
-                        if (!menuItem.isChecked) {
-                            adapter.sort(SupportComparator.createAlphanumericComparator { it.artist })
-                            menuItem.isChecked = true
-                            sortStatus = 1
-                        }
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.name -> {
+                    if (!menuItem.isChecked) {
+                        adapter.sort(SupportComparator.createAlphanumericComparator { it.title })
+                        menuItem.isChecked = true
+                        sortStatus = 0
                     }
                 }
-                true
+
+                R.id.artist -> {
+                    if (!menuItem.isChecked) {
+                        adapter.sort(SupportComparator.createAlphanumericComparator { it.artist })
+                        menuItem.isChecked = true
+                        sortStatus = 1
+                    }
+                }
             }
-            popupMenu.show()
+            true
         }
     }
 }

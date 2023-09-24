@@ -53,9 +53,7 @@ class SongFragment : BaseFragment(false) {
         if (!libraryViewModel.mediaItemList.hasActiveObservers()) {
             libraryViewModel.mediaItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    if (mediaItems.size != songList.size || songDecorAdapter.isCounterEmpty()) {
-                        songDecorAdapter.updateSongCounter(mediaItems.size)
-                    }
+                    songDecorAdapter.updateSongCounter(mediaItems.size)
                     songAdapter.updateList(mediaItems)
                 }
             }

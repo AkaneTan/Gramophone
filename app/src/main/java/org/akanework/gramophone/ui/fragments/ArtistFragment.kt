@@ -70,9 +70,7 @@ class ArtistFragment : BaseFragment(false) {
         if (!libraryViewModel.artistItemList.hasActiveObservers()) {
             libraryViewModel.artistItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    if (mediaItems.size != artistList.size || artistDecorAdapter.isCounterEmpty()) {
-                        artistDecorAdapter.updateSongCounter(mediaItems.size)
-                    }
+                    artistDecorAdapter.updateSongCounter(mediaItems.size)
                     artistAdapter.updateList(mediaItems)
                     if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
                         artistDecorAdapter.updateListToAlbumArtist()

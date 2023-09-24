@@ -57,9 +57,7 @@ class AlbumFragment : BaseFragment(false) {
         if (!libraryViewModel.albumItemList.hasActiveObservers()) {
             libraryViewModel.albumItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    if (mediaItems.size != albumList.size || albumDecorAdapter.isCounterEmpty()) {
-                        albumDecorAdapter.updateSongCounter(mediaItems.size)
-                    }
+                    albumDecorAdapter.updateSongCounter(mediaItems.size)
                     albumAdapter.updateList(mediaItems)
                 }
             }

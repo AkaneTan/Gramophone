@@ -56,9 +56,7 @@ class GenreFragment : BaseFragment(false) {
         if (!libraryViewModel.genreItemList.hasActiveObservers()) {
             libraryViewModel.genreItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    if (mediaItems.size != genreList.size || genreDecorAdapter.isCounterEmpty()) {
-                        genreDecorAdapter.updateSongCounter(mediaItems.size)
-                    }
+                    genreDecorAdapter.updateSongCounter(mediaItems.size)
                     genreAdapter.updateList(mediaItems)
                 }
             }
