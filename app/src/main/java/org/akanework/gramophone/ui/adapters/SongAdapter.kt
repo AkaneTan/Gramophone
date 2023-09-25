@@ -28,7 +28,7 @@ class SongAdapter(
     canSort: Boolean,
 ) : BaseAdapter<MediaItem>(mainActivity, songList,
     if (canSort) Sorter.from() else Sorter.noneSorter(),
-    if (canSort) Sorter.Type.ByTitleDescending else Sorter.Type.None) {
+    if (canSort) Sorter.Type.ByTitleAscending else Sorter.Type.None) {
 
     override val layout = R.layout.adapter_list_card
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
@@ -43,10 +43,6 @@ class SongAdapter(
 
     override fun coverOf(item: MediaItem): Uri? {
         return item.mediaMetadata.artworkUri
-    }
-
-    fun albumOf(item: MediaItem): String {
-        return item.mediaMetadata.albumTitle?.toString() ?: context.getString(R.string.unknown_album)
     }
 
     override fun onClick(item: MediaItem) {

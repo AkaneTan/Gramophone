@@ -106,7 +106,6 @@ class GeneralSubFragment : BaseFragment(true) {
                 requireContext(),
                 itemList.size,
                 songAdapter,
-                canSort,
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

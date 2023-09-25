@@ -47,7 +47,6 @@ class SongFragment : BaseFragment(false) {
                 requireContext(),
                 libraryViewModel.mediaItemList.value!!.size,
                 songAdapter,
-                true,
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 

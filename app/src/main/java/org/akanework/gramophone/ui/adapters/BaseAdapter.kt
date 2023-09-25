@@ -41,6 +41,8 @@ abstract class BaseAdapter<T>(
 				comparator = sorter.getComparator(value)
 			}
 		}
+	val sortTypes: Set<Sorter.Type>
+		get() = sorter.getSupportedTypes()
 
 	init {
 		sortType = initialSortType
@@ -203,12 +205,12 @@ abstract class BaseAdapter<T>(
 	open class BasePopupTextProvider<T>(private val adapter: BaseAdapter<T>) : PopupTextProvider {
 		final override fun getPopupText(position: Int): CharSequence {
 			return (if (position != 0)
-				getTitleFor(adapter.list[position])?.first()?.toString()
+				getHintFor(adapter.list[position])
 			else null) ?: "-"
 		}
 
-		open fun getTitleFor(item: T): String? {
-			return adapter.titleOf(item)
+		open fun getHintFor(item: T): String? {
+			return adapter.sorter.getFastScrollHintFor(item, adapter.sortType)
 		}
 	}
 
@@ -376,6 +378,27 @@ abstract class BaseAdapter<T>(
 				}
 				Type.None -> SupportComparator.createDummyComparator()
 			})
+		}
+
+		fun getFastScrollHintFor(item: T, sortType: Type): String? {
+			return when (sortType) {
+				Type.ByTitleDescending, Type.ByTitleAscending -> {
+					sortingHelper.getTitle(item).firstOrNull()?.toString()
+				}
+				Type.ByArtistDescending, Type.ByArtistAscending -> {
+					sortingHelper.getArtist(item).firstOrNull()?.toString()
+				}
+				Type.ByAlbumTitleDescending, Type.ByAlbumTitleAscending -> {
+					sortingHelper.getAlbumTitle(item).firstOrNull()?.toString()
+				}
+				Type.ByAlbumArtistDescending, Type.ByAlbumArtistAscending -> {
+					sortingHelper.getAlbumArtist(item).firstOrNull()?.toString()
+				}
+				Type.BySizeDescending, Type.BySizeAscending -> {
+					sortingHelper.getSize(item).toString()
+				}
+				Type.None -> throw IllegalArgumentException()
+			}?.ifEmpty { null }
 		}
 
 		abstract class HintedComparator<T>(val type: Type) : Comparator<T>

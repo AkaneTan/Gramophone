@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -14,7 +15,6 @@ abstract class BaseDecorAdapter<T : BaseAdapter<U>, U>(
 	protected val context: Context,
 	private var count: Int,
 	protected val adapter: T,
-	private val canSort: Boolean = true,
 	) : RecyclerView.Adapter<BaseDecorAdapter<T, U>.ViewHolder>() {
 
 	protected abstract val pluralStr: Int
@@ -30,15 +30,48 @@ abstract class BaseDecorAdapter<T : BaseAdapter<U>, U>(
 
 	final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 		holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
-		holder.sortButton.visibility = if (canSort) View.VISIBLE else View.GONE
-		holder.sortButton.setOnClickListener {
-			val popupMenu = PopupMenu(context, it)
+		val supportedTypes = adapter.sortTypes /* supported types always contain "None" */
+		holder.sortButton.visibility = if (supportedTypes.size > 1) View.VISIBLE else View.GONE
+		holder.sortButton.setOnClickListener { view ->
+			val popupMenu = PopupMenu(context, view)
+			popupMenu.inflate(R.menu.sort_menu)
+			val buttonMap = mapOf(
+				Pair(R.id.name, BaseAdapter.Sorter.Type.ByTitleAscending),
+				Pair(R.id.artist, BaseAdapter.Sorter.Type.ByArtistAscending),
+				Pair(R.id.album, BaseAdapter.Sorter.Type.ByAlbumTitleAscending),
+				Pair(R.id.size, BaseAdapter.Sorter.Type.BySizeDescending)
+			)
+			buttonMap.forEach {
+				popupMenu.menu.findItem(it.key).isVisible = supportedTypes.contains(it.value)
+			}
+			when (adapter.sortType) {
+				in buttonMap.values -> {
+					popupMenu.menu.findItem(buttonMap.entries
+						.first { it.value == adapter.sortType }.key).isChecked = true
+				}
+				else -> throw IllegalStateException("Invalid sortType ${adapter.sortType.name}")
+			}
+			popupMenu.setOnMenuItemClickListener { menuItem ->
+				when (menuItem.itemId) {
+					in buttonMap.keys -> {
+						if (!menuItem.isChecked) {
+							adapter.sort(buttonMap[menuItem.itemId]!!)
+							menuItem.isChecked = true
+						}
+						true
+					}
+
+					else -> onExtraMenuButtonPressed(popupMenu, menuItem)
+				}
+			}
 			onSortButtonPressed(popupMenu)
 			popupMenu.show()
 		}
 	}
 
-	protected abstract fun onSortButtonPressed(popupMenu: PopupMenu)
+	protected open fun onSortButtonPressed(popupMenu: PopupMenu) {}
+	protected open fun onExtraMenuButtonPressed(popupMenu: PopupMenu, menuItem: MenuItem): Boolean
+			= false
 
 	override fun getItemCount(): Int = 1
 

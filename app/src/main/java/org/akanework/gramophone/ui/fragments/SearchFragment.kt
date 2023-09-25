@@ -51,7 +51,6 @@ class SearchFragment : BaseFragment(false) {
                 requireContext(),
                 0,
                 songAdapter,
-                false,
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)

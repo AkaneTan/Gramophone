@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/album_artist"
+            android:title="@string/album_artist"
+            android:checkable="true"
+            android:orderInCategory="0"
+            android:visible="false"
+            app:showAsAction="never"/>
+        <item
             android:id="@+id/name"
             android:checked="true"
             android:orderInCategory="1"
@@ -17,6 +24,12 @@
             android:id="@+id/album"
             android:orderInCategory="3"
             android:title="@string/sort_by_album"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/size"
+            android:checked="false"
+            android:orderInCategory="4"
+            android:title="@string/sort_by_size"
             app:showAsAction="never" />
     </group>
 </menu>
