@@ -14,8 +14,8 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.DateAdapter
-import org.akanework.gramophone.ui.adapters.DateDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
@@ -44,10 +44,11 @@ class DateFragment : BaseFragment(false) {
                 requireActivity() as MainActivity,
             )
         val dateDecorAdapter =
-            DateDecorAdapter(
+            BaseDecorAdapter(
                 requireContext(),
                 libraryViewModel.dateItemList.value!!.size,
                 dateAdapter,
+                R.plurals.items
             )
         val concatAdapter = ConcatAdapter(dateDecorAdapter, dateAdapter)
 

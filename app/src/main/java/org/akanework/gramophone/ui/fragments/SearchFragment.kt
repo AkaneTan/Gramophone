@@ -19,15 +19,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.closeKeyboard
 import org.akanework.gramophone.logic.utils.dp
 import org.akanework.gramophone.logic.utils.showSoftKeyboard
 import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 
@@ -47,10 +46,11 @@ class SearchFragment : BaseFragment(false) {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity, false)
         val songDecorAdapter =
-            SongDecorAdapter(
+            BaseDecorAdapter(
                 requireContext(),
                 0,
                 songAdapter,
+                R.plurals.songs
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)

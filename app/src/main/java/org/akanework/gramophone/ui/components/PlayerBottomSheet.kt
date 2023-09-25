@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -23,7 +25,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
-import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
@@ -48,8 +49,6 @@ import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
-import org.akanework.gramophone.ui.adapters.PlaylistAdapter
-import org.akanework.gramophone.ui.adapters.PlaylistCardAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class PlayerBottomSheet private constructor(
@@ -433,9 +432,9 @@ class PlayerBottomSheet private constructor(
 				.placeholder(R.drawable.ic_default_cover)
 				.into(bottomSheetFullCover)
 			bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
-			bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist
+			bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
 			bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
-			bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist
+			bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
 			bottomSheetFullDuration.text =
 				mediaItem
 					?.mediaId
@@ -539,5 +538,44 @@ class PlayerBottomSheet private constructor(
 			items.add(instance.getMediaItemAt(i))
 		}
 		return items
+	}
+
+	class PlaylistCardAdapter(private val playlist: MutableList<MediaItem>,
+	                          private val instance: MediaController)
+		: RecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
+		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistCardAdapter.ViewHolder =
+			ViewHolder(
+				LayoutInflater
+					.from(parent.context)
+					.inflate(R.layout.adapter_list_card_smaller, parent, false),
+			)
+
+		override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+			holder.songName.text = playlist[holder.bindingAdapterPosition].mediaMetadata.title
+			holder.songArtist.text = playlist[holder.bindingAdapterPosition].mediaMetadata.artist
+			Glide
+				.with(holder.songCover.context)
+				.load(playlist[position].mediaMetadata.artworkUri)
+				.placeholder(R.drawable.ic_default_cover)
+				.into(holder.songCover)
+			holder.closeButton.setOnClickListener {
+				val pos = holder.bindingAdapterPosition
+				playlist.removeAt(pos)
+				notifyItemRemoved(pos)
+				instance.removeMediaItem(pos)
+			}
+		}
+
+		override fun getItemCount(): Int = playlist.size
+
+		inner class ViewHolder(
+			view: View,
+		) : RecyclerView.ViewHolder(view) {
+			val songName: TextView = view.findViewById(R.id.title)
+			val songArtist: TextView = view.findViewById(R.id.artist)
+			val songCover: ImageView = view.findViewById(R.id.cover)
+			val closeButton: MaterialButton = view.findViewById(R.id.close)
+		}
+
 	}
 }

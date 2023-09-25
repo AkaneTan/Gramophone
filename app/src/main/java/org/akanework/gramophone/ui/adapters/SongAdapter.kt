@@ -1,5 +1,6 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -65,6 +66,7 @@ class SongAdapter(
                         mediaController.currentMediaItemIndex + 1,
                         item,
                     )
+                    true
                 }
 
                 R.id.album -> {
@@ -99,6 +101,7 @@ class SongAdapter(
                             }
                         }
                     }
+                    true
                 }
 
                 R.id.artist -> {
@@ -133,6 +136,7 @@ class SongAdapter(
                             }
                         }
                     }
+                    true
                 }
 
                 R.id.details -> {
@@ -165,7 +169,7 @@ class SongAdapter(
                     }
                     rootView.findViewById<TextInputEditText>(R.id.path)!!
                         .setText(item.getUri().toString())
-
+                    true
                 }
                 /*
 				R.id.share -> {
@@ -176,8 +180,8 @@ class SongAdapter(
 					builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
 				 } */
 				 */
+                else -> false
             }
-            true
         }
     }
 

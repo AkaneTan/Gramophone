@@ -41,3 +41,27 @@ class FolderAdapter(private val folderList: MutableList<MediaStoreUtils.FileNode
     }
 
 }
+
+
+class FolderPopAdapter(private val supportFragmentManager: FragmentManager)
+    : RecyclerView.Adapter<FolderPopAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FolderPopAdapter.ViewHolder =
+        ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.adapter_folder_popup, parent, false),
+        )
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.itemView.setOnClickListener {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
+    override fun getItemCount(): Int = 1
+
+    inner class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view)
+
+}

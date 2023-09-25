@@ -14,8 +14,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -102,10 +102,11 @@ class GeneralSubFragment : BaseFragment(true) {
 
         val songAdapter = SongAdapter(itemList, requireActivity() as MainActivity, canSort)
         val songDecorAdapter =
-            SongDecorAdapter(
+            BaseDecorAdapter(
                 requireContext(),
                 itemList.size,
                 songAdapter,
+                R.plurals.songs
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.GenreAdapter
-import org.akanework.gramophone.ui.adapters.GenreDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 
@@ -46,12 +45,12 @@ class GenreFragment : BaseFragment(false) {
                 requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
             )
-        val genreDecorAdapter =
-            GenreDecorAdapter(
-                requireContext(),
-                libraryViewModel.genreItemList.value!!.size,
-                genreAdapter,
-            )
+        val genreDecorAdapter = BaseDecorAdapter(
+            requireContext(),
+            libraryViewModel.genreItemList.value!!.size,
+            genreAdapter,
+            R.plurals.items
+        )
         val concatAdapter = ConcatAdapter(genreDecorAdapter, genreAdapter)
 
         if (!libraryViewModel.genreItemList.hasActiveObservers()) {

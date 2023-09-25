@@ -11,12 +11,11 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.adapters.SongDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
@@ -43,10 +42,11 @@ class SongFragment : BaseFragment(false) {
         songList.addAll(libraryViewModel.mediaItemList.value!!)
         songAdapter = SongAdapter(songList, requireActivity() as MainActivity, true)
         val songDecorAdapter =
-            SongDecorAdapter(
+            BaseDecorAdapter(
                 requireContext(),
                 libraryViewModel.mediaItemList.value!!.size,
                 songAdapter,
+                R.plurals.songs
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 

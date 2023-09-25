@@ -1,8 +1,10 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
-import android.net.Uri
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
 import androidx.media3.common.util.UnstableApi
@@ -10,6 +12,7 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
+import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
@@ -20,7 +23,7 @@ class ArtistAdapter(
     context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Artist>
+) : ItemAdapter<MediaStoreUtils.Artist>
     (context, artistList, Sorter.from()) {
 
     private var isAlbumArtist = false
@@ -64,11 +67,9 @@ class ArtistAdapter(
                         mediaController.currentMediaItemIndex + 1,
                         item.songList,
                     )
+                    true
                 }
 
-                R.id.details -> {
-                    // TODO
-                }
                 /*
 				R.id.share -> {
 					val builder = ShareCompat.IntentBuilder(mainActivity)
@@ -78,8 +79,8 @@ class ArtistAdapter(
 					builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
 				 } */
 				 */
+                else -> false
             }
-            true
         }
     }
 
@@ -89,5 +90,68 @@ class ArtistAdapter(
 
     fun setClickEventToAlbumArtist(reverse: Boolean) {
         isAlbumArtist = !reverse
+    }
+}
+
+class ArtistDecorAdapter(
+    context: Context,
+    artistCount: Int,
+    artistAdapter: ArtistAdapter,
+    private val prefs: SharedPreferences
+) : BaseDecorAdapter<ArtistAdapter>(context, artistCount, artistAdapter, R.plurals.artists) {
+    private val viewModel: LibraryViewModel by (context as MainActivity).viewModels()
+
+    override fun onSortButtonPressed(popupMenu: PopupMenu) {
+        popupMenu.menu.findItem(R.id.album_artist).isVisible = true
+        popupMenu.menu.findItem(R.id.album_artist).isChecked =
+            prefs.getBoolean("isDisplayingAlbumArtist", false)
+    }
+
+    override fun onExtraMenuButtonPressed(popupMenu: PopupMenu, menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.album_artist -> {
+                menuItem.isChecked = !menuItem.isChecked
+                if (!prefs.getBoolean("isDisplayingAlbumArtist", false)) {
+                    prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
+                    var itemCount = 0
+                    viewModel.albumArtistItemList.value?.let { it1 ->
+                        adapter.updateList(
+                            it1
+                        )
+                        itemCount = it1.size
+                    }
+                    updateSongCounter(itemCount)
+                    adapter.setClickEventToAlbumArtist(false)
+                } else {
+                    prefs.edit().putBoolean("isDisplayingAlbumArtist", false).apply()
+                    var itemCount = 0
+                    menuItem.isChecked = !menuItem.isChecked
+                    viewModel.artistItemList.value?.let { it1 ->
+                        adapter.updateList(
+                            it1
+                        )
+                        itemCount = it1.size
+                    }
+                    updateSongCounter(itemCount)
+                    adapter.setClickEventToAlbumArtist(true)
+                }
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    fun updateListToAlbumArtist() {
+        prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
+        var itemCount = 0
+        viewModel.albumArtistItemList.value?.let { it1 ->
+            adapter.updateList(
+                it1
+            )
+            itemCount = it1.size
+        }
+        updateSongCounter(itemCount)
+        adapter.setClickEventToAlbumArtist(false)
     }
 }

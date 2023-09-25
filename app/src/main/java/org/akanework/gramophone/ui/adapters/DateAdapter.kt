@@ -1,12 +1,10 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
 import androidx.media3.common.util.UnstableApi
-import com.bumptech.glide.Glide
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -21,7 +19,7 @@ class DateAdapter(
     context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Date>
+) : ItemAdapter<MediaStoreUtils.Date>
     (context, dateList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
@@ -59,11 +57,9 @@ class DateAdapter(
                         mediaController.currentMediaItemIndex + 1,
                         item.songList,
                     )
+                    true
                 }
 
-                R.id.details -> {
-                    // TODO
-                }
                 /*
 				R.id.share -> {
 					val builder = ShareCompat.IntentBuilder(mainActivity)
@@ -73,8 +69,8 @@ class DateAdapter(
 					builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
 				 } */
 				 */
+                else -> false
             }
-            true
         }
     }
 

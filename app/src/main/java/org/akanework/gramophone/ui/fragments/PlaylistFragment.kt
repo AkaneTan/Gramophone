@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistAdapter
-import org.akanework.gramophone.ui.adapters.PlaylistDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
@@ -49,10 +48,11 @@ class PlaylistFragment : BaseFragment(false) {
             )
 
         val playlistDecorAdapter =
-            PlaylistDecorAdapter(
+            BaseDecorAdapter(
                 requireContext(),
                 libraryViewModel.playlistList.value!!.size,
-                playlistAdapter
+                playlistAdapter,
+                R.plurals.playlists
             )
 
         val concatAdapter = ConcatAdapter(playlistDecorAdapter, playlistAdapter)

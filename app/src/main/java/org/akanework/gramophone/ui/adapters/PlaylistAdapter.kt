@@ -19,7 +19,7 @@ class PlaylistAdapter(
     context: Context,
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Playlist>
+) : ItemAdapter<MediaStoreUtils.Playlist>
     (context, playlistList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
@@ -60,13 +60,10 @@ class PlaylistAdapter(
                         mediaController.currentMediaItemIndex + 1,
                         item.songList,
                     )
+                    true
                 }
-
-                R.id.details -> {
-                    // TODO
-                }
+                else -> false
             }
-            true
         }
     }
 

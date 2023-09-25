@@ -9,13 +9,12 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
-import org.akanework.gramophone.ui.adapters.AlbumDecorAdapter
 import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -44,10 +43,11 @@ class AlbumFragment : BaseFragment(false) {
                 requireActivity() as MainActivity,
             )
         val albumDecorAdapter =
-            AlbumDecorAdapter(
+            BaseDecorAdapter(
                 requireContext(),
                 libraryViewModel.albumItemList.value!!.size,
                 albumAdapter,
+                R.plurals.albums
             )
         val concatAdapter = ConcatAdapter(albumDecorAdapter, albumAdapter)
 

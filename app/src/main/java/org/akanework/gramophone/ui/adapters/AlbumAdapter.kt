@@ -15,7 +15,7 @@ class AlbumAdapter(
     albumList: MutableList<MediaStoreUtils.Album>,
     private val fragmentManager: FragmentManager,
     context: Context,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Album>
+) : ItemAdapter<MediaStoreUtils.Album>
     (context, albumList, Sorter.from()) {
 
     override val layout = R.layout.adapter_grid_card
@@ -58,9 +58,6 @@ class AlbumAdapter(
                     )
                 }
 
-                R.id.details -> {
-                    // TODO
-                }
                 /*
 				R.id.share -> {
 					val builder = ShareCompat.IntentBuilder(mainActivity)
