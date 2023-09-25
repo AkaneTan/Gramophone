@@ -397,7 +397,7 @@ abstract class BaseAdapter<T>(
 				Type.BySizeDescending, Type.BySizeAscending -> {
 					sortingHelper.getSize(item).toString()
 				}
-				Type.None -> throw IllegalArgumentException()
+				Type.None -> null
 			}?.ifEmpty { null }
 		}
 
