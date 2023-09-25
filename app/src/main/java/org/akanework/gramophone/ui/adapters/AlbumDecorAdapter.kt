@@ -18,37 +18,36 @@ class AlbumDecorAdapter(
     albumAdapter: AlbumAdapter,
 ) : BaseDecorAdapter<AlbumAdapter, MediaStoreUtils.Album>(context, albumCount, albumAdapter) {
     override val pluralStr = R.plurals.albums
-    private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {
         popupMenu.inflate(R.menu.sort_menu_songs)
         popupMenu.menu.findItem(R.id.album).isVisible = false
 
-        when (sortStatus) {
-            0 -> {
+        when (adapter.sortType) {
+            BaseAdapter.Sorter.Type.ByTitleAscending -> {
                 popupMenu.menu.findItem(R.id.name).isChecked = true
             }
 
-            1 -> {
+            BaseAdapter.Sorter.Type.ByArtistAscending -> {
                 popupMenu.menu.findItem(R.id.artist).isChecked = true
             }
+
+            else -> throw IllegalStateException()
         }
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.name -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(SupportComparator.createAlphanumericComparator { adapter.titleOf(it) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByTitleAscending)
                         menuItem.isChecked = true
-                        sortStatus = 0
                     }
                 }
 
                 R.id.artist -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(SupportComparator.createAlphanumericComparator { adapter.subTitleOf(it) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByArtistAscending)
                         menuItem.isChecked = true
-                        sortStatus = 1
                     }
                 }
             }

@@ -23,7 +23,6 @@ class ArtistDecorAdapter(
     private val prefs: SharedPreferences
 ) : BaseDecorAdapter<ArtistAdapter, MediaStoreUtils.Artist>(context, artistCount, artistAdapter) {
     override val pluralStr = R.plurals.artists
-    private var sortStatus = 0
     private val viewModel: LibraryViewModel by (context as MainActivity).viewModels()
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {
@@ -31,39 +30,39 @@ class ArtistDecorAdapter(
         popupMenu.menu.findItem(R.id.album_artist).isChecked =
             prefs.getBoolean("isDisplayingAlbumArtist", false)
 
-        when (sortStatus) {
-            0 -> {
+        when (adapter.sortType) {
+            BaseAdapter.Sorter.Type.ByTitleAscending -> {
                 popupMenu.menu.findItem(R.id.name).isChecked = true
             }
 
-            1 -> {
+            BaseAdapter.Sorter.Type.BySizeDescending -> {
                 popupMenu.menu.findItem(R.id.size).isChecked = true
             }
+
+            else -> throw IllegalStateException()
         }
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.name -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(SupportComparator.createAlphanumericComparator { adapter.titleOf(it) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByTitleAscending)
                         menuItem.isChecked = true
-                        sortStatus = 0
                     }
                 }
 
                 R.id.size -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(compareByDescending { it2 -> it2.songList.size })
+                        adapter.sort(BaseAdapter.Sorter.Type.BySizeDescending)
                         menuItem.isChecked = true
-                        sortStatus = 1
                     }
                 }
 
                 R.id.album_artist -> {
+                    menuItem.isChecked = !menuItem.isChecked
                     if (!prefs.getBoolean("isDisplayingAlbumArtist", false)) {
                         prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
                         var itemCount = 0
-                        menuItem.isChecked = !menuItem.isChecked
                         viewModel.albumArtistItemList.value?.let { it1 ->
                             adapter.updateList(
                                 it1
@@ -71,7 +70,7 @@ class ArtistDecorAdapter(
                             itemCount = it1.size
                         }
                         updateSongCounter(itemCount)
-                        adapter.setClickEventToAlbumArtist()
+                        adapter.setClickEventToAlbumArtist(false)
                     } else {
                         prefs.edit().putBoolean("isDisplayingAlbumArtist", false).apply()
                         var itemCount = 0
@@ -101,6 +100,6 @@ class ArtistDecorAdapter(
             itemCount = it1.size
         }
         updateSongCounter(itemCount)
-        adapter.setClickEventToAlbumArtist()
+        adapter.setClickEventToAlbumArtist(false)
     }
 }

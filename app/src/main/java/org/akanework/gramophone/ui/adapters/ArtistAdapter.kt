@@ -21,7 +21,7 @@ class ArtistAdapter(
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : BaseAdapter.ItemAdapter<MediaStoreUtils.Artist>
-    (context, artistList) {
+    (context, artistList, Sorter.from()) {
 
     private var isAlbumArtist = false
     override val layout = R.layout.adapter_list_card_larger
@@ -87,7 +87,7 @@ class ArtistAdapter(
         return item.title == null
     }
 
-    fun setClickEventToAlbumArtist(reverse: Boolean = false) {
+    fun setClickEventToAlbumArtist(reverse: Boolean) {
         isAlbumArtist = !reverse
     }
 }

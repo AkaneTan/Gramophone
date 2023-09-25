@@ -22,7 +22,7 @@ class DateAdapter(
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : BaseAdapter.ItemAdapter<MediaStoreUtils.Date>
-    (context, dateList) {
+    (context, dateList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_date

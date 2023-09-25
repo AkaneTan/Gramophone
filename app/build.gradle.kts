@@ -84,4 +84,5 @@ dependencies {
     implementation("me.zhanghai.android.fastscroll:library:1.2.0")
     // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
+	implementation(kotlin("reflect"))
 }

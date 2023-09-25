@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,22 +21,29 @@ import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.SupportComparator
+import org.akanework.gramophone.logic.utils.isSupertypeOrEquals
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
 	protected val context: Context,
 	initialList: MutableList<T>,
-	userSorter: Comparator<T>? = null
+	private val sorter: Sorter<T>,
+	initialSortType: Sorter.Type
 ) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
 
 	private val rawList = ArrayList<T>(initialList.size)
-	private var sorter: Comparator<T>?
-	private val defaultSorter: Comparator<T> =
-		SupportComparator.createAlphanumericComparator { titleOf(it) }
 	protected val list = ArrayList<T>(initialList.size)
+	private var comparator: Sorter.HintedComparator<T>? = null
+	var sortType: Sorter.Type
+		get() = comparator?.type!!
+		private set(value) {
+			if (comparator?.type != value) {
+				comparator = sorter.getComparator(value)
+			}
+		}
 
 	init {
-		sorter = userSorter ?: defaultSorter
+		sortType = initialSortType
 		updateList(initialList, true)
 	}
 
@@ -67,8 +75,8 @@ abstract class BaseAdapter<T>(
 				.inflate(layout, parent, false),
 		)
 
-	fun sort(selector: Comparator<T>) {
-		sorter = selector
+	fun sort(selector: Sorter.Type) {
+		sortType = selector
 		CoroutineScope(Dispatchers.Default).launch {
 			val apply = sort()
 			withContext(Dispatchers.Main) {
@@ -83,7 +91,7 @@ abstract class BaseAdapter<T>(
 		newList.sortWith { o1, o2 ->
 			if (isPinned(o1) && !isPinned(o2)) -1
 			else if (!isPinned(o1) && isPinned(o2)) 1
-			else sorter?.compare(o1, o2) ?: 0
+			else comparator?.compare(o1, o2) ?: 0
 		}
 		val apply = updateListSorted(newList)
 		return {
@@ -170,8 +178,11 @@ abstract class BaseAdapter<T>(
 	}
 
 	abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
-	                                                     rawList: MutableList<T>
-	) : BaseAdapter<T>(context, rawList) {
+	                                                     rawList: MutableList<T>,
+	                                                     sorter: Sorter<T>,
+	                                                     initialSortType: Sorter.Type
+	                                                        = Sorter.Type.ByTitleAscending
+	) : BaseAdapter<T>(context, rawList, sorter, initialSortType) {
 		override fun toId(item: T): String {
 			return item.id.toString()
 		}
@@ -198,6 +209,181 @@ abstract class BaseAdapter<T>(
 
 		open fun getTitleFor(item: T): String? {
 			return adapter.titleOf(item)
+		}
+	}
+
+	class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
+		companion object {
+			fun <T> internalCreateSorter(sortingHelper: Helper<T>): Sorter<T> {
+				return Sorter(sortingHelper)
+			}
+
+			fun <T : MediaStoreUtils.Item> internalFromStoreItem(
+					@Suppress("UNUSED_PARAMETER") dummy: T?): Helper<T> {
+				return StoreItemHelper()
+			}
+
+			fun <T> internalNoneSortHelper(): Helper<T> {
+				return NoneHelper()
+			}
+
+			fun internalFromStoreAlbum(): Helper<MediaStoreUtils.Album> {
+				return StoreAlbumHelper()
+			}
+
+			fun internalFromMediaItem(): Helper<MediaItem> {
+				return MediaItemHelper()
+			}
+
+			@Suppress("UNCHECKED_CAST")
+			inline fun <reified T> from(dummy: T?): Sorter<T> {
+				return internalCreateSorter(
+					if (T::class.isSupertypeOrEquals(MediaStoreUtils.Album::class)) {
+						internalFromStoreAlbum() as Helper<T>
+					} else if (T::class.isSupertypeOrEquals(MediaStoreUtils.Item::class)) {
+						internalFromStoreItem(dummy as MediaStoreUtils.Item?) as Helper<T>
+					} else if (T::class.isSupertypeOrEquals(MediaItem::class)) {
+						internalFromMediaItem() as Helper<T>
+					} else throw IllegalArgumentException("Unsupported: ${T::class.qualifiedName}")
+				)
+			}
+			inline fun <reified T> from(): Sorter<T> {
+				return from(dummy = null)
+			}
+			inline fun <reified T> noneSorter(): Sorter<T> {
+				return internalCreateSorter(internalNoneSortHelper())
+			}
+		}
+
+		abstract class Helper<T>(typesSupported: Set<Type>) {
+			val typesSupported = typesSupported.toMutableSet().apply { add(Type.None) }.toSet()
+			abstract fun getTitle(item: T): String
+			open fun getArtist(item: T): String = throw UnsupportedOperationException()
+			open fun getAlbumTitle(item: T): String = throw UnsupportedOperationException()
+			open fun getAlbumArtist(item: T): String = throw UnsupportedOperationException()
+			open fun getSize(item: T): Int = throw UnsupportedOperationException()
+		}
+
+		private class NoneHelper<T> : Helper<T>(setOf(Type.None)) {
+			override fun getTitle(item: T) = throw UnsupportedOperationException()
+		}
+
+		private open class StoreItemHelper<T : MediaStoreUtils.Item>(
+			typesSupported: Set<Type> = setOf(
+				Type.ByTitleDescending, Type.ByTitleAscending,
+				Type.BySizeDescending, Type.BySizeAscending
+			)
+		) : Helper<T>(typesSupported) {
+			override fun getTitle(item: T): String {
+				return item.title.toString()
+			}
+
+			override fun getSize(item: T): Int {
+				return item.songList.size
+			}
+		}
+
+		private class StoreAlbumHelper : StoreItemHelper<MediaStoreUtils.Album>(
+			setOf(
+				Type.ByTitleDescending, Type.ByTitleAscending,
+				Type.ByArtistDescending, Type.ByArtistAscending,
+				Type.BySizeDescending, Type.BySizeAscending
+			)
+		) {
+			override fun getArtist(item: MediaStoreUtils.Album): String {
+				return item.artist ?: ""
+			}
+		}
+
+		private class MediaItemHelper : Helper<MediaItem>(setOf(
+			Type.ByTitleDescending, Type.ByTitleAscending,
+			Type.ByArtistDescending, Type.ByArtistAscending,
+			Type.ByAlbumTitleDescending, Type.ByAlbumTitleAscending,
+			Type.ByAlbumArtistDescending, Type.ByAlbumArtistAscending)) {
+			override fun getTitle(item: MediaItem): String {
+				return item.mediaMetadata.title.toString()
+			}
+
+			override fun getArtist(item: MediaItem): String {
+				return item.mediaMetadata.artist?.toString() ?: ""
+			}
+
+			override fun getAlbumTitle(item: MediaItem): String {
+				return item.mediaMetadata.albumTitle?.toString() ?: ""
+			}
+
+			override fun getAlbumArtist(item: MediaItem): String {
+				return item.mediaMetadata.albumArtist?.toString() ?: ""
+			}
+		}
+
+		enum class Type {
+			ByTitleDescending, ByTitleAscending,
+			ByArtistDescending, ByArtistAscending,
+			ByAlbumTitleDescending, ByAlbumTitleAscending,
+			ByAlbumArtistDescending, ByAlbumArtistAscending,
+			BySizeDescending, BySizeAscending,
+			None
+		}
+
+		fun getSupportedTypes(): Set<Type> {
+			return sortingHelper.typesSupported
+		}
+
+		fun getComparator(type: Type): HintedComparator<T> {
+			if (!getSupportedTypes().contains(type))
+				throw IllegalArgumentException("Unsupported type ${type.name}")
+			return WrappingHintedComparator(type, when (type) {
+				Type.ByTitleDescending -> {
+					SupportComparator.createAlphanumericComparator(true) {
+						sortingHelper.getTitle(it) }
+				}
+				Type.ByTitleAscending -> {
+					SupportComparator.createAlphanumericComparator(false) {
+						sortingHelper.getTitle(it) }
+				}
+				Type.ByArtistDescending -> {
+					SupportComparator.createAlphanumericComparator(true) {
+						sortingHelper.getArtist(it) }
+				}
+				Type.ByArtistAscending -> {
+					SupportComparator.createAlphanumericComparator(false) {
+						sortingHelper.getArtist(it) }
+				}
+				Type.ByAlbumTitleDescending -> {
+					SupportComparator.createAlphanumericComparator(true) {
+						sortingHelper.getAlbumTitle(it) }
+				}
+				Type.ByAlbumTitleAscending -> {
+					SupportComparator.createAlphanumericComparator(false) {
+						sortingHelper.getAlbumTitle(it) }
+				}
+				Type.ByAlbumArtistDescending -> {
+					SupportComparator.createAlphanumericComparator(true) {
+						sortingHelper.getAlbumArtist(it) }
+				}
+				Type.ByAlbumArtistAscending -> {
+					SupportComparator.createAlphanumericComparator(false) {
+						sortingHelper.getAlbumArtist(it) }
+				}
+				Type.BySizeDescending -> {
+					SupportComparator.createInversionComparator(
+						compareBy { sortingHelper.getSize(it) }, true)
+				}
+				Type.BySizeAscending -> {
+					SupportComparator.createInversionComparator(
+						compareBy { sortingHelper.getSize(it) }, false)
+				}
+				Type.None -> SupportComparator.createDummyComparator()
+			})
+		}
+
+		abstract class HintedComparator<T>(val type: Type) : Comparator<T>
+		private class WrappingHintedComparator<T>(type: Type, private val comparator: Comparator<T>)
+					: HintedComparator<T>(type) {
+			override fun compare(o1: T, o2: T): Int {
+				return comparator.compare(o1, o2)
+			}
 		}
 	}
 

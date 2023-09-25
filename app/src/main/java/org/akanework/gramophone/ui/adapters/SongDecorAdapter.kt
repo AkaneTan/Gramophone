@@ -15,54 +15,48 @@ class SongDecorAdapter(
 ) : BaseDecorAdapter<SongAdapter, MediaItem>
     (context, songCount, songAdapter, canSort) {
     override val pluralStr = R.plurals.songs
-    private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {
         popupMenu.inflate(R.menu.sort_menu_songs)
 
-        when (sortStatus) {
-            0 -> {
+        when (adapter.sortType) {
+            BaseAdapter.Sorter.Type.ByTitleAscending -> {
                 popupMenu.menu.findItem(R.id.name).isChecked = true
             }
 
-            1 -> {
+            BaseAdapter.Sorter.Type.ByArtistAscending -> {
                 popupMenu.menu.findItem(R.id.artist).isChecked = true
             }
 
-            2 -> {
+            BaseAdapter.Sorter.Type.ByAlbumTitleAscending -> {
                 popupMenu.menu.findItem(R.id.album).isChecked = true
             }
+
+            BaseAdapter.Sorter.Type.None -> {}
+
+            else -> throw IllegalStateException()
         }
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.name -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(
-                            SupportComparator
-                                .createAlphanumericComparator { it2 -> adapter.titleOf(it2) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByTitleAscending)
                         menuItem.isChecked = true
-                        sortStatus = 0
                     }
                 }
 
                 R.id.artist -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(
-                            SupportComparator
-                                .createAlphanumericComparator { it2 -> adapter.subTitleOf(it2) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByArtistAscending)
                         menuItem.isChecked = true
-                        sortStatus = 1
                     }
                 }
 
                 R.id.album -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(
-                            SupportComparator
-                                .createAlphanumericComparator { it2 -> adapter.albumOf(it2) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByAlbumTitleAscending)
                         menuItem.isChecked = true
-                        sortStatus = 2
                     }
                 }
             }

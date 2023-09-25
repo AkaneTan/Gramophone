@@ -16,10 +16,12 @@ class SupportComparator<T, U>(private val cmp: Comparator<U>,
 
 		fun <T> createInversionComparator(cmp: Comparator<T>, invert: Boolean = false):
 				Comparator<T> {
-			return SupportComparator(cmp, invert) { it }
+			if (!invert) return cmp
+			return SupportComparator(cmp, true) { it }
 		}
 
-		fun <T> createAlphanumericComparator(inverted: Boolean = false, converter: (T) -> CharSequence): Comparator<T> {
+		fun <T> createAlphanumericComparator(inverted: Boolean = false,
+		                                     converter: (T) -> CharSequence): Comparator<T> {
 			return SupportComparator(
 				AlphaNumericComparator(),
 				inverted

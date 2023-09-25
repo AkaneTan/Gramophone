@@ -19,36 +19,35 @@ class PlaylistDecorAdapter(
 ) : BaseDecorAdapter<PlaylistAdapter, MediaStoreUtils.Playlist>
     (context, count, adapter) {
     override val pluralStr = R.plurals.playlists
-    private var sortStatus = 0
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {
         popupMenu.inflate(R.menu.sort_menu_artist)
 
-        when (sortStatus) {
-            0 -> {
+        when (adapter.sortType) {
+            BaseAdapter.Sorter.Type.ByTitleAscending -> {
                 popupMenu.menu.findItem(R.id.name).isChecked = true
             }
 
-            1 -> {
+            BaseAdapter.Sorter.Type.BySizeDescending -> {
                 popupMenu.menu.findItem(R.id.size).isChecked = true
             }
+
+            else -> throw IllegalStateException()
         }
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.name -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(SupportComparator.createAlphanumericComparator { it2 -> adapter.titleOf(it2) })
+                        adapter.sort(BaseAdapter.Sorter.Type.ByTitleAscending)
                         menuItem.isChecked = true
-                        sortStatus = 0
                     }
                 }
 
                 R.id.size -> {
                     if (!menuItem.isChecked) {
-                        adapter.sort(compareByDescending { it2 -> it2.songList.size })
+                        adapter.sort(BaseAdapter.Sorter.Type.BySizeDescending)
                         menuItem.isChecked = true
-                        sortStatus = 1
                     }
                 }
             }

@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.SupportComparator
 import org.akanework.gramophone.logic.utils.getUri
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -28,7 +27,8 @@ class SongAdapter(
     private val mainActivity: MainActivity,
     canSort: Boolean,
 ) : BaseAdapter<MediaItem>(mainActivity, songList,
-    if (canSort) null else SupportComparator.createDummyComparator()) {
+    if (canSort) Sorter.from() else Sorter.noneSorter(),
+    if (canSort) Sorter.Type.ByTitleDescending else Sorter.Type.None) {
 
     override val layout = R.layout.adapter_list_card
     private val viewModel: LibraryViewModel by mainActivity.viewModels()

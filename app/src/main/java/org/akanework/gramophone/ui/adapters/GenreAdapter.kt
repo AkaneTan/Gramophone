@@ -22,7 +22,7 @@ class GenreAdapter(
     private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
 ) : BaseAdapter.ItemAdapter<MediaStoreUtils.Genre>
-    (context, genreList) {
+    (context, genreList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_genre

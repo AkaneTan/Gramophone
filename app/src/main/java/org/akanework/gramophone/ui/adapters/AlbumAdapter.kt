@@ -16,7 +16,7 @@ class AlbumAdapter(
     private val fragmentManager: FragmentManager,
     context: Context,
 ) : BaseAdapter.ItemAdapter<MediaStoreUtils.Album>
-    (context, albumList) {
+    (context, albumList, Sorter.from()) {
 
     override val layout = R.layout.adapter_grid_card
 
