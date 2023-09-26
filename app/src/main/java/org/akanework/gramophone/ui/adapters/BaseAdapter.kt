@@ -2,6 +2,9 @@ package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -32,6 +35,9 @@ abstract class BaseAdapter<T>(
 	initialSortType: Sorter.Type = Sorter.Type.None
 ) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
 
+	private val handler = Handler(Looper.getMainLooper())
+	private var bgHandlerThread: HandlerThread? = null
+	private var bgHandler: Handler? = null
 	private val rawList = ArrayList<T>(initialList.size)
 	protected val list = ArrayList<T>(initialList.size)
 	private var comparator: Sorter.HintedComparator<T>? = null
@@ -66,6 +72,21 @@ abstract class BaseAdapter<T>(
 		return Collections.unmodifiableList(list)
 	}
 
+	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+		super.onAttachedToRecyclerView(recyclerView)
+		bgHandlerThread = HandlerThread(BaseAdapter::class.qualifiedName).apply {
+			start()
+			bgHandler = Handler(looper)
+		}
+	}
+
+	override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+		super.onDetachedFromRecyclerView(recyclerView)
+		bgHandler = null
+		bgHandlerThread!!.quitSafely()
+		bgHandlerThread = null
+	}
+
 	override fun getItemCount(): Int = list.size
 
 	override fun onCreateViewHolder(
@@ -98,17 +119,17 @@ abstract class BaseAdapter<T>(
 		}
 		val apply = updateListSorted(newList)
 		return {
+			apply()
 			if (srcList != null) {
 				rawList.clear()
 				rawList.addAll(srcList)
 			}
-			apply()
 		}
 	}
 
 	private fun updateListSorted(newList: MutableList<T>): () -> Unit {
-		val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
 		return {
+			val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
 			list.clear()
 			list.addAll(newList)
 			diffResult.dispatchUpdatesTo(this)
@@ -116,12 +137,12 @@ abstract class BaseAdapter<T>(
 	}
 
 	fun updateList(newList: MutableList<T>, now: Boolean = false) {
-		if (now) sort(newList)()
+		if (now || bgHandler == null) sort(newList)()
 		else {
-			CoroutineScope(Dispatchers.Default).launch {
+			bgHandler!!.post {
 				val apply = sort(newList)
-				withContext(Dispatchers.Main) {
-					apply()
+				handler.post {
+						apply()
 				}
 			}
 		}
