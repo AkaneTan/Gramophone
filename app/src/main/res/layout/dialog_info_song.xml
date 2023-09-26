@@ -19,8 +19,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -34,8 +33,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/artist"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,8 +47,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/album"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,8 +61,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/album_artist"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,8 +75,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/track_number"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -94,8 +89,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/year"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,8 +103,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/genre"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -124,8 +117,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/path"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

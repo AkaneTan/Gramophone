@@ -5,16 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.media3.common.util.UnstableApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
 import org.akanework.gramophone.ui.adapters.ArtistDecorAdapter
 import org.akanework.gramophone.ui.adapters.BaseAdapter
@@ -23,15 +20,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [ArtistFragment] displays information about artists.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
 class ArtistFragment : BaseFragment(false) {
-
-    companion object {
-        const val TAG = "ArtistFragment"
-    }
-
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private val artistList = mutableListOf<MediaStoreUtils.Artist>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,15 +33,11 @@ class ArtistFragment : BaseFragment(false) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
-        artistList.clear()
-        artistList.addAll(libraryViewModel.artistItemList.value!!)
-        val albumArtistList = mutableListOf<MediaStoreUtils.Artist>()
-        albumArtistList.addAll(libraryViewModel.albumArtistItemList.value!!)
 
         val artistAdapter =
             ArtistAdapter(
                 requireActivity() as MainActivity,
-                artistList,
+                libraryViewModel.artistItemList.value!!,
             )
         val artistDecorAdapter =
             ArtistDecorAdapter(

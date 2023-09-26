@@ -1,10 +1,7 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
-import androidx.fragment.app.FragmentManager
-import androidx.media3.common.util.UnstableApi
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -13,7 +10,6 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 /**
  * [GenreAdapter] is an adapter for displaying artists.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
 class GenreAdapter(
     private val mainActivity: MainActivity,
     genreList: MutableList<MediaStoreUtils.Genre>,

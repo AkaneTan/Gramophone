@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -20,7 +19,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [AlbumFragment] displays information about your albums.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
 class AlbumFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 

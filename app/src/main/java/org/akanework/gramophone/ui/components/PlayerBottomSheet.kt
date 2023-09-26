@@ -101,8 +101,8 @@ class PlayerBottomSheet private constructor(
 			field = value
 			if (value) onUiReadyListener?.run()
 		}
-	var waitedForContainer = true
-	var onUiReadyListener: Runnable? = null
+	private/*public when needed*/ var waitedForContainer = true
+	private/*public when needed*/ var onUiReadyListener: Runnable? = null
 		set(value) {
 			field = value
 			if (ready) onUiReadyListener?.run()

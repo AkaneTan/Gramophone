@@ -13,4 +13,5 @@
 	app:behavior_peekHeight="66dp"
 	app:layout_behavior="org.akanework.gramophone.logic.utils.MyBottomSheetBehavior"
 	tools:behavior_peekHeight="1000dp"
-	android:focusable="true" />
+	android:focusable="true"
+	tools:ignore="Overdraw" />

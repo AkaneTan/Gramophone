@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="70dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,7 +9,9 @@
     android:paddingStart="16dp"
     android:paddingEnd="4dp"
     android:focusable="true"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:targetApi="m"
+    tools:ignore="UnusedAttribute,UseCompoundDrawables">
 
     <ImageView
         android:layout_width="50dp"
@@ -16,7 +19,8 @@
         android:padding="12dp"
         android:layout_gravity="center_vertical"
         android:src="@drawable/folder_art"
-        app:tint="?attr/colorOnSurface" />
+        app:tint="?attr/colorOnSurface"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/title"
@@ -28,6 +32,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:textSize="16sp"
-        android:text="@string/upper_folder" />
+        android:text="@string/upper_folder"
+        tools:targetApi="p" />
 
 </LinearLayout>

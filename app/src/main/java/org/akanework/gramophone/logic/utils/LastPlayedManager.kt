@@ -14,7 +14,7 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import java.nio.charset.StandardCharsets
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class LastPlayedManager(private val context: Context, private val mediaSession: MediaSession) {
+class LastPlayedManager(context: Context, private val mediaSession: MediaSession) {
 
 	private val prefs = context.getSharedPreferences("LastPlayedManager", 0)
 

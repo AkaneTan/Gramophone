@@ -36,7 +36,6 @@ class GeneralSubFragment : BaseFragment(true) {
         val position = bundle.getInt("Position")
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         lateinit var itemList: MutableList<MediaItem>
-        var canSort = true
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
         when (item) {
@@ -93,7 +92,6 @@ class GeneralSubFragment : BaseFragment(true) {
 
             6 -> {
                 // Playlists
-                //canSort = false // Playlists have some order already
                 itemList =
                     libraryViewModel
                         .playlistList
@@ -104,7 +102,7 @@ class GeneralSubFragment : BaseFragment(true) {
             }
         }
 
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, canSort, helper)
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper)
         val songDecorAdapter =
             BaseDecorAdapter(
                 songAdapter,

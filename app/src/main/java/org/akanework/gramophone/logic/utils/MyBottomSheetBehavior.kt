@@ -37,7 +37,7 @@ class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet)
 			.apply { isAccessible = true }
 	}
 
-	fun getViewDragHelper(): ViewDragHelper? =
+	private fun getViewDragHelper(): ViewDragHelper? =
 		BottomSheetUtil.viewDragHelper.get(this) as? ViewDragHelper?
 
 	private fun ViewDragHelper.getScroller(): OverScroller? =

@@ -20,7 +20,7 @@ A media3 music player with up-to-date md3 phonograph designs.
 
 ## Screenshots
 | ![Screenshot 1](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_1.png) | ![Screenshot 2](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_2.png) | ![Screenshot 3](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_3.png) |
-| --- | --- | --- |
+|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
 | ![Screenshot 4](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_4.png) | ![Screenshot 5](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_5.png) | ![Screenshot 6](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_6.png) |
 
 ## Installation

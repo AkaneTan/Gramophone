@@ -224,6 +224,7 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>,
 			return Sorter(sortingHelper, naturalOrderHelper)
 		}
 
+		@Suppress("unused", "RedundantSuppression")
 		fun <T : MediaStoreUtils.Item> internalFromStoreItem(
 			@Suppress("UNUSED_PARAMETER") dummy: T?): Helper<T> {
 			return StoreItemHelper()
@@ -237,7 +238,7 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>,
 			return MediaItemHelper()
 		}
 
-		@Suppress("UNCHECKED_CAST")
+		@Suppress("UNCHECKED_CAST", "SameParameterValue")
 		inline fun <reified T> from(dummy: T?, naturalOrderHelper: NaturalOrderHelper<T>?): Sorter<T> {
 			return internalCreateSorter(
 				if (T::class.isSupertypeOrEquals(MediaStoreUtils.Album::class)) {
@@ -491,7 +492,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 						true
 					}
 
-					else -> onExtraMenuButtonPressed(popupMenu, menuItem)
+					else -> onExtraMenuButtonPressed(menuItem)
 				}
 			}
 			onSortButtonPressed(popupMenu)
@@ -500,7 +501,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 	}
 
 	protected open fun onSortButtonPressed(popupMenu: PopupMenu) {}
-	protected open fun onExtraMenuButtonPressed(popupMenu: PopupMenu, menuItem: MenuItem): Boolean
+	protected open fun onExtraMenuButtonPressed(menuItem: MenuItem): Boolean
 			= false
 
 	override fun getItemCount(): Int = 1

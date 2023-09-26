@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.FolderBrowserFragment
-import org.akanework.gramophone.ui.fragments.SettingsFragment
 
 class FolderAdapter(private val folderList: MutableList<MediaStoreUtils.FileNode>,
                     private val supportFragmentManager: FragmentManager)

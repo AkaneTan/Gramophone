@@ -21,11 +21,11 @@ class SupportComparator<T, U>(private val cmp: Comparator<U>,
 		}
 
 		fun <T> createAlphanumericComparator(inverted: Boolean = false,
-		                                     converter: (T) -> CharSequence): Comparator<T> {
+		                                     cnv: (T) -> CharSequence): Comparator<T> {
 			return SupportComparator(
 				AlphaNumericComparator(),
 				inverted
-			) { converter(it).toString() }
+			) { cnv(it).toString() }
 		}
 	}
 }

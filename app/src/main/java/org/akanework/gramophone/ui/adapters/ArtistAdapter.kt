@@ -1,13 +1,10 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
-import androidx.fragment.app.FragmentManager
-import androidx.media3.common.util.UnstableApi
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -17,7 +14,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
 class ArtistAdapter(
     private val mainActivity: MainActivity,
     artistList: MutableList<MediaStoreUtils.Artist>,
@@ -103,7 +99,7 @@ class ArtistDecorAdapter(
             prefs.getBoolean("isDisplayingAlbumArtist", false)
     }
 
-    override fun onExtraMenuButtonPressed(popupMenu: PopupMenu, menuItem: MenuItem): Boolean {
+    override fun onExtraMenuButtonPressed(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.album_artist -> {
                 menuItem.isChecked = !menuItem.isChecked

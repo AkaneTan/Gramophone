@@ -17,15 +17,7 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="MaterialToolBarStyle" parent="Widget.Material3.Toolbar">
-        <item name="actionOverflowMenuStyle">@style/ToolbarMenuStyle</item>
-    </style>
-
-    <style name="ToolbarMenuStyle">
-        <item name="android:paddingEnd">4dp</item>
-    </style>
-
-    <style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
+	<style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.None</item>
     </style>
 

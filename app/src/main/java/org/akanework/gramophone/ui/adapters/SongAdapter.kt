@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.MediaItem
-import androidx.media3.common.util.UnstableApi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +20,6 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [SongAdapter] is an adapter for displaying songs.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
 class SongAdapter(
     private val mainActivity: MainActivity,
     songList: MutableList<MediaItem>,

@@ -5,27 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.GenreAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-
 /**
  * [GenreFragment] displays information about your song's genres.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
 class GenreFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private val genreList = mutableListOf<MediaStoreUtils.Genre>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

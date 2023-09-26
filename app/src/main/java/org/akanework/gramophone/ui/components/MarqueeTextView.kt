@@ -32,7 +32,6 @@ import androidx.appcompat.widget.AppCompatTextView
  * will reload and cause a fake "jitter". Use this wisely, don't
  * make it everywhere.
  */
-@Suppress("KotlinConstantConditions")
 class MarqueeTextView
     @JvmOverloads
     constructor(
@@ -65,13 +64,13 @@ class MarqueeTextView
             previouslyFocusedRect: Rect?,
         ) {
             if (focused) {
-                super.onFocusChanged(focused, direction, previouslyFocusedRect)
+                super.onFocusChanged(true, direction, previouslyFocusedRect)
             }
         }
 
         override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
             if (hasWindowFocus) {
-                super.onWindowFocusChanged(hasWindowFocus)
+                super.onWindowFocusChanged(true)
             }
         }
     }

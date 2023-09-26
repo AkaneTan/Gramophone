@@ -42,5 +42,5 @@ fun View.showSoftKeyboard() {
 }
 
 fun KClass<*>.isSupertypeOrEquals(other: KClass<*>): Boolean {
-	return equals(other) || supertypes.any { it.classifier == other }
+	return equals(other) || java.interfaces.any { it == other.java }
 }
