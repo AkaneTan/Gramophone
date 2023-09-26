@@ -174,10 +174,11 @@
 					<org.akanework.gramophone.ui.components.MarqueeTextView
 						android:id="@+id/full_song_name"
 						android:layout_width="match_parent"
-						android:layout_height="30dp"
+						android:layout_height="32dp"
 						android:textColor="?attr/colorPrimary"
 						android:textFontWeight="600"
 						android:textSize="22sp"
+						android:scrollbars="none"
 						android:gravity="center_vertical"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
@@ -189,6 +190,7 @@
 						android:textColor="?attr/colorPrimary"
 						android:textFontWeight="400"
 						android:textSize="16sp"
+						android:scrollbars="none"
 						android:gravity="center_vertical"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
