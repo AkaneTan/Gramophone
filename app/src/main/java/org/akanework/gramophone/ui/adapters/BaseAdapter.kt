@@ -26,10 +26,10 @@ import org.akanework.gramophone.logic.utils.isSupertypeOrEquals
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
-	protected val context: Context,
+	val context: Context,
 	initialList: MutableList<T>,
-	private val sorter: Sorter<T>,
-	initialSortType: Sorter.Type
+	private val sorter: Sorter<T> = Sorter.noneSorter(),
+	initialSortType: Sorter.Type = Sorter.Type.None
 ) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
 
 	private val rawList = ArrayList<T>(initialList.size)
@@ -217,19 +217,16 @@ abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
 	}
 }
 
-class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
+class Sorter<T> private constructor(private val sortingHelper: Helper<T>,
+                                    private val naturalOrderHelper: NaturalOrderHelper<T>?) {
 	companion object {
-		fun <T> internalCreateSorter(sortingHelper: Helper<T>): Sorter<T> {
-			return Sorter(sortingHelper)
+		fun <T> internalCreateSorter(sortingHelper: Helper<T>, naturalOrderHelper: NaturalOrderHelper<T>?): Sorter<T> {
+			return Sorter(sortingHelper, naturalOrderHelper)
 		}
 
 		fun <T : MediaStoreUtils.Item> internalFromStoreItem(
 			@Suppress("UNUSED_PARAMETER") dummy: T?): Helper<T> {
 			return StoreItemHelper()
-		}
-
-		fun <T> internalNoneSortHelper(): Helper<T> {
-			return NoneHelper()
 		}
 
 		fun internalFromStoreAlbum(): Helper<MediaStoreUtils.Album> {
@@ -241,7 +238,7 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 		}
 
 		@Suppress("UNCHECKED_CAST")
-		inline fun <reified T> from(dummy: T?): Sorter<T> {
+		inline fun <reified T> from(dummy: T?, naturalOrderHelper: NaturalOrderHelper<T>?): Sorter<T> {
 			return internalCreateSorter(
 				if (T::class.isSupertypeOrEquals(MediaStoreUtils.Album::class)) {
 					internalFromStoreAlbum() as Helper<T>
@@ -249,24 +246,33 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 					internalFromStoreItem(dummy as MediaStoreUtils.Item?) as Helper<T>
 				} else if (T::class.isSupertypeOrEquals(MediaItem::class)) {
 					internalFromMediaItem() as Helper<T>
-				} else throw IllegalArgumentException("Unsupported: ${T::class.qualifiedName}")
+				} else throw IllegalArgumentException("Unsupported: ${T::class.qualifiedName}"),
+				naturalOrderHelper
 			)
 		}
-		inline fun <reified T> from(): Sorter<T> {
-			return from(dummy = null)
+		inline fun <reified T> from(naturalOrderHelper: NaturalOrderHelper<T>? = null): Sorter<T> {
+			return from(dummy = null, naturalOrderHelper = naturalOrderHelper)
 		}
-		inline fun <reified T> noneSorter(): Sorter<T> {
-			return internalCreateSorter(internalNoneSortHelper())
+		fun <T> noneSorter(): Sorter<T> {
+			return internalCreateSorter(NoneHelper(), null)
 		}
 	}
 
 	abstract class Helper<T>(typesSupported: Set<Type>) {
+		init {
+			if (typesSupported.contains(Type.NaturalOrder))
+				throw IllegalStateException()
+		}
 		val typesSupported = typesSupported.toMutableSet().apply { add(Type.None) }.toSet()
 		abstract fun getTitle(item: T): String
 		open fun getArtist(item: T): String = throw UnsupportedOperationException()
 		open fun getAlbumTitle(item: T): String = throw UnsupportedOperationException()
 		open fun getAlbumArtist(item: T): String = throw UnsupportedOperationException()
 		open fun getSize(item: T): Int = throw UnsupportedOperationException()
+	}
+
+	fun interface NaturalOrderHelper<T> {
+		fun lookup(item: T): Int
 	}
 
 	private class NoneHelper<T> : Helper<T>(setOf(Type.None)) {
@@ -300,11 +306,11 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 		}
 	}
 
-	private class MediaItemHelper : Helper<MediaItem>(setOf(
+	private open class MediaItemHelper(types: Set<Type> = setOf(
 		Type.ByTitleDescending, Type.ByTitleAscending,
 		Type.ByArtistDescending, Type.ByArtistAscending,
 		Type.ByAlbumTitleDescending, Type.ByAlbumTitleAscending,
-		Type.ByAlbumArtistDescending, Type.ByAlbumArtistAscending)) {
+		Type.ByAlbumArtistDescending, Type.ByAlbumArtistAscending)) : Helper<MediaItem>(types) {
 		override fun getTitle(item: MediaItem): String {
 			return item.mediaMetadata.title.toString()
 		}
@@ -328,11 +334,14 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 		ByAlbumTitleDescending, ByAlbumTitleAscending,
 		ByAlbumArtistDescending, ByAlbumArtistAscending,
 		BySizeDescending, BySizeAscending,
-		None
+		NaturalOrder, None
 	}
 
 	fun getSupportedTypes(): Set<Type> {
-		return sortingHelper.typesSupported
+		return sortingHelper.typesSupported.let {
+			if (naturalOrderHelper != null)
+				it + Type.NaturalOrder
+			else it }
 	}
 
 	fun getComparator(type: Type): HintedComparator<T> {
@@ -389,6 +398,11 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 					compareBy { sortingHelper.getSize(it) }, false
 				)
 			}
+			Type.NaturalOrder -> {
+				SupportComparator.createInversionComparator(
+					compareBy { naturalOrderHelper!!.lookup(it) }, false
+				)
+			}
 			Type.None -> SupportComparator.createDummyComparator()
 		})
 	}
@@ -410,6 +424,9 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 			Type.BySizeDescending, Type.BySizeAscending -> {
 				sortingHelper.getSize(item).toString()
 			}
+			Type.NaturalOrder -> {
+				naturalOrderHelper!!.lookup(item).toString()
+			}
 			Type.None -> null
 		}?.ifEmpty { null }
 	}
@@ -424,11 +441,12 @@ class Sorter<T> private constructor(private val sortingHelper: Helper<T>) {
 }
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
-	protected val context: Context,
-	private var count: Int,
 	protected val adapter: T,
 	private val pluralStr: Int
 ) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
+
+	protected val context: Context = adapter.context
+	private var count: Int = adapter.itemCount
 
 	override fun onCreateViewHolder(
 		parent: ViewGroup,
@@ -447,6 +465,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 			val popupMenu = PopupMenu(context, view)
 			popupMenu.inflate(R.menu.sort_menu)
 			val buttonMap = mapOf(
+				Pair(R.id.natural, Sorter.Type.NaturalOrder),
 				Pair(R.id.name, Sorter.Type.ByTitleAscending),
 				Pair(R.id.artist, Sorter.Type.ByArtistAscending),
 				Pair(R.id.album, Sorter.Type.ByAlbumTitleAscending),

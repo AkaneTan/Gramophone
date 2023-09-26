@@ -44,11 +44,9 @@ class SearchFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity, false)
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false)
         val songDecorAdapter =
             BaseDecorAdapter(
-                requireContext(),
-                0,
                 songAdapter,
                 R.plurals.songs
             )

@@ -32,25 +32,16 @@ class GenreFragment : BaseFragment(false) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_genre, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val genreRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         genreRecyclerView.layoutManager = LinearLayoutManager(activity)
-        genreList.clear()
-        genreList.addAll(libraryViewModel.genreItemList.value!!)
         val genreAdapter =
             GenreAdapter(
-                genreList,
-                requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
+                libraryViewModel.genreItemList.value!!
             )
-        val genreDecorAdapter = BaseDecorAdapter(
-            requireContext(),
-            libraryViewModel.genreItemList.value!!.size,
-            genreAdapter,
-            R.plurals.items
-        )
+        val genreDecorAdapter = BaseDecorAdapter(genreAdapter, R.plurals.items)
         val concatAdapter = ConcatAdapter(genreDecorAdapter, genreAdapter)
 
         if (!libraryViewModel.genreItemList.hasActiveObservers()) {

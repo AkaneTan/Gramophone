@@ -16,6 +16,7 @@ import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
+import org.akanework.gramophone.ui.adapters.Sorter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -36,6 +37,7 @@ class GeneralSubFragment : BaseFragment(true) {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         lateinit var itemList: MutableList<MediaItem>
         var canSort = true
+        var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
         when (item) {
             1 -> {
@@ -46,6 +48,7 @@ class GeneralSubFragment : BaseFragment(true) {
                         .value!![position]
                         .songList
                         .toMutableList()
+                helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! }
             }
 
             2 -> {
@@ -90,21 +93,20 @@ class GeneralSubFragment : BaseFragment(true) {
 
             6 -> {
                 // Playlists
-                canSort = false // Playlists have some order already
+                //canSort = false // Playlists have some order already
                 itemList =
                     libraryViewModel
                         .playlistList
                         .value!![position]
                         .songList
                         .toMutableList()
+                helper = Sorter.NaturalOrderHelper { itemList.indexOf(it) }
             }
         }
 
-        val songAdapter = SongAdapter(itemList, requireActivity() as MainActivity, canSort)
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, canSort, helper)
         val songDecorAdapter =
             BaseDecorAdapter(
-                requireContext(),
-                itemList.size,
                 songAdapter,
                 R.plurals.songs
             )

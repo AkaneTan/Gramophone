@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
@@ -24,28 +23,22 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class AlbumFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private val albumList = mutableListOf<MediaStoreUtils.Album>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_album, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val albumRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
-        albumList.clear()
-        albumList.addAll(libraryViewModel.albumItemList.value!!)
         val albumAdapter =
             AlbumAdapter(
-                albumList,
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
+                libraryViewModel.albumItemList.value!!,
             )
         val albumDecorAdapter =
             BaseDecorAdapter(
-                requireContext(),
-                libraryViewModel.albumItemList.value!!.size,
                 albumAdapter,
                 R.plurals.albums
             )

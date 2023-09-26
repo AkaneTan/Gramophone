@@ -15,12 +15,10 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class DateAdapter(
-    dateList: MutableList<MediaStoreUtils.Date>,
-    context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
+    dateList: MutableList<MediaStoreUtils.Date>,
 ) : ItemAdapter<MediaStoreUtils.Date>
-    (context, dateList, Sorter.from()) {
+    (mainActivity, dateList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_date
@@ -30,7 +28,7 @@ class DateAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Date) {
-        fragmentManager
+        mainActivity.supportFragmentManager
             .beginTransaction()
             .addToBackStack("SUBFRAG")
             .replace(

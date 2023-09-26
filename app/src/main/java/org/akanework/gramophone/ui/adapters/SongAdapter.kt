@@ -1,6 +1,5 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -24,12 +23,15 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class SongAdapter(
-    songList: MutableList<MediaItem>,
     private val mainActivity: MainActivity,
+    songList: MutableList<MediaItem>,
     canSort: Boolean,
+    helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 ) : BaseAdapter<MediaItem>(mainActivity, songList,
-    if (canSort) Sorter.from() else Sorter.noneSorter(),
-    if (canSort) Sorter.Type.ByTitleAscending else Sorter.Type.None) {
+    if (canSort) Sorter.from(helper) else Sorter.noneSorter(),
+    if (canSort)
+            (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
+    else Sorter.Type.None) {
 
     override val layout = R.layout.adapter_list_card
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
@@ -55,7 +57,6 @@ class SongAdapter(
     }
 
     override fun onMenu(item: MediaItem, popupMenu: PopupMenu) {
-
         popupMenu.inflate(R.menu.more_menu)
 
         popupMenu.setOnMenuItemClickListener { it1 ->

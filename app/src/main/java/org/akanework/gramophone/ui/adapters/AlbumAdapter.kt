@@ -12,11 +12,10 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class AlbumAdapter(
+    private val mainActivity: MainActivity,
     albumList: MutableList<MediaStoreUtils.Album>,
-    private val fragmentManager: FragmentManager,
-    context: Context,
 ) : ItemAdapter<MediaStoreUtils.Album>
-    (context, albumList, Sorter.from()) {
+    (mainActivity, albumList, Sorter.from()) {
 
     override val layout = R.layout.adapter_grid_card
 
@@ -29,7 +28,7 @@ class AlbumAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {
-        fragmentManager
+        mainActivity.supportFragmentManager
             .beginTransaction()
             .addToBackStack("SUBFRAG")
             .replace(

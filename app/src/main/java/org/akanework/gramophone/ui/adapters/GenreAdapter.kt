@@ -15,12 +15,10 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class GenreAdapter(
-    genreList: MutableList<MediaStoreUtils.Genre>,
-    context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
+    genreList: MutableList<MediaStoreUtils.Genre>,
 ) : ItemAdapter<MediaStoreUtils.Genre>
-    (context, genreList, Sorter.from()) {
+    (mainActivity, genreList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_genre
@@ -30,7 +28,7 @@ class GenreAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Genre) {
-        fragmentManager
+        mainActivity.supportFragmentManager
             .beginTransaction()
             .addToBackStack("SUBFRAG")
             .replace(

@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/album_artist"
             android:title="@string/album_artist"
             android:checkable="true"
-            android:orderInCategory="0"
+            android:orderInCategory="-1"
             android:visible="false"
             app:showAsAction="never"/>
         <item
+            android:id="@+id/natural"
+            android:title="@string/natural_order"
+            android:orderInCategory="0"
+            tools:checked="true"
+            app:showAsAction="never"/>
+        <item
             android:id="@+id/name"
-            android:checked="true"
             android:orderInCategory="1"
             android:title="@string/sort_by_name"
             app:showAsAction="never" />

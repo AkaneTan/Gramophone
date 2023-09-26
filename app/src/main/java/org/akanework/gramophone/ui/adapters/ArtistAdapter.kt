@@ -19,12 +19,10 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class ArtistAdapter(
-    artistList: MutableList<MediaStoreUtils.Artist>,
-    context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
+    artistList: MutableList<MediaStoreUtils.Artist>,
 ) : ItemAdapter<MediaStoreUtils.Artist>
-    (context, artistList, Sorter.from()) {
+    (mainActivity, artistList, Sorter.from()) {
 
     private var isAlbumArtist = false
     override val layout = R.layout.adapter_list_card_larger
@@ -35,7 +33,7 @@ class ArtistAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Artist) {
-        fragmentManager
+        mainActivity.supportFragmentManager
             .beginTransaction()
             .addToBackStack("SUBFRAG")
             .replace(
@@ -94,11 +92,9 @@ class ArtistAdapter(
 }
 
 class ArtistDecorAdapter(
-    context: Context,
-    artistCount: Int,
     artistAdapter: ArtistAdapter,
     private val prefs: SharedPreferences
-) : BaseDecorAdapter<ArtistAdapter>(context, artistCount, artistAdapter, R.plurals.artists) {
+) : BaseDecorAdapter<ArtistAdapter>(artistAdapter, R.plurals.artists) {
     private val viewModel: LibraryViewModel by (context as MainActivity).viewModels()
 
     override fun onSortButtonPressed(popupMenu: PopupMenu) {

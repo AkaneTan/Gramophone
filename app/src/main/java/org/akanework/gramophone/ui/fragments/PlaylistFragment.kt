@@ -25,32 +25,25 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class PlaylistFragment : BaseFragment(false) {
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private val playlistList = mutableListOf<MediaStoreUtils.Playlist>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_playlist, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val playlistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         playlistRecyclerView.layoutManager = LinearLayoutManager(activity)
-        playlistList.clear()
-        playlistList.addAll(libraryViewModel.playlistList.value!!)
 
         val playlistAdapter =
             PlaylistAdapter(
-                playlistList,
-                requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
+                libraryViewModel.playlistList.value!!,
             )
 
         val playlistDecorAdapter =
             BaseDecorAdapter(
-                requireContext(),
-                libraryViewModel.playlistList.value!!.size,
                 playlistAdapter,
                 R.plurals.playlists
             )

@@ -26,25 +26,21 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class SongFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private val songList = mutableListOf<MediaItem>()
-    private lateinit var songAdapter: SongAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_song, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val songRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         songRecyclerView.layoutManager = LinearLayoutManager(activity)
-        songList.clear()
-        songList.addAll(libraryViewModel.mediaItemList.value!!)
-        songAdapter = SongAdapter(songList, requireActivity() as MainActivity, true)
+        val songAdapter = SongAdapter(
+            requireActivity() as MainActivity,
+            libraryViewModel.mediaItemList.value!!, true)
         val songDecorAdapter =
             BaseDecorAdapter(
-                requireContext(),
-                libraryViewModel.mediaItemList.value!!.size,
                 songAdapter,
                 R.plurals.songs
             )

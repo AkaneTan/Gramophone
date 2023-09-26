@@ -15,12 +15,10 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class PlaylistAdapter(
-    playlistList: MutableList<MediaStoreUtils.Playlist>,
-    context: Context,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
+    playlistList: MutableList<MediaStoreUtils.Playlist>,
 ) : ItemAdapter<MediaStoreUtils.Playlist>
-    (context, playlistList, Sorter.from()) {
+    (mainActivity, playlistList, Sorter.from()) {
 
     override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_playlist
@@ -33,7 +31,7 @@ class PlaylistAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
-        fragmentManager
+        mainActivity.supportFragmentManager
             .beginTransaction()
             .addToBackStack("SUBFRAG")
             .replace(

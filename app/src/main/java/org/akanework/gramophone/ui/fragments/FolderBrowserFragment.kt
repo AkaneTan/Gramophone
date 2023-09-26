@@ -43,20 +43,21 @@ class FolderBrowserFragment(private val fileNode: MediaStoreUtils.FileNode? = nu
                     .first().folderList
                     .first().folderList
                     .first().folderList, requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(libraryViewModel.folderStructure.value!!.folderList
+                songAdapter = SongAdapter(
+                    requireActivity() as MainActivity,
+                    libraryViewModel.folderStructure.value!!.folderList
                     .first().folderList
                     .first().folderList
                     .first().songList,
-                    requireActivity() as MainActivity,
                     false)
             } else {
                 folderAdapter = FolderAdapter(mutableListOf(), requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity, false)
+                songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false)
             }
             concatAdapter = ConcatAdapter(folderAdapter, songAdapter)
         } else {
             folderAdapter = FolderAdapter(fileNode.folderList, requireParentFragment().childFragmentManager)
-            songAdapter = SongAdapter(fileNode.songList, requireActivity() as MainActivity, false)
+            songAdapter = SongAdapter(requireActivity() as MainActivity, fileNode.songList, false)
             concatAdapter = ConcatAdapter(FolderPopAdapter(requireParentFragment().childFragmentManager), folderAdapter, songAdapter)
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

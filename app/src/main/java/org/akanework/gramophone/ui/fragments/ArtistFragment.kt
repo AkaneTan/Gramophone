@@ -38,7 +38,7 @@ class ArtistFragment : BaseFragment(false) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_artist, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val artistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
@@ -50,15 +50,11 @@ class ArtistFragment : BaseFragment(false) {
 
         val artistAdapter =
             ArtistAdapter(
-                artistList,
-                requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
+                artistList,
             )
         val artistDecorAdapter =
             ArtistDecorAdapter(
-                requireContext(),
-                libraryViewModel.artistItemList.value!!.size,
                 artistAdapter,
                 prefs
             )

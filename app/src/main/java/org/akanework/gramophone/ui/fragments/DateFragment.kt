@@ -30,23 +30,17 @@ class DateFragment : BaseFragment(false) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_date, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val dateRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         dateRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val dateList = mutableListOf<MediaStoreUtils.Date>()
-        dateList.addAll(libraryViewModel.dateItemList.value!!)
         val dateAdapter =
             DateAdapter(
-                dateList,
-                requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
+                libraryViewModel.dateItemList.value!!,
             )
         val dateDecorAdapter =
             BaseDecorAdapter(
-                requireContext(),
-                libraryViewModel.dateItemList.value!!.size,
                 dateAdapter,
                 R.plurals.items
             )
