@@ -208,7 +208,7 @@
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@id/textLayout"
 					app:thumbElevation="0dp"
-					app:thumbRadius="8dp"
+					app:thumbRadius="6dp"
 					tools:value="0.5" />
 
 				<FrameLayout
