@@ -173,8 +173,8 @@
 						android:id="@+id/full_song_name"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:textColor="?attr/colorOnSurface"
-						android:textFontWeight="600"
+						android:textColor="?attr/colorPrimary"
+						android:textFontWeight="500"
 						android:textSize="22sp"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
@@ -183,7 +183,7 @@
 						android:id="@+id/full_song_artist"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:textColor="?attr/colorOnSurfaceVariant"
+						android:textColor="?attr/colorPrimaryVariant"
 						android:textFontWeight="400"
 						android:textSize="16sp"
 						tools:targetApi="p"
@@ -204,6 +204,7 @@
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@id/textLayout"
 					app:thumbRadius="8dp"
+					app:thumbElevation="0dp"
 					tools:value="0.5" />
 
 				<FrameLayout
