@@ -9,7 +9,9 @@
     android:paddingStart="16dp"
     android:paddingEnd="4dp"
     android:focusable="true"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:targetApi="m"
+    tools:ignore="UnusedAttribute,UseCompoundDrawables">
 
     <ImageView
         android:layout_width="50dp"
@@ -17,6 +19,7 @@
         android:padding="12dp"
         android:layout_gravity="center_vertical"
         android:src="@drawable/folder_art"
+        android:importantForAccessibility="no"
         app:tint="?attr/colorOnSurface" />
 
     <TextView
@@ -29,6 +32,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:textSize="16sp"
-        tools:text="Example Title" />
+        tools:text="Example Title"
+        tools:targetApi="p" />
 
 </LinearLayout>

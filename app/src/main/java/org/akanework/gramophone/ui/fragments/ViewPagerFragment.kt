@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.MaterialToolbar
@@ -13,13 +12,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : BaseFragment(true) {
-    private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private var viewPager2: ViewPager2? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,18 +24,12 @@ class ViewPagerFragment : BaseFragment(true) {
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
 
-        viewPager2 = rootView.findViewById(R.id.fragment_viewpager)
+        val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
 
         topAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.shuffle -> {
-                    libraryViewModel.mediaItemList.value?.let { it1 ->
-                        val controller = (requireActivity() as MainActivity).getPlayer()
-                        controller.setMediaItems(it1)
-                        controller.shuffleModeEnabled = true
-                        controller.prepare()
-                        controller.play()
-                    }
+                    (requireActivity() as MainActivity).shuffle()
                 }
 
                 R.id.search -> {
@@ -59,22 +48,16 @@ class ViewPagerFragment : BaseFragment(true) {
 
         // Handle click for navigationIcon.
         topAppBar.setNavigationOnClickListener {
-            (requireActivity() as MainActivity).navigateDrawer(viewPager2!!.currentItem)
+            (requireActivity() as MainActivity).navigateDrawer(viewPager2.currentItem)
         }
 
         // Connect ViewPager2.
-        viewPager2?.adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
-        if (viewPager2 != null) {
-            TabLayoutMediator(tabLayout, viewPager2!!) { tab, position ->
-                tab.text = getString(ViewPager2Adapter.getLabelResId(position))
-            }.attach()
-        }
+        viewPager2.offscreenPageLimit = 9999
+        viewPager2.adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+            tab.text = getString(ViewPager2Adapter.getLabelResId(position))
+        }.attach()
 
         return rootView
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewPager2 = null
     }
 }

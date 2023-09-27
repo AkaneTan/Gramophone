@@ -74,6 +74,7 @@ import java.util.Objects;
  * @author Farbod Safaei - farbod@binaryheart.com
  *
  */
+@SuppressWarnings("unused")
 public class AlphaNumericComparator implements Comparator<String> {
 
 	private final Collator collator;
@@ -149,7 +150,7 @@ public class AlphaNumericComparator implements Comparator<String> {
 		int s1Index = 0;
 		int s2Index = 0;
 		while (s1Index < s1.length() && s2Index < s2.length()) {
-			int result = 0;
+			int result;
 			String s1Slice = this.slice(s1, s1Index);
 			String s2Slice = this.slice(s2, s2Index);
 			s1Index += s1Slice.length();

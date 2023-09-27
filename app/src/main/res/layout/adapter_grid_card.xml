@@ -12,7 +12,9 @@
     android:paddingTop="8dp"
     android:paddingEnd="16dp"
     android:paddingBottom="16dp"
-    android:focusable="true">
+    android:focusable="true"
+    tools:targetApi="m"
+    tools:ignore="UnusedAttribute">
 
     <ImageView
         android:id="@+id/cover"
@@ -20,7 +22,8 @@
         android:layout_height="164dp"
         android:background="?attr/colorSurfaceContainer"
         android:src="@drawable/ic_default_cover"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +35,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="28dp"
         android:paddingEnd="8dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="RtlSymmetry">
 
         <TextView
             android:id="@+id/title"
@@ -42,7 +46,8 @@
             android:textColor="?attr/colorOnSurface"
             android:textFontWeight="500"
             android:textSize="14sp"
-            tools:text="Example Title" />
+            tools:text="Example Title"
+            tools:targetApi="p" />
 
         <TextView
             android:id="@+id/artist"
@@ -52,7 +57,8 @@
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textFontWeight="400"
             android:textSize="14sp"
-            tools:text="Example Artist" />
+            tools:text="Example Artist"
+            tools:targetApi="p" />
 
     </LinearLayout>
 

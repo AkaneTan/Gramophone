@@ -1,7 +1,6 @@
 package org.akanework.gramophone
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.os.Looper
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -19,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
-import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigation.NavigationView
@@ -35,7 +32,7 @@ import org.akanework.gramophone.ui.fragments.BaseFragment
 import org.akanework.gramophone.ui.fragments.SearchFragment
 import org.akanework.gramophone.ui.fragments.SettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
-import kotlin.system.exitProcess
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,32 +57,6 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("StringFormatMatches")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
-            val exceptionMessage = android.util.Log.getStackTraceString(paramThrowable)
-
-            val intent = Intent(this, BugHandlerActivity::class.java).setAction("bug_handle")
-            intent.putExtra("exception_message", exceptionMessage)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-
-            android.os.Process.killProcess(android.os.Process.myPid())
-            exitProcess(10)
-        }
-
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        when (prefs.getString("theme_mode", "0")) {
-            "0" -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            }
-            "1" -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            }
-            "2" -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        }
-
         ActivityCompat.postponeEnterTransition(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -94,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             window.attributes = params
         }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentLifecycleCallbacks() {
@@ -106,7 +78,6 @@ class MainActivity : AppCompatActivity() {
         }, false)
 
         // Set content Views.
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -224,13 +195,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.shuffle -> {
-                    libraryViewModel.mediaItemList.value?.let { it1 ->
-                        val controller = getPlayer()
-                        controller.setMediaItems(it1)
-                        controller.shuffleModeEnabled = true
-                        controller.prepare()
-                        controller.play()
-                    }
+                    shuffle()
                 }
 
                 else -> throw IllegalStateException()
@@ -266,6 +231,17 @@ class MainActivity : AppCompatActivity() {
                     // TODO: Show a prompt here
                 }
             }
+        }
+    }
+
+    fun shuffle() {
+        libraryViewModel.mediaItemList.value?.let { it1 ->
+            val controller = getPlayer()
+            controller.setMediaItems(it1)
+            controller.shuffleModeEnabled = true
+            controller.seekToDefaultPosition(Random.nextInt(0, it1.size))
+            controller.prepare()
+            controller.play()
         }
     }
 

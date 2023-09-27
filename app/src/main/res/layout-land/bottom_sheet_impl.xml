@@ -23,8 +23,8 @@
 			android:layout_centerVertical="true"
 			android:layout_marginStart="16dp"
 			android:background="?attr/colorSurfaceContainer"
-			android:src="@drawable/ic_default_cover"
-			android:contentDescription="@string/album" />
+			android:contentDescription="@string/dialog_album"
+			android:src="@drawable/ic_default_cover" />
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -138,7 +138,7 @@
 				android:layout_height="0dp"
 				android:layout_marginHorizontal="18dp"
 				android:layout_marginTop="18dp"
-				android:contentDescription="@string/album"
+				android:contentDescription="@string/dialog_album"
 				android:src="@drawable/ic_default_cover"
 				android:layout_marginBottom="25dp"
 				app:layout_constraintBottom_toBottomOf="parent"
@@ -174,20 +174,24 @@
 					<org.akanework.gramophone.ui.components.MarqueeTextView
 						android:id="@+id/full_song_name"
 						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
+						android:layout_height="32dp"
 						android:textColor="?attr/colorOnSurface"
-						android:textFontWeight="600"
+						android:textFontWeight="500"
 						android:textSize="22sp"
+						android:scrollbars="none"
+						android:gravity="center_vertical"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
 
 					<org.akanework.gramophone.ui.components.MarqueeTextView
 						android:id="@+id/full_song_artist"
 						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
+						android:layout_height="24dp"
 						android:textColor="?attr/colorOnSurfaceVariant"
 						android:textFontWeight="400"
 						android:textSize="16sp"
+						android:scrollbars="none"
+						android:gravity="center_vertical"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
 
@@ -205,6 +209,7 @@
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@id/textLayout"
+					app:thumbElevation="0dp"
 					app:thumbRadius="8dp"
 					tools:value="0.5" />
 

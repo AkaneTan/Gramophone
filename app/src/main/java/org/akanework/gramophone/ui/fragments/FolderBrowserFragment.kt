@@ -1,18 +1,14 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.MaterialColors
-import com.google.android.material.transition.MaterialSharedAxis
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -38,25 +34,24 @@ class FolderBrowserFragment(private val fileNode: MediaStoreUtils.FileNode? = nu
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         if (fileNode == null) {
-            if (libraryViewModel.folderStructure.value!!.folderList.isNotEmpty()) {
-                folderAdapter = FolderAdapter(libraryViewModel.folderStructure.value!!.folderList
-                    .first().folderList
-                    .first().folderList
-                    .first().folderList, requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(libraryViewModel.folderStructure.value!!.folderList
-                    .first().folderList
-                    .first().folderList
-                    .first().songList,
-                    requireActivity() as MainActivity,
-                    false)
-            } else {
-                folderAdapter = FolderAdapter(mutableListOf(), requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity, false)
-            }
+            val root = libraryViewModel.folderStructure.value!!.folderList
+                .firstOrNull()?.folderList
+                ?.firstOrNull()?.folderList
+                ?.firstOrNull()
+            folderAdapter = FolderAdapter(root?.folderList ?: mutableListOf(), requireParentFragment().childFragmentManager)
+            songAdapter = SongAdapter(requireActivity() as MainActivity, root?.songList ?: mutableListOf(), false)
             concatAdapter = ConcatAdapter(folderAdapter, songAdapter)
+            libraryViewModel.folderStructure.observe(viewLifecycleOwner) {
+                val newRoot = libraryViewModel.folderStructure.value!!.folderList
+                    .firstOrNull()?.folderList
+                    ?.firstOrNull()?.folderList
+                    ?.firstOrNull()
+                folderAdapter.updateList(newRoot?.folderList ?: mutableListOf())
+                songAdapter.updateList(newRoot?.songList ?: mutableListOf())
+            }
         } else {
             folderAdapter = FolderAdapter(fileNode.folderList, requireParentFragment().childFragmentManager)
-            songAdapter = SongAdapter(fileNode.songList, requireActivity() as MainActivity, false)
+            songAdapter = SongAdapter(requireActivity() as MainActivity, fileNode.songList, false)
             concatAdapter = ConcatAdapter(FolderPopAdapter(requireParentFragment().childFragmentManager), folderAdapter, songAdapter)
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

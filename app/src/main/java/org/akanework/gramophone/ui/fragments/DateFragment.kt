@@ -5,23 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.adapters.BaseAdapter
+import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.DateAdapter
-import org.akanework.gramophone.ui.adapters.DateDecorAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
  * [DateFragment] displays information about your song's dates.
  */
-@androidx.annotation.OptIn(UnstableApi::class)
-class DateFragment : BaseFragment(false) {
+class DateFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -29,33 +27,26 @@ class DateFragment : BaseFragment(false) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_date, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val dateRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         dateRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val dateList = mutableListOf<MediaStoreUtils.Date>()
-        dateList.addAll(libraryViewModel.dateItemList.value!!)
         val dateAdapter =
             DateAdapter(
-                dateList,
-                requireContext(),
-                requireActivity().supportFragmentManager,
                 requireActivity() as MainActivity,
+                libraryViewModel.dateItemList.value!!,
             )
         val dateDecorAdapter =
-            DateDecorAdapter(
-                requireContext(),
-                libraryViewModel.dateItemList.value!!.size,
+            BaseDecorAdapter(
                 dateAdapter,
+                R.plurals.items
             )
         val concatAdapter = ConcatAdapter(dateDecorAdapter, dateAdapter)
 
         if (!libraryViewModel.dateItemList.hasActiveObservers()) {
             libraryViewModel.dateItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    if (mediaItems.size != dateList.size || dateDecorAdapter.isCounterEmpty()) {
-                        dateDecorAdapter.updateSongCounter(mediaItems.size)
-                    }
+                    dateDecorAdapter.updateSongCounter(mediaItems.size)
                     dateAdapter.updateList(mediaItems)
                 }
             }
@@ -63,7 +54,10 @@ class DateFragment : BaseFragment(false) {
 
         dateRecyclerView.adapter = concatAdapter
 
-        FastScrollerBuilder(dateRecyclerView).build()
+        FastScrollerBuilder(dateRecyclerView).apply {
+            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(dateAdapter))
+            build()
+        }
 
         return rootView
     }

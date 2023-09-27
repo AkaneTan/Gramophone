@@ -2,87 +2,73 @@ package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
-import androidx.fragment.app.FragmentManager
-import androidx.media3.common.util.UnstableApi
-import com.bumptech.glide.Glide
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
-@androidx.annotation.OptIn(UnstableApi::class)
 class AlbumAdapter(
-    albumList: MutableList<MediaStoreUtils.Album>,
-    private val fragmentManager: FragmentManager,
     private val mainActivity: MainActivity,
-) : BaseAdapter.ItemAdapter<MediaStoreUtils.Album>(R.layout.adapter_grid_card, albumList) {
+    albumList: MutableList<MediaStoreUtils.Album>,
+) : ItemAdapter<MediaStoreUtils.Album>
+    (mainActivity, albumList, Sorter.from()) {
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int,
-    ) {
-        holder.title.text = list[position].title
-        holder.subTitle.text = list[position].artist
+    override val layout = R.layout.adapter_grid_card
 
-        Glide
-            .with(holder.songCover.context)
-            .load(
-                list[position]
-                    .songList
-                    .first()
-                    .mediaMetadata
-                    .artworkUri,
-            ).placeholder(R.drawable.ic_default_cover)
-            .into(holder.songCover)
+    override fun titleOf(item: MediaStoreUtils.Album): String {
+        return item.title ?: context.getString(R.string.unknown_album)
+    }
 
-        holder.itemView.setOnClickListener {
-            fragmentManager
-                .beginTransaction()
-                .addToBackStack("SUBFRAG")
-                .replace(
-                    R.id.container,
-                    GeneralSubFragment().apply {
-                        arguments =
-                            Bundle().apply {
-                                putInt("Position", toRawPos(position))
-                                putInt("Item", 1)
-                                putString("Title", list[position].title)
-                            }
-                    },
-                ).commit()
-        }
+    override fun subTitleOf(item: MediaStoreUtils.Album): String {
+        return item.artist ?: context.getString(R.string.unknown_artist)
+    }
 
-        holder.moreButton.setOnClickListener {
-            val popupMenu = PopupMenu(it.context, it)
-            popupMenu.inflate(R.menu.more_menu_less)
+    override fun onClick(item: MediaStoreUtils.Album) {
+        mainActivity.supportFragmentManager
+            .beginTransaction()
+            .addToBackStack("SUBFRAG")
+            .hide(mainActivity.supportFragmentManager.fragments[0])
+            .add(
+                R.id.container,
+                GeneralSubFragment().apply {
+                    arguments =
+                        Bundle().apply {
+                            putInt("Position", toRawPos(item))
+                            putInt("Item", 1)
+                            putString("Title", item.title)
+                        }
+                },
+            ).commit()
+    }
 
-            popupMenu.setOnMenuItemClickListener { it1 ->
-                when (it1.itemId) {
-                    R.id.play_next -> {
-                        val mediaController = mainActivity.getPlayer()
-                        mediaController.addMediaItems(
-                            mediaController.currentMediaItemIndex + 1,
-                            list[holder.bindingAdapterPosition].songList,
-                        )
-                    }
+    override fun onMenu(item: MediaStoreUtils.Album, popupMenu: PopupMenu) {
+        popupMenu.inflate(R.menu.more_menu_less)
 
-                    R.id.details -> {
-                    }
-                    /*
-                    R.id.share -> {
-                        val builder = ShareCompat.IntentBuilder(mainActivity)
-                        val mimeTypes = mutableSetOf<String>()
-                        builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
-                        mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
-                        builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
-                     } */
-                     */
+        popupMenu.setOnMenuItemClickListener { it1 ->
+            when (it1.itemId) {
+                R.id.play_next -> {
+                    val mediaController = (context as MainActivity).getPlayer()
+                    mediaController.addMediaItems(
+                        mediaController.currentMediaItemIndex + 1,
+                        item.songList,
+                    )
                 }
-                true
+
+                /*
+				R.id.share -> {
+					val builder = ShareCompat.IntentBuilder(mainActivity)
+					val mimeTypes = mutableSetOf<String>()
+					builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+					mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
+					builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
+				 } */
+				 */
             }
-            popupMenu.show()
+            true
         }
     }
 
-
+    override fun isPinned(item: MediaStoreUtils.Album): Boolean {
+        return item.title == null
+    }
 }

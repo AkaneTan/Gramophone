@@ -22,7 +22,8 @@
             android:layout_height="54dp"
             android:layout_gravity="center_vertical"
             android:background="?attr/colorSurfaceContainer"
-            android:src="@drawable/ic_default_cover" />
+            android:src="@drawable/ic_default_cover"
+            android:importantForAccessibility="no" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -39,7 +40,8 @@
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
                 android:textSize="16sp"
-                tools:text="Example Title" />
+                tools:text="Example Title"
+                tools:targetApi="p" />
 
             <TextView
                 android:id="@+id/artist"
@@ -49,7 +51,8 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
                 android:textSize="16sp"
-                tools:text="Example Artist" />
+                tools:text="Example Artist"
+                tools:targetApi="p" />
 
         </LinearLayout>
 

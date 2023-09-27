@@ -1,19 +1,14 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.DropDownPreference
 import androidx.preference.Preference
-import androidx.preference.SwitchPreferenceCompat
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
-
 
 class SettingsTopFragment : BasePreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -37,10 +32,10 @@ class SettingsTopFragment : BasePreferenceFragment(), SharedPreferences.OnShared
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
                 "1" -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 }
                 "2" -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
             }
         }

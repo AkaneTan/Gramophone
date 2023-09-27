@@ -35,11 +35,11 @@ android {
 
     signingConfigs {
         create("release") {
-            if (project.hasProperty("RELEASE_KEY_ALIAS")) {
-                storeFile = file(project.properties["RELEASE_STORE_FILE"].toString())
-                storePassword = project.properties["RELEASE_STORE_PASSWORD"].toString()
-                keyAlias = project.properties["RELEASE_KEY_ALIAS"].toString()
-                keyPassword = project.properties["RELEASE_KEY_PASSWORD"].toString()
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
+                storeFile = file(project.properties["AKANE_RELEASE_STORE_FILE"].toString())
+                storePassword = project.properties["AKANE_RELEASE_STORE_PASSWORD"].toString()
+                keyAlias = project.properties["AKANE_RELEASE_KEY_ALIAS"].toString()
+                keyPassword = project.properties["AKANE_RELEASE_KEY_PASSWORD"].toString()
             }
         }
     }
@@ -52,7 +52,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            if (project.hasProperty("RELEASE_KEY_ALIAS")) {
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
+                signingConfig = signingConfigs["release"]
+            }
+        }
+        debug {
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
         }
@@ -69,10 +74,10 @@ android {
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.activity:activity-ktx:1.8.0-beta01")
-    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha04")
+    implementation("androidx.activity:activity-ktx:1.8.0-rc01")
+    implementation("androidx.transition:transition-ktx:1.5.0-alpha03")
+    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha05")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-alpha02")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("com.google.android.material:material:1.11.0-alpha03")

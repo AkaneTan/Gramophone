@@ -27,11 +27,7 @@
         tools:targetApi="upside_down_cake">
         <activity
             android:name=".BugHandlerActivity"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="bug_handle" />
-            </intent-filter>
-        </activity>
+            android:exported="false"/>
 
         <service
             android:name=".logic.services.GramophonePlaybackService"
@@ -47,8 +43,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleInstance">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.MUSIC_PLAYER" />
