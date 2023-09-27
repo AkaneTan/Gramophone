@@ -20,7 +20,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [ArtistFragment] displays information about artists.
  */
-class ArtistFragment : BaseFragment(false) {
+class ArtistFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

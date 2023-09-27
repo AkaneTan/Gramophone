@@ -49,6 +49,7 @@ class PlaylistFragment : BaseFragment(false) {
 
         if (!libraryViewModel.playlistList.hasActiveObservers()) {
             libraryViewModel.playlistList.observe(viewLifecycleOwner) { mediaItems ->
+                playlistDecorAdapter.updateSongCounter(mediaItems.size)
                 playlistAdapter.updateList(mediaItems)
             }
         }

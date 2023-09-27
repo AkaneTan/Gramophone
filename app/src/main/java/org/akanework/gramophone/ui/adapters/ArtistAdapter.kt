@@ -32,7 +32,7 @@ class ArtistAdapter(
         mainActivity.supportFragmentManager
             .beginTransaction()
             .addToBackStack("SUBFRAG")
-            .replace(
+            .add(
                 R.id.container,
                 GeneralSubFragment().apply {
                     arguments =

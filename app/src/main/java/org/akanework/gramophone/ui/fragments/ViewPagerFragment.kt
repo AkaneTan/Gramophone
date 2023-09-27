@@ -52,6 +52,7 @@ class ViewPagerFragment : BaseFragment(true) {
         }
 
         // Connect ViewPager2.
+        viewPager2.offscreenPageLimit = 9999
         viewPager2.adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = getString(ViewPager2Adapter.getLabelResId(position))

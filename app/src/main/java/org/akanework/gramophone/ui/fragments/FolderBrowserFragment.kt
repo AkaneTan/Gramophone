@@ -34,23 +34,21 @@ class FolderBrowserFragment(private val fileNode: MediaStoreUtils.FileNode? = nu
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         if (fileNode == null) {
-            if (libraryViewModel.folderStructure.value!!.folderList.isNotEmpty()) {
-                folderAdapter = FolderAdapter(libraryViewModel.folderStructure.value!!.folderList
-                    .first().folderList
-                    .first().folderList
-                    .first().folderList, requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(
-                    requireActivity() as MainActivity,
-                    libraryViewModel.folderStructure.value!!.folderList
-                    .first().folderList
-                    .first().folderList
-                    .first().songList,
-                    false)
-            } else {
-                folderAdapter = FolderAdapter(mutableListOf(), requireParentFragment().childFragmentManager)
-                songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false)
-            }
+            val root = libraryViewModel.folderStructure.value!!.folderList
+                .firstOrNull()?.folderList
+                ?.firstOrNull()?.folderList
+                ?.firstOrNull()
+            folderAdapter = FolderAdapter(root?.folderList ?: mutableListOf(), requireParentFragment().childFragmentManager)
+            songAdapter = SongAdapter(requireActivity() as MainActivity, root?.songList ?: mutableListOf(), false)
             concatAdapter = ConcatAdapter(folderAdapter, songAdapter)
+            libraryViewModel.folderStructure.observe(viewLifecycleOwner) {
+                val newRoot = libraryViewModel.folderStructure.value!!.folderList
+                    .firstOrNull()?.folderList
+                    ?.firstOrNull()?.folderList
+                    ?.firstOrNull()
+                folderAdapter.updateList(newRoot?.folderList ?: mutableListOf())
+                songAdapter.updateList(newRoot?.songList ?: mutableListOf())
+            }
         } else {
             folderAdapter = FolderAdapter(fileNode.folderList, requireParentFragment().childFragmentManager)
             songAdapter = SongAdapter(requireActivity() as MainActivity, fileNode.songList, false)

@@ -21,7 +21,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  * when you open the application. It displays information
  * about songs.
  */
-class SongFragment : BaseFragment(false) {
+class SongFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

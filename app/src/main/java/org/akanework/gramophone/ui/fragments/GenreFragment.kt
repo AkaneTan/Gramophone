@@ -19,7 +19,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 /**
  * [GenreFragment] displays information about your song's genres.
  */
-class GenreFragment : BaseFragment(false) {
+class GenreFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(

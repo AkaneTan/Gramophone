@@ -83,7 +83,7 @@ class SongAdapter(
                                     .supportFragmentManager
                                     .beginTransaction()
                                     .addToBackStack("SUBFRAG")
-                                    .replace(
+                                    .add(
                                         R.id.container,
                                         GeneralSubFragment().apply {
                                             arguments =
@@ -118,7 +118,7 @@ class SongAdapter(
                                     .supportFragmentManager
                                     .beginTransaction()
                                     .addToBackStack("SUBFRAG")
-                                    .replace(
+                                    .add(
                                         R.id.container,
                                         GeneralSubFragment().apply {
                                             arguments =
@@ -156,13 +156,13 @@ class SongAdapter(
                         .setText(item.mediaMetadata.albumArtist)
                     rootView.findViewById<TextInputEditText>(R.id.track_number)!!
                         .setText(item.mediaMetadata.trackNumber.toString())
-                    val year = item.mediaMetadata.releaseYear.toString()
-                    if (year != "0") {
+                    val year = item.mediaMetadata.releaseYear?.toString()
+                    if (year != null) {
                         rootView.findViewById<TextInputEditText>(R.id.year)!!
                             .setText(year)
                     }
-                    val genre = item.mediaMetadata.genre.toString()
-                    if (genre != "null") {
+                    val genre = item.mediaMetadata.genre?.toString()
+                    if (genre != null) {
                         rootView.findViewById<TextInputEditText>(R.id.genre)!!
                             .setText(genre)
                     }
