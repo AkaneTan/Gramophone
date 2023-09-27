@@ -377,7 +377,41 @@ class PlayerBottomSheet private constructor(
 		mediaItem: MediaItem?,
 		reason: Int,
 	) {
-		updateSongInfo(mediaItem)
+		if (instance.mediaItemCount != 0) {
+			Glide
+				.with(bottomSheetPreviewCover)
+				.load(mediaItem?.mediaMetadata?.artworkUri)
+				.placeholder(R.drawable.ic_default_cover)
+				.into(bottomSheetPreviewCover)
+			Glide
+				.with(bottomSheetFullCover)
+				.load(mediaItem?.mediaMetadata?.artworkUri)
+				.placeholder(R.drawable.ic_default_cover)
+				.into(bottomSheetFullCover)
+			bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
+			bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
+			bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
+			bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
+			bottomSheetFullDuration.text =
+				mediaItem
+					?.mediaId
+					?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
+		}
+		var newState = standardBottomSheetBehavior!!.state
+		if (instance.mediaItemCount != 0 && visible) {
+			if (newState != BottomSheetBehavior.STATE_EXPANDED) {
+				newState = BottomSheetBehavior.STATE_COLLAPSED
+			}
+		} else {
+			newState = BottomSheetBehavior.STATE_HIDDEN
+		}
+		handler.post {
+			if (!waitedForContainer) {
+				waitedForContainer = true
+				standardBottomSheetBehavior!!.setStateWithoutAnimation(newState)
+			} else standardBottomSheetBehavior!!.state = newState
+		}
 		val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
 		val duration =
 			libraryViewModel.durationItemList.value?.get(
@@ -419,44 +453,6 @@ class PlayerBottomSheet private constructor(
 		}
 	}
 
-	private fun updateSongInfo(mediaItem: MediaItem?) {
-		if (instance.mediaItemCount != 0) {
-			Glide
-				.with(bottomSheetPreviewCover)
-				.load(mediaItem?.mediaMetadata?.artworkUri)
-				.placeholder(R.drawable.ic_default_cover)
-				.into(bottomSheetPreviewCover)
-			Glide
-				.with(bottomSheetFullCover)
-				.load(mediaItem?.mediaMetadata?.artworkUri)
-				.placeholder(R.drawable.ic_default_cover)
-				.into(bottomSheetFullCover)
-			bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
-			bottomSheetPreviewSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
-			bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
-			bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
-			bottomSheetFullDuration.text =
-				mediaItem
-					?.mediaId
-					?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
-					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
-		}
-		var newState = standardBottomSheetBehavior!!.state
-		if (instance.mediaItemCount != 0 && visible) {
-			if (newState != BottomSheetBehavior.STATE_EXPANDED) {
-				newState = BottomSheetBehavior.STATE_COLLAPSED
-			}
-		} else {
-			newState = BottomSheetBehavior.STATE_HIDDEN
-		}
-		handler.post {
-			if (!waitedForContainer) {
-				waitedForContainer = true
-				standardBottomSheetBehavior!!.setStateWithoutAnimation(newState)
-			} else standardBottomSheetBehavior!!.state = newState
-		}
-	}
-
 	override fun onStart(owner: LifecycleOwner) {
 		super.onStart(owner)
 		sessionToken =
@@ -473,7 +469,8 @@ class PlayerBottomSheet private constructor(
 				onRepeatModeChanged(instance.repeatMode)
 				onShuffleModeEnabledChanged(instance.shuffleModeEnabled)
 				onIsPlayingChanged(instance.isPlaying)
-				updateSongInfo(instance.currentMediaItem)
+				onMediaItemTransition(instance.currentMediaItem,
+					Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
 				handler.post { ready = true }
 			},
 			MoreExecutors.directExecutor(),
