@@ -83,6 +83,7 @@ class SongAdapter(
                                     .supportFragmentManager
                                     .beginTransaction()
                                     .addToBackStack("SUBFRAG")
+                                    .hide(mainActivity.supportFragmentManager.fragments[0])
                                     .add(
                                         R.id.container,
                                         GeneralSubFragment().apply {
@@ -118,6 +119,7 @@ class SongAdapter(
                                     .supportFragmentManager
                                     .beginTransaction()
                                     .addToBackStack("SUBFRAG")
+                                    .hide(mainActivity.supportFragmentManager.fragments[0])
                                     .add(
                                         R.id.container,
                                         GeneralSubFragment().apply {
