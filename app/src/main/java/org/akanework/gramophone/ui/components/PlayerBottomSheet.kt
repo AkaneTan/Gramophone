@@ -479,8 +479,11 @@ class PlayerBottomSheet private constructor(
 
 	override fun onStop(owner: LifecycleOwner) {
 		super.onStop(owner)
-		instance.removeListener(this)
-		instance.release()
+		if (controllerFuture?.isDone == true) {
+			instance.removeListener(this)
+			instance.release()
+		}
+		controllerFuture?.cancel(true)
 	}
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
