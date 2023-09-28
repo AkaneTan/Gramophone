@@ -39,22 +39,13 @@ class PlaylistFragment : BaseFragment(false) {
                 libraryViewModel.playlistList.value!!,
             )
 
-        val playlistDecorAdapter =
-            BaseDecorAdapter(
-                playlistAdapter,
-                R.plurals.playlists
-            )
-
-        val concatAdapter = ConcatAdapter(playlistDecorAdapter, playlistAdapter)
-
         if (!libraryViewModel.playlistList.hasActiveObservers()) {
             libraryViewModel.playlistList.observe(viewLifecycleOwner) { mediaItems ->
-                playlistDecorAdapter.updateSongCounter(mediaItems.size)
                 playlistAdapter.updateList(mediaItems)
             }
         }
 
-        playlistRecyclerView.adapter = concatAdapter
+        playlistRecyclerView.adapter = playlistAdapter.concatAdapter
 
         FastScrollerBuilder(playlistRecyclerView).apply {
             setPopupTextProvider(BaseAdapter.BasePopupTextProvider(playlistAdapter))

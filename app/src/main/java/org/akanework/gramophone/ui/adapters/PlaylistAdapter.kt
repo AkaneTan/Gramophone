@@ -14,10 +14,13 @@ class PlaylistAdapter(
     private val mainActivity: MainActivity,
     playlistList: MutableList<MediaStoreUtils.Playlist>,
 ) : ItemAdapter<MediaStoreUtils.Playlist>
-    (mainActivity, playlistList, Sorter.from()) {
+    (mainActivity, playlistList, Sorter.from(), pluralStr = R.plurals.playlists) {
 
-    override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_playlist
+
+    override fun getItemViewType(position: Int): Int {
+        return R.layout.adapter_list_card_larger
+    }
 
     override fun titleOf(item: MediaStoreUtils.Playlist): String {
         if (item is MediaStoreUtils.RecentlyAdded) {
@@ -60,10 +63,6 @@ class PlaylistAdapter(
                 else -> false
             }
         }
-    }
-
-    override fun isPinned(item: MediaStoreUtils.Playlist): Boolean {
-        return item.virtual
     }
 
 }

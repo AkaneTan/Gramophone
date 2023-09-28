@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.MediaItem
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -32,9 +33,12 @@ abstract class BaseAdapter<T>(
 	val context: Context,
 	initialList: MutableList<T>,
 	private val sorter: Sorter<T> = Sorter.noneSorter(),
-	initialSortType: Sorter.Type = Sorter.Type.None
+	initialSortType: Sorter.Type = Sorter.Type.None,
+	private val pluralStr: Int
 ) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
 
+	open val decorAdapter by lazy { createDecorAdapter() }
+	val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
 	private val handler = Handler(Looper.getMainLooper())
 	private var bgHandlerThread: HandlerThread? = null
 	private var bgHandler: Handler? = null
@@ -57,7 +61,6 @@ abstract class BaseAdapter<T>(
 	}
 
 	protected open val defaultCover: Int = R.drawable.ic_default_cover
-	protected abstract val layout: Int
 
 	inner class ViewHolder(
 		view: View,
@@ -96,7 +99,7 @@ abstract class BaseAdapter<T>(
 		ViewHolder(
 			LayoutInflater
 				.from(parent.context)
-				.inflate(layout, parent, false),
+				.inflate(viewType, parent, false),
 		)
 
 	fun sort(selector: Sorter.Type) {
@@ -104,12 +107,12 @@ abstract class BaseAdapter<T>(
 		CoroutineScope(Dispatchers.Default).launch {
 			val apply = sort()
 			withContext(Dispatchers.Main) {
-				apply()
+				apply(false)
 			}
 		}
 	}
 
-	private fun sort(srcList: MutableList<T>? = null): () -> Unit {
+	private fun sort(srcList: MutableList<T>? = null): (Boolean) -> Unit {
 		// Sorting in the background using coroutines
 		val newList = ArrayList(srcList ?: rawList)
 		newList.sortWith { o1, o2 ->
@@ -118,8 +121,8 @@ abstract class BaseAdapter<T>(
 			else comparator?.compare(o1, o2) ?: 0
 		}
 		val apply = updateListSorted(newList)
-		return {
-			apply()
+		return { now ->
+			apply(now)
 			if (srcList != null) {
 				rawList.clear()
 				rawList.addAll(srcList)
@@ -127,26 +130,37 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	private fun updateListSorted(newList: MutableList<T>): () -> Unit {
-		return {
+	private fun updateListSorted(newList: MutableList<T>): (Boolean) -> Unit {
+		return { now ->
 			val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
 			list.clear()
 			list.addAll(newList)
 			diffResult.dispatchUpdatesTo(this)
+			if (!now) decorAdapter.updateSongCounter(list.size)
 		}
 	}
 
-	fun updateList(newList: MutableList<T>, now: Boolean = false) {
-		if (now || bgHandler == null) sort(newList)()
+	private fun updateList(newList: MutableList<T>, now: Boolean) {
+		if (now || bgHandler == null) sort(newList)(true)
 		else {
 			bgHandler!!.post {
 				val apply = sort(newList)
 				handler.post {
-						apply()
+						apply(false)
 				}
 			}
 		}
 	}
+
+	fun updateList(newList: MutableList<T>) {
+		updateList(newList, false)
+	}
+
+	protected open fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<T>> {
+		return BaseDecorAdapter(this, pluralStr)
+	}
+
+	abstract override fun getItemViewType(position: Int): Int
 
 	final override fun onBindViewHolder(
 		holder: ViewHolder,
@@ -219,8 +233,9 @@ abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
                                                      rawList: MutableList<T>,
                                                      sorter: Sorter<T>,
                                                      initialSortType: Sorter.Type
-                                                     = Sorter.Type.ByTitleAscending
-) : BaseAdapter<T>(context, rawList, sorter, initialSortType) {
+                                                     = Sorter.Type.ByTitleAscending,
+                                                     pluralStr: Int = R.plurals.items
+) : BaseAdapter<T>(context, rawList, sorter, initialSortType, pluralStr) {
 	override fun toId(item: T): String {
 		return item.id.toString()
 	}
@@ -235,6 +250,10 @@ abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
 			.firstOrNull()
 			?.mediaMetadata
 			?.artworkUri
+	}
+
+	override fun isPinned(item: T): Boolean {
+		return item.title == null
 	}
 }
 

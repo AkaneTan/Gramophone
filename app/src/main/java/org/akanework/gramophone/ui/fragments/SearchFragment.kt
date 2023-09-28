@@ -42,16 +42,10 @@ class SearchFragment : BaseFragment(false) {
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false)
-        val songDecorAdapter =
-            BaseDecorAdapter(
-                songAdapter,
-                R.plurals.songs
-            )
-        val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = concatAdapter
+        recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {
             setPadding(0, 0, 0, (66).dp)
@@ -62,7 +56,6 @@ class SearchFragment : BaseFragment(false) {
         editText.addTextChangedListener { text ->
             if (text.isNullOrBlank()) {
                 songAdapter.updateList(mutableListOf())
-                songDecorAdapter.updateSongCounter(0)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     filteredList.clear()
@@ -79,11 +72,6 @@ class SearchFragment : BaseFragment(false) {
                         )
                     }
                     withContext(Dispatchers.Main) {
-                        if (filteredList.isNotEmpty()) {
-                            songDecorAdapter.updateSongCounter(filteredList.size)
-                        } else {
-                            songDecorAdapter.updateSongCounter(0)
-                        }
                         songAdapter.updateList(filteredList.toMutableList())
                     }
                 }

@@ -103,14 +103,8 @@ class GeneralSubFragment : BaseFragment(true) {
         }
 
         val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper)
-        val songDecorAdapter =
-            BaseDecorAdapter(
-                songAdapter,
-                R.plurals.songs
-            )
-        val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = concatAdapter
+        recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).build()
 

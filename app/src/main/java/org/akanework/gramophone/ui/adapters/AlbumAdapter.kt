@@ -11,9 +11,11 @@ class AlbumAdapter(
     private val mainActivity: MainActivity,
     albumList: MutableList<MediaStoreUtils.Album>,
 ) : ItemAdapter<MediaStoreUtils.Album>
-    (mainActivity, albumList, Sorter.from()) {
+    (mainActivity, albumList, Sorter.from(), pluralStr = R.plurals.albums) {
 
-    override val layout = R.layout.adapter_grid_card
+    override fun getItemViewType(position: Int): Int {
+        return R.layout.adapter_grid_card
+    }
 
     override fun titleOf(item: MediaStoreUtils.Album): String {
         return item.title ?: context.getString(R.string.unknown_album)
@@ -66,9 +68,5 @@ class AlbumAdapter(
             }
             true
         }
-    }
-
-    override fun isPinned(item: MediaStoreUtils.Album): Boolean {
-        return item.title == null
     }
 }

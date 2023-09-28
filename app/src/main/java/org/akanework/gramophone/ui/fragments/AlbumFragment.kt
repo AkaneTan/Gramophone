@@ -35,13 +35,6 @@ class AlbumFragment : BaseFragment(null) {
                 requireActivity() as MainActivity,
                 libraryViewModel.albumItemList.value!!,
             )
-        val albumDecorAdapter =
-            BaseDecorAdapter(
-                albumAdapter,
-                R.plurals.albums
-            )
-        val concatAdapter = ConcatAdapter(albumDecorAdapter, albumAdapter)
-
         val gridLayoutManager = CustomGridLayoutManager(requireContext(), 2)
 
         albumRecyclerView.layoutManager = gridLayoutManager
@@ -49,13 +42,12 @@ class AlbumFragment : BaseFragment(null) {
         if (!libraryViewModel.albumItemList.hasActiveObservers()) {
             libraryViewModel.albumItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    albumDecorAdapter.updateSongCounter(mediaItems.size)
                     albumAdapter.updateList(mediaItems)
                 }
             }
         }
 
-        albumRecyclerView.adapter = concatAdapter
+        albumRecyclerView.adapter = albumAdapter.concatAdapter
 
         FastScrollerBuilder(albumRecyclerView).apply {
             setPopupTextProvider(BaseAdapter.BasePopupTextProvider(albumAdapter))

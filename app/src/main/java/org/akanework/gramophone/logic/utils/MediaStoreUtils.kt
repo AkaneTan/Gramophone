@@ -74,14 +74,12 @@ object MediaStoreUtils {
     open class Playlist(
         override val id: Long,
         override val title: String?,
-        override val songList: List<MediaItem>,
-        val virtual: Boolean
+        override val songList: List<MediaItem>
     ) : Item
 
     class RecentlyAdded(id: Long, songList: List<MediaItem>)
         : Playlist(id, null, songList
-            .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 },
-        true) {
+            .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }) {
         private val rawList: List<MediaItem> = super.songList
         private var filteredList: List<MediaItem>? = null
         var minAddDate: Long = 0
@@ -372,7 +370,7 @@ object MediaStoreUtils {
                 val songs = getSongsInPlaylist(contentResolver, playlistId, songList)
 
                 // Create a Playlist object and add it to the list
-                val playlist = Playlist(playlistId, playlistName, songs, false)
+                val playlist = Playlist(playlistId, playlistName, songs)
                 playlists.add(playlist)
             }
         }

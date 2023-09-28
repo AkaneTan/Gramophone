@@ -29,10 +29,13 @@ class SongAdapter(
     if (canSort) Sorter.from(helper) else Sorter.noneSorter(),
     if (canSort)
             (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
-    else Sorter.Type.None) {
+    else Sorter.Type.None, R.plurals.songs) {
 
-    override val layout = R.layout.adapter_list_card
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
+
+    override fun getItemViewType(position: Int): Int {
+        return R.layout.adapter_list_card
+    }
 
     override fun titleOf(item: MediaItem): String {
         return item.mediaMetadata.title.toString()

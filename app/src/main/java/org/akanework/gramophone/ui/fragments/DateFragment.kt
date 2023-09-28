@@ -36,23 +36,16 @@ class DateFragment : BaseFragment(null) {
                 requireActivity() as MainActivity,
                 libraryViewModel.dateItemList.value!!,
             )
-        val dateDecorAdapter =
-            BaseDecorAdapter(
-                dateAdapter,
-                R.plurals.items
-            )
-        val concatAdapter = ConcatAdapter(dateDecorAdapter, dateAdapter)
 
         if (!libraryViewModel.dateItemList.hasActiveObservers()) {
             libraryViewModel.dateItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    dateDecorAdapter.updateSongCounter(mediaItems.size)
                     dateAdapter.updateList(mediaItems)
                 }
             }
         }
 
-        dateRecyclerView.adapter = concatAdapter
+        dateRecyclerView.adapter = dateAdapter.concatAdapter
 
         FastScrollerBuilder(dateRecyclerView).apply {
             setPopupTextProvider(BaseAdapter.BasePopupTextProvider(dateAdapter))

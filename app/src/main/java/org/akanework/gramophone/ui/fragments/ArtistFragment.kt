@@ -39,12 +39,7 @@ class ArtistFragment : BaseFragment(null) {
                 requireActivity() as MainActivity,
                 libraryViewModel.artistItemList.value!!,
             )
-        val artistDecorAdapter =
-            ArtistDecorAdapter(
-                artistAdapter,
-                prefs
-            )
-        val concatAdapter = ConcatAdapter(artistDecorAdapter, artistAdapter)
+        val artistDecorAdapter = artistAdapter.decorAdapter
 
         if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
             artistDecorAdapter.updateListToAlbumArtist()
@@ -53,7 +48,6 @@ class ArtistFragment : BaseFragment(null) {
         if (!libraryViewModel.artistItemList.hasActiveObservers()) {
             libraryViewModel.artistItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    artistDecorAdapter.updateSongCounter(mediaItems.size)
                     if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
                         artistDecorAdapter.updateListToAlbumArtist()
                     } else {
@@ -63,7 +57,7 @@ class ArtistFragment : BaseFragment(null) {
             }
         }
 
-        artistRecyclerView.adapter = concatAdapter
+        artistRecyclerView.adapter = artistAdapter.concatAdapter
 
         FastScrollerBuilder(artistRecyclerView).apply {
             setPopupTextProvider(BaseAdapter.BasePopupTextProvider(artistAdapter))

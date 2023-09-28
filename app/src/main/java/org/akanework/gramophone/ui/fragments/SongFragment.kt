@@ -36,23 +36,14 @@ class SongFragment : BaseFragment(null) {
         val songAdapter = SongAdapter(
             requireActivity() as MainActivity,
             libraryViewModel.mediaItemList.value!!, true)
-        val songDecorAdapter =
-            BaseDecorAdapter(
-                songAdapter,
-                R.plurals.songs
-            )
-        val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 
         if (!libraryViewModel.mediaItemList.hasActiveObservers()) {
             libraryViewModel.mediaItemList.observe(viewLifecycleOwner) { mediaItems ->
-                if (mediaItems.isNotEmpty()) {
-                    songDecorAdapter.updateSongCounter(mediaItems.size)
-                    songAdapter.updateList(mediaItems)
-                }
+                songAdapter.updateList(mediaItems)
             }
         }
 
-        songRecyclerView.adapter = concatAdapter
+        songRecyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(songRecyclerView).apply {
             setPopupTextProvider(BaseAdapter.BasePopupTextProvider(songAdapter))

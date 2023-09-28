@@ -36,19 +36,16 @@ class GenreFragment : BaseFragment(null) {
                 requireActivity() as MainActivity,
                 libraryViewModel.genreItemList.value!!
             )
-        val genreDecorAdapter = BaseDecorAdapter(genreAdapter, R.plurals.items)
-        val concatAdapter = ConcatAdapter(genreDecorAdapter, genreAdapter)
 
         if (!libraryViewModel.genreItemList.hasActiveObservers()) {
             libraryViewModel.genreItemList.observe(viewLifecycleOwner) { mediaItems ->
                 if (mediaItems.isNotEmpty()) {
-                    genreDecorAdapter.updateSongCounter(mediaItems.size)
                     genreAdapter.updateList(mediaItems)
                 }
             }
         }
 
-        genreRecyclerView.adapter = concatAdapter
+        genreRecyclerView.adapter = genreAdapter.concatAdapter
 
         FastScrollerBuilder(genreRecyclerView).apply {
             setPopupTextProvider(BaseAdapter.BasePopupTextProvider(genreAdapter))

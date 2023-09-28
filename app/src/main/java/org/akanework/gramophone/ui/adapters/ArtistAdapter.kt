@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.preference.PreferenceManager
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -18,11 +19,15 @@ class ArtistAdapter(
     private val mainActivity: MainActivity,
     artistList: MutableList<MediaStoreUtils.Artist>,
 ) : ItemAdapter<MediaStoreUtils.Artist>
-    (mainActivity, artistList, Sorter.from()) {
+    (mainActivity, artistList, Sorter.from(), pluralStr = R.plurals.artists) {
 
+    override val decorAdapter: ArtistDecorAdapter by lazy { createDecorAdapter() as ArtistDecorAdapter }
     private var isAlbumArtist = false
-    override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_artist
+
+    override fun getItemViewType(position: Int): Int {
+        return R.layout.adapter_list_card_larger
+    }
 
     override fun titleOf(item: MediaStoreUtils.Artist): String {
         return item.title ?: context.getString(R.string.unknown_artist)
@@ -79,8 +84,8 @@ class ArtistAdapter(
         }
     }
 
-    override fun isPinned(item: MediaStoreUtils.Artist): Boolean {
-        return item.title == null
+    override fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<MediaStoreUtils.Artist>> {
+        return ArtistDecorAdapter(this, PreferenceManager.getDefaultSharedPreferences(context))
     }
 
     fun setClickEventToAlbumArtist(reverse: Boolean) {

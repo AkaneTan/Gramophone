@@ -16,8 +16,11 @@ class DateAdapter(
 ) : ItemAdapter<MediaStoreUtils.Date>
     (mainActivity, dateList, Sorter.from()) {
 
-    override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_date
+
+    override fun getItemViewType(position: Int): Int {
+        return R.layout.adapter_list_card_larger
+    }
 
     override fun titleOf(item: MediaStoreUtils.Date): String {
         return item.title ?: context.getString(R.string.unknown_year)
@@ -67,10 +70,6 @@ class DateAdapter(
                 else -> false
             }
         }
-    }
-
-    override fun isPinned(item: MediaStoreUtils.Date): Boolean {
-        return item.title == null
     }
 
 }
