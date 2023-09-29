@@ -105,7 +105,7 @@
 			android:id="@+id/player_content"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
-			android:background="?attr/colorSurface"
+			android:background="?attr/colorSurfaceContainerLowest"
 			android:elevation="0dp"
 			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			app:layout_constraintEnd_toEndOf="parent"
