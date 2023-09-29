@@ -37,6 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -176,26 +177,6 @@ class PlayerBottomSheet private constructor(
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
 				.toFloat()
 
-		/*
-		touchListener = object : Slider.OnSliderTouchListener {
-			override fun onStartTrackingTouch(slider: Slider) {
-				isUserTracking = true
-			}
-
-			override fun onStopTrackingTouch(slider: Slider) {
-				// This value is multiplied by 1000 is because
-				// when the number is too big (like when toValue
-				// used the duration directly) we might encounter
-				// some performance problem.
-				val mediaId = instance.currentMediaItem?.mediaId
-				if (mediaId != null) {
-					instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
-				}
-				isUserTracking = false
-			}
-		}
-		*/
-
 		touchListener = object : SeekBar.OnSeekBarChangeListener {
 			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 				if (fromUser) {
@@ -230,17 +211,19 @@ class PlayerBottomSheet private constructor(
 		}
 
 		progressDrawable = bottomSheetFullSlider.progressDrawable as SquigglyProgress
-		progressDrawable?.let {
+		progressDrawable.let {
 			it.waveLength = seekBarProgressWavelength
 			it.lineAmplitude = seekBarProgressAmplitude
 			it.phaseSpeed = seekBarProgressPhase
 			it.strokeWidth = seekBarProgressStrokeWidth
-		}
-
-		if (progressDrawable != null) {
-			progressDrawable.transitionEnabled = true
-			progressDrawable.animate = true
-			progressDrawable.setTint(getContext().getColor(android.R.color.system_accent1_500))
+			it.transitionEnabled = true
+			it.animate = true
+			it.setTint(
+				MaterialColors.getColor(
+					bottomSheetFullSlider,
+					com.google.android.material.R.attr.colorPrimary,
+				)
+			)
 		}
 
 		setOnClickListener {
@@ -308,22 +291,6 @@ class PlayerBottomSheet private constructor(
 			instance.shuffleModeEnabled = isChecked
 		}
 
-		/*
-		bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
-			if (isUser) {
-				val dest =
-					instance.currentMediaItem?.mediaId?.let {
-						libraryViewModel.durationItemList.value?.get(it.toLong())
-					}
-				if (dest != null) {
-					bottomSheetFullPosition.text =
-						GramophoneUtils.convertDurationToTimeStamp((value * dest).toLong())
-				}
-			}
-		}
-		*/
-
-		//bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
 		bottomSheetFullSlider.setOnSeekBarChangeListener(touchListener)
 
 		bottomSheetFullSlideUpButton.setOnClickListener {

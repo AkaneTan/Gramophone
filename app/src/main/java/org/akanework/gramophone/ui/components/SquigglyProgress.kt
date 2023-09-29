@@ -27,22 +27,24 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
-import org.akanework.gramophone.logic.utils.ColorUtils
 
 import kotlin.math.abs
 import kotlin.math.cos
 
-import org.akanework.gramophone.logic.utils.MathUtils.lerp
-import org.akanework.gramophone.logic.utils.MathUtils.lerpInv
-import org.akanework.gramophone.logic.utils.MathUtils.lerpInvSat
+import org.akanework.gramophone.logic.utils.GramophoneUtils.lerp
+import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInv
+import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInvSat
+import org.akanework.gramophone.logic.utils.GramophoneUtils.setAlphaComponent
 import org.akanework.gramophone.ui.animation.Interpolators
 
-private const val TAG = "Squiggly"
-
-private const val TWO_PI = (Math.PI * 2f).toFloat()
-@VisibleForTesting internal const val DISABLED_ALPHA = 77
-
 class SquigglyProgress : Drawable() {
+
+    companion object {
+        private const val TAG = "Squiggly"
+
+        private const val TWO_PI = (Math.PI * 2f).toFloat()
+        @VisibleForTesting internal const val DISABLED_ALPHA = 77
+    }
 
     private val wavePaint = Paint()
     private val linePaint = Paint()
@@ -215,6 +217,9 @@ class SquigglyProgress : Drawable() {
         canvas.restore()
     }
 
+    @Deprecated("Deprecated in Java",
+        ReplaceWith("PixelFormat.TRANSLUCENT", "android.graphics.PixelFormat")
+    )
     override fun getOpacity(): Int {
         return PixelFormat.TRANSLUCENT
     }
@@ -248,8 +253,8 @@ class SquigglyProgress : Drawable() {
     }
 
     private fun updateColors(tintColor: Int, alpha: Int) {
-        wavePaint.color = ColorUtils.setAlphaComponent(tintColor, alpha)
+        wavePaint.color = setAlphaComponent(tintColor, alpha)
         linePaint.color =
-            ColorUtils.setAlphaComponent(tintColor, (DISABLED_ALPHA * (alpha / 255f)).toInt())
+            setAlphaComponent(tintColor, (DISABLED_ALPHA * (alpha / 255f)).toInt())
     }
 }

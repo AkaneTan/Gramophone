@@ -195,28 +195,13 @@
 
 				</LinearLayout>
 
-				<!--com.google.android.material.slider.Slider
-					android:id="@+id/slider"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginHorizontal="5dp"
-					android:layout_marginBottom="0.5dp"
-					android:value="0"
-					app:labelBehavior="gone"
-					app:layout_constraintBottom_toTopOf="@id/duration_frame"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout"
-					app:thumbRadius="8dp"
-					app:thumbElevation="0dp"
-					tools:value="0.5" /-->
-
 				<SeekBar
 					android:id="@+id/slider"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="5dp"
 					android:layout_marginBottom="0.5dp"
+					android:thumbTint="?attr/colorPrimary"
 					style="@style/MediaPlayer.ProgressBar"
 					app:labelBehavior="gone"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
