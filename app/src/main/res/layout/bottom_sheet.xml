@@ -5,7 +5,7 @@
 	style="@style/BottomPlayerSheetStyle"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:backgroundTint="?attr/colorSurfaceContainerLow"
+	android:background="?attr/colorOnSurface"
 	android:clickable="true"
 	android:fitsSystemWindows="false"
 	android:translationZ="256dp"
