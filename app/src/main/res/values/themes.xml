@@ -21,5 +21,15 @@
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.None</item>
     </style>
 
+    <style name="MediaPlayer.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:thumb">@drawable/media_seekbar_thumb</item>
+        <item name="android:thumbTint">?android:attr/textColorPrimary</item>
+        <item name="android:progressDrawable">@drawable/media_squiggly_progress</item>
+        <item name="android:progressTint">?android:attr/textColorPrimary</item>
+        <item name="android:progressBackgroundTint">?android:attr/textColorTertiary</item>
+        <item name="android:clickable">true</item>
+        <item name="android:splitTrack">false</item>
+    </style>
+
     <style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
 </resources>
