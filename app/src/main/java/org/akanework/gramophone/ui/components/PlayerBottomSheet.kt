@@ -217,7 +217,7 @@ class PlayerBottomSheet private constructor(
 			it.phaseSpeed = seekBarProgressPhase
 			it.strokeWidth = seekBarProgressStrokeWidth
 			it.transitionEnabled = true
-			it.animate = true
+			it.animate = false
 			it.setTint(
 				MaterialColors.getColor(
 					bottomSheetFullSlider,
