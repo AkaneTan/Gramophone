@@ -360,9 +360,8 @@ class PlayerBottomSheet private constructor(
 						instance.currentMediaItem?.mediaId?.toLong(),
 					)
 				if (duration != null && !isUserTracking) {
-					bottomSheetFullSlider.progress =instance.currentPosition.toInt()
-					//(instance.currentPosition.toFloat() / duration.toFloat()).coerceAtMost(1f)
 					bottomSheetFullSlider.max = duration.toInt()
+					bottomSheetFullSlider.progress = instance.currentPosition.toInt()
 					bottomSheetFullPosition.text = position
 				}
 			}
@@ -458,8 +457,8 @@ class PlayerBottomSheet private constructor(
 				instance.currentMediaItem?.mediaId?.toLong(),
 			)
 		if (duration != null && !isUserTracking) {
-			bottomSheetFullSlider.progress =
-				(instance.currentPosition.toFloat() / duration.toFloat()).coerceAtMost(1f).toInt()
+			bottomSheetFullSlider.max = duration.toInt()
+			bottomSheetFullSlider.progress = instance.currentPosition.toInt()
 			bottomSheetFullPosition.text = position
 		}
 	}

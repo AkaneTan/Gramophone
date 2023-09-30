@@ -202,6 +202,7 @@
 					android:layout_marginHorizontal="5dp"
 					android:layout_marginBottom="0.5dp"
 					android:thumbTint="?attr/colorPrimary"
+					android:progress="0"
 					style="@style/MediaPlayer.ProgressBar"
 					app:labelBehavior="gone"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"

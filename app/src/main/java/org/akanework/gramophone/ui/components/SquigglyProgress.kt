@@ -26,6 +26,7 @@ import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import android.view.animation.PathInterpolator
 import androidx.annotation.VisibleForTesting
 
 import kotlin.math.abs
@@ -35,13 +36,10 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils.lerp
 import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInv
 import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInvSat
 import org.akanework.gramophone.logic.utils.GramophoneUtils.setAlphaComponent
-import org.akanework.gramophone.ui.animation.Interpolators
 
 class SquigglyProgress : Drawable() {
 
     companion object {
-        private const val TAG = "Squiggly"
-
         private const val TWO_PI = (Math.PI * 2f).toFloat()
         @VisibleForTesting internal const val DISABLED_ALPHA = 77
     }
@@ -57,9 +55,9 @@ class SquigglyProgress : Drawable() {
     /* distance over which amplitude drops to zero, measured in wavelengths */
     private val transitionPeriods = 1.5f
     /* wave endpoint as percentage of bar when play position is zero */
-    private val minWaveEndpoint = 0.2f
+    private val minWaveEndpoint = 0f
     /* wave endpoint as percentage of bar when play position matches wave endpoint */
-    private val matchedWaveEndpoint = 0.6f
+    private val matchedWaveEndpoint = 1f
 
     // Horizontal length of the sine wave
     var waveLength = 0f
@@ -109,10 +107,14 @@ class SquigglyProgress : Drawable() {
                     if (animate) {
                         startDelay = 60
                         duration = 800
-                        interpolator = Interpolators.EMPHASIZED_DECELERATE
+                        interpolator = PathInterpolator(
+                            0.05f, 0.7f, 0.1f, 1f
+                        )
                     } else {
                         duration = 550
-                        interpolator = Interpolators.STANDARD_DECELERATE
+                        interpolator = PathInterpolator(
+                            0f, 0f, 0f, 1f
+                        )
                     }
                     addUpdateListener {
                         heightFraction = it.animatedValue as Float
