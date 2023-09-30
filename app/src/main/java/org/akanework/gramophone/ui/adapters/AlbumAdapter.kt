@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -9,7 +10,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 class AlbumAdapter(
     private val mainActivity: MainActivity,
-    albumList: MutableList<MediaStoreUtils.Album>,
+    albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>,
 ) : ItemAdapter<MediaStoreUtils.Album>
     (mainActivity, albumList, Sorter.from(), pluralStr = R.plurals.albums) {
 

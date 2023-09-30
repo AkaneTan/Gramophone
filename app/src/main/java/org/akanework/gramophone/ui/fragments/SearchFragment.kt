@@ -55,7 +55,7 @@ class SearchFragment : BaseFragment(false) {
 
         editText.addTextChangedListener { text ->
             if (text.isNullOrBlank()) {
-                songAdapter.updateList(mutableListOf())
+                songAdapter.updateList(mutableListOf(), now = false, true)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     filteredList.clear()
@@ -72,7 +72,7 @@ class SearchFragment : BaseFragment(false) {
                         )
                     }
                     withContext(Dispatchers.Main) {
-                        songAdapter.updateList(filteredList.toMutableList())
+                        songAdapter.updateList(filteredList.toMutableList(), now = false, true)
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
@@ -12,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -31,19 +34,20 @@ import java.util.Collections
 
 abstract class BaseAdapter<T>(
 	val context: Context,
-	initialList: MutableList<T>,
+	protected var liveData: MutableLiveData<MutableList<T>>?,
 	private val sorter: Sorter<T> = Sorter.noneSorter(),
 	initialSortType: Sorter.Type = Sorter.Type.None,
 	private val pluralStr: Int
-) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
+) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>> {
 
 	open val decorAdapter by lazy { createDecorAdapter() }
 	val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
 	private val handler = Handler(Looper.getMainLooper())
 	private var bgHandlerThread: HandlerThread? = null
-	private var bgHandler: Handler? = null
-	private val rawList = ArrayList<T>(initialList.size)
-	protected val list = ArrayList<T>(initialList.size)
+	protected var bgHandler: Handler? = null
+		private set
+	private val rawList = ArrayList<T>(liveData?.value?.size ?: 0)
+	protected val list = ArrayList<T>(liveData?.value?.size ?: 0)
 	private var comparator: Sorter.HintedComparator<T>? = null
 	var sortType: Sorter.Type
 		get() = comparator?.type!!
@@ -57,7 +61,7 @@ abstract class BaseAdapter<T>(
 
 	init {
 		sortType = initialSortType
-		updateList(initialList, true)
+		liveData?.value?.let { updateList(it, now = true, canDiff = false) }
 	}
 
 	protected open val defaultCover: Int = R.drawable.ic_default_cover
@@ -77,6 +81,7 @@ abstract class BaseAdapter<T>(
 
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
 		super.onAttachedToRecyclerView(recyclerView)
+		liveData?.observeForever(this)
 		bgHandlerThread = HandlerThread(BaseAdapter::class.qualifiedName).apply {
 			start()
 			bgHandler = Handler(looper)
@@ -85,9 +90,14 @@ abstract class BaseAdapter<T>(
 
 	override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
 		super.onDetachedFromRecyclerView(recyclerView)
+		liveData?.removeObserver(this)
 		bgHandler = null
 		bgHandlerThread!!.quitSafely()
 		bgHandlerThread = null
+	}
+
+	override fun onChanged(value: MutableList<T>) {
+		updateList(value, now = false, true)
 	}
 
 	override fun getItemCount(): Int = list.size
@@ -107,12 +117,12 @@ abstract class BaseAdapter<T>(
 		CoroutineScope(Dispatchers.Default).launch {
 			val apply = sort()
 			withContext(Dispatchers.Main) {
-				apply(false)
+				apply(false, true)
 			}
 		}
 	}
 
-	private fun sort(srcList: MutableList<T>? = null): (Boolean) -> Unit {
+	private fun sort(srcList: MutableList<T>? = null): (Boolean, Boolean) -> Unit {
 		// Sorting in the background using coroutines
 		val newList = ArrayList(srcList ?: rawList)
 		newList.sortWith { o1, o2 ->
@@ -121,8 +131,8 @@ abstract class BaseAdapter<T>(
 			else comparator?.compare(o1, o2) ?: 0
 		}
 		val apply = updateListSorted(newList)
-		return { now ->
-			apply(now)
+		return { now, canDiff ->
+			apply(now, canDiff)
 			if (srcList != null) {
 				rawList.clear()
 				rawList.addAll(srcList)
@@ -130,30 +140,28 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	private fun updateListSorted(newList: MutableList<T>): (Boolean) -> Unit {
-		return { now ->
-			val diffResult = DiffUtil.calculateDiff(SongDiffCallback(list, newList))
+	@SuppressLint("NotifyDataSetChanged")
+	private fun updateListSorted(newList: MutableList<T>): (Boolean, Boolean) -> Unit {
+		return { now, canDiff ->
+			val diffResult = if (canDiff)
+				DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
 			list.clear()
 			list.addAll(newList)
-			diffResult.dispatchUpdatesTo(this)
+			if (canDiff) diffResult!!.dispatchUpdatesTo(this) else notifyDataSetChanged()
 			if (!now) decorAdapter.updateSongCounter(list.size)
 		}
 	}
 
-	private fun updateList(newList: MutableList<T>, now: Boolean) {
-		if (now || bgHandler == null) sort(newList)(true)
+	fun updateList(newList: MutableList<T>, now: Boolean, canDiff: Boolean) {
+		if (now || bgHandler == null) sort(newList)(true, canDiff)
 		else {
 			bgHandler!!.post {
 				val apply = sort(newList)
 				handler.post {
-						apply(false)
+						apply(false, canDiff)
 				}
 			}
 		}
-	}
-
-	fun updateList(newList: MutableList<T>) {
-		updateList(newList, false)
 	}
 
 	protected open fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<T>> {
@@ -230,8 +238,8 @@ abstract class BaseAdapter<T>(
 }
 
 abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
-                                                     rawList: MutableList<T>,
-                                                     sorter: Sorter<T>,
+                                                     rawList: MutableLiveData<MutableList<T>>,
+		                                             sorter: Sorter<T>,
                                                      initialSortType: Sorter.Type
                                                      = Sorter.Type.ByTitleAscending,
                                                      pluralStr: Int = R.plurals.items

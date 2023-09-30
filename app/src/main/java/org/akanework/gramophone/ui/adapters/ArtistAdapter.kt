@@ -1,28 +1,28 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
  */
 class ArtistAdapter(
     private val mainActivity: MainActivity,
-    artistList: MutableList<MediaStoreUtils.Artist>,
+    private val artistList: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
+    private val albumArtists: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
 ) : ItemAdapter<MediaStoreUtils.Artist>
     (mainActivity, artistList, Sorter.from(), pluralStr = R.plurals.artists) {
 
-    override val decorAdapter: ArtistDecorAdapter by lazy { createDecorAdapter() as ArtistDecorAdapter }
-    private var isAlbumArtist = false
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+    var isAlbumArtist = prefs.getBoolean("isDisplayingAlbumArtist", false)
+        private set
     override val defaultCover = R.drawable.ic_default_cover_artist
 
     override fun getItemViewType(position: Int): Int {
@@ -85,71 +85,38 @@ class ArtistAdapter(
     }
 
     override fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<MediaStoreUtils.Artist>> {
-        return ArtistDecorAdapter(this, PreferenceManager.getDefaultSharedPreferences(context))
+        return ArtistDecorAdapter(this)
     }
 
-    fun setClickEventToAlbumArtist(reverse: Boolean) {
-        isAlbumArtist = !reverse
-    }
-}
-
-class ArtistDecorAdapter(
-    artistAdapter: ArtistAdapter,
-    private val prefs: SharedPreferences
-) : BaseDecorAdapter<ArtistAdapter>(artistAdapter, R.plurals.artists) {
-    private val viewModel: LibraryViewModel by (context as MainActivity).viewModels()
-
-    override fun onSortButtonPressed(popupMenu: PopupMenu) {
-        popupMenu.menu.findItem(R.id.album_artist).isVisible = true
-        popupMenu.menu.findItem(R.id.album_artist).isChecked =
-            prefs.getBoolean("isDisplayingAlbumArtist", false)
+    private fun setAlbumArtist(albumArtist: Boolean) {
+        isAlbumArtist = albumArtist
+        prefs.edit().putBoolean("isDisplayingAlbumArtist", isAlbumArtist).apply()
+        if (bgHandler != null)
+            liveData?.removeObserver(this)
+        liveData = if (isAlbumArtist) albumArtists else artistList
+        if (bgHandler != null)
+            liveData?.observeForever(this)
     }
 
-    override fun onExtraMenuButtonPressed(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
-            R.id.album_artist -> {
-                menuItem.isChecked = !menuItem.isChecked
-                if (!prefs.getBoolean("isDisplayingAlbumArtist", false)) {
-                    prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
-                    var itemCount = 0
-                    viewModel.albumArtistItemList.value?.let { it1 ->
-                        adapter.updateList(
-                            it1
-                        )
-                        itemCount = it1.size
-                    }
-                    updateSongCounter(itemCount)
-                    adapter.setClickEventToAlbumArtist(false)
-                } else {
-                    prefs.edit().putBoolean("isDisplayingAlbumArtist", false).apply()
-                    var itemCount = 0
+    private class ArtistDecorAdapter(
+        artistAdapter: ArtistAdapter
+    ) : BaseDecorAdapter<ArtistAdapter>(artistAdapter, R.plurals.artists) {
+
+        override fun onSortButtonPressed(popupMenu: PopupMenu) {
+            popupMenu.menu.findItem(R.id.album_artist).isVisible = true
+            popupMenu.menu.findItem(R.id.album_artist).isChecked = adapter.isAlbumArtist
+        }
+
+        override fun onExtraMenuButtonPressed(menuItem: MenuItem): Boolean {
+            return when (menuItem.itemId) {
+                R.id.album_artist -> {
                     menuItem.isChecked = !menuItem.isChecked
-                    viewModel.artistItemList.value?.let { it1 ->
-                        adapter.updateList(
-                            it1
-                        )
-                        itemCount = it1.size
-                    }
-                    updateSongCounter(itemCount)
-                    adapter.setClickEventToAlbumArtist(true)
+                    adapter.setAlbumArtist(menuItem.isChecked)
+                    true
                 }
-                true
+
+                else -> false
             }
-
-            else -> false
         }
-    }
-
-    fun updateListToAlbumArtist() {
-        prefs.edit().putBoolean("isDisplayingAlbumArtist", true).apply()
-        var itemCount = 0
-        viewModel.albumArtistItemList.value?.let { it1 ->
-            adapter.updateList(
-                it1
-            )
-            itemCount = it1.size
-        }
-        updateSongCounter(itemCount)
-        adapter.setClickEventToAlbumArtist(false)
     }
 }

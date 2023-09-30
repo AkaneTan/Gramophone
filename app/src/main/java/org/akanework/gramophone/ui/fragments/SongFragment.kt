@@ -35,13 +35,7 @@ class SongFragment : BaseFragment(null) {
         songRecyclerView.layoutManager = LinearLayoutManager(activity)
         val songAdapter = SongAdapter(
             requireActivity() as MainActivity,
-            libraryViewModel.mediaItemList.value!!, true)
-
-        if (!libraryViewModel.mediaItemList.hasActiveObservers()) {
-            libraryViewModel.mediaItemList.observe(viewLifecycleOwner) { mediaItems ->
-                songAdapter.updateList(mediaItems)
-            }
-        }
+            libraryViewModel.mediaItemList, true)
 
         songRecyclerView.adapter = songAdapter.concatAdapter
 

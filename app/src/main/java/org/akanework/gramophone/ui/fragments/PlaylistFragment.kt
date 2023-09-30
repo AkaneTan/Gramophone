@@ -36,14 +36,8 @@ class PlaylistFragment : BaseFragment(false) {
         val playlistAdapter =
             PlaylistAdapter(
                 requireActivity() as MainActivity,
-                libraryViewModel.playlistList.value!!,
+                libraryViewModel.playlistList,
             )
-
-        if (!libraryViewModel.playlistList.hasActiveObservers()) {
-            libraryViewModel.playlistList.observe(viewLifecycleOwner) { mediaItems ->
-                playlistAdapter.updateList(mediaItems)
-            }
-        }
 
         playlistRecyclerView.adapter = playlistAdapter.concatAdapter
 

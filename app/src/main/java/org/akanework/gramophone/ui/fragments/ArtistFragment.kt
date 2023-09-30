@@ -5,15 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
-import org.akanework.gramophone.ui.adapters.ArtistDecorAdapter
 import org.akanework.gramophone.ui.adapters.BaseAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -30,32 +27,15 @@ class ArtistFragment : BaseFragment(null) {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         val artistRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         artistRecyclerView.layoutManager = LinearLayoutManager(activity)
 
         val artistAdapter =
             ArtistAdapter(
                 requireActivity() as MainActivity,
-                libraryViewModel.artistItemList.value!!,
+                libraryViewModel.artistItemList,
+                libraryViewModel.albumArtistItemList,
             )
-        val artistDecorAdapter = artistAdapter.decorAdapter
-
-        if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
-            artistDecorAdapter.updateListToAlbumArtist()
-        }
-
-        if (!libraryViewModel.artistItemList.hasActiveObservers()) {
-            libraryViewModel.artistItemList.observe(viewLifecycleOwner) { mediaItems ->
-                if (mediaItems.isNotEmpty()) {
-                    if (prefs.getBoolean("isDisplayingAlbumArtist", false)) {
-                        artistDecorAdapter.updateListToAlbumArtist()
-                    } else {
-                        artistAdapter.updateList(mediaItems)
-                    }
-                }
-            }
-        }
 
         artistRecyclerView.adapter = artistAdapter.concatAdapter
 

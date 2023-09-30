@@ -34,16 +34,8 @@ class DateFragment : BaseFragment(null) {
         val dateAdapter =
             DateAdapter(
                 requireActivity() as MainActivity,
-                libraryViewModel.dateItemList.value!!,
+                libraryViewModel.dateItemList,
             )
-
-        if (!libraryViewModel.dateItemList.hasActiveObservers()) {
-            libraryViewModel.dateItemList.observe(viewLifecycleOwner) { mediaItems ->
-                if (mediaItems.isNotEmpty()) {
-                    dateAdapter.updateList(mediaItems)
-                }
-            }
-        }
 
         dateRecyclerView.adapter = dateAdapter.concatAdapter
 

@@ -1,10 +1,13 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.MediaItem
+import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +25,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 class SongAdapter(
     private val mainActivity: MainActivity,
-    songList: MutableList<MediaItem>,
+    songList: MutableLiveData<MutableList<MediaItem>>?,
     canSort: Boolean,
     helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 ) : BaseAdapter<MediaItem>(mainActivity, songList,
@@ -30,6 +33,14 @@ class SongAdapter(
     if (canSort)
             (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
     else Sorter.Type.None, R.plurals.songs) {
+
+    constructor(mainActivity: MainActivity,
+                    songList: MutableList<MediaItem>,
+                    canSort: Boolean,
+                    helper: Sorter.NaturalOrderHelper<MediaItem>? = null)
+            : this(mainActivity, null, canSort, helper) {
+                updateList(songList, now = true, false)
+            }
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
