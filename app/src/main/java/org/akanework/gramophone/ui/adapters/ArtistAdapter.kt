@@ -18,15 +18,15 @@ class ArtistAdapter(
     private val artistList: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
     private val albumArtists: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
 ) : ItemAdapter<MediaStoreUtils.Artist>
-    (mainActivity, artistList, Sorter.from(), pluralStr = R.plurals.artists) {
+    (mainActivity, null, Sorter.from(), pluralStr = R.plurals.artists) {
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
     var isAlbumArtist = prefs.getBoolean("isDisplayingAlbumArtist", false)
         private set
     override val defaultCover = R.drawable.ic_default_cover_artist
 
-    override fun getItemViewType(position: Int): Int {
-        return R.layout.adapter_list_card_larger
+    init {
+        liveData = if (isAlbumArtist) albumArtists else artistList
     }
 
     override fun titleOf(item: MediaStoreUtils.Artist): String {
@@ -91,10 +91,10 @@ class ArtistAdapter(
     private fun setAlbumArtist(albumArtist: Boolean) {
         isAlbumArtist = albumArtist
         prefs.edit().putBoolean("isDisplayingAlbumArtist", isAlbumArtist).apply()
-        if (bgHandler != null)
+        if (recyclerView != null)
             liveData?.removeObserver(this)
         liveData = if (isAlbumArtist) albumArtists else artistList
-        if (bgHandler != null)
+        if (recyclerView != null)
             liveData?.observeForever(this)
     }
 

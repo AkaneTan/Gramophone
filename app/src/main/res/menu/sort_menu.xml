@@ -38,4 +38,25 @@
             android:title="@string/sort_by_size"
             app:showAsAction="never" />
     </group>
+
+    <item
+        android:title="@string/layout"
+        android:id="@+id/display"
+        android:orderInCategory="999">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/list"
+                    android:title="@string/list"
+                    android:orderInCategory="1"
+                    app:showAsAction="never"/>
+                <item
+                    android:id="@+id/grid"
+                    android:title="@string/grid"
+                    android:orderInCategory="2"
+                    tools:checked="true"
+                    app:showAsAction="never"/>
+            </group>
+        </menu>
+    </item>
 </menu>

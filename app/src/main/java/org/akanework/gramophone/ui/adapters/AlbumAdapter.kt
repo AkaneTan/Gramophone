@@ -12,11 +12,7 @@ class AlbumAdapter(
     private val mainActivity: MainActivity,
     albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>,
 ) : ItemAdapter<MediaStoreUtils.Album>
-    (mainActivity, albumList, Sorter.from(), pluralStr = R.plurals.albums) {
-
-    override fun getItemViewType(position: Int): Int {
-        return R.layout.adapter_grid_card
-    }
+    (mainActivity, albumList, Sorter.from(), pluralStr = R.plurals.albums, layoutType = LayoutType.GRID) {
 
     override fun titleOf(item: MediaStoreUtils.Album): String {
         return item.title ?: context.getString(R.string.unknown_album)

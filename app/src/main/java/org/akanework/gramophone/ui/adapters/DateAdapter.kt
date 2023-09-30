@@ -19,10 +19,6 @@ class DateAdapter(
 
     override val defaultCover = R.drawable.ic_default_cover_date
 
-    override fun getItemViewType(position: Int): Int {
-        return R.layout.adapter_list_card_larger
-    }
-
     override fun titleOf(item: MediaStoreUtils.Date): String {
         return item.title ?: context.getString(R.string.unknown_year)
     }

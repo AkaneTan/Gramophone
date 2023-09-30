@@ -11,18 +11,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 
 class FolderAdapter(mainActivity: MainActivity,
                     private val liveData: MutableLiveData<MediaStoreUtils.FileNode>)
-    : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
+    : BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
     private val folderPopAdapter: FolderPopAdapter = FolderPopAdapter(this)
     private val folderAdapter: FolderListAdapter = FolderListAdapter(mutableListOf(), this)
-    private val songAdapter: SongAdapter = SongAdapter(mainActivity, mutableListOf(), false)
-    val concatAdapter: ConcatAdapter = ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
+    private val songAdapter: SongAdapter = SongAdapter(mainActivity, mutableListOf(), false, null, false)
+    override val concatAdapter: ConcatAdapter = ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
     private var root: MediaStoreUtils.FileNode? = null
     private var fileNodePath = ArrayList<String>()
     private var recyclerView: RecyclerView? = null
@@ -35,11 +37,13 @@ class FolderAdapter(mainActivity: MainActivity,
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
         liveData.observeForever(this)
+        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         liveData.removeObserver(this)
+        recyclerView.layoutManager = null
     }
 
     override fun onChanged(value: MediaStoreUtils.FileNode) {
@@ -79,8 +83,10 @@ class FolderAdapter(mainActivity: MainActivity,
                 doUpdate(it != null)
                 return@let
             }
-            val animation = AnimationUtils.loadAnimation(it.context,
-                if (invertedDirection) R.anim.slide_out_right else R.anim.slide_out_left)
+            val animation = AnimationUtils.loadAnimation(
+                it.context,
+                if (invertedDirection) R.anim.slide_out_right else R.anim.slide_out_left
+            )
             animation.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {}
                 override fun onAnimationEnd(animation: Animation) {
@@ -90,13 +96,30 @@ class FolderAdapter(mainActivity: MainActivity,
                             it.context,
                             if (invertedDirection) R.anim.slide_in_left else R.anim.slide_in_right
                         )
-                    );
+                    )
                 }
+
                 override fun onAnimationRepeat(animation: Animation) {}
             })
             it.startAnimation(animation)
         }
-  }
+    }
+
+    override fun getPopupText(position: Int): CharSequence {
+        var newPos = position
+        if (newPos < folderPopAdapter.itemCount) {
+            return "-"
+        }
+        newPos -= folderPopAdapter.itemCount
+        if (newPos < folderAdapter.itemCount) {
+            return folderAdapter.getPopupText(newPos)
+        }
+        newPos -= folderAdapter.itemCount
+        if (newPos < songAdapter.itemCount) {
+            return songAdapter.getPopupText(newPos + 1)
+        }
+        throw IllegalStateException()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         throw UnsupportedOperationException()
@@ -109,7 +132,7 @@ class FolderAdapter(mainActivity: MainActivity,
 
     private class FolderListAdapter(private var folderList: MutableList<MediaStoreUtils.FileNode>,
                                     frag: FolderAdapter)
-        : FolderCardAdapter(frag) {
+        : FolderCardAdapter(frag), PopupTextProvider {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = folderList[position]
@@ -117,6 +140,10 @@ class FolderAdapter(mainActivity: MainActivity,
             holder.itemView.setOnClickListener {
                 folderFragment.enter(item.folderName)
             }
+        }
+
+        override fun getPopupText(position: Int): CharSequence {
+            return folderList[position].folderName.first().toString()
         }
 
         override fun getItemCount(): Int = folderList.size

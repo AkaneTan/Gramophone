@@ -5,13 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.akanework.gramophone.R
-import org.akanework.gramophone.ui.fragments.AlbumFragment
-import org.akanework.gramophone.ui.fragments.ArtistFragment
-import org.akanework.gramophone.ui.fragments.DateFragment
-import org.akanework.gramophone.ui.fragments.FolderFragment
-import org.akanework.gramophone.ui.fragments.GenreFragment
-import org.akanework.gramophone.ui.fragments.PlaylistFragment
-import org.akanework.gramophone.ui.fragments.SongFragment
+import org.akanework.gramophone.ui.fragments.AdapterFragment
 
 /**
  * This is the ViewPager2 adapter.
@@ -48,13 +42,17 @@ class ViewPager2Adapter(
 
     override fun createFragment(position: Int): Fragment =
         when (tabs[position]) {
-            R.id.songs -> SongFragment()
-            R.id.albums -> AlbumFragment()
-            R.id.artists -> ArtistFragment()
-            R.id.genres -> GenreFragment()
-            R.id.dates -> DateFragment()
-            R.id.folders -> FolderFragment()
-            R.id.playlists -> PlaylistFragment()
+            R.id.songs -> AdapterFragment { m, v ->
+                SongAdapter(m, v.mediaItemList, true, null, true)
+            }
+            R.id.albums -> AdapterFragment { m, v -> AlbumAdapter(m, v.albumItemList) }
+            R.id.artists -> AdapterFragment { m, v ->
+                ArtistAdapter(m, v.artistItemList, v.albumArtistItemList)
+            }
+            R.id.genres -> AdapterFragment { m, v -> GenreAdapter(m, v.genreItemList) }
+            R.id.dates -> AdapterFragment { m, v -> GenreAdapter(m, v.genreItemList) }
+            R.id.folders -> AdapterFragment { m, v -> FolderAdapter(m, v.folderStructure) }
+            R.id.playlists -> AdapterFragment { m, v -> PlaylistAdapter(m, v.playlistList) }
             else -> throw IllegalArgumentException("Invalid position: $position")
         }
 }

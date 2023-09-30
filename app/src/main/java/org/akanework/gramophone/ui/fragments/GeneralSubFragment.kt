@@ -102,11 +102,13 @@ class GeneralSubFragment : BaseFragment(true) {
             }
         }
 
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true)
         recyclerView.adapter = songAdapter.concatAdapter
 
-        FastScrollerBuilder(recyclerView).build()
+        FastScrollerBuilder(recyclerView).apply {
+            setPopupTextProvider(songAdapter)
+            build()
+        }
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

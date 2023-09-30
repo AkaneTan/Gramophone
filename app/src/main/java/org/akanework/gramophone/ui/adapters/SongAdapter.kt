@@ -1,13 +1,11 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.MediaItem
-import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
@@ -27,26 +25,24 @@ class SongAdapter(
     private val mainActivity: MainActivity,
     songList: MutableLiveData<MutableList<MediaItem>>?,
     canSort: Boolean,
-    helper: Sorter.NaturalOrderHelper<MediaItem>? = null
+    helper: Sorter.NaturalOrderHelper<MediaItem>?,
+    ownsView: Boolean
 ) : BaseAdapter<MediaItem>(mainActivity, songList,
     if (canSort) Sorter.from(helper) else Sorter.noneSorter(),
     if (canSort)
             (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
-    else Sorter.Type.None, R.plurals.songs) {
+    else Sorter.Type.None, R.plurals.songs, ownsView) {
 
     constructor(mainActivity: MainActivity,
                     songList: MutableList<MediaItem>,
                     canSort: Boolean,
-                    helper: Sorter.NaturalOrderHelper<MediaItem>? = null)
-            : this(mainActivity, null, canSort, helper) {
+                    helper: Sorter.NaturalOrderHelper<MediaItem>?,
+                    ownsView: Boolean)
+            : this(mainActivity, null, canSort, helper, ownsView) {
                 updateList(songList, now = true, false)
             }
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
-
-    override fun getItemViewType(position: Int): Int {
-        return R.layout.adapter_list_card
-    }
 
     override fun titleOf(item: MediaItem): String {
         return item.mediaMetadata.title.toString()
@@ -202,5 +198,12 @@ class SongAdapter(
 
     override fun toId(item: MediaItem): String {
         return item.mediaId
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when (layoutType) {
+            LayoutType.GRID -> R.layout.adapter_grid_card
+            LayoutType.LIST, null -> R.layout.adapter_list_card
+        }
     }
 }

@@ -41,19 +41,19 @@ class SearchFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false)
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false, null, false)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {
-            setPadding(0, 0, 0, (66).dp)
-            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(songAdapter))
+            setPopupTextProvider(songAdapter)
             build()
         }
 
         editText.addTextChangedListener { text ->
+            // TODO sort results by match quality?
             if (text.isNullOrBlank()) {
                 songAdapter.updateList(mutableListOf(), now = false, true)
             } else {

@@ -5,19 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.ui.adapters.BaseAdapter
-import org.akanework.gramophone.ui.adapters.GenreAdapter
+import org.akanework.gramophone.ui.adapters.BaseInterface
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
-/**
- * [GenreFragment] displays information about your song's genres.
- */
-class GenreFragment : BaseFragment(null) {
+class AdapterFragment(private val adapterCreator:
+                          (MainActivity, LibraryViewModel) -> BaseInterface<*>)
+    : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -26,23 +23,13 @@ class GenreFragment : BaseFragment(null) {
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
-        val genreRecyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-
-        genreRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val genreAdapter =
-            GenreAdapter(
-                requireActivity() as MainActivity,
-                libraryViewModel.genreItemList
-            )
-
-        genreRecyclerView.adapter = genreAdapter.concatAdapter
-
-        FastScrollerBuilder(genreRecyclerView).apply {
-            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(genreAdapter))
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val adapter = adapterCreator(requireActivity() as MainActivity, libraryViewModel)
+        recyclerView.adapter = adapter.concatAdapter
+        FastScrollerBuilder(recyclerView).apply {
+            setPopupTextProvider(adapter)
             build()
         }
-
         return rootView
     }
-
 }

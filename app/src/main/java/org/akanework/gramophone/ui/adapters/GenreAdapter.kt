@@ -19,10 +19,6 @@ class GenreAdapter(
 
     override val defaultCover = R.drawable.ic_default_cover_genre
 
-    override fun getItemViewType(position: Int): Int {
-        return R.layout.adapter_list_card_larger
-    }
-
     override fun titleOf(item: MediaStoreUtils.Genre): String {
         return item.title ?: context.getString(R.string.unknown_genre)
     }

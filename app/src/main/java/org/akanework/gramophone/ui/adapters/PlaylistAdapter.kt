@@ -19,10 +19,6 @@ class PlaylistAdapter(
 
     override val defaultCover = R.drawable.ic_default_cover_playlist
 
-    override fun getItemViewType(position: Int): Int {
-        return R.layout.adapter_list_card_larger
-    }
-
     override fun titleOf(item: MediaStoreUtils.Playlist): String {
         if (item is MediaStoreUtils.RecentlyAdded) {
             return context.getString(R.string.recently_added)

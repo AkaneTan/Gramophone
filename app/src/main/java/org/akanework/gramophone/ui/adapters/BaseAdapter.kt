@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
@@ -18,6 +19,7 @@ import androidx.lifecycle.Observer
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
@@ -30,6 +32,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.SupportComparator
 import org.akanework.gramophone.logic.utils.isSupertypeOrEquals
+import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
@@ -37,18 +40,40 @@ abstract class BaseAdapter<T>(
 	protected var liveData: MutableLiveData<MutableList<T>>?,
 	private val sorter: Sorter<T> = Sorter.noneSorter(),
 	initialSortType: Sorter.Type = Sorter.Type.None,
-	private val pluralStr: Int
-) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>> {
+	private val pluralStr: Int,
+	val ownsView: Boolean,
+	defaultLayoutType: LayoutType = LayoutType.LIST
+) : BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>, PopupTextProvider {
 
-	open val decorAdapter by lazy { createDecorAdapter() }
-	val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
+	private val decorAdapter by lazy { createDecorAdapter() }
+	override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
 	private val handler = Handler(Looper.getMainLooper())
 	private var bgHandlerThread: HandlerThread? = null
-	protected var bgHandler: Handler? = null
-		private set
+	private var bgHandler: Handler? = null
 	private val rawList = ArrayList<T>(liveData?.value?.size ?: 0)
 	protected val list = ArrayList<T>(liveData?.value?.size ?: 0)
 	private var comparator: Sorter.HintedComparator<T>? = null
+	private var layoutManager: RecyclerView.LayoutManager? = null
+	protected var recyclerView: RecyclerView? = null
+		private set
+	var layoutType: LayoutType? = null
+		@SuppressLint("NotifyDataSetChanged")
+		set(value) {
+			if (value != null && !ownsView) throw IllegalStateException()
+			if (value == null && ownsView) throw IllegalStateException()
+			field = value
+			if (value != null) {
+				layoutManager = if (value == LayoutType.LIST
+					&& context.resources.configuration.orientation
+					== Configuration.ORIENTATION_PORTRAIT)
+					LinearLayoutManager(context)
+				else CustomGridLayoutManager(context, if (value == LayoutType.LIST
+					|| context.resources.configuration.orientation
+					== Configuration.ORIENTATION_PORTRAIT) 2 else 4)
+				if (recyclerView != null) applyLayoutManager()
+				notifyDataSetChanged() // we change view type for all items
+			}
+		}
 	var sortType: Sorter.Type
 		get() = comparator?.type!!
 		private set(value) {
@@ -62,6 +87,7 @@ abstract class BaseAdapter<T>(
 	init {
 		sortType = initialSortType
 		liveData?.value?.let { updateList(it, now = true, canDiff = false) }
+		layoutType = if (ownsView) defaultLayoutType else null
 	}
 
 	protected open val defaultCover: Int = R.drawable.ic_default_cover
@@ -81,6 +107,12 @@ abstract class BaseAdapter<T>(
 
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
 		super.onAttachedToRecyclerView(recyclerView)
+		this.recyclerView = recyclerView
+		if (ownsView) {
+			if (recyclerView.layoutManager != layoutManager) {
+				applyLayoutManager()
+			}
+		}
 		liveData?.observeForever(this)
 		bgHandlerThread = HandlerThread(BaseAdapter::class.qualifiedName).apply {
 			start()
@@ -90,10 +122,24 @@ abstract class BaseAdapter<T>(
 
 	override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
 		super.onDetachedFromRecyclerView(recyclerView)
+		this.recyclerView = null
+		if (ownsView) {
+			recyclerView.layoutManager = null
+		}
 		liveData?.removeObserver(this)
 		bgHandler = null
 		bgHandlerThread!!.quitSafely()
 		bgHandlerThread = null
+	}
+
+	private fun applyLayoutManager() {
+		// If a layout manager has already been set, get current scroll position.
+		val scrollPosition = if (recyclerView?.layoutManager != null) {
+			(recyclerView!!.layoutManager as LinearLayoutManager)
+				.findFirstCompletelyVisibleItemPosition()
+		} else 0
+		recyclerView?.layoutManager = layoutManager
+		recyclerView?.scrollToPosition(scrollPosition)
 	}
 
 	override fun onChanged(value: MutableList<T>) {
@@ -168,7 +214,12 @@ abstract class BaseAdapter<T>(
 		return BaseDecorAdapter(this, pluralStr)
 	}
 
-	abstract override fun getItemViewType(position: Int): Int
+	override fun getItemViewType(position: Int): Int {
+		return when (layoutType) {
+			LayoutType.GRID -> R.layout.adapter_grid_card
+			LayoutType.LIST, null -> R.layout.adapter_list_card_larger
+		}
+	}
 
 	final override fun onBindViewHolder(
 		holder: ViewHolder,
@@ -190,10 +241,10 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	abstract fun toId(item: T): String
-	abstract fun titleOf(item: T): String
-	abstract fun subTitleOf(item: T): String
-	abstract fun coverOf(item: T): Uri?
+	protected abstract fun toId(item: T): String
+	protected abstract fun titleOf(item: T): String
+	protected abstract fun subTitleOf(item: T): String
+	protected abstract fun coverOf(item: T): Uri?
 	protected abstract fun onClick(item: T)
 	protected abstract fun onMenu(item: T, popupMenu: PopupMenu)
 	protected open fun isPinned(item: T): Boolean {
@@ -223,27 +274,31 @@ abstract class BaseAdapter<T>(
 		return rawList.indexOf(item)
 	}
 
-	open class BasePopupTextProvider<T>(private val adapter: BaseAdapter<T>) : PopupTextProvider {
-		final override fun getPopupText(position: Int): CharSequence {
-			return (if (position != 0)
-				getHintFor(adapter.list[position])
-			else null) ?: "-"
-		}
-
-		open fun getHintFor(item: T): String? {
-			return adapter.sorter.getFastScrollHintFor(item, adapter.sortType)
-		}
+	final override fun getPopupText(position: Int): CharSequence {
+		// position here refers to pos in ConcatAdapter(!)
+		return (if (position != 0)
+			sorter.getFastScrollHintFor(list[position - 1], sortType)
+		else null) ?: "-"
 	}
 
+	enum class LayoutType {
+		LIST, GRID
+	}
+}
+
+abstract class BaseInterface<T : RecyclerView.ViewHolder>
+	: RecyclerView.Adapter<T>(), PopupTextProvider {
+	abstract val concatAdapter: ConcatAdapter
 }
 
 abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
-                                                     rawList: MutableLiveData<MutableList<T>>,
+                                                     rawList: MutableLiveData<MutableList<T>>?,
 		                                             sorter: Sorter<T>,
                                                      initialSortType: Sorter.Type
                                                      = Sorter.Type.ByTitleAscending,
-                                                     pluralStr: Int = R.plurals.items
-) : BaseAdapter<T>(context, rawList, sorter, initialSortType, pluralStr) {
+                                                     pluralStr: Int = R.plurals.items,
+                                                     layoutType: LayoutType = LayoutType.LIST
+) : BaseAdapter<T>(context, rawList, sorter, initialSortType, pluralStr, true, layoutType) {
 	override fun toId(item: T): String {
 		return item.id.toString()
 	}
@@ -509,7 +564,8 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 	final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 		holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
 		val supportedTypes = adapter.sortTypes /* supported types always contain "None" */
-		holder.sortButton.visibility = if (supportedTypes.size > 1) View.VISIBLE else View.GONE
+		holder.sortButton.visibility =
+			if (supportedTypes.size > 1 || adapter.ownsView) View.VISIBLE else View.GONE
 		holder.sortButton.setOnClickListener { view ->
 			val popupMenu = PopupMenu(context, view)
 			popupMenu.inflate(R.menu.sort_menu)
@@ -520,21 +576,52 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 				Pair(R.id.album, Sorter.Type.ByAlbumTitleAscending),
 				Pair(R.id.size, Sorter.Type.BySizeDescending)
 			)
+			val layoutMap = mapOf(
+				Pair(R.id.list, BaseAdapter.LayoutType.LIST),
+				Pair(R.id.grid, BaseAdapter.LayoutType.GRID)
+			)
 			buttonMap.forEach {
 				popupMenu.menu.findItem(it.key).isVisible = supportedTypes.contains(it.value)
 			}
-			when (adapter.sortType) {
-				in buttonMap.values -> {
-					popupMenu.menu.findItem(buttonMap.entries
-						.first { it.value == adapter.sortType }.key).isChecked = true
+			layoutMap.forEach {
+				popupMenu.menu.findItem(it.key).isVisible = adapter.ownsView
+			}
+			popupMenu.menu.findItem(R.id.display).isVisible = adapter.ownsView
+			if (supportedTypes.size > 1) {
+				when (adapter.sortType) {
+					in buttonMap.values -> {
+						popupMenu.menu.findItem(buttonMap.entries
+							.first { it.value == adapter.sortType }.key
+						).isChecked = true
+					}
+
+					else -> throw IllegalStateException("Invalid sortType ${adapter.sortType.name}")
 				}
-				else -> throw IllegalStateException("Invalid sortType ${adapter.sortType.name}")
+			}
+			if (adapter.ownsView) {
+				when (adapter.layoutType) {
+					in layoutMap.values -> {
+						popupMenu.menu.findItem(layoutMap.entries
+							.first { it.value == adapter.layoutType }.key
+						).isChecked = true
+					}
+
+					else -> throw IllegalStateException("Invalid layoutType ${adapter.layoutType?.name}")
+				}
 			}
 			popupMenu.setOnMenuItemClickListener { menuItem ->
 				when (menuItem.itemId) {
 					in buttonMap.keys -> {
 						if (!menuItem.isChecked) {
 							adapter.sort(buttonMap[menuItem.itemId]!!)
+							menuItem.isChecked = true
+						}
+						true
+					}
+
+					in layoutMap.keys -> {
+						if (!menuItem.isChecked) {
+							adapter.layoutType = layoutMap[menuItem.itemId]!!
 							menuItem.isChecked = true
 						}
 						true
