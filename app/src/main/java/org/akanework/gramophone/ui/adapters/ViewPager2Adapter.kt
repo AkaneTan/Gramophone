@@ -50,7 +50,7 @@ class ViewPager2Adapter(
                 ArtistAdapter(m, v.artistItemList, v.albumArtistItemList)
             }
             R.id.genres -> AdapterFragment { m, v -> GenreAdapter(m, v.genreItemList) }
-            R.id.dates -> AdapterFragment { m, v -> GenreAdapter(m, v.genreItemList) }
+            R.id.dates -> AdapterFragment { m, v -> DateAdapter(m, v.dateItemList) }
             R.id.folders -> AdapterFragment { m, v -> FolderAdapter(m, v.folderStructure) }
             R.id.playlists -> AdapterFragment { m, v -> PlaylistAdapter(m, v.playlistList) }
             else -> throw IllegalArgumentException("Invalid position: $position")
