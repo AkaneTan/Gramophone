@@ -2,16 +2,19 @@ package org.akanework.gramophone.ui.components
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
@@ -35,7 +38,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.slider.Slider
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
@@ -60,7 +63,7 @@ class PlayerBottomSheet private constructor(
 
 	private var sessionToken: SessionToken? = null
 	private var controllerFuture: ListenableFuture<MediaController>? = null
-	private val touchListener: Slider.OnSliderTouchListener
+	private val touchListener: SeekBar.OnSeekBarChangeListener
 	private val bottomSheetPreviewCover: ImageView
 	private val bottomSheetPreviewTitle: TextView
 	private val bottomSheetPreviewSubtitle: TextView
@@ -80,11 +83,12 @@ class PlayerBottomSheet private constructor(
 	private val bottomSheetPlaylistButton: MaterialButton
 	private val bottomSheetLyricButton: MaterialButton
 	private val bottomSheetTimerButton: MaterialButton
-	private val bottomSheetFullSlider: Slider
+	private val bottomSheetFullSlider: SeekBar
 	private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
 	private var bottomSheetBackCallback: OnBackPressedCallback? = null
 	private val fullPlayer: ConstraintLayout
 	private val previewPlayer: RelativeLayout
+	private val progressDrawable: SquigglyProgress
 
 	private val activity
 		get() = context as MainActivity
@@ -156,21 +160,71 @@ class PlayerBottomSheet private constructor(
 			return@setOnApplyWindowInsetsListener insets
 		}
 
-		touchListener = object : Slider.OnSliderTouchListener {
-			override fun onStartTrackingTouch(slider: Slider) {
-				isUserTracking = true
+		val seekBarProgressWavelength =
+			getContext().resources
+				.getDimensionPixelSize(R.dimen.media_seekbar_progress_wavelength)
+				.toFloat()
+		val seekBarProgressAmplitude =
+			getContext().resources
+				.getDimensionPixelSize(R.dimen.media_seekbar_progress_amplitude)
+				.toFloat()
+		val seekBarProgressPhase =
+			getContext().resources
+				.getDimensionPixelSize(R.dimen.media_seekbar_progress_phase)
+				.toFloat()
+		val seekBarProgressStrokeWidth =
+			getContext().resources
+				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
+				.toFloat()
+
+		progressDrawable = bottomSheetFullSlider.progressDrawable as SquigglyProgress
+		progressDrawable.let {
+			it.waveLength = seekBarProgressWavelength
+			it.lineAmplitude = seekBarProgressAmplitude
+			it.phaseSpeed = seekBarProgressPhase
+			it.strokeWidth = seekBarProgressStrokeWidth
+			it.transitionEnabled = true
+			it.animate = false
+			it.setTint(
+				MaterialColors.getColor(
+					bottomSheetFullSlider,
+					com.google.android.material.R.attr.colorPrimary,
+				)
+			)
+		}
+
+		touchListener = object : SeekBar.OnSeekBarChangeListener {
+			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+				if (fromUser) {
+					val dest =
+						instance.currentMediaItem?.mediaId?.let {
+							libraryViewModel.durationItemList.value?.get(it.toLong())
+						}
+					if (dest != null) {
+						bottomSheetFullPosition.text =
+							GramophoneUtils.convertDurationToTimeStamp((progress.toLong()))
+					}
+				}
 			}
 
-			override fun onStopTrackingTouch(slider: Slider) {
+			override fun onStartTrackingTouch(seekBar: SeekBar?) {
+				isUserTracking = true
+				progressDrawable.animate = false
+			}
+
+			override fun onStopTrackingTouch(seekBar: SeekBar?) {
 				// This value is multiplied by 1000 is because
 				// when the number is too big (like when toValue
 				// used the duration directly) we might encounter
 				// some performance problem.
 				val mediaId = instance.currentMediaItem?.mediaId
 				if (mediaId != null) {
-					instance.seekTo((slider.value * libraryViewModel.durationItemList.value!![mediaId.toLong()]!!).toLong())
+					if (seekBar != null) {
+						instance.seekTo((seekBar.progress.toLong()))
+					}
 				}
 				isUserTracking = false
+				progressDrawable.animate = instance.isPlaying || instance.playWhenReady
 			}
 		}
 
@@ -239,20 +293,7 @@ class PlayerBottomSheet private constructor(
 			instance.shuffleModeEnabled = isChecked
 		}
 
-		bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
-			if (isUser) {
-				val dest =
-					instance.currentMediaItem?.mediaId?.let {
-						libraryViewModel.durationItemList.value?.get(it.toLong())
-					}
-				if (dest != null) {
-					bottomSheetFullPosition.text =
-						GramophoneUtils.convertDurationToTimeStamp((value * dest).toLong())
-				}
-			}
-		}
-
-		bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
+		bottomSheetFullSlider.setOnSeekBarChangeListener(touchListener)
 
 		bottomSheetFullSlideUpButton.setOnClickListener {
 			standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -321,8 +362,8 @@ class PlayerBottomSheet private constructor(
 						instance.currentMediaItem?.mediaId?.toLong(),
 					)
 				if (duration != null && !isUserTracking) {
-					bottomSheetFullSlider.value =
-						(instance.currentPosition.toFloat() / duration.toFloat()).coerceAtMost(1f)
+					bottomSheetFullSlider.max = duration.toInt()
+					bottomSheetFullSlider.progress = instance.currentPosition.toInt()
 					bottomSheetFullPosition.text = position
 				}
 			}
@@ -418,8 +459,8 @@ class PlayerBottomSheet private constructor(
 				instance.currentMediaItem?.mediaId?.toLong(),
 			)
 		if (duration != null && !isUserTracking) {
-			bottomSheetFullSlider.value =
-				(instance.currentPosition.toFloat() / duration.toFloat()).coerceAtMost(1f)
+			bottomSheetFullSlider.max = duration.toInt()
+			bottomSheetFullSlider.progress = instance.currentPosition.toInt()
 			bottomSheetFullPosition.text = position
 		}
 	}
@@ -479,8 +520,11 @@ class PlayerBottomSheet private constructor(
 
 	override fun onStop(owner: LifecycleOwner) {
 		super.onStop(owner)
-		instance.removeListener(this)
-		instance.release()
+		if (controllerFuture?.isDone == true) {
+			instance.removeListener(this)
+			instance.release()
+		}
+		controllerFuture?.cancel(true)
 	}
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
@@ -511,21 +555,53 @@ class PlayerBottomSheet private constructor(
 
 	override fun onIsPlayingChanged(isPlaying: Boolean) {
 		if (isPlaying) {
-			bottomSheetPreviewControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.pause_art)
-			bottomSheetFullControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.pause_art)
-		} else if (instance.playbackState != Player.STATE_BUFFERING) {
-			bottomSheetPreviewControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.play_art)
-			bottomSheetFullControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.play_art)
-		}
-		if (isPlaying) {
+			if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 1) {
+				bottomSheetPreviewControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.play_anim)
+				bottomSheetFullControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.play_anim)
+				bottomSheetFullControllerButton.background =
+					AppCompatResources.getDrawable(context, R.drawable.ic_media_play_container)
+				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
+				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
+			}
+			if (!isUserTracking) {
+				progressDrawable.animate = true
+			}
 			if (!runnableRunning) {
 				handler.postDelayed(positionRunnable, instance.currentPosition % 1000)
 				runnableRunning = true
 			}
+		} else if (instance.playbackState != Player.STATE_BUFFERING) {
+			if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 2) {
+				bottomSheetPreviewControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+				bottomSheetFullControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+				bottomSheetFullControllerButton.background =
+					AppCompatResources.getDrawable(context, R.drawable.ic_media_pause_container)
+				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
+				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
+			}
+			if (!isUserTracking) {
+				progressDrawable.animate = false
+			}
+		}
+	}
+
+	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+		android.util.Log.e("hi","$keyCode")
+		if (controllerFuture?.isDone != true || controllerFuture?.isCancelled != false)
+			return super.onKeyDown(keyCode, event)
+		return when (keyCode) {
+			KeyEvent.KEYCODE_SPACE -> { instance.playOrPause(); true }
+			KeyEvent.KEYCODE_DPAD_LEFT -> { instance.seekToPreviousMediaItem(); true }
+			KeyEvent.KEYCODE_DPAD_RIGHT -> { instance.seekToNextMediaItem(); true }
+			else -> super.onKeyDown(keyCode, event)
 		}
 	}
 

@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.MediaItem
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -22,28 +23,35 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
  */
 class SongAdapter(
     private val mainActivity: MainActivity,
-    songList: MutableList<MediaItem>,
+    songList: MutableLiveData<MutableList<MediaItem>>?,
     canSort: Boolean,
-    helper: Sorter.NaturalOrderHelper<MediaItem>? = null
-) : BaseAdapter<MediaItem>(mainActivity, songList,
-    if (canSort) Sorter.from(helper) else Sorter.noneSorter(),
-    if (canSort)
+    helper: Sorter.NaturalOrderHelper<MediaItem>?,
+    ownsView: Boolean
+) : BaseAdapter<MediaItem>
+    (mainActivity,
+    liveData = songList,
+    sortHelper = MediaItemHelper(),
+    naturalOrderHelper = if (canSort) helper else null,
+    initialSortType = if (canSort)
             (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
-    else Sorter.Type.None) {
+    else Sorter.Type.None,
+    pluralStr = R.plurals.songs,
+    ownsView = ownsView,
+    defaultLayoutType = LayoutType.LIST) {
 
-    override val layout = R.layout.adapter_list_card
+    constructor(mainActivity: MainActivity,
+                    songList: MutableList<MediaItem>,
+                    canSort: Boolean,
+                    helper: Sorter.NaturalOrderHelper<MediaItem>?,
+                    ownsView: Boolean)
+            : this(mainActivity, null, canSort, helper, ownsView) {
+                updateList(songList, now = true, false)
+            }
+
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
-    override fun titleOf(item: MediaItem): String {
-        return item.mediaMetadata.title.toString()
-    }
-
-    override fun subTitleOf(item: MediaItem): String {
-        return item.mediaMetadata.artist?.toString() ?: context.getString(R.string.unknown_artist)
-    }
-
-    override fun coverOf(item: MediaItem): Uri? {
-        return item.mediaMetadata.artworkUri
+    override fun virtualTitleOf(item: MediaItem): String {
+        return "null"
     }
 
     override fun onClick(item: MediaItem) {
@@ -79,25 +87,15 @@ class SongAdapter(
                             }
                         if (positionAlbum != null) {
                             withContext(Dispatchers.Main) {
-                                mainActivity
-                                    .supportFragmentManager
-                                    .beginTransaction()
-                                    .addToBackStack("SUBFRAG")
-                                    .hide(mainActivity.supportFragmentManager.fragments[0])
-                                    .add(
-                                        R.id.container,
-                                        GeneralSubFragment().apply {
-                                            arguments =
-                                                Bundle().apply {
-                                                    putInt("Position", positionAlbum)
-                                                    putInt("Item", 1)
-                                                    putString(
-                                                        "Title",
-                                                        titleOf(item),
-                                                    )
-                                                }
-                                        },
-                                    ).commit()
+                                mainActivity.startFragment(
+                                    GeneralSubFragment().apply {
+                                        arguments =
+                                            Bundle().apply {
+                                                putInt("Position", positionAlbum)
+                                                putInt("Item", R.id.album)
+                                            }
+                                    },
+                                )
                             }
                         }
                     }
@@ -115,25 +113,15 @@ class SongAdapter(
                             }
                         if (positionArtist != null) {
                             withContext(Dispatchers.Main) {
-                                mainActivity
-                                    .supportFragmentManager
-                                    .beginTransaction()
-                                    .addToBackStack("SUBFRAG")
-                                    .hide(mainActivity.supportFragmentManager.fragments[0])
-                                    .add(
-                                        R.id.container,
-                                        GeneralSubFragment().apply {
-                                            arguments =
-                                                Bundle().apply {
-                                                    putInt("Position", positionArtist)
-                                                    putInt("Item", 2)
-                                                    putString(
-                                                        "Title",
-                                                        titleOf(item),
-                                                    )
-                                                }
-                                        },
-                                    ).commit()
+                                mainActivity.startFragment(
+                                    GeneralSubFragment().apply {
+                                        arguments =
+                                            Bundle().apply {
+                                                putInt("Position", positionArtist)
+                                                putInt("Item", R.id.artist)
+                                            }
+                                    },
+                                )
                             }
                         }
                     }
@@ -186,7 +174,41 @@ class SongAdapter(
         }
     }
 
-    override fun toId(item: MediaItem): String {
-        return item.mediaId
+    override fun getItemViewType(position: Int): Int {
+        return when (layoutType) {
+            LayoutType.GRID -> R.layout.adapter_grid_card
+            LayoutType.LIST, null -> R.layout.adapter_list_card
+        }
+    }
+
+    class MediaItemHelper(types: Set<Sorter.Type> = setOf(
+        Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
+        Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
+        Sorter.Type.ByAlbumTitleDescending, Sorter.Type.ByAlbumTitleAscending,
+        Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending))
+        : Sorter.Helper<MediaItem>(types) {
+        override fun getId(item: MediaItem): String {
+            return item.mediaId
+        }
+
+        override fun getTitle(item: MediaItem): String {
+            return item.mediaMetadata.title.toString()
+        }
+
+        override fun getArtist(item: MediaItem): String? {
+            return item.mediaMetadata.artist?.toString()
+        }
+
+        override fun getAlbumTitle(item: MediaItem): String {
+            return item.mediaMetadata.albumTitle?.toString() ?: ""
+        }
+
+        override fun getAlbumArtist(item: MediaItem): String {
+            return item.mediaMetadata.albumArtist?.toString() ?: ""
+        }
+
+        override fun getCover(item: MediaItem): Uri? {
+            return item.mediaMetadata.artworkUri
+        }
     }
 }

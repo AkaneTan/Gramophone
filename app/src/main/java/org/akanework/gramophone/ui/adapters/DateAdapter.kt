@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -12,33 +13,33 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class DateAdapter(
     private val mainActivity: MainActivity,
-    dateList: MutableList<MediaStoreUtils.Date>,
-) : ItemAdapter<MediaStoreUtils.Date>
-    (mainActivity, dateList, Sorter.from()) {
+    dateList: MutableLiveData<MutableList<MediaStoreUtils.Date>>,
+) : BaseAdapter<MediaStoreUtils.Date>
+    (mainActivity,
+    liveData = dateList,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.items,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
-    override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_date
 
-    override fun titleOf(item: MediaStoreUtils.Date): String {
-        return item.title ?: context.getString(R.string.unknown_year)
+    override fun virtualTitleOf(item: MediaStoreUtils.Date): String {
+        return context.getString(R.string.unknown_year)
     }
 
     override fun onClick(item: MediaStoreUtils.Date) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 4)
-                            putString("Title", titleOf(item))
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", R.id.year)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Date, popupMenu: PopupMenu) {
@@ -67,10 +68,6 @@ class DateAdapter(
                 else -> false
             }
         }
-    }
-
-    override fun isPinned(item: MediaStoreUtils.Date): Boolean {
-        return item.title == null
     }
 
 }

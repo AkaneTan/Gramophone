@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -9,36 +10,31 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 class AlbumAdapter(
     private val mainActivity: MainActivity,
-    albumList: MutableList<MediaStoreUtils.Album>,
-) : ItemAdapter<MediaStoreUtils.Album>
-    (mainActivity, albumList, Sorter.from()) {
+    albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>,
+) : BaseAdapter<MediaStoreUtils.Album>
+    (mainActivity,
+    liveData = albumList,
+    sortHelper = StoreAlbumHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.albums,
+    ownsView = true,
+    defaultLayoutType = LayoutType.GRID) {
 
-    override val layout = R.layout.adapter_grid_card
-
-    override fun titleOf(item: MediaStoreUtils.Album): String {
-        return item.title ?: context.getString(R.string.unknown_album)
-    }
-
-    override fun subTitleOf(item: MediaStoreUtils.Album): String {
-        return item.artist ?: context.getString(R.string.unknown_artist)
+    override fun virtualTitleOf(item: MediaStoreUtils.Album): String {
+        return context.getString(R.string.unknown_album)
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 1)
-                            putString("Title", item.title)
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", R.id.album)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Album, popupMenu: PopupMenu) {
@@ -68,7 +64,15 @@ class AlbumAdapter(
         }
     }
 
-    override fun isPinned(item: MediaStoreUtils.Album): Boolean {
-        return item.title == null
+    class StoreAlbumHelper : StoreItemHelper<MediaStoreUtils.Album>(
+        setOf(
+            Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
+            Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
+            Sorter.Type.BySizeDescending, Sorter.Type.BySizeAscending
+        )
+    ) {
+        override fun getArtist(item: MediaStoreUtils.Album): String? {
+            return item.artist
+        }
     }
 }

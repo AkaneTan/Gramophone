@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
+import org.akanework.gramophone.MainActivity
 
 abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
 
@@ -22,5 +23,14 @@ abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
 		super.onViewCreated(view, savedInstanceState)
 		val colorBackground = MaterialColors.getColor(view, android.R.attr.colorBackground)
 		view.setBackgroundColor(colorBackground)
+	}
+
+	final override fun onHiddenChanged(hidden: Boolean) {
+		super.onHiddenChanged(hidden)
+		if (hidden) return
+		// see registerFragmentLifecycleCallbacks in MainActivity
+		if (wantsPlayer != null) {
+			(requireActivity() as MainActivity).getPlayerSheet().visible = wantsPlayer
+		}
 	}
 }

@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -12,36 +13,34 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class PlaylistAdapter(
     private val mainActivity: MainActivity,
-    playlistList: MutableList<MediaStoreUtils.Playlist>,
-) : ItemAdapter<MediaStoreUtils.Playlist>
-    (mainActivity, playlistList, Sorter.from()) {
+    playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
+) : BaseAdapter<MediaStoreUtils.Playlist>
+    (mainActivity,
+    liveData = playlistList,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.items,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
-    override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_playlist
 
-    override fun titleOf(item: MediaStoreUtils.Playlist): String {
-        if (item is MediaStoreUtils.RecentlyAdded) {
-            return context.getString(R.string.recently_added)
-        }
-        return item.title ?: context.getString(R.string.unknown_playlist)
+    override fun virtualTitleOf(item: MediaStoreUtils.Playlist): String {
+        return context.getString(if (item is MediaStoreUtils.RecentlyAdded)
+            R.string.recently_added else R.string.unknown_playlist)
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 6)
-                            putString("Title", titleOf(item))
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", R.id.playlist)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Playlist, popupMenu: PopupMenu) {
@@ -60,10 +59,6 @@ class PlaylistAdapter(
                 else -> false
             }
         }
-    }
-
-    override fun isPinned(item: MediaStoreUtils.Playlist): Boolean {
-        return item.virtual
     }
 
 }

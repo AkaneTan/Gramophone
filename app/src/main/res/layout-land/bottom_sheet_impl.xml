@@ -105,7 +105,7 @@
 			android:id="@+id/player_content"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
-			android:background="?attr/colorSurface"
+			android:background="?attr/colorSurfaceContainerLowest"
 			android:elevation="0dp"
 			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			app:layout_constraintEnd_toEndOf="parent"
@@ -197,21 +197,21 @@
 
 				</LinearLayout>
 
-				<com.google.android.material.slider.Slider
+				<SeekBar
 					android:id="@+id/slider"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="5dp"
 					android:layout_marginBottom="0.5dp"
-					android:value="0"
+					android:thumbTint="?attr/colorPrimary"
+					android:progress="0"
+					style="@style/MediaPlayer.ProgressBar"
 					app:labelBehavior="gone"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@id/textLayout"
-					app:thumbElevation="0dp"
-					app:thumbRadius="8dp"
-					tools:value="0.5" />
+					tools:progress="20"/>
 
 				<FrameLayout
 					android:id="@+id/duration_frame"

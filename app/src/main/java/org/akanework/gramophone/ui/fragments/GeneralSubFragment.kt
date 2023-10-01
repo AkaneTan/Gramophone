@@ -7,14 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -31,88 +29,68 @@ class GeneralSubFragment : BaseFragment(true) {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val bundle = requireArguments()
-        val title = bundle.getString("Title")
-        val item = bundle.getInt("Item")
+        var title: String? = null
+        val itemType = bundle.getInt("Item")
         val position = bundle.getInt("Position")
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         lateinit var itemList: MutableList<MediaItem>
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
-        when (item) {
-            1 -> {
-                // Albums
-                itemList =
-                    libraryViewModel
-                        .albumItemList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+        when (itemType) {
+            R.id.album -> {
+                val item = libraryViewModel.albumItemList.value!![position]
+                title = item.title ?: requireContext().getString(R.string.unknown_album)
+                itemList = item.songList.toMutableList()
                 helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! }
             }
 
-            2 -> {
-                // Artists
-                itemList =
-                    libraryViewModel
-                        .artistItemList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+            R.id.artist -> {
+                val item = libraryViewModel.artistItemList.value!![position]
+                title = item.title ?: requireContext().getString(R.string.unknown_artist)
+                itemList = item.songList.toMutableList()
             }
 
-            3 -> {
+            R.id.genre -> {
                 // Genres
-                itemList =
-                    libraryViewModel
-                        .genreItemList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+                val item = libraryViewModel.genreItemList.value!![position]
+                title = item.title ?: requireContext().getString(R.string.unknown_genre)
+                itemList = item.songList.toMutableList()
             }
 
-            4 -> {
+            R.id.year -> {
                 // Dates
-                itemList =
-                    libraryViewModel
-                        .dateItemList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+                val item = libraryViewModel.dateItemList.value!![position]
+                title = item.title ?: requireContext().getString(R.string.unknown_year)
+                itemList = item.songList.toMutableList()
             }
 
-            5 -> {
+            R.id.album_artist -> {
                 // Album artists
-                itemList =
-                    libraryViewModel
-                        .albumArtistItemList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+                val item = libraryViewModel.albumArtistItemList.value!![position]
+                title = item.title ?: requireContext().getString(R.string.unknown_artist)
+                itemList = item.songList.toMutableList()
             }
 
-            6 -> {
+            R.id.playlist -> {
                 // Playlists
-                itemList =
-                    libraryViewModel
-                        .playlistList
-                        .value!![position]
-                        .songList
-                        .toMutableList()
+                val item = libraryViewModel.playlistList.value!![position]
+                title = if (item is MediaStoreUtils.RecentlyAdded) {
+                    requireContext().getString(R.string.recently_added)
+                } else {
+                    item.title ?: requireContext().getString(R.string.unknown_playlist)
+                }
+                itemList = item.songList.toMutableList()
                 helper = Sorter.NaturalOrderHelper { itemList.indexOf(it) }
             }
         }
 
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper)
-        val songDecorAdapter =
-            BaseDecorAdapter(
-                songAdapter,
-                R.plurals.songs
-            )
-        val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = concatAdapter
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true)
+        recyclerView.adapter = songAdapter.concatAdapter
 
-        FastScrollerBuilder(recyclerView).build()
+        FastScrollerBuilder(recyclerView).apply {
+            setPopupTextProvider(songAdapter)
+            build()
+        }
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

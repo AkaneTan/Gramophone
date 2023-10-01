@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -12,33 +13,33 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class GenreAdapter(
     private val mainActivity: MainActivity,
-    genreList: MutableList<MediaStoreUtils.Genre>,
-) : ItemAdapter<MediaStoreUtils.Genre>
-    (mainActivity, genreList, Sorter.from()) {
+    genreList: MutableLiveData<MutableList<MediaStoreUtils.Genre>>,
+) : BaseAdapter<MediaStoreUtils.Genre>
+    (mainActivity,
+    liveData = genreList,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.items,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
-    override val layout = R.layout.adapter_list_card_larger
     override val defaultCover = R.drawable.ic_default_cover_genre
 
-    override fun titleOf(item: MediaStoreUtils.Genre): String {
-        return item.title ?: context.getString(R.string.unknown_genre)
+    override fun virtualTitleOf(item: MediaStoreUtils.Genre): String {
+        return context.getString(R.string.unknown_genre)
     }
 
     override fun onClick(item: MediaStoreUtils.Genre) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 3)
-                            putString("Title", titleOf(item))
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", R.id.genre)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Genre, popupMenu: PopupMenu) {
@@ -67,9 +68,5 @@ class GenreAdapter(
             }
 
         }
-    }
-
-    override fun isPinned(item: MediaStoreUtils.Genre): Boolean {
-        return item.title == null
     }
 }

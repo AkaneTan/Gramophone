@@ -71,6 +71,8 @@ class MainActivity : AppCompatActivity() {
             FragmentLifecycleCallbacks() {
             override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
                 super.onFragmentStarted(fm, f)
+                // this won't be called in case we show()/hide() so
+                // we handle that case in BaseFragment
                 if (f is BaseFragment && f.wantsPlayer != null) {
                     getPlayerSheet().visible = f.wantsPlayer
                 }
@@ -173,25 +175,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.settings -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .addToBackStack("SETTINGS")
-                        .replace(R.id.container, SettingsFragment())
-                        .commit()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        drawerLayout.close()
-                    }, 50)
+                    startFragment(SettingsFragment())
                 }
 
                 R.id.search -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .addToBackStack("SEARCH")
-                        .replace(R.id.container, SearchFragment())
-                        .commit()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        drawerLayout.close()
-                    }, 50)
+                    startFragment(SearchFragment())
                 }
 
                 R.id.shuffle -> {
@@ -245,6 +233,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPlayerSheet() = findViewById<PlayerBottomSheet>(R.id.player_layout)
+    fun startFragment(frag: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(System.currentTimeMillis().toString())
+            .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
+            .add(R.id.container, frag)
+            .commit()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            drawerLayout.close()
+        }, 50)
+    }
+
+    fun getPlayerSheet(): PlayerBottomSheet = findViewById(R.id.player_layout)
     fun getPlayer() = getPlayerSheet().getPlayer()
 }

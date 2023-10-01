@@ -9,7 +9,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -21,10 +20,7 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.closeKeyboard
-import org.akanework.gramophone.logic.utils.dp
 import org.akanework.gramophone.logic.utils.showSoftKeyboard
-import org.akanework.gramophone.ui.adapters.BaseAdapter
-import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -41,28 +37,21 @@ class SearchFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false)
-        val songDecorAdapter =
-            BaseDecorAdapter(
-                songAdapter,
-                R.plurals.songs
-            )
-        val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false, null, false)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = concatAdapter
+        recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {
-            setPadding(0, 0, 0, (66).dp)
-            setPopupTextProvider(BaseAdapter.BasePopupTextProvider(songAdapter))
+            setPopupTextProvider(songAdapter)
             build()
         }
 
         editText.addTextChangedListener { text ->
+            // TODO sort results by match quality?
             if (text.isNullOrBlank()) {
-                songAdapter.updateList(mutableListOf())
-                songDecorAdapter.updateSongCounter(0)
+                songAdapter.updateList(mutableListOf(), now = false, true)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     filteredList.clear()
@@ -79,12 +68,7 @@ class SearchFragment : BaseFragment(false) {
                         )
                     }
                     withContext(Dispatchers.Main) {
-                        if (filteredList.isNotEmpty()) {
-                            songDecorAdapter.updateSongCounter(filteredList.size)
-                        } else {
-                            songDecorAdapter.updateSongCounter(0)
-                        }
-                        songAdapter.updateList(filteredList.toMutableList())
+                        songAdapter.updateList(filteredList.toMutableList(), now = false, true)
                     }
                 }
             }
