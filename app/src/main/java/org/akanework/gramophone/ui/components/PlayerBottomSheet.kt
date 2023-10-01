@@ -229,13 +229,9 @@ class PlayerBottomSheet private constructor(
 					}
 				}
 				isUserTracking = false
-				if (instance.isPlaying) {
-					progressDrawable.animate = true
-				}
+				progressDrawable.animate = instance.isPlaying || instance.playWhenReady
 			}
 		}
-
-
 
 		setOnClickListener {
 			if (standardBottomSheetBehavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -564,29 +560,40 @@ class PlayerBottomSheet private constructor(
 
 	override fun onIsPlayingChanged(isPlaying: Boolean) {
 		if (isPlaying) {
-			bottomSheetPreviewControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.play_anim)
-			bottomSheetFullControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.play_anim)
-			bottomSheetFullControllerButton.background =
-				AppCompatResources.getDrawable(context, R.drawable.ic_media_play_container)
-			progressDrawable.animate = true
-		} else if (instance.playbackState != Player.STATE_BUFFERING) {
-			bottomSheetPreviewControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-			bottomSheetFullControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-			bottomSheetFullControllerButton.background =
-				AppCompatResources.getDrawable(context, R.drawable.ic_media_pause_container)
-			progressDrawable.animate = false
-		}
-		(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
-		(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
-		(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
-		if (isPlaying) {
+			if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 1) {
+				bottomSheetPreviewControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.play_anim)
+				bottomSheetFullControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.play_anim)
+				bottomSheetFullControllerButton.background =
+					AppCompatResources.getDrawable(context, R.drawable.ic_media_play_container)
+				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
+				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
+			}
+			if (!isUserTracking) {
+				progressDrawable.animate = true
+			}
 			if (!runnableRunning) {
 				handler.postDelayed(positionRunnable, instance.currentPosition % 1000)
 				runnableRunning = true
+			}
+		} else if (instance.playbackState != Player.STATE_BUFFERING) {
+			if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 2) {
+				bottomSheetPreviewControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+				bottomSheetFullControllerButton.icon =
+					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+				bottomSheetFullControllerButton.background =
+					AppCompatResources.getDrawable(context, R.drawable.ic_media_pause_container)
+				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
+				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
+			}
+			if (!isUserTracking) {
+				progressDrawable.animate = false
 			}
 		}
 	}
