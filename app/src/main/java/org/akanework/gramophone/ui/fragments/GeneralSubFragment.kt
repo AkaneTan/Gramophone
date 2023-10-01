@@ -7,15 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -40,42 +37,41 @@ class GeneralSubFragment : BaseFragment(true) {
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
         when (itemType) {
-            1 -> {
-                // Albums
+            R.id.album -> {
                 val item = libraryViewModel.albumItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_album)
                 itemList = item.songList.toMutableList()
                 helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! }
             }
 
-            2 -> {
+            R.id.artist -> {
                 val item = libraryViewModel.artistItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_artist)
                 itemList = item.songList.toMutableList()
             }
 
-            3 -> {
+            R.id.genre -> {
                 // Genres
                 val item = libraryViewModel.genreItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_genre)
                 itemList = item.songList.toMutableList()
             }
 
-            4 -> {
+            R.id.year -> {
                 // Dates
                 val item = libraryViewModel.dateItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_year)
                 itemList = item.songList.toMutableList()
             }
 
-            5 -> {
+            R.id.album_artist -> {
                 // Album artists
                 val item = libraryViewModel.albumArtistItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_artist)
                 itemList = item.songList.toMutableList()
             }
 
-            6 -> {
+            R.id.playlist -> {
                 // Playlists
                 val item = libraryViewModel.playlistList.value!![position]
                 title = if (item is MediaStoreUtils.RecentlyAdded) {

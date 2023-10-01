@@ -9,7 +9,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -21,10 +20,7 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.closeKeyboard
-import org.akanework.gramophone.logic.utils.dp
 import org.akanework.gramophone.logic.utils.showSoftKeyboard
-import org.akanework.gramophone.ui.adapters.BaseAdapter
-import org.akanework.gramophone.ui.adapters.BaseDecorAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 

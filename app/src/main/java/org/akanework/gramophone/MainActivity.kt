@@ -71,6 +71,8 @@ class MainActivity : AppCompatActivity() {
             FragmentLifecycleCallbacks() {
             override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
                 super.onFragmentStarted(fm, f)
+                // this won't be called in case we show()/hide() so
+                // we handle that case in BaseFragment
                 if (f is BaseFragment && f.wantsPlayer != null) {
                     getPlayerSheet().visible = f.wantsPlayer
                 }
@@ -244,6 +246,6 @@ class MainActivity : AppCompatActivity() {
         }, 50)
     }
 
-    private fun getPlayerSheet() = findViewById<PlayerBottomSheet>(R.id.player_layout)
+    fun getPlayerSheet(): PlayerBottomSheet = findViewById(R.id.player_layout)
     fun getPlayer() = getPlayerSheet().getPlayer()
 }

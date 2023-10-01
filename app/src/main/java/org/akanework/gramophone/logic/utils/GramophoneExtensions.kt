@@ -2,19 +2,12 @@ package org.akanework.gramophone.logic.utils
 
 import android.app.Activity
 import android.content.Context
-import android.content.res.Resources
 import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
-import kotlin.reflect.KClass
 
-/**
- * This file contains some extension methods that made
- * For Gramophone.
- */
-val Int.dp: Int get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 fun MediaController.playOrPause() {
 	if (isPlaying) {
 		pause()
@@ -39,8 +32,4 @@ fun View.showSoftKeyboard() {
 		val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 		imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
 	}
-}
-
-fun KClass<*>.isSupertypeOrEquals(other: KClass<*>): Boolean {
-	return equals(other) || java.interfaces.any { it == other.java }
 }

@@ -15,12 +15,12 @@ class GenreAdapter(
     private val mainActivity: MainActivity,
     genreList: MutableLiveData<MutableList<MediaStoreUtils.Genre>>,
 ) : ItemAdapter<MediaStoreUtils.Genre>
-    (mainActivity, genreList, Sorter.from()) {
+    (mainActivity, genreList, Sorter.StoreItemHelper()) {
 
     override val defaultCover = R.drawable.ic_default_cover_genre
 
-    override fun titleOf(item: MediaStoreUtils.Genre): String {
-        return item.title ?: context.getString(R.string.unknown_genre)
+    override fun virtualTitleOf(item: MediaStoreUtils.Genre): String {
+        return context.getString(R.string.unknown_genre)
     }
 
     override fun onClick(item: MediaStoreUtils.Genre) {
@@ -29,7 +29,7 @@ class GenreAdapter(
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
-                        putInt("Item", 3)
+                        putInt("Item", R.id.genre)
                     }
             },
         )

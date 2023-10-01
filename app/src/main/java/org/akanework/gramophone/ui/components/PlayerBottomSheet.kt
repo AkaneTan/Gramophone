@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -589,6 +590,18 @@ class PlayerBottomSheet private constructor(
 			if (!isUserTracking) {
 				progressDrawable.animate = false
 			}
+		}
+	}
+
+	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+		android.util.Log.e("hi","$keyCode")
+		if (controllerFuture?.isDone != true || controllerFuture?.isCancelled != false)
+			return super.onKeyDown(keyCode, event)
+		return when (keyCode) {
+			KeyEvent.KEYCODE_SPACE -> { instance.playOrPause(); true }
+			KeyEvent.KEYCODE_DPAD_LEFT -> { instance.seekToPreviousMediaItem(); true }
+			KeyEvent.KEYCODE_DPAD_RIGHT -> { instance.seekToNextMediaItem(); true }
+			else -> super.onKeyDown(keyCode, event)
 		}
 	}
 

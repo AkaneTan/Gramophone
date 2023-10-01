@@ -12,14 +12,14 @@ class AlbumAdapter(
     private val mainActivity: MainActivity,
     albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>,
 ) : ItemAdapter<MediaStoreUtils.Album>
-    (mainActivity, albumList, Sorter.from(), pluralStr = R.plurals.albums, layoutType = LayoutType.GRID) {
+    (mainActivity,
+    albumList,
+    Sorter.StoreAlbumHelper(),
+    pluralStr = R.plurals.albums,
+    layoutType = LayoutType.GRID) {
 
-    override fun titleOf(item: MediaStoreUtils.Album): String {
-        return item.title ?: context.getString(R.string.unknown_album)
-    }
-
-    override fun subTitleOf(item: MediaStoreUtils.Album): String {
-        return item.artist ?: context.getString(R.string.unknown_artist)
+    override fun virtualTitleOf(item: MediaStoreUtils.Album): String {
+        return context.getString(R.string.unknown_album)
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {
@@ -28,7 +28,7 @@ class AlbumAdapter(
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
-                        putInt("Item", 1)
+                        putInt("Item", R.id.album)
                     }
             },
         )

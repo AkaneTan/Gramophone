@@ -18,7 +18,14 @@ class ArtistAdapter(
     private val artistList: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
     private val albumArtists: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
 ) : ItemAdapter<MediaStoreUtils.Artist>
-    (mainActivity, null, Sorter.from(), pluralStr = R.plurals.artists) {
+    (mainActivity,
+    null,
+    Sorter.StoreItemHelper(),
+    pluralStr = R.plurals.artists) {
+
+    override fun virtualTitleOf(item: MediaStoreUtils.Artist): String {
+        return context.getString(R.string.unknown_artist)
+    }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
     var isAlbumArtist = prefs.getBoolean("isDisplayingAlbumArtist", false)
@@ -29,10 +36,6 @@ class ArtistAdapter(
         liveData = if (isAlbumArtist) albumArtists else artistList
     }
 
-    override fun titleOf(item: MediaStoreUtils.Artist): String {
-        return item.title ?: context.getString(R.string.unknown_artist)
-    }
-
     override fun onClick(item: MediaStoreUtils.Artist) {
         mainActivity.startFragment(
             GeneralSubFragment().apply {
@@ -41,10 +44,10 @@ class ArtistAdapter(
                         putInt("Position", toRawPos(item))
                         putInt(
                             "Item",
-                            if (!isAlbumArtist)
-                                2
+                            if (isAlbumArtist)
+                                R.id.album_artist
                             else
-                                5
+                                R.id.artist
                         )
                     }
             },

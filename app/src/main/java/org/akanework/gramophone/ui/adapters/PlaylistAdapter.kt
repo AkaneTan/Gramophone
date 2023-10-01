@@ -15,15 +15,16 @@ class PlaylistAdapter(
     private val mainActivity: MainActivity,
     playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
 ) : ItemAdapter<MediaStoreUtils.Playlist>
-    (mainActivity, playlistList, Sorter.from(), pluralStr = R.plurals.playlists) {
+    (mainActivity,
+    playlistList,
+    Sorter.StoreItemHelper(),
+    pluralStr = R.plurals.playlists) {
 
     override val defaultCover = R.drawable.ic_default_cover_playlist
 
-    override fun titleOf(item: MediaStoreUtils.Playlist): String {
-        if (item is MediaStoreUtils.RecentlyAdded) {
-            return context.getString(R.string.recently_added)
-        }
-        return item.title ?: context.getString(R.string.unknown_playlist)
+    override fun virtualTitleOf(item: MediaStoreUtils.Playlist): String {
+        return context.getString(if (item is MediaStoreUtils.RecentlyAdded)
+            R.string.recently_added else R.string.unknown_playlist)
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
@@ -32,7 +33,7 @@ class PlaylistAdapter(
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
-                        putInt("Item", 6)
+                        putInt("Item", R.id.playlist)
                     }
             },
         )

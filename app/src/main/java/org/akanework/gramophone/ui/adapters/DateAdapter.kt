@@ -15,12 +15,12 @@ class DateAdapter(
     private val mainActivity: MainActivity,
     dateList: MutableLiveData<MutableList<MediaStoreUtils.Date>>,
 ) : ItemAdapter<MediaStoreUtils.Date>
-    (mainActivity, dateList, Sorter.from()) {
+    (mainActivity, dateList, Sorter.StoreItemHelper()) {
 
     override val defaultCover = R.drawable.ic_default_cover_date
 
-    override fun titleOf(item: MediaStoreUtils.Date): String {
-        return item.title ?: context.getString(R.string.unknown_year)
+    override fun virtualTitleOf(item: MediaStoreUtils.Date): String {
+        return context.getString(R.string.unknown_year)
     }
 
     override fun onClick(item: MediaStoreUtils.Date) {
@@ -29,7 +29,7 @@ class DateAdapter(
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
-                        putInt("Item", 4)
+                        putInt("Item", R.id.year)
                     }
             },
         )

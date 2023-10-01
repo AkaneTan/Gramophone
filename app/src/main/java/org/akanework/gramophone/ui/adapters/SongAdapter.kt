@@ -1,6 +1,5 @@
 package org.akanework.gramophone.ui.adapters
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
@@ -14,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.getUri
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -28,7 +28,8 @@ class SongAdapter(
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
     ownsView: Boolean
 ) : BaseAdapter<MediaItem>(mainActivity, songList,
-    if (canSort) Sorter.from(helper) else Sorter.noneSorter(),
+    Sorter.MediaItemHelper(),
+    if (canSort) helper else null,
     if (canSort)
             (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
     else Sorter.Type.None, R.plurals.songs, ownsView) {
@@ -44,16 +45,8 @@ class SongAdapter(
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
-    override fun titleOf(item: MediaItem): String {
-        return item.mediaMetadata.title.toString()
-    }
-
-    override fun subTitleOf(item: MediaItem): String {
-        return item.mediaMetadata.artist?.toString() ?: context.getString(R.string.unknown_artist)
-    }
-
-    override fun coverOf(item: MediaItem): Uri? {
-        return item.mediaMetadata.artworkUri
+    override fun virtualTitleOf(item: MediaItem): String {
+        return "null"
     }
 
     override fun onClick(item: MediaItem) {
@@ -94,7 +87,7 @@ class SongAdapter(
                                         arguments =
                                             Bundle().apply {
                                                 putInt("Position", positionAlbum)
-                                                putInt("Item", 1)
+                                                putInt("Item", R.id.album)
                                             }
                                     },
                                 )
@@ -120,7 +113,7 @@ class SongAdapter(
                                         arguments =
                                             Bundle().apply {
                                                 putInt("Position", positionArtist)
-                                                putInt("Item", 2)
+                                                putInt("Item", R.id.artist)
                                             }
                                     },
                                 )
@@ -174,10 +167,6 @@ class SongAdapter(
                 else -> false
             }
         }
-    }
-
-    override fun toId(item: MediaItem): String {
-        return item.mediaId
     }
 
     override fun getItemViewType(position: Int): Int {
