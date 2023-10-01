@@ -229,7 +229,9 @@ class PlayerBottomSheet private constructor(
 					}
 				}
 				isUserTracking = false
-				progressDrawable.animate = true
+				if (instance.isPlaying) {
+					progressDrawable.animate = true
+				}
 			}
 		}
 
