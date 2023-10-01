@@ -2,6 +2,7 @@ package org.akanework.gramophone.ui.components
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +11,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -32,7 +35,9 @@ import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.vectordrawable.graphics.drawable.AnimationUtilsCompat
 import com.bumptech.glide.Glide
+import com.google.android.material.animation.AnimationUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -558,17 +563,24 @@ class PlayerBottomSheet private constructor(
 	override fun onIsPlayingChanged(isPlaying: Boolean) {
 		if (isPlaying) {
 			bottomSheetPreviewControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.pause_art)
+				AppCompatResources.getDrawable(context, R.drawable.play_anim)
 			bottomSheetFullControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.pause_art)
+				AppCompatResources.getDrawable(context, R.drawable.play_anim)
+			bottomSheetFullControllerButton.background =
+				AppCompatResources.getDrawable(context, R.drawable.ic_media_play_container)
 			progressDrawable.animate = true
 		} else if (instance.playbackState != Player.STATE_BUFFERING) {
 			bottomSheetPreviewControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.play_art)
+				AppCompatResources.getDrawable(context, R.drawable.pause_anim)
 			bottomSheetFullControllerButton.icon =
-				AppCompatResources.getDrawable(context, R.drawable.play_art)
+				AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+			bottomSheetFullControllerButton.background =
+				AppCompatResources.getDrawable(context, R.drawable.ic_media_pause_container)
 			progressDrawable.animate = false
 		}
+		(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
+		(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+		(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
 		if (isPlaying) {
 			if (!runnableRunning) {
 				handler.postDelayed(positionRunnable, instance.currentPosition % 1000)
