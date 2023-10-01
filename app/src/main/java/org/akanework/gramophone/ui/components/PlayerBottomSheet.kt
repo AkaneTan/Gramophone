@@ -177,6 +177,22 @@ class PlayerBottomSheet private constructor(
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
 				.toFloat()
 
+		progressDrawable = bottomSheetFullSlider.progressDrawable as SquigglyProgress
+		progressDrawable.let {
+			it.waveLength = seekBarProgressWavelength
+			it.lineAmplitude = seekBarProgressAmplitude
+			it.phaseSpeed = seekBarProgressPhase
+			it.strokeWidth = seekBarProgressStrokeWidth
+			it.transitionEnabled = true
+			it.animate = false
+			it.setTint(
+				MaterialColors.getColor(
+					bottomSheetFullSlider,
+					com.google.android.material.R.attr.colorPrimary,
+				)
+			)
+		}
+
 		touchListener = object : SeekBar.OnSeekBarChangeListener {
 			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 				if (fromUser) {
@@ -193,6 +209,7 @@ class PlayerBottomSheet private constructor(
 
 			override fun onStartTrackingTouch(seekBar: SeekBar?) {
 				isUserTracking = true
+				progressDrawable.animate = false
 			}
 
 			override fun onStopTrackingTouch(seekBar: SeekBar?) {
@@ -207,24 +224,11 @@ class PlayerBottomSheet private constructor(
 					}
 				}
 				isUserTracking = false
+				progressDrawable.animate = true
 			}
 		}
 
-		progressDrawable = bottomSheetFullSlider.progressDrawable as SquigglyProgress
-		progressDrawable.let {
-			it.waveLength = seekBarProgressWavelength
-			it.lineAmplitude = seekBarProgressAmplitude
-			it.phaseSpeed = seekBarProgressPhase
-			it.strokeWidth = seekBarProgressStrokeWidth
-			it.transitionEnabled = true
-			it.animate = false
-			it.setTint(
-				MaterialColors.getColor(
-					bottomSheetFullSlider,
-					com.google.android.material.R.attr.colorPrimary,
-				)
-			)
-		}
+
 
 		setOnClickListener {
 			if (standardBottomSheetBehavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
