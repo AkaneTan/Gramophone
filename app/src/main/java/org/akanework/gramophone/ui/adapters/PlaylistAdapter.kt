@@ -14,11 +14,15 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class PlaylistAdapter(
     private val mainActivity: MainActivity,
     playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
-) : ItemAdapter<MediaStoreUtils.Playlist>
+) : BaseAdapter<MediaStoreUtils.Playlist>
     (mainActivity,
-    playlistList,
-    Sorter.StoreItemHelper(),
-    pluralStr = R.plurals.playlists) {
+    liveData = playlistList,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.items,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
     override val defaultCover = R.drawable.ic_default_cover_playlist
 

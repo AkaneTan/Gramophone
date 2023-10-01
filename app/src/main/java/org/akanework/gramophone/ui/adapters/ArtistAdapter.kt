@@ -17,11 +17,15 @@ class ArtistAdapter(
     private val mainActivity: MainActivity,
     private val artistList: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
     private val albumArtists: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
-) : ItemAdapter<MediaStoreUtils.Artist>
+) : BaseAdapter<MediaStoreUtils.Artist>
     (mainActivity,
-    null,
-    Sorter.StoreItemHelper(),
-    pluralStr = R.plurals.artists) {
+    liveData = null,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.artists,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
     override fun virtualTitleOf(item: MediaStoreUtils.Artist): String {
         return context.getString(R.string.unknown_artist)

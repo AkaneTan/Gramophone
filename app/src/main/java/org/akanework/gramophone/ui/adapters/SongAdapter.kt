@@ -1,5 +1,6 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
@@ -13,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.getUri
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -27,12 +27,17 @@ class SongAdapter(
     canSort: Boolean,
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
     ownsView: Boolean
-) : BaseAdapter<MediaItem>(mainActivity, songList,
-    Sorter.MediaItemHelper(),
-    if (canSort) helper else null,
-    if (canSort)
+) : BaseAdapter<MediaItem>
+    (mainActivity,
+    liveData = songList,
+    sortHelper = MediaItemHelper(),
+    naturalOrderHelper = if (canSort) helper else null,
+    initialSortType = if (canSort)
             (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
-    else Sorter.Type.None, R.plurals.songs, ownsView) {
+    else Sorter.Type.None,
+    pluralStr = R.plurals.songs,
+    ownsView = ownsView,
+    defaultLayoutType = LayoutType.LIST) {
 
     constructor(mainActivity: MainActivity,
                     songList: MutableList<MediaItem>,
@@ -173,6 +178,37 @@ class SongAdapter(
         return when (layoutType) {
             LayoutType.GRID -> R.layout.adapter_grid_card
             LayoutType.LIST, null -> R.layout.adapter_list_card
+        }
+    }
+
+    class MediaItemHelper(types: Set<Sorter.Type> = setOf(
+        Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
+        Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
+        Sorter.Type.ByAlbumTitleDescending, Sorter.Type.ByAlbumTitleAscending,
+        Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending))
+        : Sorter.Helper<MediaItem>(types) {
+        override fun getId(item: MediaItem): String {
+            return item.mediaId
+        }
+
+        override fun getTitle(item: MediaItem): String {
+            return item.mediaMetadata.title.toString()
+        }
+
+        override fun getArtist(item: MediaItem): String? {
+            return item.mediaMetadata.artist?.toString()
+        }
+
+        override fun getAlbumTitle(item: MediaItem): String {
+            return item.mediaMetadata.albumTitle?.toString() ?: ""
+        }
+
+        override fun getAlbumArtist(item: MediaItem): String {
+            return item.mediaMetadata.albumArtist?.toString() ?: ""
+        }
+
+        override fun getCover(item: MediaItem): Uri? {
+            return item.mediaMetadata.artworkUri
         }
     }
 }

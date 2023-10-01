@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
@@ -50,5 +52,10 @@ class AdapterFragment : BaseFragment(null) {
             -1, null -> throw IllegalArgumentException("unset ID value")
             else -> throw IllegalArgumentException("invalid ID value")
         }
+    }
+
+    abstract class BaseInterface<T : RecyclerView.ViewHolder>
+        : RecyclerView.Adapter<T>(), PopupTextProvider {
+        abstract val concatAdapter: ConcatAdapter
     }
 }

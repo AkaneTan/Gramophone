@@ -11,12 +11,15 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class AlbumAdapter(
     private val mainActivity: MainActivity,
     albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>,
-) : ItemAdapter<MediaStoreUtils.Album>
+) : BaseAdapter<MediaStoreUtils.Album>
     (mainActivity,
-    albumList,
-    Sorter.StoreAlbumHelper(),
+    liveData = albumList,
+    sortHelper = StoreAlbumHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.albums,
-    layoutType = LayoutType.GRID) {
+    ownsView = true,
+    defaultLayoutType = LayoutType.GRID) {
 
     override fun virtualTitleOf(item: MediaStoreUtils.Album): String {
         return context.getString(R.string.unknown_album)
@@ -58,6 +61,18 @@ class AlbumAdapter(
 				 */
             }
             true
+        }
+    }
+
+    class StoreAlbumHelper : StoreItemHelper<MediaStoreUtils.Album>(
+        setOf(
+            Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
+            Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
+            Sorter.Type.BySizeDescending, Sorter.Type.BySizeAscending
+        )
+    ) {
+        override fun getArtist(item: MediaStoreUtils.Album): String? {
+            return item.artist
         }
     }
 }

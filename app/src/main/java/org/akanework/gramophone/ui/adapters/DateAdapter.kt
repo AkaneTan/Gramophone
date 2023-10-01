@@ -14,8 +14,15 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class DateAdapter(
     private val mainActivity: MainActivity,
     dateList: MutableLiveData<MutableList<MediaStoreUtils.Date>>,
-) : ItemAdapter<MediaStoreUtils.Date>
-    (mainActivity, dateList, Sorter.StoreItemHelper()) {
+) : BaseAdapter<MediaStoreUtils.Date>
+    (mainActivity,
+    liveData = dateList,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.items,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
     override val defaultCover = R.drawable.ic_default_cover_date
 

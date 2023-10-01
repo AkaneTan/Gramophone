@@ -17,14 +17,18 @@ import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.fragments.AdapterFragment
 
 class FolderAdapter(mainActivity: MainActivity,
                     private val liveData: MutableLiveData<MediaStoreUtils.FileNode>)
-    : BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
+    : AdapterFragment.BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
     private val folderPopAdapter: FolderPopAdapter = FolderPopAdapter(this)
-    private val folderAdapter: FolderListAdapter = FolderListAdapter(mutableListOf(), this)
-    private val songAdapter: SongAdapter = SongAdapter(mainActivity, mutableListOf(), false, null, false)
-    override val concatAdapter: ConcatAdapter = ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
+    private val folderAdapter: FolderListAdapter =
+        FolderListAdapter(mutableListOf(), this)
+    private val songAdapter: SongAdapter =
+        SongAdapter(mainActivity, mutableListOf(), false, null, false)
+    override val concatAdapter: ConcatAdapter =
+        ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
     private var root: MediaStoreUtils.FileNode? = null
     private var fileNodePath = ArrayList<String>()
     private var recyclerView: RecyclerView? = null

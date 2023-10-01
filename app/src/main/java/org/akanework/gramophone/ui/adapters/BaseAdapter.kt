@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -16,7 +15,6 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,20 +28,20 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.logic.utils.SupportComparator
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
+import org.akanework.gramophone.ui.fragments.AdapterFragment
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
 	val context: Context,
 	protected var liveData: MutableLiveData<MutableList<T>>?,
 	sortHelper: Sorter.Helper<T>,
-	naturalOrderHelper: Sorter.NaturalOrderHelper<T>? = null,
-	initialSortType: Sorter.Type = Sorter.Type.None,
+	naturalOrderHelper: Sorter.NaturalOrderHelper<T>?,
+	initialSortType: Sorter.Type,
 	private val pluralStr: Int,
 	val ownsView: Boolean,
-	defaultLayoutType: LayoutType = LayoutType.LIST
-) : BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>, PopupTextProvider {
+	defaultLayoutType: LayoutType
+) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>, PopupTextProvider {
 
 	private val sorter = Sorter(sortHelper, naturalOrderHelper)
 	private val decorAdapter by lazy { createDecorAdapter() }
@@ -302,71 +300,19 @@ abstract class BaseAdapter<T>(
 	enum class LayoutType {
 		LIST, GRID
 	}
-}
-
-abstract class BaseInterface<T : RecyclerView.ViewHolder>
-	: RecyclerView.Adapter<T>(), PopupTextProvider {
-	abstract val concatAdapter: ConcatAdapter
-}
-
-abstract class ItemAdapter<T : MediaStoreUtils.Item>(context: Context,
-                                                     rawList: MutableLiveData<MutableList<T>>?,
-                                                     sortHelper: Sorter.Helper<T> =
-	                                                     Sorter.StoreItemHelper(),
-                                                     naturalOrderHelper:
-                                                     Sorter.NaturalOrderHelper<T>? = null,
-                                                     initialSortType: Sorter.Type
-                                                     = Sorter.Type.ByTitleAscending,
-                                                     pluralStr: Int = R.plurals.items,
-                                                     layoutType: LayoutType = LayoutType.LIST
-) : BaseAdapter<T>(context, rawList, sortHelper, naturalOrderHelper, initialSortType, pluralStr, true, layoutType) {
-
-}
-
-class Sorter<T>(val sortingHelper: Helper<T>,
-                private val naturalOrderHelper: NaturalOrderHelper<T>?) {
-
-	abstract class Helper<T>(typesSupported: Set<Type>) {
-		init {
-			if (typesSupported.contains(Type.NaturalOrder) || typesSupported.contains(Type.None))
-				throw IllegalStateException()
-		}
-		val typesSupported = typesSupported.toMutableSet().apply { add(Type.None) }.toSet()
-		abstract fun getTitle(item: T): String?
-		abstract fun getId(item: T): String
-		abstract fun getCover(item: T): Uri?
-		open fun getArtist(item: T): String? = throw UnsupportedOperationException()
-		open fun getAlbumTitle(item: T): String? = throw UnsupportedOperationException()
-		open fun getAlbumArtist(item: T): String? = throw UnsupportedOperationException()
-		open fun getSize(item: T): Int = throw UnsupportedOperationException()
-		fun canGetTitle(): Boolean = typesSupported.contains(Type.ByTitleAscending)
-				|| typesSupported.contains(Type.ByTitleDescending)
-		fun canGetArtist(): Boolean = typesSupported.contains(Type.ByArtistAscending)
-				|| typesSupported.contains(Type.ByArtistDescending)
-		fun canGetAlbumTitle(): Boolean = typesSupported.contains(Type.ByAlbumTitleAscending)
-				|| typesSupported.contains(Type.ByAlbumTitleDescending)
-		fun canGetAlbumArtist(): Boolean = typesSupported.contains(Type.ByAlbumArtistAscending)
-				|| typesSupported.contains(Type.ByAlbumArtistDescending)
-		fun canGetSize(): Boolean = typesSupported.contains(Type.BySizeAscending)
-				|| typesSupported.contains(Type.BySizeDescending)
-	}
-
-	fun interface NaturalOrderHelper<T> {
-		fun lookup(item: T): Int
-	}
 
 	open class StoreItemHelper<T : MediaStoreUtils.Item>(
-		typesSupported: Set<Type> = setOf(
-			Type.ByTitleDescending, Type.ByTitleAscending,
-			Type.BySizeDescending, Type.BySizeAscending
+		typesSupported: Set<Sorter.Type> = setOf(
+			Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
+			Sorter.Type.BySizeDescending, Sorter.Type.BySizeAscending
 		)
-	) : Helper<T>(typesSupported) {
+	) : Sorter.Helper<T>(typesSupported) {
 		override fun getId(item: T): String {
 			return item.id.toString()
 		}
 
 		override fun getTitle(item: T): String? {
-			return item.title?.toString()
+			return item.title
 		}
 
 		override fun getSize(item: T): Int {
@@ -376,267 +322,5 @@ class Sorter<T>(val sortingHelper: Helper<T>,
 		override fun getCover(item: T): Uri? {
 			return item.songList.firstOrNull()?.mediaMetadata?.artworkUri
 		}
-	}
-
-	class StoreAlbumHelper : StoreItemHelper<MediaStoreUtils.Album>(
-		setOf(
-			Type.ByTitleDescending, Type.ByTitleAscending,
-			Type.ByArtistDescending, Type.ByArtistAscending,
-			Type.BySizeDescending, Type.BySizeAscending
-		)
-	) {
-		override fun getArtist(item: MediaStoreUtils.Album): String? {
-			return item.artist
-		}
-	}
-
-	open class MediaItemHelper(types: Set<Type> = setOf(
-		Type.ByTitleDescending, Type.ByTitleAscending,
-		Type.ByArtistDescending, Type.ByArtistAscending,
-		Type.ByAlbumTitleDescending, Type.ByAlbumTitleAscending,
-		Type.ByAlbumArtistDescending, Type.ByAlbumArtistAscending)) : Helper<MediaItem>(types) {
-		override fun getId(item: MediaItem): String {
-			return item.mediaId
-		}
-
-		override fun getTitle(item: MediaItem): String? {
-			return item.mediaMetadata.title.toString()
-		}
-
-		override fun getArtist(item: MediaItem): String? {
-			return item.mediaMetadata.artist?.toString()
-		}
-
-		override fun getAlbumTitle(item: MediaItem): String {
-			return item.mediaMetadata.albumTitle?.toString() ?: ""
-		}
-
-		override fun getAlbumArtist(item: MediaItem): String {
-			return item.mediaMetadata.albumArtist?.toString() ?: ""
-		}
-
-		override fun getCover(item: MediaItem): Uri? {
-			return item.mediaMetadata.artworkUri
-		}
-	}
-
-	enum class Type {
-		ByTitleDescending, ByTitleAscending,
-		ByArtistDescending, ByArtistAscending,
-		ByAlbumTitleDescending, ByAlbumTitleAscending,
-		ByAlbumArtistDescending, ByAlbumArtistAscending,
-		BySizeDescending, BySizeAscending,
-		NaturalOrder, None
-	}
-
-	fun getSupportedTypes(): Set<Type> {
-		return sortingHelper.typesSupported.let {
-			if (naturalOrderHelper != null)
-				it + Type.NaturalOrder
-			else it }
-	}
-
-	fun getComparator(type: Type): HintedComparator<T> {
-		if (!getSupportedTypes().contains(type))
-			throw IllegalArgumentException("Unsupported type ${type.name}")
-		return WrappingHintedComparator(type, when (type) {
-			Type.ByTitleDescending -> {
-				SupportComparator.createAlphanumericComparator(true) {
-					sortingHelper.getTitle(it) ?: ""
-				}
-			}
-			Type.ByTitleAscending -> {
-				SupportComparator.createAlphanumericComparator(false) {
-					sortingHelper.getTitle(it) ?: ""
-				}
-			}
-			Type.ByArtistDescending -> {
-				SupportComparator.createAlphanumericComparator(true) {
-					sortingHelper.getArtist(it) ?: ""
-				}
-			}
-			Type.ByArtistAscending -> {
-				SupportComparator.createAlphanumericComparator(false) {
-					sortingHelper.getArtist(it) ?: ""
-				}
-			}
-			Type.ByAlbumTitleDescending -> {
-				SupportComparator.createAlphanumericComparator(true) {
-					sortingHelper.getAlbumTitle(it) ?: ""
-				}
-			}
-			Type.ByAlbumTitleAscending -> {
-				SupportComparator.createAlphanumericComparator(false) {
-					sortingHelper.getAlbumTitle(it) ?: ""
-				}
-			}
-			Type.ByAlbumArtistDescending -> {
-				SupportComparator.createAlphanumericComparator(true) {
-					sortingHelper.getAlbumArtist(it) ?: ""
-				}
-			}
-			Type.ByAlbumArtistAscending -> {
-				SupportComparator.createAlphanumericComparator(false) {
-					sortingHelper.getAlbumArtist(it) ?: ""
-				}
-			}
-			Type.BySizeDescending -> {
-				SupportComparator.createInversionComparator(
-					compareBy { sortingHelper.getSize(it) }, true
-				)
-			}
-			Type.BySizeAscending -> {
-				SupportComparator.createInversionComparator(
-					compareBy { sortingHelper.getSize(it) }, false
-				)
-			}
-			Type.NaturalOrder -> {
-				SupportComparator.createInversionComparator(
-					compareBy { naturalOrderHelper!!.lookup(it) }, false
-				)
-			}
-			Type.None -> SupportComparator.createDummyComparator()
-		})
-	}
-
-	fun getFastScrollHintFor(item: T, sortType: Type): String? {
-		return when (sortType) {
-			Type.ByTitleDescending, Type.ByTitleAscending -> {
-				(sortingHelper.getTitle(item) ?: "-").firstOrNull()?.toString()
-			}
-			Type.ByArtistDescending, Type.ByArtistAscending -> {
-				(sortingHelper.getArtist(item) ?: "-").firstOrNull()?.toString()
-			}
-			Type.ByAlbumTitleDescending, Type.ByAlbumTitleAscending -> {
-				(sortingHelper.getAlbumTitle(item) ?: "-").firstOrNull()?.toString()
-			}
-			Type.ByAlbumArtistDescending, Type.ByAlbumArtistAscending -> {
-				(sortingHelper.getAlbumArtist(item) ?: "-").firstOrNull()?.toString()
-			}
-			Type.BySizeDescending, Type.BySizeAscending -> {
-				sortingHelper.getSize(item).toString()
-			}
-			Type.NaturalOrder -> {
-				naturalOrderHelper!!.lookup(item).toString()
-			}
-			Type.None -> null
-		}?.ifEmpty { null }
-	}
-
-	abstract class HintedComparator<T>(val type: Type) : Comparator<T>
-	private class WrappingHintedComparator<T>(type: Type, private val comparator: Comparator<T>)
-		: HintedComparator<T>(type) {
-		override fun compare(o1: T, o2: T): Int {
-			return comparator.compare(o1, o2)
-		}
-	}
-}
-
-open class BaseDecorAdapter<T : BaseAdapter<*>>(
-	protected val adapter: T,
-	private val pluralStr: Int
-) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
-
-	protected val context: Context = adapter.context
-	private var count: Int = adapter.itemCount
-
-	override fun onCreateViewHolder(
-		parent: ViewGroup,
-		viewType: Int,
-	): ViewHolder {
-		val view =
-			LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
-		return ViewHolder(view)
-	}
-
-	final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-		holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
-		holder.sortButton.visibility =
-			if (adapter.sortType != Sorter.Type.None || adapter.ownsView) View.VISIBLE else View.GONE
-		holder.sortButton.setOnClickListener { view ->
-			val popupMenu = PopupMenu(context, view)
-			popupMenu.inflate(R.menu.sort_menu)
-			val buttonMap = mapOf(
-				Pair(R.id.natural, Sorter.Type.NaturalOrder),
-				Pair(R.id.name, Sorter.Type.ByTitleAscending),
-				Pair(R.id.artist, Sorter.Type.ByArtistAscending),
-				Pair(R.id.album, Sorter.Type.ByAlbumTitleAscending),
-				Pair(R.id.size, Sorter.Type.BySizeDescending)
-			)
-			val layoutMap = mapOf(
-				Pair(R.id.list, BaseAdapter.LayoutType.LIST),
-				Pair(R.id.grid, BaseAdapter.LayoutType.GRID)
-			)
-			buttonMap.forEach {
-				popupMenu.menu.findItem(it.key).isVisible = adapter.sortTypes.contains(it.value)
-			}
-			layoutMap.forEach {
-				popupMenu.menu.findItem(it.key).isVisible = adapter.ownsView
-			}
-			popupMenu.menu.findItem(R.id.display).isVisible = adapter.ownsView
-			if (adapter.sortType != Sorter.Type.None) {
-				when (adapter.sortType) {
-					in buttonMap.values -> {
-						popupMenu.menu.findItem(buttonMap.entries
-							.first { it.value == adapter.sortType }.key
-						).isChecked = true
-					}
-
-					else -> throw IllegalStateException("Invalid sortType ${adapter.sortType.name}")
-				}
-			}
-			if (adapter.ownsView) {
-				when (adapter.layoutType) {
-					in layoutMap.values -> {
-						popupMenu.menu.findItem(layoutMap.entries
-							.first { it.value == adapter.layoutType }.key
-						).isChecked = true
-					}
-
-					else -> throw IllegalStateException("Invalid layoutType ${adapter.layoutType?.name}")
-				}
-			}
-			popupMenu.setOnMenuItemClickListener { menuItem ->
-				when (menuItem.itemId) {
-					in buttonMap.keys -> {
-						if (!menuItem.isChecked) {
-							adapter.sort(buttonMap[menuItem.itemId]!!)
-							menuItem.isChecked = true
-						}
-						true
-					}
-
-					in layoutMap.keys -> {
-						if (!menuItem.isChecked) {
-							adapter.layoutType = layoutMap[menuItem.itemId]!!
-							menuItem.isChecked = true
-						}
-						true
-					}
-
-					else -> onExtraMenuButtonPressed(menuItem)
-				}
-			}
-			onSortButtonPressed(popupMenu)
-			popupMenu.show()
-		}
-	}
-
-	protected open fun onSortButtonPressed(popupMenu: PopupMenu) {}
-	protected open fun onExtraMenuButtonPressed(menuItem: MenuItem): Boolean
-			= false
-
-	override fun getItemCount(): Int = 1
-
-	inner class ViewHolder(
-		view: View,
-	) : RecyclerView.ViewHolder(view) {
-		val sortButton: MaterialButton = view.findViewById(R.id.sort)
-		val counter: TextView = view.findViewById(R.id.song_counter)
-	}
-
-	fun updateSongCounter(newCount: Int) {
-		count = newCount
-		notifyItemChanged(0)
 	}
 }

@@ -14,8 +14,15 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 class GenreAdapter(
     private val mainActivity: MainActivity,
     genreList: MutableLiveData<MutableList<MediaStoreUtils.Genre>>,
-) : ItemAdapter<MediaStoreUtils.Genre>
-    (mainActivity, genreList, Sorter.StoreItemHelper()) {
+) : BaseAdapter<MediaStoreUtils.Genre>
+    (mainActivity,
+    liveData = genreList,
+    sortHelper = StoreItemHelper(),
+    naturalOrderHelper = null,
+    initialSortType = Sorter.Type.ByTitleAscending,
+    pluralStr = R.plurals.items,
+    ownsView = true,
+    defaultLayoutType = LayoutType.LIST) {
 
     override val defaultCover = R.drawable.ic_default_cover_genre
 
