@@ -44,11 +44,11 @@ class GeneralSubFragment : BaseFragment(true) {
                 helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! }
             }
 
-            R.id.artist -> {
+            /*R.id.artist -> {
                 val item = libraryViewModel.artistItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_artist)
                 itemList = item.songList.toMutableList()
-            }
+            } TODO */
 
             R.id.genre -> {
                 // Genres
@@ -82,6 +82,8 @@ class GeneralSubFragment : BaseFragment(true) {
                 itemList = item.songList.toMutableList()
                 helper = Sorter.NaturalOrderHelper { itemList.indexOf(it) }
             }
+
+            else -> throw IllegalArgumentException()
         }
 
         val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true)

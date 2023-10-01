@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.getUri
+import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -114,7 +115,7 @@ class SongAdapter(
                         if (positionArtist != null) {
                             withContext(Dispatchers.Main) {
                                 mainActivity.startFragment(
-                                    GeneralSubFragment().apply {
+                                    ArtistSubFragment().apply {
                                         arguments =
                                             Bundle().apply {
                                                 putInt("Position", positionArtist)

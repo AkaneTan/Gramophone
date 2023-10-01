@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
-import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.preference.PreferenceManager
@@ -16,16 +15,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import java.time.Instant
+import java.time.ZoneId
 
 /**
  * [MediaStoreUtils] contains all the methods for reading
  * from mediaStore.
  */
-@Suppress("DEPRECATION")
 object MediaStoreUtils {
 
     interface Item {
-        val id: Long
+        val id: Long?
         val title: String?
         val songList: List<MediaItem>
     }
@@ -34,7 +34,7 @@ object MediaStoreUtils {
      * [Album] stores Album metadata.
      */
     data class Album(
-        override val id: Long,
+        override val id: Long?,
         override val title: String?,
         val artist: String?,
         val albumYear: Int?,
@@ -45,16 +45,17 @@ object MediaStoreUtils {
      * [Artist] stores Artist metadata.
      */
     data class Artist(
-        override val id: Long,
+        override val id: Long?,
         override val title: String?,
         override val songList: List<MediaItem>,
+        val albumList: List<Album>,
     ) : Item
 
     /**
      * [Genre] stores Genre metadata.
      */
     data class Genre(
-        override val id: Long,
+        override val id: Long?,
         override val title: String?,
         override val songList: List<MediaItem>,
     ) : Item
@@ -111,9 +112,6 @@ object MediaStoreUtils {
         val artistList: MutableList<Artist>,
         val genreList: MutableList<Genre>,
         val dateList: MutableList<Date>,
-        val durationList: MutableMap<Long, Long>,
-        val fileUriList: MutableMap<Long, Uri>,
-        val mimeTypeList: MutableMap<Long, String>,
         val playlistList: MutableList<Playlist>,
         val folderStructure: FileNode
     )
@@ -158,6 +156,7 @@ object MediaStoreUtils {
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ARTIST_ID,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ALBUM_ARTIST,
                 MediaStore.Audio.Media.DATA,
@@ -170,30 +169,37 @@ object MediaStoreUtils {
             ).apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     add(MediaStore.Audio.Media.GENRE)
+                    add(MediaStore.Audio.Media.GENRE_ID)
+                    add(MediaStore.Audio.Media.CD_TRACK_NUMBER)
+                    add(MediaStore.Audio.Media.COMPILATION)
+                    add(MediaStore.Audio.Media.COMPOSER)
+                    add(MediaStore.Audio.Media.DATE_TAKEN)
+                    add(MediaStore.Audio.Media.WRITER)
+                    add(MediaStore.Audio.Media.DISC_NUMBER)
+                    add(MediaStore.Audio.Media.AUTHOR)
                 }
             }.toTypedArray()
-        val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val limitValue = prefs.getInt("mediastore_filter",  context.resources.getInteger(R.integer.filter_default_sec))
+        val limitValue = prefs.getInt(
+            "mediastore_filter",
+            context.resources.getInteger(R.integer.filter_default_sec)
+        )
         val root = FileNode(folderName = "storage", mutableListOf(), mutableListOf())
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
-        val albumMap = mutableMapOf<Pair<String?, Int?>, MutableList<MediaItem>>()
-        val artistMap = mutableMapOf<String?, MutableList<MediaItem>>()
+        val albumMap = mutableMapOf<Pair<Long?, String?>, MutableList<MediaItem>>()
+        val artistMap = mutableMapOf<Pair<Long?, String?>, MutableList<MediaItem>>()
         val albumArtistMap = mutableMapOf<String?, MutableList<MediaItem>>()
-        val genreMap = mutableMapOf<String?, MutableList<MediaItem>>()
+        val genreMap = mutableMapOf<Pair<Long?, String?>, MutableList<MediaItem>>()
         val dateMap = mutableMapOf<Int?, MutableList<MediaItem>>()
-        val durationMap = mutableMapOf<Long, Long>()
-        val fileUriMap = mutableMapOf<Long, Uri>()
-        val mimeTypeMap = mutableMapOf<Long, String>()
         val cursor =
             context.contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 projection,
                 selection,
                 null,
-                sortOrder,
+                null,
             )
 
         cursor?.use {
@@ -206,30 +212,63 @@ object MediaStoreUtils {
             val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val yearColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR)
             val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+            val artistIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID)
             val mimeTypeColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
+            val discNumberColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndex(MediaStore.Audio.Media.DISC_NUMBER) else null
             val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
             val genreColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                 it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE) else null
+            val genreIdColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE_ID) else null
+            val cdTrackNumberColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.CD_TRACK_NUMBER) else null
+            val compilationColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.COMPILATION) else null
+            val dateTakenColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_TAKEN) else null
+            val composerColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.COMPOSER) else null
+            val writerColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.WRITER) else null
+            val authorColumn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                it.getColumnIndexOrThrow(MediaStore.Audio.Media.AUTHOR) else null
             val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
             val addDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
 
             while (it.moveToNext()) {
                 val id = it.getLong(idColumn)
                 val title = it.getString(titleColumn)
-                val artist = it.getString(artistColumn).let { v -> if (v == "<unknown>") null else v }
+                val artist = it.getString(artistColumn)
+                    .let { v -> if (v == "<unknown>") null else v }
                 val album = it.getStringOrNull(albumColumn)
                 val albumArtist =
                     it.getString(albumArtistColumn)
                         ?: null
                 val path = it.getString(pathColumn)
-                val year = it.getInt(yearColumn).let { v -> if (v == 0) null else v}
+                val year = it.getInt(yearColumn).let { v -> if (v == 0) null else v }
                 val albumId = it.getLong(albumIdColumn)
+                val artistId = it.getLong(artistIdColumn)
                 val mimeType = it.getString(mimeTypeColumn)
-                var discNumber = 0
+                var discNumber = discNumberColumn?.let { col -> it.getInt(col) }
                 var trackNumber = it.getInt(trackNumberColumn)
                 val duration = it.getLong(durationColumn)
+                val cdTrackNumber = cdTrackNumberColumn?.let { col -> it.getStringOrNull(col) }
+                val compilation = compilationColumn?.let { col -> it.getStringOrNull(col) }
+                val dateTaken = dateTakenColumn?.let { col -> it.getStringOrNull(col) }
+                val composer = composerColumn?.let { col -> it.getStringOrNull(col) }
+                val writer = writerColumn?.let { col -> it.getStringOrNull(col) }
+                val author = authorColumn?.let { col -> it.getStringOrNull(col) }
                 val genre = genreColumn?.let { col -> it.getStringOrNull(col) }
+                val genreId = genreIdColumn?.let { col -> it.getLong(col) }
                 val addDate = it.getLong(addDateColumn)
+                val dateTakenParsed = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // the column exists since R, so we can always use these APIs
+                    dateTaken?.toLongOrNull()?.let { it1 -> Instant.ofEpochMilli(it1) }
+                        ?.atZone(ZoneId.systemDefault())
+                        ?.let { time -> Pair(Pair(time.dayOfMonth, time.monthValue), time.year) }
+                } else null
+
 
                 // Since we're using glide, we can get album cover with a uri.
                 val artworkUri = Uri.parse("content://media/external/audio/albumart")
@@ -246,7 +285,7 @@ object MediaStoreUtils {
                     trackNumber %= 100
                 }
 
-                if (duration > limitValue * 1000) {
+                if (duration >= limitValue * 1000) {
                     // Build our mediaItem.
                     songs.add(
                         MediaItem
@@ -260,74 +299,80 @@ object MediaStoreUtils {
                                     .setIsBrowsable(false)
                                     .setIsPlayable(true)
                                     .setTitle(title)
+                                    .setWriter(writer)
+                                    .setCompilation(compilation)
+                                    .setComposer(composer)
                                     .setArtist(artist)
                                     .setAlbumTitle(album)
                                     .setAlbumArtist(albumArtist)
                                     .setArtworkUri(imgUri)
                                     .setTrackNumber(trackNumber)
                                     .setDiscNumber(discNumber)
-                                    .setRecordingYear(year)
+                                    .setRecordingDay(dateTakenParsed?.first?.first)
+                                    .setRecordingMonth(dateTakenParsed?.first?.second)
+                                    .setRecordingYear(dateTakenParsed?.second)
                                     .setReleaseYear(year)
                                     .setExtras(Bundle().apply {
+                                        putLong("ArtistId", artistId)
+                                        putLong("AlbumId", albumId)
+                                        if (genreId != null) {
+                                            putLong("GenreId", genreId)
+                                        }
+                                        putString("Author", author)
                                         putLong("AddDate", addDate)
+                                        putLong("Duration", duration)
+                                        cdTrackNumber?.toIntOrNull()
+                                            ?.let { it1 -> putInt("CdTrackNumber", it1) }
                                     })
                                     .build(),
                             ).build(),
 
-                    )
+                        )
 
                     // Build our metadata maps/lists.
-                    albumMap.getOrPut(Pair(album, year)) { mutableListOf() }.add(songs.last())
-                    artistMap.getOrPut(artist) { mutableListOf() }.add(songs.last())
+                    albumMap.getOrPut(Pair(albumId, album)) { mutableListOf() }.add(songs.last())
+                    artistMap.getOrPut(Pair(artistId, artist)) { mutableListOf() }.add(songs.last())
                     albumArtistMap.getOrPut(albumArtist) { mutableListOf() }.add(songs.last())
-                    genreMap.getOrPut(genre) { mutableListOf() }.add(songs.last())
+                    genreMap.getOrPut(Pair(genreId, genre)) { mutableListOf() }.add(songs.last())
                     dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
-                    durationMap[id] = duration
-                    fileUriMap[id] = path.toUri()
-                    mimeTypeMap[id] = mimeType
                     handleMediaItem(songs.last(), path.toString(), root)
                 }
             }
         }
         cursor?.close()
 
-        // Sort all the lists/albums.
-        val albumList: MutableList<Album> =
-            albumMap
-                .entries
-                .mapIndexed { index, (key, value) ->
-                    val (albumTitle, albumYear) = key
-                    val albumArtist =
-                        value.first().mediaMetadata.albumArtist
-                            ?: value
-                                .first()
-                                .mediaMetadata
-                                .artist
-                                ?.toString()
-                    Album(
-                        index.toLong(),
-                        albumTitle,
-                        albumArtist?.toString(),
-                        albumYear,
-                        value,
-                    )
-                }
-                .toMutableList()
+        // Parse all the lists.
+        val albumList = albumMap.entries.map { (key, value) ->
+            val albumArtist = value.first().mediaMetadata.albumArtist
+                ?: value.first().mediaMetadata.artist?.toString()
+            Album(
+                key.first, key.second, albumArtist?.toString(),
+                value.first().mediaMetadata.releaseYear, value
+            )
+        }.toMutableList()
+        val artistList = artistMap.entries.map { (cat, songs) ->
+            Artist(cat.first, cat.second, songs, albumList.filter { cat.second == it.artist })
+        }.toMutableList()
+        val albumArtistList = albumArtistMap.entries.map { (cat, songs) ->
+            // we do not get unique IDs for album artists, so just take first match :shrug:
+            val at = artistList.find { it.title == cat }
+            Artist(at?.id, cat, songs, at?.albumList ?: mutableListOf())
+        }.toMutableList()
+        val genreList = genreMap.entries.map { (cat, songs) ->
+            Genre(cat.first, cat.second, songs)
+        }.toMutableList()
+        val dateList = dateMap.entries.mapIndexed { index, (cat, songs) ->
+            // dates do not have unique IDs, but they arguably aren't needed either
+            Date(index.toLong(), cat?.toString(), songs)
+        }.toMutableList()
 
         return LibraryStoreClass(
             songs,
             albumList,
-            albumArtistMap.entries.mapIndexed { index, (cat, songs) ->
-                Artist(index.toLong(), cat, songs) }.toMutableList(),
-            artistMap.entries.mapIndexed { index, (cat, songs) ->
-                Artist(index.toLong(), cat, songs) }.toMutableList(),
-            genreMap.entries.mapIndexed { index, (cat, songs) ->
-                Genre(index.toLong(), cat, songs) }.toMutableList(),
-            dateMap.entries.mapIndexed { index, (cat, songs) ->
-                Date(index.toLong(), cat?.toString(), songs) }.toMutableList(),
-            durationMap,
-            fileUriMap,
-            mimeTypeMap,
+            albumArtistList,
+            artistList,
+            genreList,
+            dateList,
             getPlaylists(context, songs),
             root
         )
@@ -350,12 +395,13 @@ object MediaStoreUtils {
         val contentResolver: ContentResolver = context.contentResolver
 
         // Define the URI for playlists
-        val playlistUri: Uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
+        val playlistUri: Uri =
+            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
 
         // Define the projection (columns to retrieve)
         val projection = arrayOf(
-            MediaStore.Audio.Playlists._ID,
-            MediaStore.Audio.Playlists.NAME
+            @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID,
+            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
         )
 
         // Query the playlists
@@ -363,8 +409,10 @@ object MediaStoreUtils {
 
         cursor?.use {
             while (it.moveToNext()) {
-                val playlistId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists._ID))
-                val playlistName = it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME)).ifEmpty { null }
+                val playlistId = it.getLong(it.getColumnIndexOrThrow(
+                    @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID))
+                val playlistName = it.getString(it.getColumnIndexOrThrow(
+                    @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME)).ifEmpty { null }
 
                 // Retrieve the list of songs for each playlist
                 val songs = getSongsInPlaylist(contentResolver, playlistId, songList)
@@ -386,19 +434,22 @@ object MediaStoreUtils {
         val songs = mutableListOf<MediaItem>()
 
         // Define the URI for playlist members (songs in the playlist)
-        val uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId)
+        val uri = @Suppress("DEPRECATION") MediaStore.Audio
+            .Playlists.Members.getContentUri("external", playlistId)
 
         // Define the projection (columns to retrieve)
         val projection = arrayOf(
-            MediaStore.Audio.Playlists.Members.AUDIO_ID,
+            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID,
         )
 
         // Query the songs in the playlist
-        val cursor = contentResolver.query(uri, projection, null, null, null)
+        val cursor = contentResolver.query(uri, projection, null, null,
+            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.PLAY_ORDER + " ASC")
 
         cursor?.use {
             while (it.moveToNext()) {
-                val audioId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID))
+                val audioId = it.getLong(it.getColumnIndexOrThrow(
+                    @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID))
                 // Create a MediaItem and add it to the list
                 val song = songList.find { it1 ->
                     it1.mediaId.toLong() == audioId
@@ -422,9 +473,6 @@ object MediaStoreUtils {
             libraryViewModel.albumArtistItemList.value = pairObject.albumArtistList
             libraryViewModel.genreItemList.value = pairObject.genreList
             libraryViewModel.dateItemList.value = pairObject.dateList
-            libraryViewModel.durationItemList.value = pairObject.durationList
-            libraryViewModel.fileUriList.value = pairObject.fileUriList
-            libraryViewModel.mimeTypeList.value = pairObject.mimeTypeList
             libraryViewModel.playlistList.value = pairObject.playlistList
             libraryViewModel.folderStructure.value = pairObject.folderStructure
         }

@@ -51,6 +51,17 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
 				b.writeBool(it.mediaMetadata.isBrowsable)
 				b.writeBool(it.mediaMetadata.isPlayable)
 				b.writeLong(it.mediaMetadata.extras?.getLong("AddDate"))
+				b.writeStringSafe(it.mediaMetadata.writer)
+				b.writeStringSafe(it.mediaMetadata.compilation)
+				b.writeStringSafe(it.mediaMetadata.composer)
+				b.writeInt(it.mediaMetadata.recordingDay)
+				b.writeInt(it.mediaMetadata.recordingMonth)
+				b.writeLong(it.mediaMetadata.extras?.getLong("ArtistId"))
+				b.writeLong(it.mediaMetadata.extras?.getLong("AlbumId"))
+				b.writeLong(it.mediaMetadata.extras?.getLong("GenreId"))
+				b.writeStringSafe(it.mediaMetadata.extras?.getString("Author"))
+				b.writeInt(it.mediaMetadata.extras?.getInt("CdTrackNumber"))
+				b.writeLong(it.mediaMetadata.extras?.getLong("Duration"))
 				b.toString()
 			})
 		editor.putStringSet("last_played_lst", lastPlayed.first)
@@ -97,6 +108,17 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
 					val isBrowsable = b.readBool()
 					val isPlayable = b.readBool()
 					val addDate = b.readLong()
+					val writer = b.readStringSafe()
+					val compilation = b.readStringSafe()
+					val composer = b.readStringSafe()
+					val recordingDay = b.readInt()
+					val recordingMonth = b.readInt()
+					val artistId = b.readLong()
+					val albumId = b.readLong()
+					val genreId = b.readLong()
+					val author = b.readStringSafe()
+					val cdTrackNumber = b.readInt()
+					val duration = b.readLong()
 					MediaItem.Builder()
 						.setUri(uri)
 						.setMediaId(mediaId!!)
@@ -106,6 +128,11 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
 								.Builder()
 								.setTitle(title)
 								.setArtist(artist)
+								.setWriter(writer)
+								.setComposer(composer)
+								.setCompilation(compilation)
+								.setRecordingDay(recordingDay)
+								.setRecordingMonth(recordingMonth)
 								.setAlbumTitle(album)
 								.setAlbumArtist(albumArtist)
 								.setArtworkUri(imgUri)
@@ -118,6 +145,22 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
 								.setExtras(Bundle().apply {
 									if (addDate != null) {
 										putLong("AddDate", addDate)
+									}
+									if (artistId != null) {
+										putLong("ArtistId", artistId)
+									}
+									if (albumId != null) {
+										putLong("AlbumId", albumId)
+									}
+									if (genreId != null) {
+										putLong("GenreId", genreId)
+									}
+									if (cdTrackNumber != null) {
+										putInt("CdTrackNumber", cdTrackNumber)
+									}
+									putString("Author", author)
+									if (duration != null) {
+										putLong("Duration", duration)
 									}
 								})
 								.build())

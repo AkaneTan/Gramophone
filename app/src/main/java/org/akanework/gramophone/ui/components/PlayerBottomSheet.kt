@@ -196,10 +196,7 @@ class PlayerBottomSheet private constructor(
 		touchListener = object : SeekBar.OnSeekBarChangeListener {
 			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 				if (fromUser) {
-					val dest =
-						instance.currentMediaItem?.mediaId?.let {
-							libraryViewModel.durationItemList.value?.get(it.toLong())
-						}
+					val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 					if (dest != null) {
 						bottomSheetFullPosition.text =
 							GramophoneUtils.convertDurationToTimeStamp((progress.toLong()))
@@ -357,10 +354,7 @@ class PlayerBottomSheet private constructor(
 			val position =
 				GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
 			if (runnableRunning) {
-				val duration =
-					libraryViewModel.durationItemList.value?.get(
-						instance.currentMediaItem?.mediaId?.toLong(),
-					)
+				val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 				if (duration != null && !isUserTracking) {
 					bottomSheetFullSlider.max = duration.toInt()
 					bottomSheetFullSlider.progress = instance.currentPosition.toInt()
@@ -434,9 +428,7 @@ class PlayerBottomSheet private constructor(
 			bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
 			bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
 			bottomSheetFullDuration.text =
-				mediaItem
-					?.mediaId
-					?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+				mediaItem?.mediaMetadata?.extras?.getLong("Duration")
 					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
 		}
 		var newState = standardBottomSheetBehavior!!.state
@@ -454,10 +446,7 @@ class PlayerBottomSheet private constructor(
 			} else standardBottomSheetBehavior!!.state = newState
 		}
 		val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
-		val duration =
-			libraryViewModel.durationItemList.value?.get(
-				instance.currentMediaItem?.mediaId?.toLong(),
-			)
+		val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 		if (duration != null && !isUserTracking) {
 			bottomSheetFullSlider.max = duration.toInt()
 			bottomSheetFullSlider.progress = instance.currentPosition.toInt()

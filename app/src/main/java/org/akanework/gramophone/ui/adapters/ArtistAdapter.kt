@@ -8,7 +8,7 @@ import androidx.preference.PreferenceManager
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.ui.fragments.GeneralSubFragment
+import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
@@ -42,7 +42,7 @@ class ArtistAdapter(
 
     override fun onClick(item: MediaStoreUtils.Artist) {
         mainActivity.startFragment(
-            GeneralSubFragment().apply {
+            ArtistSubFragment().apply {
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
