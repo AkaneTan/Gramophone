@@ -1,5 +1,6 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -41,18 +42,9 @@ class ViewPager2Adapter(
     override fun getItemCount(): Int = tabs.count()
 
     override fun createFragment(position: Int): Fragment =
-        when (tabs[position]) {
-            R.id.songs -> AdapterFragment { m, v ->
-                SongAdapter(m, v.mediaItemList, true, null, true)
+        AdapterFragment().apply {
+            arguments = Bundle().apply {
+                putInt("ID", tabs[position])
             }
-            R.id.albums -> AdapterFragment { m, v -> AlbumAdapter(m, v.albumItemList) }
-            R.id.artists -> AdapterFragment { m, v ->
-                ArtistAdapter(m, v.artistItemList, v.albumArtistItemList)
-            }
-            R.id.genres -> AdapterFragment { m, v -> GenreAdapter(m, v.genreItemList) }
-            R.id.dates -> AdapterFragment { m, v -> DateAdapter(m, v.dateItemList) }
-            R.id.folders -> AdapterFragment { m, v -> FolderAdapter(m, v.folderStructure) }
-            R.id.playlists -> AdapterFragment { m, v -> PlaylistAdapter(m, v.playlistList) }
-            else -> throw IllegalArgumentException("Invalid position: $position")
         }
 }
