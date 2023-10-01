@@ -33,12 +33,7 @@ class ViewPagerFragment : BaseFragment(true) {
                 }
 
                 R.id.search -> {
-                    requireActivity()
-                        .supportFragmentManager
-                        .beginTransaction()
-                        .addToBackStack("SEARCH")
-                        .replace(R.id.container, SearchFragment())
-                        .commit()
+                    (requireActivity() as MainActivity).startFragment(SearchFragment())
                 }
 
                 else -> throw IllegalStateException()

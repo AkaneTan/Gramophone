@@ -23,21 +23,15 @@ class AlbumAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 1)
-                            putString("Title", item.title)
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", 1)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Album, popupMenu: PopupMenu) {

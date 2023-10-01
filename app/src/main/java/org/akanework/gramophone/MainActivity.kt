@@ -173,25 +173,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.settings -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .addToBackStack("SETTINGS")
-                        .replace(R.id.container, SettingsFragment())
-                        .commit()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        drawerLayout.close()
-                    }, 50)
+                    startFragment(SettingsFragment())
                 }
 
                 R.id.search -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .addToBackStack("SEARCH")
-                        .replace(R.id.container, SearchFragment())
-                        .commit()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        drawerLayout.close()
-                    }, 50)
+                    startFragment(SearchFragment())
                 }
 
                 R.id.shuffle -> {
@@ -243,6 +229,19 @@ class MainActivity : AppCompatActivity() {
             controller.prepare()
             controller.play()
         }
+    }
+
+    fun startFragment(frag: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(System.currentTimeMillis().toString())
+            .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
+            .add(R.id.container, frag)
+            .commit()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            drawerLayout.close()
+        }, 50)
     }
 
     private fun getPlayerSheet() = findViewById<PlayerBottomSheet>(R.id.player_layout)

@@ -27,21 +27,15 @@ class PlaylistAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 6)
-                            putString("Title", titleOf(item))
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", 6)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Playlist, popupMenu: PopupMenu) {

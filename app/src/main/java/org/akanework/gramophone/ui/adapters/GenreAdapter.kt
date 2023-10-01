@@ -24,21 +24,15 @@ class GenreAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Genre) {
-        mainActivity.supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("SUBFRAG")
-            .hide(mainActivity.supportFragmentManager.fragments[0])
-            .add(
-                R.id.container,
-                GeneralSubFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putInt("Position", toRawPos(item))
-                            putInt("Item", 3)
-                            putString("Title", titleOf(item))
-                        }
-                },
-            ).commit()
+        mainActivity.startFragment(
+            GeneralSubFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putInt("Position", toRawPos(item))
+                        putInt("Item", 3)
+                    }
+            },
+        )
     }
 
     override fun onMenu(item: MediaStoreUtils.Genre, popupMenu: PopupMenu) {

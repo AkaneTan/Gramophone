@@ -89,25 +89,15 @@ class SongAdapter(
                             }
                         if (positionAlbum != null) {
                             withContext(Dispatchers.Main) {
-                                mainActivity
-                                    .supportFragmentManager
-                                    .beginTransaction()
-                                    .addToBackStack("SUBFRAG")
-                                    .hide(mainActivity.supportFragmentManager.fragments[0])
-                                    .add(
-                                        R.id.container,
-                                        GeneralSubFragment().apply {
-                                            arguments =
-                                                Bundle().apply {
-                                                    putInt("Position", positionAlbum)
-                                                    putInt("Item", 1)
-                                                    putString(
-                                                        "Title",
-                                                        titleOf(item),
-                                                    )
-                                                }
-                                        },
-                                    ).commit()
+                                mainActivity.startFragment(
+                                    GeneralSubFragment().apply {
+                                        arguments =
+                                            Bundle().apply {
+                                                putInt("Position", positionAlbum)
+                                                putInt("Item", 1)
+                                            }
+                                    },
+                                )
                             }
                         }
                     }
@@ -125,25 +115,15 @@ class SongAdapter(
                             }
                         if (positionArtist != null) {
                             withContext(Dispatchers.Main) {
-                                mainActivity
-                                    .supportFragmentManager
-                                    .beginTransaction()
-                                    .addToBackStack("SUBFRAG")
-                                    .hide(mainActivity.supportFragmentManager.fragments[0])
-                                    .add(
-                                        R.id.container,
-                                        GeneralSubFragment().apply {
-                                            arguments =
-                                                Bundle().apply {
-                                                    putInt("Position", positionArtist)
-                                                    putInt("Item", 2)
-                                                    putString(
-                                                        "Title",
-                                                        titleOf(item),
-                                                    )
-                                                }
-                                        },
-                                    ).commit()
+                                mainActivity.startFragment(
+                                    GeneralSubFragment().apply {
+                                        arguments =
+                                            Bundle().apply {
+                                                putInt("Position", positionArtist)
+                                                putInt("Item", 2)
+                                            }
+                                    },
+                                )
                             }
                         }
                     }
