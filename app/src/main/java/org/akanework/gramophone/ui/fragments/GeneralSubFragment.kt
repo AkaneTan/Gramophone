@@ -29,47 +29,47 @@ class GeneralSubFragment : BaseFragment(true) {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val bundle = requireArguments()
-        var title: String? = null
+        val title: String?
         val itemType = bundle.getInt("Item")
         val position = bundle.getInt("Position")
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        lateinit var itemList: MutableList<MediaItem>
+        lateinit var itemList: List<MediaItem>
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
         when (itemType) {
             R.id.album -> {
                 val item = libraryViewModel.albumItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_album)
-                itemList = item.songList.toMutableList()
+                itemList = item.songList
                 helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! }
             }
 
             /*R.id.artist -> {
                 val item = libraryViewModel.artistItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_artist)
-                itemList = item.songList.toMutableList()
+                itemList = item.songList
             } TODO */
 
             R.id.genre -> {
                 // Genres
                 val item = libraryViewModel.genreItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_genre)
-                itemList = item.songList.toMutableList()
+                itemList = item.songList
             }
 
             R.id.year -> {
                 // Dates
                 val item = libraryViewModel.dateItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_year)
-                itemList = item.songList.toMutableList()
+                itemList = item.songList
             }
 
-            R.id.album_artist -> {
+            /*R.id.album_artist -> {
                 // Album artists
                 val item = libraryViewModel.albumArtistItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_artist)
-                itemList = item.songList.toMutableList()
-            }
+                itemList = item.songList
+            } TODO */
 
             R.id.playlist -> {
                 // Playlists
@@ -79,7 +79,7 @@ class GeneralSubFragment : BaseFragment(true) {
                 } else {
                     item.title ?: requireContext().getString(R.string.unknown_playlist)
                 }
-                itemList = item.songList.toMutableList()
+                itemList = item.songList
                 helper = Sorter.NaturalOrderHelper { itemList.indexOf(it) }
             }
 

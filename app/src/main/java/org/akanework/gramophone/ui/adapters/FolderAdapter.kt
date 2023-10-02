@@ -24,9 +24,9 @@ class FolderAdapter(mainActivity: MainActivity,
     : AdapterFragment.BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
     private val folderPopAdapter: FolderPopAdapter = FolderPopAdapter(this)
     private val folderAdapter: FolderListAdapter =
-        FolderListAdapter(mutableListOf(), this)
+        FolderListAdapter(listOf(), this)
     private val songAdapter: SongAdapter =
-        SongAdapter(mainActivity, mutableListOf(), false, null, false)
+        SongAdapter(mainActivity, listOf(), false, null, false)
     override val concatAdapter: ConcatAdapter =
         ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
     private var root: MediaStoreUtils.FileNode? = null
@@ -79,8 +79,8 @@ class FolderAdapter(mainActivity: MainActivity,
         }
         val doUpdate = { canDiff: Boolean ->
             folderPopAdapter.enabled = fileNodePath.isNotEmpty()
-            folderAdapter.updateList(item?.folderList ?: mutableListOf(), canDiff)
-            songAdapter.updateList(item?.songList ?: mutableListOf(), now = true, false)
+            folderAdapter.updateList(item?.folderList ?: listOf(), canDiff)
+            songAdapter.updateList(item?.songList ?: listOf(), now = true, false)
         }
         recyclerView.let {
             if (it == null || invertedDirection == null) {
@@ -134,7 +134,7 @@ class FolderAdapter(mainActivity: MainActivity,
     override fun getItemCount() = 0
 
 
-    private class FolderListAdapter(private var folderList: MutableList<MediaStoreUtils.FileNode>,
+    private class FolderListAdapter(private var folderList: List<MediaStoreUtils.FileNode>,
                                     frag: FolderAdapter)
         : FolderCardAdapter(frag), PopupTextProvider {
 
@@ -153,20 +153,20 @@ class FolderAdapter(mainActivity: MainActivity,
         override fun getItemCount(): Int = folderList.size
 
         @SuppressLint("NotifyDataSetChanged")
-        fun updateList(newList: MutableList<MediaStoreUtils.FileNode>, canDiff: Boolean) {
+        fun updateList(newList: List<MediaStoreUtils.FileNode>, canDiff: Boolean) {
             if (canDiff) {
                 val diffResult = DiffUtil.calculateDiff(DiffCallback(folderList, newList))
-                folderList = newList
+                folderList = newList.toMutableList()
                 diffResult.dispatchUpdatesTo(this)
             } else {
-                folderList = newList
+                folderList = newList.toMutableList()
                 notifyDataSetChanged()
             }
         }
 
         private inner class DiffCallback(
-            private val oldList: MutableList<MediaStoreUtils.FileNode>,
-            private val newList: MutableList<MediaStoreUtils.FileNode>,
+            private val oldList: List<MediaStoreUtils.FileNode>,
+            private val newList: List<MediaStoreUtils.FileNode>,
         ) : DiffUtil.Callback() {
             override fun getOldListSize() = oldList.size
 

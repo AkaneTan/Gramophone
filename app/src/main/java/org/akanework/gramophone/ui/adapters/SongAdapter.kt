@@ -41,7 +41,7 @@ class SongAdapter(
     defaultLayoutType = LayoutType.LIST) {
 
     constructor(mainActivity: MainActivity,
-                    songList: MutableList<MediaItem>,
+                    songList: List<MediaItem>,
                     canSort: Boolean,
                     helper: Sorter.NaturalOrderHelper<MediaItem>?,
                     ownsView: Boolean)
