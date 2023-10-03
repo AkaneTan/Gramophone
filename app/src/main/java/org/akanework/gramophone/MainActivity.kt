@@ -167,7 +167,8 @@ class MainActivity : AppCompatActivity() {
                                     com.google.android.material.R.attr.colorOnSurface,
                                 ),
                             )
-                            snackBar.anchorView = playerLayout
+                            if (playerLayout.visible && playerLayout.actuallyVisible)
+                                snackBar.anchorView = playerLayout
                             snackBar.show()
                         }
                     }

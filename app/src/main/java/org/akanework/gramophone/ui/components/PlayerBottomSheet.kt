@@ -2,7 +2,6 @@ package org.akanework.gramophone.ui.components
 
 import android.content.ComponentName
 import android.content.Context
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,7 +17,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -33,6 +31,7 @@ import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -52,7 +51,6 @@ import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class PlayerBottomSheet private constructor(
 	context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
@@ -94,7 +92,6 @@ class PlayerBottomSheet private constructor(
 		get() = context as MainActivity
 	private val lifecycleOwner: LifecycleOwner
 		get() = activity
-	private val libraryViewModel: LibraryViewModel by activity.viewModels()
 	private val handler = Handler(Looper.getMainLooper())
 	private val instance: MediaController
 		get() = controllerFuture!!.get()
@@ -127,6 +124,8 @@ class PlayerBottomSheet private constructor(
 					}
 			}
 		}
+	val actuallyVisible: Boolean
+		get() = standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_HIDDEN
 
 	init {
 		inflate(context, R.layout.bottom_sheet_impl, this)
@@ -177,7 +176,8 @@ class PlayerBottomSheet private constructor(
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
 				.toFloat()
 
-		progressDrawable = bottomSheetFullSlider.progressDrawable as SquigglyProgress
+		progressDrawable = SquigglyProgress()
+		bottomSheetFullSlider.progressDrawable = progressDrawable
 		progressDrawable.let {
 			it.waveLength = seekBarProgressWavelength
 			it.lineAmplitude = seekBarProgressAmplitude
@@ -549,8 +549,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
-				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawableCompat).start()
+				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawableCompat).start()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
 			}
 			if (!isUserTracking) {
@@ -566,8 +566,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
+				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawableCompat).start()
+				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawableCompat).start()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
 			}
 			if (!isUserTracking) {
