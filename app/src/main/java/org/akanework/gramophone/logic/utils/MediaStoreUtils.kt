@@ -150,7 +150,7 @@ object MediaStoreUtils {
      * @return
      */
     private fun getAllSongs(context: Context): LibraryStoreClass {
-        val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
+        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0 or ${MediaStore.Audio.Media.MIME_TYPE} = 'audio/x-wav' or ${MediaStore.Audio.Media.MIME_TYPE} = 'audio/ogg'"
         val projection =
             arrayListOf(
                 MediaStore.Audio.Media._ID,
