@@ -31,7 +31,6 @@ import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -51,6 +50,7 @@ import org.akanework.gramophone.logic.services.GramophonePlaybackService
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
+import org.akanework.gramophone.logic.utils.startAnimation
 
 class PlayerBottomSheet private constructor(
 	context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
@@ -549,8 +549,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
-				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawableCompat).start()
-				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawableCompat).start()
+				bottomSheetFullControllerButton.icon.startAnimation()
+				bottomSheetPreviewControllerButton.icon.startAnimation()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
 			}
 			if (!isUserTracking) {
@@ -566,8 +566,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawableCompat).start()
-				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawableCompat).start()
+				bottomSheetFullControllerButton.icon.startAnimation()
+				bottomSheetPreviewControllerButton.icon.startAnimation()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
 			}
 			if (!isUserTracking) {
