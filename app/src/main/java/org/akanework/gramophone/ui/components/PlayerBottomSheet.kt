@@ -549,11 +549,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
-				bottomSheetFullControllerButton.background =
-					AppCompatResources.getDrawable(context, R.drawable.ic_media_play_container)
 				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
 				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
 			}
 			if (!isUserTracking) {
@@ -569,11 +566,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-				bottomSheetFullControllerButton.background =
-					AppCompatResources.getDrawable(context, R.drawable.ic_media_pause_container)
 				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
 				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
 			}
 			if (!isUserTracking) {

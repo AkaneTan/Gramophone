@@ -8,11 +8,9 @@
 	<drawable name="dates_art">@drawable/ic_schedule</drawable>
 	<drawable name="pause_art">@drawable/ic_pause</drawable>
 	<drawable name="pause_anim">@drawable/ic_media_pause_anim</drawable>
-	<drawable name="pause_container">@drawable/ic_media_pause_container</drawable>
 	<drawable name="next_art">@drawable/ic_skip_next_filled</drawable>
 	<drawable name="play_art">@drawable/ic_play_arrow</drawable>
 	<drawable name="play_anim">@drawable/ic_media_play_anim</drawable>
-	<drawable name="play_container">@drawable/ic_media_play_container</drawable>
 	<drawable name="previous_art">@drawable/ic_skip_previous_filled</drawable>
 	<drawable name="subtitles_art">@drawable/ic_subtitles</drawable>
 	<drawable name="timer_art">@drawable/ic_timer</drawable>

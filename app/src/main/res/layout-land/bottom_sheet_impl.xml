@@ -253,7 +253,6 @@
 					android:layout_height="84dp"
 					android:layout_centerHorizontal="true"
 					android:layout_marginTop="18dp"
-					android:background="@drawable/play_container"
 					android:insetLeft="0dp"
 					android:insetTop="0dp"
 					android:insetRight="0dp"
