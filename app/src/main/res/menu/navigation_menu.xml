@@ -61,6 +61,12 @@
                 android:title="@string/home_menu_shuffle"
                 app:showAsAction="ifRoom" />
             <item
+                android:id="@+id/equalizer"
+                android:checkable="false"
+                android:icon="@drawable/ic_equalizer"
+                android:title="@string/home_menu_equalizer"
+                app:showAsAction="ifRoom" />
+            <item
                 android:id="@+id/search"
                 android:checkable="false"
                 android:icon="@drawable/ic_search"

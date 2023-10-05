@@ -1,12 +1,16 @@
 package org.akanework.gramophone
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -41,6 +45,16 @@ class MainActivity : AppCompatActivity() {
     private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+    private val startActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != Activity.RESULT_OK) {
+                Toast.makeText(
+                    applicationContext,
+                    R.string.equalizer_not_found,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 
     fun navigateDrawer(int: Int) {
         drawerLayout.open()
@@ -185,6 +199,12 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.shuffle -> {
                     shuffle()
+                }
+
+                R.id.equalizer -> {
+                    val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
+                        .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
+                    startActivity.launch(intent)
                 }
 
                 else -> throw IllegalStateException()
