@@ -143,6 +143,13 @@ object MediaStoreUtils {
         }
     }
 
+    private val formatCollection = mutableListOf(
+        "audio/x-wav",
+        "audio/ogg",
+        "audio/aac",
+        "audio/midi"
+    )
+
     /**
      * [getAllSongs] gets all of your songs from your local disk.
      *
@@ -150,7 +157,10 @@ object MediaStoreUtils {
      * @return
      */
     private fun getAllSongs(context: Context): LibraryStoreClass {
-        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0 or ${MediaStore.Audio.Media.MIME_TYPE} = 'audio/x-wav' or ${MediaStore.Audio.Media.MIME_TYPE} = 'audio/ogg'"
+        var selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
+        for (i in formatCollection) {
+            selection = "$selection or ${MediaStore.Audio.Media.MIME_TYPE} = '$i'"
+        }
         val projection =
             arrayListOf(
                 MediaStore.Audio.Media._ID,
