@@ -4,6 +4,7 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
 import android.content.Intent
+import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
@@ -114,21 +116,32 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
             )
         handler = Handler(Looper.getMainLooper())
 
-        val renderersFactory = DefaultRenderersFactory(this)
-        renderersFactory.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-
-        val player = ExoPlayer.Builder(this, renderersFactory).build()
-        val audioAttributes: AudioAttributes =
-            AudioAttributes
+        val player = ExoPlayer.Builder(this,
+            DefaultRenderersFactory(this)
+                .setEnableAudioFloatOutput(false) // TODO "true" disables EQ but enables HD audio, add toggle
+                .setEnableDecoderFallback(true)
+                .setEnableAudioTrackPlaybackParams(true) // hardware/system-accelerated playback speed
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+            )
+            .setWakeMode(C.WAKE_MODE_LOCAL)
+            // we seek with SeekBar on a touchscreen anyway, we can afford loosing some exactness
+            .setSeekParameters(SeekParameters.CLOSEST_SYNC)
+            .setSkipSilenceEnabled(false) // TODO add toggle?
+            .setAudioAttributes(AudioAttributes
                 .Builder()
                 .setUsage(C.USAGE_MEDIA)
                 .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                .build()
-        player.setAudioAttributes(audioAttributes, true)
+                .build(), true)
+            .build()
+        sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
+            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+        })
 
-        val notificationProvider = DefaultMediaNotificationProvider(this)
-        notificationProvider.setSmallIcon(R.drawable.ic_gramophone)
-        setMediaNotificationProvider(notificationProvider)
+        setMediaNotificationProvider(DefaultMediaNotificationProvider(this).apply {
+            setSmallIcon(R.drawable.ic_gramophone)
+        })
         mediaSession =
             MediaLibrarySession
                 .Builder(this, player, this)
@@ -143,13 +156,11 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                 )
                 .build()
         lastPlayedManager = LastPlayedManager(this, mediaSession!!)
-        if (!mediaSession!!.player.isPlaying) {
-            handler.post {
-                val restoreInstance = lastPlayedManager.restore()
-                if (restoreInstance != null) {
-                    player.setMediaItems(restoreInstance.mediaItems)
-                    player.seekTo(restoreInstance.startIndex, restoreInstance.startPositionMs)
-                }
+        handler.post {
+            val restoreInstance = lastPlayedManager.restore()
+            if (restoreInstance != null) {
+                player.setMediaItems(restoreInstance.mediaItems)
+                player.seekTo(restoreInstance.startIndex, restoreInstance.startPositionMs)
             }
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
@@ -161,6 +172,11 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
         // When destroying, we should release server side player
         // alongside with the mediaSession.
         lastPlayedManager.save()
+        sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION,
+                (mediaSession!!.player as ExoPlayer).audioSessionId)
+        })
         mediaSession!!.player.release()
         mediaSession!!.release()
         mediaSession = null
