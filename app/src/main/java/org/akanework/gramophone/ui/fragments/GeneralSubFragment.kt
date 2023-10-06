@@ -10,7 +10,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.adapters.SongAdapter

@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 
 abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
 

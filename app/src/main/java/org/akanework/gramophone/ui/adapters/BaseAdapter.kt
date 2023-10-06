@@ -60,11 +60,11 @@ abstract class BaseAdapter<T>(
 		set(value) {
 			field = value
 			if (value != null && ownsView) {
-				layoutManager = if (value == LayoutType.LIST
+				layoutManager = if (value != LayoutType.GRID
 					&& context.resources.configuration.orientation
 					== Configuration.ORIENTATION_PORTRAIT)
 					LinearLayoutManager(context)
-				else CustomGridLayoutManager(context, if (value == LayoutType.LIST
+				else CustomGridLayoutManager(context, if (value != LayoutType.GRID
 					|| context.resources.configuration.orientation
 					== Configuration.ORIENTATION_PORTRAIT) 2 else 4)
 				if (recyclerView != null) applyLayoutManager()
@@ -214,6 +214,7 @@ abstract class BaseAdapter<T>(
 	override fun getItemViewType(position: Int): Int {
 		return when (layoutType) {
 			LayoutType.GRID -> R.layout.adapter_grid_card
+			LayoutType.COMPACT_LIST -> R.layout.adapter_list_card
 			LayoutType.LIST, null -> R.layout.adapter_list_card_larger
 		}
 	}
@@ -296,7 +297,7 @@ abstract class BaseAdapter<T>(
 	}
 
 	enum class LayoutType {
-		LIST, GRID
+		LIST, COMPACT_LIST, GRID
 	}
 
 	open class StoreItemHelper<T : MediaStoreUtils.Item>(

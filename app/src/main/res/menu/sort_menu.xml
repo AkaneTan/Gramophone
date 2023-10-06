@@ -46,6 +46,11 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
+                    android:id="@+id/compact_list"
+                    android:title="@string/compact_list"
+                    android:orderInCategory="0"
+                    app:showAsAction="never"/>
+                <item
                     android:id="@+id/list"
                     android:title="@string/list"
                     android:orderInCategory="1"

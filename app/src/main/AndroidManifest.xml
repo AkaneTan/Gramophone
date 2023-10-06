@@ -31,7 +31,7 @@
             android:exported="false"/>
 
         <service
-            android:name=".logic.services.GramophonePlaybackService"
+            android:name=".logic.GramophonePlaybackService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             tools:ignore="ExportedService">
@@ -43,7 +43,7 @@
         </service>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

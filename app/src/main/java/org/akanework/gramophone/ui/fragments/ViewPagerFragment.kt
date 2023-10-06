@@ -9,7 +9,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 

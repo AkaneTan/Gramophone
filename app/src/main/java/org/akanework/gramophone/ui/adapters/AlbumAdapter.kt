@@ -5,7 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
@@ -58,7 +58,7 @@ class AlbumAdapter(
         popupMenu.setOnMenuItemClickListener { it1 ->
             when (it1.itemId) {
                 R.id.play_next -> {
-                    val mediaController = (context as MainActivity).getPlayer()
+                    val mediaController = mainActivity.getPlayer()
                     mediaController.addMediaItems(
                         mediaController.currentMediaItemIndex + 1,
                         item.songList,

@@ -5,7 +5,7 @@ import android.view.MenuItem
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment

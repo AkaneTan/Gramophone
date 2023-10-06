@@ -44,9 +44,12 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.Constants
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.services.GramophonePlaybackService
+import org.akanework.gramophone.logic.GramophonePlaybackService
+import org.akanework.gramophone.logic.getTimer
+import org.akanework.gramophone.logic.hasTimer
+import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
@@ -235,17 +238,17 @@ class PlayerBottomSheet private constructor(
 			val picker =
 				MaterialTimePicker
 					.Builder()
-					.setHour(queryTimerDuration(instance) / 3600 / 1000)
-					.setMinute((queryTimerDuration(instance) % (3600 * 1000)) / (60 * 1000))
+					.setHour(instance.getTimer() / 3600 / 1000)
+					.setMinute((instance.getTimer() % (3600 * 1000)) / (60 * 1000))
 					.setTimeFormat(TimeFormat.CLOCK_24H)
 					.setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
 					.build()
 			picker.addOnPositiveButtonClickListener {
 				val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-				setTimer(instance, destinationTime)
+				instance.setTimer(destinationTime)
 			}
 			picker.addOnDismissListener {
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(instance)
+				bottomSheetTimerButton.isChecked = instance.hasTimer()
 			}
 			picker.show(activity.supportFragmentManager, "timer")
 		}
@@ -454,30 +457,14 @@ class PlayerBottomSheet private constructor(
 		}
 	}
 
-	private fun queryTimerDuration(controller: MediaController): Int =
-		controller.sendCustomCommand(
-			SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
-			Bundle.EMPTY
-		).get().extras.getInt("duration")
-
-	private fun alreadyHasTimer(controller: MediaController): Boolean =
-		queryTimerDuration(controller) > 0
-
-	private fun setTimer(controller: MediaController, value: Int) =
-		controller.sendCustomCommand(
-			SessionCommand(Constants.SERVICE_SET_TIMER, Bundle.EMPTY).apply {
-				customExtras.putInt("duration", value)
-			}, Bundle.EMPTY
-		)
-
 	private val sessionListener: MediaController.Listener = object : MediaController.Listener {
 		override fun onCustomCommand(
 			controller: MediaController,
 			command: SessionCommand,
 			args: Bundle
 		): ListenableFuture<SessionResult> {
-			if (command.customAction == Constants.SERVICE_TIMER_CHANGED) {
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
+			if (command.customAction == GramophonePlaybackService.SERVICE_TIMER_CHANGED) {
+				bottomSheetTimerButton.isChecked = controller.hasTimer()
 			}
 			return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
 		}
@@ -495,7 +482,7 @@ class PlayerBottomSheet private constructor(
 		controllerFuture!!.addListener(
 			{
 				instance.addListener(this)
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(instance)
+				bottomSheetTimerButton.isChecked = instance.hasTimer()
 				onRepeatModeChanged(instance.repeatMode)
 				onShuffleModeEnabledChanged(instance.shuffleModeEnabled)
 				onIsPlayingChanged(instance.isPlaying)

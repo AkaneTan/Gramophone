@@ -1,4 +1,4 @@
-package org.akanework.gramophone
+package org.akanework.gramophone.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -29,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
@@ -40,7 +41,12 @@ import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
-    
+
+    companion object {
+        private const val PERMISSION_READ_MEDIA_AUDIO = 100
+        private const val PERMISSION_READ_EXTERNAL_STORAGE = 101
+    }
+
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
@@ -106,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
-                    Constants.PERMISSION_READ_MEDIA_AUDIO,
+                    PERMISSION_READ_MEDIA_AUDIO,
                 )
             } else {
                 if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
@@ -123,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    Constants.PERMISSION_READ_EXTERNAL_STORAGE,
+                    PERMISSION_READ_EXTERNAL_STORAGE,
                 )
             } else {
                 if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
@@ -221,7 +227,7 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {
-            Constants.PERMISSION_READ_MEDIA_AUDIO -> {
+            PERMISSION_READ_MEDIA_AUDIO -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ) {
@@ -231,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            Constants.PERMISSION_READ_EXTERNAL_STORAGE -> {
+            PERMISSION_READ_EXTERNAL_STORAGE -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ) {
