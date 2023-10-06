@@ -43,7 +43,6 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.Constants
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService

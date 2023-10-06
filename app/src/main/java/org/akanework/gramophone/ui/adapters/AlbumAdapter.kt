@@ -3,7 +3,6 @@ package org.akanework.gramophone.ui.adapters
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
