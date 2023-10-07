@@ -35,5 +35,5 @@
 ## お知らせ
 - バグの報告はこちら: [Telegram](https://t.me/MizuhaNetwork)
 
-# 友達
+## 友達
 [SongSync](https://github.com/lambada10/songsync)
