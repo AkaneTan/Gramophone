@@ -33,7 +33,7 @@
 このプロジェクトのライセンスは GNU General Public License v3.0 です。 - ライセンスの詳細は [LICENSE](https://github.com/AkaneTan/Gramophone/blob/beta/LICENSE) ファイルを参照してください。
 
 ## お知らせ
-- バグの報告こちら: [Telegram](https://t.me/MizuhaNetwork)
+- バグの報告はこちら: [Telegram](https://t.me/MizuhaNetwork)
 
 # 友達
 [SongSync](https://github.com/lambada10/songsync)
