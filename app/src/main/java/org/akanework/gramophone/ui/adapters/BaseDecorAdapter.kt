@@ -44,6 +44,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 			)
 			val layoutMap = mapOf(
 				Pair(R.id.list, BaseAdapter.LayoutType.LIST),
+				Pair(R.id.compact_list, BaseAdapter.LayoutType.COMPACT_LIST),
 				Pair(R.id.grid, BaseAdapter.LayoutType.GRID)
 			)
 			buttonMap.forEach {

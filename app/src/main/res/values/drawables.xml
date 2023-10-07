@@ -8,12 +8,10 @@
 	<drawable name="dates_art">@drawable/ic_schedule</drawable>
 	<drawable name="pause_art">@drawable/ic_pause</drawable>
 	<drawable name="pause_anim">@drawable/ic_media_pause_anim</drawable>
-	<drawable name="pause_container">@drawable/ic_media_pause_container</drawable>
-	<drawable name="next_art">@drawable/ic_skip_next</drawable>
+	<drawable name="next_art">@drawable/ic_skip_next_filled</drawable>
 	<drawable name="play_art">@drawable/ic_play_arrow</drawable>
 	<drawable name="play_anim">@drawable/ic_media_play_anim</drawable>
-	<drawable name="play_container">@drawable/ic_media_play_container</drawable>
-	<drawable name="previous_art">@drawable/ic_skip_previous</drawable>
+	<drawable name="previous_art">@drawable/ic_skip_previous_filled</drawable>
 	<drawable name="subtitles_art">@drawable/ic_subtitles</drawable>
 	<drawable name="timer_art">@drawable/ic_timer</drawable>
 	<drawable name="widgets_art">@drawable/ic_widgets</drawable>
@@ -21,4 +19,10 @@
 	<drawable name="daynight_art">@drawable/ic_light_mode</drawable>
 	<drawable name="filter_art">@drawable/ic_filter_alt</drawable>
 	<drawable name="folder_art">@drawable/ic_folder</drawable>
+
+	<!-- Media3 -->
+	<drawable name="media3_notification_play">@drawable/ic_play_arrow_filled</drawable>
+	<drawable name="media3_notification_pause">@drawable/ic_pause_filled</drawable>
+	<drawable name="media3_notification_seek_to_previous">@drawable/ic_skip_previous_filled</drawable>
+	<drawable name="media3_notification_seek_to_next">@drawable/ic_skip_next_filled</drawable>
 </resources>

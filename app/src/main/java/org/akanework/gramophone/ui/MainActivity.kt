@@ -1,12 +1,16 @@
-package org.akanework.gramophone
+package org.akanework.gramophone.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
@@ -36,11 +41,26 @@ import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
-    
+
+    companion object {
+        private const val PERMISSION_READ_MEDIA_AUDIO = 100
+        private const val PERMISSION_READ_EXTERNAL_STORAGE = 101
+    }
+
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+    private val startActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != Activity.RESULT_OK) {
+                Toast.makeText(
+                    applicationContext,
+                    R.string.equalizer_not_found,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 
     fun navigateDrawer(int: Int) {
         drawerLayout.open()
@@ -92,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
-                    Constants.PERMISSION_READ_MEDIA_AUDIO,
+                    PERMISSION_READ_MEDIA_AUDIO,
                 )
             } else {
                 if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
@@ -109,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    Constants.PERMISSION_READ_EXTERNAL_STORAGE,
+                    PERMISSION_READ_EXTERNAL_STORAGE,
                 )
             } else {
                 if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
@@ -167,7 +187,8 @@ class MainActivity : AppCompatActivity() {
                                     com.google.android.material.R.attr.colorOnSurface,
                                 ),
                             )
-                            snackBar.anchorView = playerLayout
+                            if (playerLayout.visible && playerLayout.actuallyVisible)
+                                snackBar.anchorView = playerLayout
                             snackBar.show()
                         }
                     }
@@ -186,6 +207,12 @@ class MainActivity : AppCompatActivity() {
                     shuffle()
                 }
 
+                R.id.equalizer -> {
+                    val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
+                        .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
+                    startActivity.launch(intent)
+                }
+
                 else -> throw IllegalStateException()
             }
             true
@@ -200,7 +227,7 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {
-            Constants.PERMISSION_READ_MEDIA_AUDIO -> {
+            PERMISSION_READ_MEDIA_AUDIO -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ) {
@@ -210,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            Constants.PERMISSION_READ_EXTERNAL_STORAGE -> {
+            PERMISSION_READ_EXTERNAL_STORAGE -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="V29.Theme.Gramophone" parent="V27.Theme.Gramophone">
+		<item name="android:enforceNavigationBarContrast">false</item>
+		<item name="android:enforceStatusBarContrast">false</item>
+	</style>
+
+	<style name="Theme.Gramophone" parent="V29.Theme.Gramophone" />
+</resources>

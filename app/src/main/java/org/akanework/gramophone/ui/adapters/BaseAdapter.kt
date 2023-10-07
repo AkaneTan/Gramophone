@@ -58,20 +58,18 @@ abstract class BaseAdapter<T>(
 	var layoutType: LayoutType? = null
 		@SuppressLint("NotifyDataSetChanged")
 		set(value) {
-			if (value != null && !ownsView) throw IllegalStateException()
-			if (value == null && ownsView) throw IllegalStateException()
 			field = value
-			if (value != null) {
-				layoutManager = if (value == LayoutType.LIST
+			if (value != null && ownsView) {
+				layoutManager = if (value != LayoutType.GRID
 					&& context.resources.configuration.orientation
 					== Configuration.ORIENTATION_PORTRAIT)
 					LinearLayoutManager(context)
-				else CustomGridLayoutManager(context, if (value == LayoutType.LIST
+				else CustomGridLayoutManager(context, if (value != LayoutType.GRID
 					|| context.resources.configuration.orientation
 					== Configuration.ORIENTATION_PORTRAIT) 2 else 4)
 				if (recyclerView != null) applyLayoutManager()
-				notifyDataSetChanged() // we change view type for all items
 			}
+			notifyDataSetChanged() // we change view type for all items
 		}
 	var sortType: Sorter.Type
 		get() = comparator?.type!!
@@ -86,7 +84,7 @@ abstract class BaseAdapter<T>(
 	init {
 		sortType = initialSortType
 		liveData?.value?.let { updateList(it, now = true, canDiff = false) }
-		layoutType = if (ownsView) defaultLayoutType else null
+		layoutType = defaultLayoutType
 	}
 
 	protected open val defaultCover: Int = R.drawable.ic_default_cover
@@ -167,7 +165,7 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	private fun sort(srcList: MutableList<T>? = null): (Boolean, Boolean) -> Unit {
+	private fun sort(srcList: List<T>? = null): (Boolean, Boolean) -> Unit {
 		// Sorting in the background using coroutines
 		val newList = ArrayList(srcList ?: rawList)
 		newList.sortWith { o1, o2 ->
@@ -197,7 +195,7 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	fun updateList(newList: MutableList<T>, now: Boolean, canDiff: Boolean) {
+	fun updateList(newList: List<T>, now: Boolean, canDiff: Boolean) {
 		if (now || bgHandler == null) sort(newList)(true, canDiff)
 		else {
 			bgHandler!!.post {
@@ -216,6 +214,7 @@ abstract class BaseAdapter<T>(
 	override fun getItemViewType(position: Int): Int {
 		return when (layoutType) {
 			LayoutType.GRID -> R.layout.adapter_grid_card
+			LayoutType.COMPACT_LIST -> R.layout.adapter_list_card
 			LayoutType.LIST, null -> R.layout.adapter_list_card_larger
 		}
 	}
@@ -298,7 +297,7 @@ abstract class BaseAdapter<T>(
 	}
 
 	enum class LayoutType {
-		LIST, GRID
+		LIST, COMPACT_LIST, GRID
 	}
 
 	open class StoreItemHelper<T : MediaStoreUtils.Item>(

@@ -2,7 +2,6 @@ package org.akanework.gramophone.ui.components
 
 import android.content.ComponentName
 import android.content.Context
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,7 +17,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -45,14 +43,16 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.Constants
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.services.GramophonePlaybackService
+import org.akanework.gramophone.logic.GramophonePlaybackService
+import org.akanework.gramophone.logic.getTimer
+import org.akanework.gramophone.logic.hasTimer
+import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.logic.utils.startAnimation
 
 class PlayerBottomSheet private constructor(
 	context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
@@ -94,7 +94,6 @@ class PlayerBottomSheet private constructor(
 		get() = context as MainActivity
 	private val lifecycleOwner: LifecycleOwner
 		get() = activity
-	private val libraryViewModel: LibraryViewModel by activity.viewModels()
 	private val handler = Handler(Looper.getMainLooper())
 	private val instance: MediaController
 		get() = controllerFuture!!.get()
@@ -127,6 +126,8 @@ class PlayerBottomSheet private constructor(
 					}
 			}
 		}
+	val actuallyVisible: Boolean
+		get() = standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_HIDDEN
 
 	init {
 		inflate(context, R.layout.bottom_sheet_impl, this)
@@ -177,7 +178,8 @@ class PlayerBottomSheet private constructor(
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
 				.toFloat()
 
-		progressDrawable = bottomSheetFullSlider.progressDrawable as SquigglyProgress
+		progressDrawable = SquigglyProgress()
+		bottomSheetFullSlider.progressDrawable = progressDrawable
 		progressDrawable.let {
 			it.waveLength = seekBarProgressWavelength
 			it.lineAmplitude = seekBarProgressAmplitude
@@ -196,10 +198,7 @@ class PlayerBottomSheet private constructor(
 		touchListener = object : SeekBar.OnSeekBarChangeListener {
 			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 				if (fromUser) {
-					val dest =
-						instance.currentMediaItem?.mediaId?.let {
-							libraryViewModel.durationItemList.value?.get(it.toLong())
-						}
+					val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 					if (dest != null) {
 						bottomSheetFullPosition.text =
 							GramophoneUtils.convertDurationToTimeStamp((progress.toLong()))
@@ -238,17 +237,17 @@ class PlayerBottomSheet private constructor(
 			val picker =
 				MaterialTimePicker
 					.Builder()
-					.setHour(queryTimerDuration(instance) / 3600 / 1000)
-					.setMinute((queryTimerDuration(instance) % (3600 * 1000)) / (60 * 1000))
+					.setHour(instance.getTimer() / 3600 / 1000)
+					.setMinute((instance.getTimer() % (3600 * 1000)) / (60 * 1000))
 					.setTimeFormat(TimeFormat.CLOCK_24H)
 					.setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
 					.build()
 			picker.addOnPositiveButtonClickListener {
 				val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-				setTimer(instance, destinationTime)
+				instance.setTimer(destinationTime)
 			}
 			picker.addOnDismissListener {
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(instance)
+				bottomSheetTimerButton.isChecked = instance.hasTimer()
 			}
 			picker.show(activity.supportFragmentManager, "timer")
 		}
@@ -357,10 +356,7 @@ class PlayerBottomSheet private constructor(
 			val position =
 				GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
 			if (runnableRunning) {
-				val duration =
-					libraryViewModel.durationItemList.value?.get(
-						instance.currentMediaItem?.mediaId?.toLong(),
-					)
+				val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 				if (duration != null && !isUserTracking) {
 					bottomSheetFullSlider.max = duration.toInt()
 					bottomSheetFullSlider.progress = instance.currentPosition.toInt()
@@ -434,9 +430,7 @@ class PlayerBottomSheet private constructor(
 			bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
 			bottomSheetFullSubtitle.text = mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
 			bottomSheetFullDuration.text =
-				mediaItem
-					?.mediaId
-					?.let { libraryViewModel.durationItemList.value?.get(it.toLong()) }
+				mediaItem?.mediaMetadata?.extras?.getLong("Duration")
 					?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
 		}
 		var newState = standardBottomSheetBehavior!!.state
@@ -454,10 +448,7 @@ class PlayerBottomSheet private constructor(
 			} else standardBottomSheetBehavior!!.state = newState
 		}
 		val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
-		val duration =
-			libraryViewModel.durationItemList.value?.get(
-				instance.currentMediaItem?.mediaId?.toLong(),
-			)
+		val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 		if (duration != null && !isUserTracking) {
 			bottomSheetFullSlider.max = duration.toInt()
 			bottomSheetFullSlider.progress = instance.currentPosition.toInt()
@@ -465,30 +456,14 @@ class PlayerBottomSheet private constructor(
 		}
 	}
 
-	private fun queryTimerDuration(controller: MediaController): Int =
-		controller.sendCustomCommand(
-			SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY),
-			Bundle.EMPTY
-		).get().extras.getInt("duration")
-
-	private fun alreadyHasTimer(controller: MediaController): Boolean =
-		queryTimerDuration(controller) > 0
-
-	private fun setTimer(controller: MediaController, value: Int) =
-		controller.sendCustomCommand(
-			SessionCommand(Constants.SERVICE_SET_TIMER, Bundle.EMPTY).apply {
-				customExtras.putInt("duration", value)
-			}, Bundle.EMPTY
-		)
-
 	private val sessionListener: MediaController.Listener = object : MediaController.Listener {
 		override fun onCustomCommand(
 			controller: MediaController,
 			command: SessionCommand,
 			args: Bundle
 		): ListenableFuture<SessionResult> {
-			if (command.customAction == Constants.SERVICE_TIMER_CHANGED) {
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(controller)
+			if (command.customAction == GramophonePlaybackService.SERVICE_TIMER_CHANGED) {
+				bottomSheetTimerButton.isChecked = controller.hasTimer()
 			}
 			return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
 		}
@@ -506,7 +481,7 @@ class PlayerBottomSheet private constructor(
 		controllerFuture!!.addListener(
 			{
 				instance.addListener(this)
-				bottomSheetTimerButton.isChecked = alreadyHasTimer(instance)
+				bottomSheetTimerButton.isChecked = instance.hasTimer()
 				onRepeatModeChanged(instance.repeatMode)
 				onShuffleModeEnabledChanged(instance.shuffleModeEnabled)
 				onIsPlayingChanged(instance.isPlaying)
@@ -560,11 +535,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.play_anim)
-				bottomSheetFullControllerButton.background =
-					AppCompatResources.getDrawable(context, R.drawable.ic_media_play_container)
-				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
+				bottomSheetFullControllerButton.icon.startAnimation()
+				bottomSheetPreviewControllerButton.icon.startAnimation()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
 			}
 			if (!isUserTracking) {
@@ -580,11 +552,8 @@ class PlayerBottomSheet private constructor(
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-				bottomSheetFullControllerButton.background =
-					AppCompatResources.getDrawable(context, R.drawable.ic_media_pause_container)
-				(bottomSheetFullControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetPreviewControllerButton.icon as AnimatedVectorDrawable).start()
-				(bottomSheetFullControllerButton.background as AnimatedVectorDrawable).start()
+				bottomSheetFullControllerButton.icon.startAnimation()
+				bottomSheetPreviewControllerButton.icon.startAnimation()
 				bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
 			}
 			if (!isUserTracking) {

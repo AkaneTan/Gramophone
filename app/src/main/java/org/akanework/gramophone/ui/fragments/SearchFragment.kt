@@ -17,7 +17,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.closeKeyboard
 import org.akanework.gramophone.logic.utils.showSoftKeyboard
@@ -37,7 +37,7 @@ class SearchFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, mutableListOf(), false, null, false)
+        val songAdapter = SongAdapter(requireActivity() as MainActivity, listOf(), false, null, false)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -51,7 +51,7 @@ class SearchFragment : BaseFragment(false) {
         editText.addTextChangedListener { text ->
             // TODO sort results by match quality?
             if (text.isNullOrBlank()) {
-                songAdapter.updateList(mutableListOf(), now = false, true)
+                songAdapter.updateList(listOf(), now = false, true)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     filteredList.clear()
@@ -68,7 +68,7 @@ class SearchFragment : BaseFragment(false) {
                         )
                     }
                     withContext(Dispatchers.Main) {
-                        songAdapter.updateList(filteredList.toMutableList(), now = false, true)
+                        songAdapter.updateList(filteredList, now = false, true)
                     }
                 }
             }

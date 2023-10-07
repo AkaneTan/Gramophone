@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Base.Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+    <style name="V23.Theme.Gramophone" parent="Base.Theme.Gramophone">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/statusBarContentLight</item>
-        <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <style name="Theme.Gramophone" parent="V23.Theme.Gramophone" />
 
 </resources>

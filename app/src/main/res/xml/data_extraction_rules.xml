@@ -5,15 +5,13 @@
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <exclude />
     </cloud-backup>
-    <!--
+    <!-- Playlists etc are stored in MediaStore, not in our data.
+         Only "last played" is currently in our application data.
+         When we later implement playback history or favourites,
+         we might want to revisit this. -->
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude />
     </device-transfer>
-    -->
 </data-extraction-rules>

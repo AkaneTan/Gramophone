@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -12,9 +13,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.getUri
+import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -37,13 +39,13 @@ class SongAdapter(
     else Sorter.Type.None,
     pluralStr = R.plurals.songs,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.LIST) {
+    defaultLayoutType = LayoutType.COMPACT_LIST) {
 
     constructor(mainActivity: MainActivity,
-                    songList: MutableList<MediaItem>,
-                    canSort: Boolean,
-                    helper: Sorter.NaturalOrderHelper<MediaItem>?,
-                    ownsView: Boolean)
+                songList: List<MediaItem>,
+                canSort: Boolean,
+                helper: Sorter.NaturalOrderHelper<MediaItem>?,
+                ownsView: Boolean)
             : this(mainActivity, null, canSort, helper, ownsView) {
                 updateList(songList, now = true, false)
             }
@@ -56,8 +58,7 @@ class SongAdapter(
 
     override fun onClick(item: MediaItem) {
         val mediaController = mainActivity.getPlayer()
-        mediaController.setMediaItems(list)
-        mediaController.seekToDefaultPosition(list.indexOf(item))
+        mediaController.setMediaItems(list, list.indexOf(item), C.TIME_UNSET)
         mediaController.prepare()
         mediaController.play()
     }
@@ -114,7 +115,7 @@ class SongAdapter(
                         if (positionArtist != null) {
                             withContext(Dispatchers.Main) {
                                 mainActivity.startFragment(
-                                    GeneralSubFragment().apply {
+                                    ArtistSubFragment().apply {
                                         arguments =
                                             Bundle().apply {
                                                 putInt("Position", positionArtist)
@@ -171,13 +172,6 @@ class SongAdapter(
 				 */
                 else -> false
             }
-        }
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return when (layoutType) {
-            LayoutType.GRID -> R.layout.adapter_grid_card
-            LayoutType.LIST, null -> R.layout.adapter_list_card
         }
     }
 

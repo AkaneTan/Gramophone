@@ -1,9 +1,10 @@
-package org.akanework.gramophone.logic.services
+package org.akanework.gramophone.logic
 
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
 import android.content.Intent
+import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,9 +16,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
+import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
@@ -27,8 +30,7 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
-import org.akanework.gramophone.Constants
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 
@@ -38,7 +40,18 @@ import org.akanework.gramophone.logic.utils.LastPlayedManager
  * It's using exoplayer2 as its player backend.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
+class GramophonePlaybackService : MediaLibraryService(),
+    MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
+
+    companion object {
+        private const val PLAYBACK_SHUFFLE_ACTION_ON = "shuffle_on"
+        private const val PLAYBACK_SHUFFLE_ACTION_OFF = "shuffle_off"
+        private const val PLAYBACK_REPEAT_OFF = "repeat_off"
+        private const val PLAYBACK_REPEAT_ALL = "repeat_all"
+        private const val PLAYBACK_REPEAT_ONE = "repeat_one"
+        // sent to PlayerBottomSheet
+        const val SERVICE_TIMER_CHANGED = "changed_timer"
+    }
 
     private var mediaSession: MediaLibrarySession? = null
     private lateinit var customCommands: List<CommandButton>
@@ -73,7 +86,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                 handler.removeCallbacks(timer)
             }
             mediaSession!!.broadcastCustomCommand(
-                SessionCommand(Constants.SERVICE_TIMER_CHANGED, Bundle.EMPTY),
+                SessionCommand(SERVICE_TIMER_CHANGED, Bundle.EMPTY),
                 Bundle.EMPTY
             )
         }
@@ -84,51 +97,62 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                 CommandButton.Builder() // shuffle currently disabled, click will enable
                     .setDisplayName(getString(R.string.shuffle))
                     .setSessionCommand(
-                        SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_ON, Bundle.EMPTY))
+                        SessionCommand(PLAYBACK_SHUFFLE_ACTION_ON, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_shuffle)
                     .build(),
                 CommandButton.Builder() // shuffle currently enabled, click will disable
                     .setDisplayName(getString(R.string.shuffle))
                     .setSessionCommand(
-                        SessionCommand(Constants.PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY))
+                        SessionCommand(PLAYBACK_SHUFFLE_ACTION_OFF, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_shuffle_on)
                     .build(),
                 CommandButton.Builder() // repeat currently disabled, click will repeat all
                     .setDisplayName(getString(R.string.repeat_mode))
                     .setSessionCommand(
-                        SessionCommand(Constants.PLAYBACK_REPEAT_ALL, Bundle.EMPTY))
+                        SessionCommand(PLAYBACK_REPEAT_ALL, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_repeat)
                     .build(),
                 CommandButton.Builder() // repeat all currently enabled, click will repeat one
                     .setDisplayName(getString(R.string.repeat_mode))
                     .setSessionCommand(
-                        SessionCommand(Constants.PLAYBACK_REPEAT_ONE, Bundle.EMPTY))
+                        SessionCommand(PLAYBACK_REPEAT_ONE, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_repeat_on)
                     .build(),
                 CommandButton.Builder() // repeat one currently enabled, click will disable
                     .setDisplayName(getString(R.string.repeat_mode))
                     .setSessionCommand(
-                        SessionCommand(Constants.PLAYBACK_REPEAT_OFF, Bundle.EMPTY))
+                        SessionCommand(PLAYBACK_REPEAT_OFF, Bundle.EMPTY))
                     .setIconResId(R.drawable.ic_repeat_one_on)
                     .build(),
             )
         handler = Handler(Looper.getMainLooper())
 
-        val renderersFactory = DefaultRenderersFactory(this)
-        renderersFactory.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-
-        val player = ExoPlayer.Builder(this, renderersFactory).build()
-        val audioAttributes: AudioAttributes =
-            AudioAttributes
+        val player = ExoPlayer.Builder(this,
+            DefaultRenderersFactory(this)
+                .setEnableAudioFloatOutput(false) // TODO "true" disables EQ but enables HD audio, add toggle
+                .setEnableDecoderFallback(true)
+                .setEnableAudioTrackPlaybackParams(true) // hardware/system-accelerated playback speed
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+            )
+            .setWakeMode(C.WAKE_MODE_LOCAL)
+            // we seek with SeekBar on a touchscreen anyway, we can afford loosing some exactness
+            .setSeekParameters(SeekParameters.CLOSEST_SYNC)
+            .setSkipSilenceEnabled(false) // TODO add toggle?
+            .setAudioAttributes(AudioAttributes
                 .Builder()
                 .setUsage(C.USAGE_MEDIA)
                 .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                .build()
-        player.setAudioAttributes(audioAttributes, true)
+                .build(), true)
+            .build()
+        sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
+            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+        })
 
-        val notificationProvider = DefaultMediaNotificationProvider(this)
-        notificationProvider.setSmallIcon(R.drawable.ic_gramophone)
-        setMediaNotificationProvider(notificationProvider)
+        setMediaNotificationProvider(DefaultMediaNotificationProvider(this).apply {
+            setSmallIcon(R.drawable.ic_gramophone)
+        })
         mediaSession =
             MediaLibrarySession
                 .Builder(this, player, this)
@@ -143,13 +167,11 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
                 )
                 .build()
         lastPlayedManager = LastPlayedManager(this, mediaSession!!)
-        if (!mediaSession!!.player.isPlaying) {
-            handler.post {
-                val restoreInstance = lastPlayedManager.restore()
-                if (restoreInstance != null) {
-                    player.setMediaItems(restoreInstance.mediaItems)
-                    player.seekTo(restoreInstance.startIndex, restoreInstance.startPositionMs)
-                }
+        handler.post {
+            val restoreInstance = lastPlayedManager.restore()
+            if (restoreInstance != null) {
+                player.setMediaItems(restoreInstance.mediaItems,
+                    restoreInstance.startIndex, restoreInstance.startPositionMs)
             }
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
@@ -161,6 +183,11 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
         // When destroying, we should release server side player
         // alongside with the mediaSession.
         lastPlayedManager.save()
+        sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION,
+                (mediaSession!!.player as ExoPlayer).audioSessionId)
+        })
         mediaSession!!.player.release()
         mediaSession!!.release()
         mediaSession = null
@@ -181,9 +208,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
             // Add custom command to available session commands.
             commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
         }
-        availableSessionCommands.add(SessionCommand(Constants.SERVICE_SET_TIMER, Bundle.EMPTY))
-        availableSessionCommands.add(
-            SessionCommand(Constants.SERVICE_QUERY_TIMER, Bundle.EMPTY))
+        availableSessionCommands.add(SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY))
+        availableSessionCommands.add(SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY))
         return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
             .setAvailableSessionCommands(availableSessionCommands.build())
             .build()
@@ -196,33 +222,33 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
         args: Bundle
     ): ListenableFuture<SessionResult> {
         return Futures.immediateFuture(when (customCommand.customAction) {
-            Constants.PLAYBACK_SHUFFLE_ACTION_ON -> {
+            PLAYBACK_SHUFFLE_ACTION_ON -> {
                 session.player.shuffleModeEnabled = true
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
-            Constants.PLAYBACK_SHUFFLE_ACTION_OFF -> {
+            PLAYBACK_SHUFFLE_ACTION_OFF -> {
                 session.player.shuffleModeEnabled = false
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
-            Constants.SERVICE_SET_TIMER -> {
+            SERVICE_SET_TIMER -> {
                 // 0 = clear timer
                 timerDuration = customCommand.customExtras.getInt("duration")
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
-            Constants.SERVICE_QUERY_TIMER -> {
+            SERVICE_QUERY_TIMER -> {
                 SessionResult(SessionResult.RESULT_SUCCESS).also {
                     it.extras.putInt("duration", timerDuration)
                 }
             }
-            Constants.PLAYBACK_REPEAT_OFF -> {
+            PLAYBACK_REPEAT_OFF -> {
                 session.player.repeatMode = Player.REPEAT_MODE_OFF
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
-            Constants.PLAYBACK_REPEAT_ONE -> {
+            PLAYBACK_REPEAT_ONE -> {
                 session.player.repeatMode = Player.REPEAT_MODE_ONE
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
-            Constants.PLAYBACK_REPEAT_ALL -> {
+            PLAYBACK_REPEAT_ALL -> {
                 session.player.repeatMode = Player.REPEAT_MODE_ALL
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
@@ -267,4 +293,23 @@ class GramophonePlaybackService : MediaLibraryService(), MediaLibraryService.Med
             stopSelf()
         }
     }
+}
+
+// Custom commands handling for client side
+
+private const val SERVICE_SET_TIMER = "set_timer"
+private const val SERVICE_QUERY_TIMER = "query_timer"
+
+fun MediaController.getTimer(): Int =
+    sendCustomCommand(
+        SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY),
+        Bundle.EMPTY
+    ).get().extras.getInt("duration")
+fun MediaController.hasTimer(): Boolean = getTimer() > 0
+fun MediaController.setTimer(value: Int) {
+    sendCustomCommand(
+        SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY).apply {
+            customExtras.putInt("duration", value)
+        }, Bundle.EMPTY
+    )
 }

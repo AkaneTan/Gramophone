@@ -9,7 +9,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import org.akanework.gramophone.MainActivity
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 
@@ -48,9 +48,10 @@ class ViewPagerFragment : BaseFragment(true) {
 
         // Connect ViewPager2.
         viewPager2.offscreenPageLimit = 9999
-        viewPager2.adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+        val adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+        viewPager2.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = getString(ViewPager2Adapter.getLabelResId(position))
+            tab.text = getString(adapter.getLabelResId(position))
         }.attach()
 
         return rootView
