@@ -24,7 +24,7 @@
 | ![スクリーンショット 4](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_4.png) | ![スクリーンショット 5](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_5.png) | ![スクリーンショット 6](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_6.png) |
 
 ## インストール
-アプリの最新バージョンは[リリースページ](https://github.com/AkaneTan/Gramophone/releases).からダウンロードができます。
+アプリの最新バージョンは[リリースページ](https://github.com/AkaneTan/Gramophone/releases)からダウンロードができます。
 
 ## ビルド
 このアプリをビルドするには、Android Studio の最新版 Beta と高速なネットワークが必要です。クローンをしてビルドを実行するだけです。
