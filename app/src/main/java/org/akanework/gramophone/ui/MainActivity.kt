@@ -250,7 +250,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun shuffle() {
-        libraryViewModel.mediaItemList.value?.let { it1 ->
+        libraryViewModel.mediaItemList.value?.takeIf { it.isNotEmpty() }?.let { it1 ->
             val controller = getPlayer()
             controller.setMediaItems(it1)
             controller.shuffleModeEnabled = true
