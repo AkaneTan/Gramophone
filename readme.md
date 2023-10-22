@@ -1,7 +1,7 @@
 # Gramophone
 ![GitHub](https://img.shields.io/github/license/AkaneTan/Gramophone)
 ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/AkaneTan/Gramophone)
-[![Telegram](https://img.shields.io/badge/-telegram-red?color=white&logo=telegram&logoColor=blue)](https://t.me/MizuhaNetwork)
+[![Telegram](https://img.shields.io/badge/-telegram-red?color=white&logo=telegram&logoColor=blue)](https://t.me/AkaneFoundation)
 [![Matrix](https://img.shields.io/badge/-matrix-red?color=white&logo=matrix&logoColor=black)](https://matrix.to/#/#akanefoundation:matrix.org)
 
 A media3 music player with up-to-date md3 phonograph designs.
@@ -33,7 +33,7 @@ To build this app, you will need the latest beta version of android studio and a
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/AkaneTan/Gramophone/blob/beta/LICENSE) file for details.
 
 ## Notice
-- For bug reporting: [Telegram](https://t.me/MizuhaNetwork)
+- For bug reporting: [Telegram](https://t.me/AkaneFoundation)
 
 # Friend
 [SongSync](https://github.com/lambada10/songsync)
