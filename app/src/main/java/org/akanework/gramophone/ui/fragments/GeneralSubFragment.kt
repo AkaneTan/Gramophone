@@ -41,7 +41,7 @@ class GeneralSubFragment : BaseFragment(true) {
                 val item = libraryViewModel.albumItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_album)
                 itemList = item.songList
-                helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! }
+                helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! + it.mediaMetadata.discNumber!! * 1000 }
             }
 
             /*R.id.artist -> {

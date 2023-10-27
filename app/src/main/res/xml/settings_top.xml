@@ -24,6 +24,14 @@
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/AkaneTan/Gramophone" />
         </Preference>
+        <Preference
+            android:title="Telegram"
+            android:icon="@drawable/ic_telegram"
+            android:summary="@string/check_for_updates">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://t.me/AkaneDevRel" />
+        </Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_appearance">
