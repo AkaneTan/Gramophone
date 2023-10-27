@@ -257,7 +257,7 @@
 					android:insetRight="0dp"
 					android:insetBottom="0dp"
 					app:icon="@drawable/play_anim"
-					app:iconTint="?attr/colorOnPrimaryContainer"
+					app:iconTint="?attr/colorOnSecondaryContainer"
 					app:iconGravity="textStart"
 					app:iconPadding="0dp"
 					app:iconSize="40sp"
