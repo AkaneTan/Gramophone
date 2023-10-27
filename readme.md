@@ -1,8 +1,8 @@
 # Gramophone
-![GitHub](https://img.shields.io/github/license/AkaneTan/Gramophone)
-![GitHub tag (with filter)](https://img.shields.io/github/v/tag/AkaneTan/Gramophone)
-[![Telegram](https://img.shields.io/badge/-telegram-red?color=white&logo=telegram&logoColor=blue)](https://t.me/AkaneFoundation)
-[![Matrix](https://img.shields.io/badge/-matrix-red?color=white&logo=matrix&logoColor=black)](https://matrix.to/#/#akanefoundation:matrix.org)
+![GitHub](https://img.shields.io/github/license/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=azure)
+![GitHub tag (with filter)](https://img.shields.io/github/v/tag/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=azure)
+[![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=azure)](https://t.me/AkaneFoundation)
+[![Static Badge](https://img.shields.io/badge/Matrix-Content?style=flat-square&logo=matrix&logoColor=black&color=azure)](https://matrix.to/#/#akanefoundation:matrix.org)
 
 A media3 music player with up-to-date md3 phonograph designs.
 
@@ -32,8 +32,13 @@ To build this app, you will need the latest beta version of android studio and a
 ## License
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/AkaneTan/Gramophone/blob/beta/LICENSE) file for details.
 
+## Translation
+<a href="https://hosted.weblate.org/engage/gramophone/">
+<img src="https://hosted.weblate.org/widget/gramophone/strings-xml/287x66-white.png" alt="翻译状态" />
+</a>
+
 ## Notice
 - For bug reporting: [Telegram](https://t.me/AkaneFoundation)
 
-# Friend
+## Friend
 [SongSync](https://github.com/lambada10/songsync)
