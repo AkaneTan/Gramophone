@@ -90,6 +90,7 @@ class GeneralSubFragment : BaseFragment(true) {
         recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {
+            useMd2Style()
             setPopupTextProvider(songAdapter)
             build()
         }

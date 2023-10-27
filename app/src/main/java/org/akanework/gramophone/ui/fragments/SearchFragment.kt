@@ -45,6 +45,7 @@ class SearchFragment : BaseFragment(false) {
 
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(songAdapter)
+            useMd2Style()
             build()
         }
 

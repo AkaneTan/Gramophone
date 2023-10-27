@@ -34,6 +34,7 @@ class AdapterFragment : BaseFragment(null) {
         recyclerView.adapter = adapter.concatAdapter
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(adapter)
+            useMd2Style()
             build()
         }
         return rootView

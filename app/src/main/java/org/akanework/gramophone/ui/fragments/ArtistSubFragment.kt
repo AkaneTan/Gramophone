@@ -51,6 +51,7 @@ class ArtistSubFragment : BaseFragment(true) {
 
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(songAdapter)
+            useMd2Style()
             build()
         }
 
