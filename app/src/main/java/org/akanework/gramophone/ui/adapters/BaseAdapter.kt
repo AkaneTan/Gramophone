@@ -191,7 +191,7 @@ abstract class BaseAdapter<T>(
 			list.clear()
 			list.addAll(newList)
 			if (canDiff) diffResult!!.dispatchUpdatesTo(this) else notifyDataSetChanged()
-			if (!now) decorAdapter.updateSongCounter(list.size)
+			if (!now) decorAdapter.updateSongCounter()
 		}
 	}
 

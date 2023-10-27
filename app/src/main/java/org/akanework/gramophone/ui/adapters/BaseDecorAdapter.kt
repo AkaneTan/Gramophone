@@ -17,7 +17,6 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 ) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
 
 	protected val context: Context = adapter.context
-	private var count: Int = adapter.itemCount
 
 	override fun onCreateViewHolder(
 		parent: ViewGroup,
@@ -29,6 +28,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 	}
 
 	final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+		val count = adapter.itemCount
 		holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
 		holder.sortButton.visibility =
 			if (adapter.sortType != Sorter.Type.None || adapter.ownsView) View.VISIBLE else View.GONE
@@ -115,8 +115,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 		val counter: TextView = view.findViewById(R.id.song_counter)
 	}
 
-	fun updateSongCounter(newCount: Int) {
-		count = newCount
+	fun updateSongCounter() {
 		notifyItemChanged(0)
 	}
 }
