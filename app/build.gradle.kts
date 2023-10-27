@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -23,6 +25,10 @@ android {
     namespace = "org.akanework.gramophone"
     compileSdk = 34
     android.buildFeatures.buildConfig = true
+
+    androidResources {
+        generateLocaleConfig = true
+    }
 
     defaultConfig {
         applicationId = "org.akanework.gramophone"
