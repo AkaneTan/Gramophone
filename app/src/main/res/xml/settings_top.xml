@@ -46,6 +46,13 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_behavior">
+        <SwitchPreferenceCompat
+            android:key="floatoutput"
+            android:title="@string/settings_float_output"
+            android:summary="@string/settings_float_output_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_earthquake"
+            android:widgetLayout="@layout/preference_material_switch" />
         <SeekBarPreference
             android:key="mediastore_filter"
             android:title="@string/settings_mediastore_filter"

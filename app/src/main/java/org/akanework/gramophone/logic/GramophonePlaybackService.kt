@@ -26,6 +26,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
+import androidx.preference.PreferenceManager
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -92,6 +93,10 @@ class GramophonePlaybackService : MediaLibraryService(),
         }
 
     override fun onCreate() {
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val enableFloatOutput = prefs.getBoolean("floatoutput", false)
+
         customCommands =
             listOf(
                 CommandButton.Builder() // shuffle currently disabled, click will enable
@@ -129,7 +134,7 @@ class GramophonePlaybackService : MediaLibraryService(),
 
         val player = ExoPlayer.Builder(this,
             DefaultRenderersFactory(this)
-                .setEnableAudioFloatOutput(false) // TODO "true" disables EQ but enables HD audio, add toggle
+                .setEnableAudioFloatOutput(enableFloatOutput)
                 .setEnableDecoderFallback(true)
                 .setEnableAudioTrackPlaybackParams(true) // hardware/system-accelerated playback speed
                 .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
