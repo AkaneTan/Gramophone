@@ -62,4 +62,14 @@
             android:icon="@drawable/filter_art"
             app:showSeekBarValue="true" />
     </PreferenceCategory>
+
+    <!-- For extra space below -->
+    <Preference
+        android:title=""
+        android:enabled="false" />
+
+    <Preference
+        android:title=""
+        android:enabled="false" />
+
 </PreferenceScreen>
