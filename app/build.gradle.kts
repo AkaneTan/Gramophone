@@ -34,8 +34,8 @@ android {
         applicationId = "org.akanework.gramophone"
         minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.1" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
+        versionCode = 3
+        versionName = "1.0.2" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
         setProperty("archivesBaseName", "Gramophone-$versionName")
     }
 
