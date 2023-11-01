@@ -162,7 +162,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="18dp"
-					android:layout_marginBottom="24dp"
+					android:layout_marginBottom="34dp"
 					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
