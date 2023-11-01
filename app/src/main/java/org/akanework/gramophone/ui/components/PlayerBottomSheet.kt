@@ -83,7 +83,7 @@ class PlayerBottomSheet private constructor(
 	private val bottomSheetPlaylistButton: MaterialButton
 	private val bottomSheetLyricButton: MaterialButton
 	private val bottomSheetTimerButton: MaterialButton
-	private val bottomSheetFullSlider: SeekBar
+	private val bottomSheetFullSeekBar: SeekBar
 	private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
 	private var bottomSheetBackCallback: OnBackPressedCallback? = null
 	private val fullPlayer: ConstraintLayout
@@ -145,7 +145,7 @@ class PlayerBottomSheet private constructor(
 		bottomSheetFullNextButton = findViewById(R.id.sheet_next_song)
 		bottomSheetFullPosition = findViewById(R.id.position)
 		bottomSheetFullDuration = findViewById(R.id.duration)
-		bottomSheetFullSlider = findViewById(R.id.slider)
+		bottomSheetFullSeekBar = findViewById(R.id.slider)
 		bottomSheetFullSlideUpButton = findViewById(R.id.slide_down)
 		bottomSheetShuffleButton = findViewById(R.id.sheet_random)
 		bottomSheetLoopButton = findViewById(R.id.sheet_loop)
@@ -179,7 +179,7 @@ class PlayerBottomSheet private constructor(
 				.toFloat()
 
 		progressDrawable = SquigglyProgress()
-		bottomSheetFullSlider.progressDrawable = progressDrawable
+		bottomSheetFullSeekBar.progressDrawable = progressDrawable
 		progressDrawable.let {
 			it.waveLength = seekBarProgressWavelength
 			it.lineAmplitude = seekBarProgressAmplitude
@@ -189,7 +189,7 @@ class PlayerBottomSheet private constructor(
 			it.animate = false
 			it.setTint(
 				MaterialColors.getColor(
-					bottomSheetFullSlider,
+					bottomSheetFullSeekBar,
 					com.google.android.material.R.attr.colorPrimary,
 				)
 			)
@@ -292,7 +292,7 @@ class PlayerBottomSheet private constructor(
 			instance.shuffleModeEnabled = isChecked
 		}
 
-		bottomSheetFullSlider.setOnSeekBarChangeListener(touchListener)
+		bottomSheetFullSeekBar.setOnSeekBarChangeListener(touchListener)
 
 		bottomSheetFullSlideUpButton.setOnClickListener {
 			standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -358,8 +358,8 @@ class PlayerBottomSheet private constructor(
 			if (runnableRunning) {
 				val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 				if (duration != null && !isUserTracking) {
-					bottomSheetFullSlider.max = duration.toInt()
-					bottomSheetFullSlider.progress = instance.currentPosition.toInt()
+					bottomSheetFullSeekBar.max = duration.toInt()
+					bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
 					bottomSheetFullPosition.text = position
 				}
 			}
@@ -450,8 +450,8 @@ class PlayerBottomSheet private constructor(
 		val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
 		val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 		if (duration != null && !isUserTracking) {
-			bottomSheetFullSlider.max = duration.toInt()
-			bottomSheetFullSlider.progress = instance.currentPosition.toInt()
+			bottomSheetFullSeekBar.max = duration.toInt()
+			bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
 			bottomSheetFullPosition.text = position
 		}
 	}

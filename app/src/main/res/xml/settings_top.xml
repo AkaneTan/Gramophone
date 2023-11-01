@@ -43,6 +43,13 @@
             android:entryValues="@array/theme_switch_val"
             android:defaultValue="0"
             app:useSimpleSummaryProvider="true"/>
+        <SwitchPreferenceCompat
+            android:key="floatoutput"
+            android:title="@string/settings_float_output"
+            android:summary="@string/settings_float_output_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_earthquake"
+            android:widgetLayout="@layout/preference_material_switch" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_behavior">

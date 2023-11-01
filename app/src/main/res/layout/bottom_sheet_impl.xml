@@ -98,6 +98,9 @@
 		android:alpha="0"
 		tools:visibility="visible"
 		tools:alpha="1"
+		android:background="?attr/colorSurface"
+		android:elevation="0dp"
+		android:fitsSystemWindows="false"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
@@ -105,8 +108,6 @@
 			android:id="@+id/player_content"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
-			android:background="?attr/colorSurface"
-			android:elevation="0dp"
 			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
@@ -150,8 +151,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
 				android:layout_weight="1"
-				android:elevation="0dp"
-				app:layout_constraintHeight_min="230dp"
+				app:layout_constraintHeight_min="250dp"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
@@ -162,7 +162,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="18dp"
-					android:layout_marginBottom="6dp"
+					android:layout_marginBottom="14dp"
 					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
@@ -177,7 +177,7 @@
 						android:textFontWeight="500"
 						android:textSize="22sp"
 						android:scrollbars="none"
-						android:gravity="center_vertical"
+						android:gravity="center"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
 
@@ -186,10 +186,10 @@
 						android:layout_width="match_parent"
 						android:layout_height="24dp"
 						android:textColor="?attr/colorOnSurfaceVariant"
-						android:textFontWeight="400"
+						android:textFontWeight="500"
 						android:textSize="16sp"
 						android:scrollbars="none"
-						android:gravity="center_vertical"
+						android:gravity="center"
 						tools:targetApi="p"
 						tools:text="Artifiction" />
 
