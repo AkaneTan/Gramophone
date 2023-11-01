@@ -46,6 +46,7 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.getTimer
@@ -55,7 +56,6 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.logic.utils.startAnimation
-import org.akanework.gramophone.ui.MainActivity
 
 class PlayerBottomSheet private constructor(
 	context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
@@ -93,6 +93,7 @@ class PlayerBottomSheet private constructor(
 	private val fullPlayer: ConstraintLayout
 	private val previewPlayer: RelativeLayout
 	private val progressDrawable: SquigglyProgress
+	private var isLegacyProgressEnabled: Boolean = false
 
 	private val activity
 		get() = context as MainActivity
@@ -134,6 +135,8 @@ class PlayerBottomSheet private constructor(
 		get() = standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_HIDDEN
 
 	init {
+		val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+		isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
 		inflate(context, R.layout.bottom_sheet_impl, this)
 		id = R.id.player_layout
 		bottomSheetPreviewCover = findViewById(R.id.preview_album_cover)
@@ -159,26 +162,12 @@ class PlayerBottomSheet private constructor(
 		bottomSheetPlaylistButton = findViewById(R.id.playlist)
 		previewPlayer = findViewById(R.id.preview_player)
 		fullPlayer = findViewById(R.id.full_player)
-		val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-		if (prefs.getBoolean("default_progress_bar", false)) {
+		if (isLegacyProgressEnabled) {
 			bottomSheetFullSlider.visibility = View.VISIBLE
 			bottomSheetFullSeekBar.visibility = View.GONE
 		} else {
 			bottomSheetFullSlider.visibility = View.GONE
 			bottomSheetFullSeekBar.visibility = View.VISIBLE
-		}
-		prefs.registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
-			when (key) {
-				"default_progress_bar" -> {
-					if (sharedPreferences.getBoolean(key, false)) {
-						bottomSheetFullSlider.visibility = View.VISIBLE
-						bottomSheetFullSeekBar.visibility = View.GONE
-					} else {
-						bottomSheetFullSlider.visibility = View.GONE
-						bottomSheetFullSeekBar.visibility = View.VISIBLE
-					}
-				}
-			}
 		}
 		val playerContent = findViewById<ConstraintLayout>(R.id.player_content)
 		ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
@@ -610,7 +599,7 @@ class PlayerBottomSheet private constructor(
 	}
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-		Log.e("hi","$keyCode")
+		android.util.Log.e("hi","$keyCode")
 		if (controllerFuture?.isDone != true || controllerFuture?.isCancelled != false)
 			return super.onKeyDown(keyCode, event)
 		return when (keyCode) {
