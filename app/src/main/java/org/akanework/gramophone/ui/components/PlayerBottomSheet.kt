@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +30,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -37,13 +39,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.slider.Slider
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.getTimer
@@ -53,6 +55,7 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.logic.utils.startAnimation
+import org.akanework.gramophone.ui.MainActivity
 
 class PlayerBottomSheet private constructor(
 	context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
@@ -84,6 +87,7 @@ class PlayerBottomSheet private constructor(
 	private val bottomSheetLyricButton: MaterialButton
 	private val bottomSheetTimerButton: MaterialButton
 	private val bottomSheetFullSeekBar: SeekBar
+	private val bottomSheetFullSlider: Slider
 	private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
 	private var bottomSheetBackCallback: OnBackPressedCallback? = null
 	private val fullPlayer: ConstraintLayout
@@ -145,7 +149,8 @@ class PlayerBottomSheet private constructor(
 		bottomSheetFullNextButton = findViewById(R.id.sheet_next_song)
 		bottomSheetFullPosition = findViewById(R.id.position)
 		bottomSheetFullDuration = findViewById(R.id.duration)
-		bottomSheetFullSeekBar = findViewById(R.id.slider)
+		bottomSheetFullSeekBar = findViewById(R.id.slider_squiggly)
+		bottomSheetFullSlider = findViewById(R.id.slider_vert)
 		bottomSheetFullSlideUpButton = findViewById(R.id.slide_down)
 		bottomSheetShuffleButton = findViewById(R.id.sheet_random)
 		bottomSheetLoopButton = findViewById(R.id.sheet_loop)
@@ -154,6 +159,27 @@ class PlayerBottomSheet private constructor(
 		bottomSheetPlaylistButton = findViewById(R.id.playlist)
 		previewPlayer = findViewById(R.id.preview_player)
 		fullPlayer = findViewById(R.id.full_player)
+		val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+		if (prefs.getBoolean("default_progress_bar", false)) {
+			bottomSheetFullSlider.visibility = View.VISIBLE
+			bottomSheetFullSeekBar.visibility = View.GONE
+		} else {
+			bottomSheetFullSlider.visibility = View.GONE
+			bottomSheetFullSeekBar.visibility = View.VISIBLE
+		}
+		prefs.registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
+			when (key) {
+				"default_progress_bar" -> {
+					if (sharedPreferences.getBoolean(key, false)) {
+						bottomSheetFullSlider.visibility = View.VISIBLE
+						bottomSheetFullSeekBar.visibility = View.GONE
+					} else {
+						bottomSheetFullSlider.visibility = View.GONE
+						bottomSheetFullSeekBar.visibility = View.VISIBLE
+					}
+				}
+			}
+		}
 		val playerContent = findViewById<ConstraintLayout>(R.id.player_content)
 		ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
 			val statusBarSize = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -195,7 +221,7 @@ class PlayerBottomSheet private constructor(
 			)
 		}
 
-		touchListener = object : SeekBar.OnSeekBarChangeListener {
+		touchListener = object : SeekBar.OnSeekBarChangeListener, Slider.OnSliderTouchListener {
 			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 				if (fromUser) {
 					val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
@@ -224,6 +250,22 @@ class PlayerBottomSheet private constructor(
 				}
 				isUserTracking = false
 				progressDrawable.animate = instance.isPlaying || instance.playWhenReady
+			}
+
+			override fun onStartTrackingTouch(slider: Slider) {
+				isUserTracking = true
+			}
+
+			override fun onStopTrackingTouch(slider: Slider) {
+				// This value is multiplied by 1000 is because
+				// when the number is too big (like when toValue
+				// used the duration directly) we might encounter
+				// some performance problem.
+				val mediaId = instance.currentMediaItem?.mediaId
+				if (mediaId != null) {
+					instance.seekTo((slider.value.toLong()))
+				}
+				isUserTracking = false
 			}
 		}
 
@@ -293,6 +335,7 @@ class PlayerBottomSheet private constructor(
 		}
 
 		bottomSheetFullSeekBar.setOnSeekBarChangeListener(touchListener)
+		bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
 
 		bottomSheetFullSlideUpButton.setOnClickListener {
 			standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -360,6 +403,8 @@ class PlayerBottomSheet private constructor(
 				if (duration != null && !isUserTracking) {
 					bottomSheetFullSeekBar.max = duration.toInt()
 					bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
+					bottomSheetFullSlider.valueTo = duration.toFloat()
+					bottomSheetFullSlider.value = instance.currentPosition.toFloat()
 					bottomSheetFullPosition.text = position
 				}
 			}
@@ -452,6 +497,8 @@ class PlayerBottomSheet private constructor(
 		if (duration != null && !isUserTracking) {
 			bottomSheetFullSeekBar.max = duration.toInt()
 			bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
+			bottomSheetFullSlider.valueTo = duration.toFloat()
+			bottomSheetFullSlider.value = instance.currentPosition.toFloat()
 			bottomSheetFullPosition.text = position
 		}
 	}
@@ -563,7 +610,7 @@ class PlayerBottomSheet private constructor(
 	}
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-		android.util.Log.e("hi","$keyCode")
+		Log.e("hi","$keyCode")
 		if (controllerFuture?.isDone != true || controllerFuture?.isCancelled != false)
 			return super.onKeyDown(keyCode, event)
 		return when (keyCode) {

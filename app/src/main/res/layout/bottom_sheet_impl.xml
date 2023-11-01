@@ -162,7 +162,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="18dp"
-					android:layout_marginBottom="14dp"
+					android:layout_marginBottom="24dp"
 					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
@@ -187,7 +187,7 @@
 						android:layout_height="24dp"
 						android:textColor="?attr/colorOnSurfaceVariant"
 						android:textFontWeight="500"
-						android:textSize="16sp"
+						android:textSize="18sp"
 						android:scrollbars="none"
 						android:gravity="center"
 						tools:targetApi="p"
@@ -195,21 +195,52 @@
 
 				</LinearLayout>
 
-				<SeekBar
+				<View
 					android:id="@+id/slider"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+					android:layout_height="16dp"
 					android:layout_marginHorizontal="5dp"
 					android:layout_marginBottom="0.5dp"
+					app:layout_constraintBottom_toTopOf="@id/duration_frame"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
+
+				<SeekBar
+					android:id="@+id/slider_squiggly"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
 					android:thumbTint="?attr/colorPrimary"
 					android:progress="0"
 					style="@style/MediaPlayer.ProgressBar"
 					app:labelBehavior="gone"
+					tools:progress="20"
+					android:visibility="gone"
+					android:layout_marginHorizontal="5dp"
+					android:layout_marginBottom="0.5dp"
+					app:layout_constraintBottom_toTopOf="@id/duration_frame"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
+
+				<com.google.android.material.slider.Slider
+					android:id="@+id/slider_vert"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:value="0"
+					app:labelBehavior="gone"
+					app:thumbRadius="8dp"
+					app:thumbElevation="0dp"
+					tools:value="0.5"
+					android:layout_marginHorizontal="5dp"
+					android:layout_marginBottom="0.5dp"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@id/textLayout"
-					tools:progress="20"/>
+					tools:visibility="gone"/>
 
 				<FrameLayout
 					android:id="@+id/duration_frame"

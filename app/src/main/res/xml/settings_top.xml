@@ -44,11 +44,11 @@
             android:defaultValue="0"
             app:useSimpleSummaryProvider="true"/>
         <SwitchPreferenceCompat
-            android:key="floatoutput"
-            android:title="@string/settings_float_output"
-            android:summary="@string/settings_float_output_summary"
+            android:key="default_progress_bar"
+            android:title="@string/settings_default_progress_bar"
+            android:summary="@string/settings_default_progress_bar_summary"
             android:defaultValue="false"
-            android:icon="@drawable/ic_earthquake"
+            android:icon="@drawable/ic_draw_abstract"
             android:widgetLayout="@layout/preference_material_switch" />
     </PreferenceCategory>
     <PreferenceCategory
