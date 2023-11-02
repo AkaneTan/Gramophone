@@ -112,107 +112,102 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:id="@+id/player_content"
+		<!-- LANDSCAPE changed constraints -->
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/slide_down"
+			android:layout_width="52dp"
+			android:layout_height="52dp"
+			android:layout_marginStart="18dp"
+			android:layout_marginTop="26dp"
+			android:background="@drawable/rp_buttons"
+			app:icon="@drawable/ic_expand_more"
+			app:iconGravity="textStart"
+			app:iconPadding="0dp"
+			app:iconSize="28dp"
+			app:iconTint="?attr/colorOnSurface"
+			app:layout_constraintEnd_toStartOf="@id/full_sheet_cover"
+			app:layout_constraintHorizontal_bias="0.0"
+			app:layout_constraintVertical_bias="0.0"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"/>
+
+		<!-- LANDSCAPE changed constraints and added marginBottom -->
+		<ImageView
+			android:id="@+id/full_sheet_cover"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
+			android:layout_marginHorizontal="18dp"
+			android:layout_marginTop="25dp"
+			android:contentDescription="@string/dialog_album"
+			android:src="@drawable/ic_default_cover"
+			android:layout_marginBottom="25dp"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/controls"
+			app:layout_constraintStart_toEndOf="@id/slide_down"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<!-- LANDSCAPE changed constraints -->
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/controls"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="25dp"
+			android:layout_marginBottom="10dp"
+			android:layout_weight="1"
+			android:gravity="center_vertical"
+			app:layout_constraintHeight_min="200dp"
 			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
+			app:layout_constraintStart_toEndOf="@id/full_sheet_cover">
 
-			<com.google.android.material.button.MaterialButton
-				android:id="@+id/slide_down"
-				android:layout_width="52dp"
-				android:layout_height="52dp"
-				android:layout_marginHorizontal="18dp"
-				android:layout_marginTop="16dp"
-				android:background="@drawable/rp_buttons"
-				app:icon="@drawable/ic_expand_more"
-				app:iconGravity="textStart"
-				app:iconPadding="0dp"
-				app:iconSize="28dp"
-				app:iconTint="?attr/colorOnSurface"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintHorizontal_bias="0.0"
-				app:layout_constraintVertical_bias="0.0"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toTopOf="parent"
-				app:layout_constraintBottom_toTopOf="@+id/full_sheet_cover"/>
-
-			<ImageView
-				android:id="@+id/full_sheet_cover"
-				android:layout_width="0dp"
-				android:layout_height="0dp"
-				android:layout_marginHorizontal="18dp"
-				android:layout_marginTop="18dp"
-				android:contentDescription="@string/dialog_album"
-				android:src="@drawable/ic_default_cover"
-				android:layout_marginBottom="25dp"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintEnd_toStartOf="@id/controls"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
-
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:id="@+id/controls"
-				android:layout_width="0dp"
+			<LinearLayout
+				android:id="@+id/textLayout"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="10dp"
-				android:layout_weight="1"
-				app:layout_constraintHeight_min="250dp"
-				app:layout_constraintBottom_toBottomOf="parent"
+				android:layout_marginHorizontal="20dp"
+				android:layout_marginBottom="32dp"
+				android:orientation="vertical"
+				app:layout_constraintBottom_toTopOf="@id/slider"
 				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintStart_toEndOf="@id/full_sheet_cover">
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent">
 
-				<LinearLayout
-					android:id="@+id/textLayout"
+				<org.akanework.gramophone.ui.components.MarqueeTextView
+					android:id="@+id/full_song_name"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginHorizontal="18dp"
-					android:layout_marginBottom="34dp"
-					android:orientation="vertical"
-					app:layout_constraintBottom_toTopOf="@+id/slider"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toTopOf="parent">
+					android:layout_height="32dp"
+					android:textColor="?attr/colorOnSurface"
+					android:textFontWeight="500"
+					android:textSize="22sp"
+					android:scrollbars="none"
+					android:gravity="center"
+					tools:targetApi="p"
+					tools:text="Artifiction" />
 
-					<org.akanework.gramophone.ui.components.MarqueeTextView
-						android:id="@+id/full_song_name"
-						android:layout_width="match_parent"
-						android:layout_height="32dp"
-						android:textColor="?attr/colorOnSurface"
-						android:textFontWeight="500"
-						android:textSize="22sp"
-						android:scrollbars="none"
-						android:gravity="center"
-						tools:targetApi="p"
-						tools:text="Artifiction" />
-
-					<org.akanework.gramophone.ui.components.MarqueeTextView
-						android:id="@+id/full_song_artist"
-						android:layout_width="match_parent"
-						android:layout_height="24dp"
-						android:textColor="?attr/colorOnSurfaceVariant"
-						android:textFontWeight="500"
-						android:textSize="18sp"
-						android:scrollbars="none"
-						android:gravity="center"
-						tools:targetApi="p"
-						tools:text="Artifiction" />
-
-				</LinearLayout>
-
-				<View
-					android:id="@+id/slider"
+				<org.akanework.gramophone.ui.components.MarqueeTextView
+					android:id="@+id/full_song_artist"
 					android:layout_width="match_parent"
-					android:layout_height="16dp"
-					android:layout_marginHorizontal="5dp"
-					android:layout_marginBottom="0.5dp"
-					app:layout_constraintBottom_toTopOf="@id/duration_frame"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
+					android:layout_height="24dp"
+					android:textColor="?attr/colorOnSurfaceVariant"
+					android:textFontWeight="500"
+					android:textSize="18sp"
+					android:scrollbars="none"
+					android:gravity="center"
+					tools:targetApi="p"
+					tools:text="Artifiction" />
+
+			</LinearLayout>
+
+			<FrameLayout
+				android:id="@+id/slider"
+				android:layout_width="match_parent"
+				android:layout_height="16dp"
+				app:layout_constraintBottom_toTopOf="@id/duration_frame"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/textLayout"
+				android:layout_marginHorizontal="8dp"
+				android:layout_marginBottom="0.5dp">
 
 				<SeekBar
 					android:id="@+id/slider_squiggly"
@@ -223,14 +218,9 @@
 					android:progress="0"
 					style="@style/MediaPlayer.ProgressBar"
 					app:labelBehavior="gone"
-					tools:progress="20"
 					android:visibility="gone"
-					android:layout_marginHorizontal="5dp"
-					android:layout_marginBottom="0.5dp"
-					app:layout_constraintBottom_toTopOf="@id/duration_frame"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
+					tools:visibility="visible"
+					tools:progress="20"/>
 
 				<com.google.android.material.slider.Slider
 					android:id="@+id/slider_vert"
@@ -241,118 +231,111 @@
 					app:labelBehavior="gone"
 					app:thumbRadius="8dp"
 					app:thumbElevation="0dp"
-					tools:value="0.5"
-					android:layout_marginHorizontal="5dp"
-					android:layout_marginBottom="0.5dp"
-					app:layout_constraintBottom_toTopOf="@id/duration_frame"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout"
-					tools:visibility="gone"/>
+					android:visibility="gone"
+					tools:value="0.5"/>
 
-				<FrameLayout
-					android:id="@+id/duration_frame"
-					android:layout_width="match_parent"
+			</FrameLayout>
+
+			<FrameLayout
+				android:id="@+id/duration_frame"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="20dp"
+				android:layout_marginTop="4dp"
+				app:layout_constraintBottom_toTopOf="@id/sheet_mid_button"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/slider"
+				app:layout_constraintVertical_bias="0.0">
+
+				<TextView
+					android:id="@+id/position"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginHorizontal="18dp"
-					android:layout_marginTop="4dp"
-					app:layout_constraintBottom_toTopOf="@id/sheet_mid_button"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/slider"
-					app:layout_constraintVertical_bias="0.0">
+					android:layout_gravity="start"
+					android:text="@string/default_time"
+					android:textColor="?attr/colorOnSurfaceVariant"
+					android:textFontWeight="500"
+					tools:targetApi="p" />
 
-					<TextView
-						android:id="@+id/position"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_gravity="start"
-						android:text="@string/default_time"
-						android:textColor="?attr/colorOnSurfaceVariant"
-						android:textFontWeight="500"
-						tools:targetApi="p" />
+				<TextView
+					android:id="@+id/duration"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="end"
+					android:text="@string/default_time"
+					android:textColor="?attr/colorOnSurfaceVariant"
+					android:textFontWeight="500"
+					tools:targetApi="p" />
 
-					<TextView
-						android:id="@+id/duration"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_gravity="end"
-						android:text="@string/default_time"
-						android:textColor="?attr/colorOnSurfaceVariant"
-						android:textFontWeight="500"
-						tools:targetApi="p" />
+			</FrameLayout>
 
-				</FrameLayout>
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/sheet_mid_button"
+				android:layout_width="84dp"
+				android:layout_height="84dp"
+				android:layout_centerHorizontal="true"
+				android:layout_marginTop="18dp"
+				android:backgroundTint="?attr/colorSecondaryContainer"
+				android:insetLeft="0dp"
+				android:insetTop="0dp"
+				android:insetRight="0dp"
+				android:insetBottom="0dp"
+				app:icon="@drawable/play_anim"
+				app:iconTint="?attr/colorOnSecondaryContainer"
+				app:iconGravity="textStart"
+				app:iconPadding="0dp"
+				app:iconSize="40sp"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/duration_frame" />
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/sheet_mid_button"
-					android:layout_width="84dp"
-					android:layout_height="84dp"
-					android:layout_centerHorizontal="true"
-					android:layout_marginTop="18dp"
-					android:backgroundTint="?attr/colorSecondaryContainer"
-					android:insetLeft="0dp"
-					android:insetTop="0dp"
-					android:insetRight="0dp"
-					android:insetBottom="0dp"
-					app:icon="@drawable/play_anim"
-					app:iconTint="?attr/colorOnSecondaryContainer"
-					app:iconGravity="textStart"
-					app:iconPadding="0dp"
-					app:iconSize="40sp"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/duration_frame" />
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/sheet_previous_song"
+				android:layout_width="84dp"
+				android:layout_height="84dp"
+				android:layout_gravity="center"
+				android:layout_marginEnd="8dp"
+				android:layout_toStartOf="@id/sheet_mid_button"
+				android:background="@drawable/rp_buttons_dynamic"
+				android:insetLeft="0dp"
+				android:insetTop="0dp"
+				android:insetRight="0dp"
+				android:insetBottom="0dp"
+				app:icon="@drawable/previous_art"
+				app:iconGravity="textStart"
+				app:iconPadding="0dp"
+				app:iconSize="36sp"
+				app:iconTint="?attr/colorOnSurface"
+				app:layout_constraintBottom_toBottomOf="@id/sheet_mid_button"
+				app:layout_constraintEnd_toStartOf="@id/sheet_mid_button"
+				app:layout_constraintHorizontal_bias="0.85"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="@id/sheet_mid_button" />
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/sheet_previous_song"
-					android:layout_width="84dp"
-					android:layout_height="84dp"
-					android:layout_gravity="center"
-					android:layout_marginEnd="8dp"
-					android:layout_toStartOf="@id/sheet_mid_button"
-					android:background="@drawable/rp_buttons_dynamic"
-					android:insetLeft="0dp"
-					android:insetTop="0dp"
-					android:insetRight="0dp"
-					android:insetBottom="0dp"
-					app:icon="@drawable/previous_art"
-					app:iconGravity="textStart"
-					app:iconPadding="0dp"
-					app:iconSize="36sp"
-					app:iconTint="?attr/colorOnSurface"
-					app:layout_constraintBottom_toBottomOf="@id/sheet_mid_button"
-					app:layout_constraintEnd_toStartOf="@id/sheet_mid_button"
-					app:layout_constraintHorizontal_bias="0.85"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toTopOf="@id/sheet_mid_button" />
-
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/sheet_next_song"
-					android:layout_width="84dp"
-					android:layout_height="84dp"
-					android:layout_gravity="center"
-					android:layout_marginStart="8dp"
-					android:layout_toEndOf="@id/sheet_mid_button"
-					android:background="@drawable/rp_buttons_dynamic"
-					android:insetLeft="0dp"
-					android:insetTop="0dp"
-					android:insetRight="0dp"
-					android:insetBottom="0dp"
-					app:icon="@drawable/next_art"
-					app:iconGravity="textStart"
-					app:iconPadding="0dp"
-					app:iconSize="36sp"
-					app:iconTint="?attr/colorOnSurface"
-					app:layout_constraintBottom_toBottomOf="@id/sheet_mid_button"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintHorizontal_bias="0.15"
-					app:layout_constraintStart_toEndOf="@+id/sheet_mid_button"
-					app:layout_constraintTop_toTopOf="@id/sheet_mid_button" />
-
-			</androidx.constraintlayout.widget.ConstraintLayout>
-
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/sheet_next_song"
+				android:layout_width="84dp"
+				android:layout_height="84dp"
+				android:layout_gravity="center"
+				android:layout_marginStart="8dp"
+				android:layout_toEndOf="@id/sheet_mid_button"
+				android:background="@drawable/rp_buttons_dynamic"
+				android:insetLeft="0dp"
+				android:insetTop="0dp"
+				android:insetRight="0dp"
+				android:insetBottom="0dp"
+				app:icon="@drawable/next_art"
+				app:iconGravity="textStart"
+				app:iconPadding="0dp"
+				app:iconSize="36sp"
+				app:iconTint="?attr/colorOnSurface"
+				app:layout_constraintBottom_toBottomOf="@id/sheet_mid_button"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintHorizontal_bias="0.15"
+				app:layout_constraintStart_toEndOf="@id/sheet_mid_button"
+				app:layout_constraintTop_toTopOf="@id/sheet_mid_button" />
 		</androidx.constraintlayout.widget.ConstraintLayout>
 
 		<LinearLayout
@@ -360,9 +343,12 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/actionBar"
 			android:gravity="end"
-			android:padding="4dp"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
+			android:paddingStart="8dp"
+			android:paddingTop="4dp"
+			android:paddingBottom="4dp"
+			android:paddingEnd="8dp"
+			app:layout_constraintStart_toStartOf="@id/controls"
+			app:layout_constraintEnd_toEndOf="@id/controls"
 			app:layout_constraintBottom_toBottomOf="parent">
 
 			<com.google.android.material.button.MaterialButton
