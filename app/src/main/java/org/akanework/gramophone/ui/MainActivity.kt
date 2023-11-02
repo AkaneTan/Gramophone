@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
@@ -16,7 +17,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setPadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -146,6 +150,12 @@ class MainActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.navigation_view)
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
 
+        ViewCompat.setOnApplyWindowInsetsListener(navigationView) { view, insets ->
+            val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            navigationView.setPadding(navBarInset.left, 0, 0, navBarInset.bottom)
+            view.onApplyWindowInsets(insets.toWindowInsets())
+            return@setOnApplyWindowInsetsListener insets
+        }
         navigationView.setNavigationItemSelectedListener {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
             val playerLayout = getPlayerSheet()

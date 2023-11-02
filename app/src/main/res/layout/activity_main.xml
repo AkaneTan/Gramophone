@@ -10,14 +10,19 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/colorSurface">
+        android:layout_height="match_parent">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/container"
-            android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/container"
+                android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
 
         <include layout="@layout/bottom_sheet" />
 

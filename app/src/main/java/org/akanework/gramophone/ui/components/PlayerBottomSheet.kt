@@ -6,20 +6,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -90,8 +87,8 @@ class PlayerBottomSheet private constructor(
 	private val bottomSheetFullSlider: Slider
 	private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
 	private var bottomSheetBackCallback: OnBackPressedCallback? = null
-	private val fullPlayer: ConstraintLayout
-	private val previewPlayer: RelativeLayout
+	private val fullPlayer: View
+	private val previewPlayer: View
 	private val progressDrawable: SquigglyProgress
 	private var isLegacyProgressEnabled: Boolean = false
 
@@ -169,10 +166,13 @@ class PlayerBottomSheet private constructor(
 			bottomSheetFullSlider.visibility = View.GONE
 			bottomSheetFullSeekBar.visibility = View.VISIBLE
 		}
-		val playerContent = findViewById<ConstraintLayout>(R.id.player_content)
-		ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
-			val statusBarSize = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-			playerContent.setPadding(statusBarSize.left, statusBarSize.top, statusBarSize.right, statusBarSize.bottom)
+		ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
+			val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+			previewPlayer.setPadding(0, 0, 0, navBarInset.bottom)
+			fullPlayer.setPadding(0, 0, 0, navBarInset.bottom)
+			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+			view.onApplyWindowInsets(insets.toWindowInsets())
 			return@setOnApplyWindowInsetsListener insets
 		}
 
@@ -440,6 +440,8 @@ class PlayerBottomSheet private constructor(
 			activity.onBackPressedDispatcher.addCallback(activity, bottomSheetBackCallback!!)
 			standardBottomSheetBehavior!!.addBottomSheetCallback(bottomSheetCallback)
 			lifecycleOwner.lifecycle.addObserver(this)
+			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
 		}
 	}
 
@@ -609,7 +611,7 @@ class PlayerBottomSheet private constructor(
 	}
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-		android.util.Log.e("hi","$keyCode")
+		//android.util.Log.e("hi","$keyCode") TODO
 		if (controllerFuture?.isDone != true || controllerFuture?.isCancelled != false)
 			return super.onKeyDown(keyCode, event)
 		return when (keyCode) {

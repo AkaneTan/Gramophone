@@ -7,32 +7,37 @@
 	android:id="@+id/player_layout">
 
 	<!-- Preview Player -->
-	<RelativeLayout
+	<androidx.constraintlayout.widget.ConstraintLayout
 		android:id="@+id/preview_player"
 		android:layout_width="match_parent"
-		android:layout_height="66dp"
+		android:layout_height="wrap_content"
 		android:visibility="gone"
 		android:alpha="0"
 		tools:alpha="1"
-		tools:visibility="gone">
+		tools:visibility="gone"
+		android:orientation="horizontal">
 
 		<ImageView
 			android:id="@+id/preview_album_cover"
 			android:layout_width="50dp"
 			android:layout_height="50dp"
-			android:layout_centerVertical="true"
 			android:layout_marginStart="16dp"
+			android:layout_marginVertical="8dp"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
 			android:background="?attr/colorSurfaceContainer"
 			android:src="@drawable/ic_default_cover"
 			android:contentDescription="@string/dialog_album" />
 
 		<LinearLayout
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
+			app:layout_constraintStart_toEndOf="@id/preview_album_cover"
+			app:layout_constraintEnd_toStartOf="@id/preview_control"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
 			android:layout_marginStart="16dp"
-			android:layout_marginEnd="112dp"
-			android:layout_toEndOf="@id/preview_album_cover"
 			android:orientation="vertical">
 
 			<org.akanework.gramophone.ui.components.MarqueeTextView
@@ -59,8 +64,10 @@
 			android:id="@+id/preview_control"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:layout_centerVertical="true"
-			android:layout_toStartOf="@id/preview_next"
+			android:layout_marginStart="16dp"
+			app:layout_constraintEnd_toStartOf="@id/preview_next"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
 			android:background="@drawable/rp_buttons"
 			android:insetLeft="0dp"
 			android:insetTop="0dp"
@@ -76,9 +83,11 @@
 			android:id="@+id/preview_next"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:layout_alignParentEnd="true"
-			android:layout_centerVertical="true"
+			android:layout_marginStart="16dp"
 			android:layout_marginEnd="8dp"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
 			android:background="@drawable/rp_buttons"
 			android:insetLeft="0dp"
 			android:insetTop="0dp"
@@ -89,7 +98,7 @@
 			app:iconPadding="0dp"
 			app:iconSize="24dp"
 			app:iconTint="?attr/colorOnSurface" />
-	</RelativeLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<!-- Full Player -->
 	<androidx.constraintlayout.widget.ConstraintLayout
@@ -98,6 +107,8 @@
 		android:alpha="0"
 		tools:visibility="visible"
 		tools:alpha="1"
+		android:background="?attr/colorSurface"
+		android:elevation="0dp"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
@@ -129,7 +140,6 @@
 				app:layout_constraintTop_toTopOf="parent"
 				app:layout_constraintBottom_toTopOf="@+id/full_sheet_cover"/>
 
-			<!-- LANDSCAPE changed constraints here and added margin bottom -->
 			<ImageView
 				android:id="@+id/full_sheet_cover"
 				android:layout_width="0dp"
@@ -144,14 +154,13 @@
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
 
-			<!-- LANDSCAPE changed constraints here -->
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/controls"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
 				android:layout_weight="1"
-				app:layout_constraintHeight_min="230dp"
+				app:layout_constraintHeight_min="250dp"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toEndOf="@id/full_sheet_cover">
@@ -161,7 +170,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="18dp"
-					android:layout_marginBottom="6dp"
+					android:layout_marginBottom="34dp"
 					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
@@ -185,8 +194,8 @@
 						android:layout_width="match_parent"
 						android:layout_height="24dp"
 						android:textColor="?attr/colorOnSurfaceVariant"
-						android:textFontWeight="400"
-						android:textSize="16sp"
+						android:textFontWeight="500"
+						android:textSize="18sp"
 						android:scrollbars="none"
 						android:gravity="center"
 						tools:targetApi="p"
@@ -194,36 +203,52 @@
 
 				</LinearLayout>
 
-				<FrameLayout
+				<View
 					android:id="@+id/slider"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+					android:layout_height="16dp"
 					android:layout_marginHorizontal="5dp"
 					android:layout_marginBottom="0.5dp"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout">
-					<SeekBar
-						android:id="@+id/slider_squiggly"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:thumbTint="?attr/colorPrimary"
-						android:progress="0"
-						style="@style/MediaPlayer.ProgressBar"
-						app:labelBehavior="gone"
-						tools:progress="20"/>
-					<com.google.android.material.slider.Slider
-						android:id="@+id/slider_vert"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:value="0"
-						app:labelBehavior="gone"
-						app:thumbRadius="8dp"
-						app:thumbElevation="0dp"
-						tools:value="0.5"
-						android:visibility="gone"/>
-				</FrameLayout>
+					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
+
+				<SeekBar
+					android:id="@+id/slider_squiggly"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:thumbTint="?attr/colorPrimary"
+					android:progress="0"
+					style="@style/MediaPlayer.ProgressBar"
+					app:labelBehavior="gone"
+					tools:progress="20"
+					android:visibility="gone"
+					android:layout_marginHorizontal="5dp"
+					android:layout_marginBottom="0.5dp"
+					app:layout_constraintBottom_toTopOf="@id/duration_frame"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
+
+				<com.google.android.material.slider.Slider
+					android:id="@+id/slider_vert"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:value="0"
+					app:labelBehavior="gone"
+					app:thumbRadius="8dp"
+					app:thumbElevation="0dp"
+					tools:value="0.5"
+					android:layout_marginHorizontal="5dp"
+					android:layout_marginBottom="0.5dp"
+					app:layout_constraintBottom_toTopOf="@id/duration_frame"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/textLayout"
+					tools:visibility="gone"/>
 
 				<FrameLayout
 					android:id="@+id/duration_frame"
@@ -271,7 +296,7 @@
 					android:insetRight="0dp"
 					android:insetBottom="0dp"
 					app:icon="@drawable/play_anim"
-					app:iconTint="?attr/colorOnPrimaryContainer"
+					app:iconTint="?attr/colorOnSecondaryContainer"
 					app:iconGravity="textStart"
 					app:iconPadding="0dp"
 					app:iconSize="40sp"
