@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -23,12 +24,14 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
@@ -211,6 +214,15 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
                         .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
                     startActivity.launch(intent)
+                }
+
+                R.id.about -> {
+                    val rootView = MaterialAlertDialogBuilder(this)
+                        .setView(R.layout.dialog_about)
+                        .show()
+                    val versionTextView = rootView.findViewById<TextView>(R.id.version)!!
+                    versionTextView.text =
+                        BuildConfig.VERSION_NAME
                 }
 
                 else -> throw IllegalStateException()

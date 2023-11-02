@@ -4,6 +4,7 @@
     <PreferenceCategory
         android:title="@string/settings_category_info">
         <Preference
+            android:key="app_name"
             android:title="@string/settings_app_name"
             android:summary="@string/app_name"
             android:icon="@drawable/widgets_art" />
