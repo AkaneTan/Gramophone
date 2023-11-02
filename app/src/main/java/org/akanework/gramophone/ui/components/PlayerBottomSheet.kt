@@ -19,6 +19,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
@@ -167,13 +169,16 @@ class PlayerBottomSheet private constructor(
 			bottomSheetFullSeekBar.visibility = View.VISIBLE
 		}
 		ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
-			val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-			val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-			previewPlayer.setPadding(0, 0, 0, navBarInset.bottom)
-			fullPlayer.setPadding(0, statusBarInset.top, 0, navBarInset.bottom)
-			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
-			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
 			view.onApplyWindowInsets(insets.toWindowInsets())
+			doOnLayout {
+				val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+				val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+				previewPlayer.setPadding(0, 0, 0, navBarInset.bottom)
+				fullPlayer.setPadding(0, statusBarInset.top, 0, navBarInset.bottom)
+				previewPlayer.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+					MeasureSpec.UNSPECIFIED)
+				standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+			}
 			return@setOnApplyWindowInsetsListener insets
 		}
 
@@ -441,8 +446,13 @@ class PlayerBottomSheet private constructor(
 			activity.onBackPressedDispatcher.addCallback(activity, bottomSheetBackCallback!!)
 			standardBottomSheetBehavior!!.addBottomSheetCallback(bottomSheetCallback)
 			lifecycleOwner.lifecycle.addObserver(this)
-			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
-			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+			doOnLayout {
+				previewPlayer.measure(
+					MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+					MeasureSpec.UNSPECIFIED
+				)
+				standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+			}
 		}
 	}
 
