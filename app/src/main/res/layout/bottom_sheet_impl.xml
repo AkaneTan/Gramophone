@@ -109,6 +109,7 @@
 		tools:alpha="1"
 		android:background="?attr/colorSurface"
 		android:elevation="0dp"
+		android:fitsSystemWindows="true"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
@@ -117,7 +118,7 @@
 			android:layout_width="52dp"
 			android:layout_height="52dp"
 			android:layout_marginStart="18dp"
-			android:layout_marginTop="26dp"
+			android:layout_marginTop="16dp"
 			android:background="@drawable/rp_buttons"
 			app:icon="@drawable/ic_expand_more"
 			app:iconGravity="textStart"
@@ -136,7 +137,7 @@
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			android:layout_marginHorizontal="18dp"
-			android:layout_marginTop="25dp"
+			android:layout_marginTop="16dp"
 			android:contentDescription="@string/dialog_album"
 			android:src="@drawable/ic_default_cover"
 			app:layout_constraintDimensionRatio="1:1"
@@ -152,7 +153,7 @@
 			android:layout_marginBottom="10dp"
 			android:layout_weight="1"
 			android:gravity="center_vertical"
-			app:layout_constraintHeight_min="200dp"
+			app:layout_constraintHeight_min="250dp"
 			app:layout_constraintBottom_toTopOf="@id/actionBar"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
@@ -163,7 +164,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginHorizontal="20dp"
-				android:layout_marginBottom="32dp"
 				android:orientation="vertical"
 				app:layout_constraintBottom_toTopOf="@id/slider"
 				app:layout_constraintEnd_toEndOf="parent"
@@ -199,7 +199,7 @@
 			<FrameLayout
 				android:id="@+id/slider"
 				android:layout_width="match_parent"
-				android:layout_height="16dp"
+				android:layout_height="48dp"
 				app:layout_constraintBottom_toTopOf="@id/duration_frame"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
@@ -230,7 +230,8 @@
 					app:thumbRadius="8dp"
 					app:thumbElevation="0dp"
 					android:visibility="gone"
-					tools:value="0.5"/>
+					tools:value="0.5"
+					tools:visibility="visible"/>
 
 			</FrameLayout>
 
@@ -239,7 +240,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginHorizontal="20dp"
-				android:layout_marginTop="4dp"
 				app:layout_constraintBottom_toTopOf="@id/sheet_mid_button"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
