@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -61,10 +60,6 @@ class PlayerBottomSheet private constructor(
 	  Player.Listener, DefaultLifecycleObserver {
 	constructor(context: Context, attributeSet: AttributeSet?)
 			: this(context, attributeSet, 0, 0)
-
-	companion object {
-		const val TAG = "PlayerBottomSheet"
-	}
 
 	private var sessionToken: SessionToken? = null
 	private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -171,12 +166,13 @@ class PlayerBottomSheet private constructor(
 			bottomSheetFullSlider.visibility = View.GONE
 			bottomSheetFullSeekBar.visibility = View.VISIBLE
 		}
-		Log.d(TAG, "Init executed")
 		ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
 			val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 			val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
 			previewPlayer.setPadding(0, 0, 0, navBarInset.bottom)
 			fullPlayer.setPadding(0, statusBarInset.top, 0, navBarInset.bottom)
+			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
 			view.onApplyWindowInsets(insets.toWindowInsets())
 			return@setOnApplyWindowInsetsListener insets
 		}
@@ -445,7 +441,6 @@ class PlayerBottomSheet private constructor(
 			activity.onBackPressedDispatcher.addCallback(activity, bottomSheetBackCallback!!)
 			standardBottomSheetBehavior!!.addBottomSheetCallback(bottomSheetCallback)
 			lifecycleOwner.lifecycle.addObserver(this)
-			Log.d(TAG, "onViewAdded executed")
 			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
 			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
 		}
