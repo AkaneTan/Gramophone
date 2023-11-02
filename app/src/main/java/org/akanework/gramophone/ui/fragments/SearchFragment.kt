@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -41,7 +41,7 @@ class SearchFragment : BaseFragment(false) {
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(), false, null, false)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
-        val easterEgg = rootView.findViewById<FrameLayout>(R.id.easter_egg)
+        val easterEgg = rootView.findViewById<LinearLayout>(R.id.easter_egg)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter
