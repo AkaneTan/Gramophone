@@ -168,8 +168,9 @@ class PlayerBottomSheet private constructor(
 		}
 		ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
 			val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+			val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
 			previewPlayer.setPadding(0, 0, 0, navBarInset.bottom)
-			fullPlayer.setPadding(0, 0, 0, navBarInset.bottom)
+			fullPlayer.setPadding(0, statusBarInset.top, 0, navBarInset.bottom)
 			previewPlayer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
 			standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
 			view.onApplyWindowInsets(insets.toWindowInsets())

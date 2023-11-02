@@ -109,7 +109,6 @@
 		tools:alpha="1"
 		android:background="?attr/colorSurface"
 		android:elevation="0dp"
-		android:fitsSystemWindows="true"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
