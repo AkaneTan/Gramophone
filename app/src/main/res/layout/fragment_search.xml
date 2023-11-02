@@ -46,6 +46,43 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/easter_egg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/seniorious"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/easter_egg_1"
+            android:textColor="?attr/colorOnSurface"
+            android:fontFamily="serif"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/easter_egg_2"
+            android:textColor="?attr/colorPrimary" />
+
+    </LinearLayout>
+
     <include
         layout="@layout/fragment_recyclerview"
         android:layout_width="match_parent"

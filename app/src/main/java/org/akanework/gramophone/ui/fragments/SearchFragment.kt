@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +41,7 @@ class SearchFragment : BaseFragment(false) {
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(), false, null, false)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
+        val easterEgg = rootView.findViewById<FrameLayout>(R.id.easter_egg)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter
@@ -55,6 +57,12 @@ class SearchFragment : BaseFragment(false) {
             if (text.isNullOrBlank()) {
                 songAdapter.updateList(listOf(), now = false, true)
             } else {
+                if (text.contentEquals("Are you going to Scarborough fair?")) {
+                    easterEgg.visibility = View.VISIBLE
+                } else if (!text.contentEquals("Are you going to Scarborough fair?") &&
+                    easterEgg.visibility == View.VISIBLE) {
+                    easterEgg.visibility = View.GONE
+                }
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     filteredList.clear()
                     libraryViewModel.mediaItemList.value?.filter {
