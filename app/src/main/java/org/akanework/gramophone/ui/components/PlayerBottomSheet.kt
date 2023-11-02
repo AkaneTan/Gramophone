@@ -323,6 +323,16 @@ class PlayerBottomSheet private constructor(
 			instance.shuffleModeEnabled = isChecked
 		}
 
+		bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
+			if (isUser) {
+				val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+				if (dest != null) {
+					bottomSheetFullPosition.text =
+						GramophoneUtils.convertDurationToTimeStamp((value).toLong())
+				}
+			}
+		}
+
 		bottomSheetFullSeekBar.setOnSeekBarChangeListener(touchListener)
 		bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
 
