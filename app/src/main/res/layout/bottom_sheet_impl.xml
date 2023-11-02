@@ -145,11 +145,12 @@
 				android:layout_width="0dp"
 				android:layout_height="0dp"
 				android:layout_marginHorizontal="18dp"
-				android:layout_marginTop="18dp"
+				android:layout_marginTop="8dp"
 				android:contentDescription="@string/dialog_album"
 				android:src="@drawable/ic_default_cover"
 				app:layout_constraintDimensionRatio="1:1"
 				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintHorizontal_bias="0.0"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toBottomOf="@+id/slide_down" />
 
@@ -170,7 +171,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="20dp"
-					android:layout_marginBottom="48dp"
+					android:layout_marginBottom="24dp"
 					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
@@ -214,41 +215,45 @@
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@id/textLayout"/>
 
-				<SeekBar
-					android:id="@+id/slider_squiggly"
+				<FrameLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_gravity="center"
-					android:thumbTint="?attr/colorPrimary"
-					android:progress="0"
-					style="@style/MediaPlayer.ProgressBar"
-					app:labelBehavior="gone"
-					tools:progress="20"
-					android:visibility="gone"
-					android:layout_marginHorizontal="8dp"
-					android:layout_marginBottom="0.5dp"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout" />
+					app:layout_constraintStart_toStartOf="parent">
 
-				<com.google.android.material.slider.Slider
-					android:id="@+id/slider_vert"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center"
-					android:value="0"
-					app:labelBehavior="gone"
-					app:thumbRadius="8dp"
-					app:thumbElevation="0dp"
-					tools:value="0.5"
-					android:layout_marginHorizontal="8dp"
-					android:layout_marginBottom="0.5dp"
-					app:layout_constraintBottom_toTopOf="@id/duration_frame"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/textLayout"
-					tools:visibility="visible"/>
+					<SeekBar
+						android:id="@+id/slider_squiggly"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:thumbTint="?attr/colorPrimary"
+						android:progress="0"
+						style="@style/MediaPlayer.ProgressBar"
+						app:labelBehavior="gone"
+						tools:progress="20"
+						android:visibility="gone"
+						android:layout_marginHorizontal="8dp"
+						android:layout_marginBottom="0.5dp"
+						tools:visibility="visible"/>
+
+					<com.google.android.material.slider.Slider
+						android:id="@+id/slider_vert"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:value="0"
+						app:labelBehavior="gone"
+						app:thumbRadius="8dp"
+						app:thumbElevation="0dp"
+						tools:value="0.5"
+						android:layout_marginHorizontal="8dp"
+						app:layout_constraintBottom_toTopOf="@id/duration_frame"
+						app:layout_constraintEnd_toEndOf="parent"
+						app:layout_constraintStart_toStartOf="parent"
+						tools:visibility="visible"/>
+
+				</FrameLayout>
 
 				<FrameLayout
 					android:id="@+id/duration_frame"
@@ -360,7 +365,10 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/actionBar"
 			android:gravity="end"
-			android:padding="4dp"
+			android:paddingStart="8dp"
+			android:paddingTop="4dp"
+			android:paddingBottom="4dp"
+			android:paddingEnd="8dp"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent">
