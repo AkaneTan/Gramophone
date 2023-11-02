@@ -126,7 +126,7 @@
 				android:layout_width="52dp"
 				android:layout_height="52dp"
 				android:layout_marginHorizontal="18dp"
-				android:layout_marginTop="16dp"
+				android:layout_marginTop="52dp"
 				android:background="@drawable/rp_buttons"
 				app:icon="@drawable/ic_expand_more"
 				app:iconGravity="textStart"
@@ -145,7 +145,7 @@
 				android:layout_width="0dp"
 				android:layout_height="0dp"
 				android:layout_marginHorizontal="18dp"
-				android:layout_marginTop="8dp"
+				android:layout_marginTop="16dp"
 				android:contentDescription="@string/dialog_album"
 				android:src="@drawable/ic_default_cover"
 				app:layout_constraintDimensionRatio="1:1"
@@ -171,7 +171,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginHorizontal="20dp"
-					android:layout_marginBottom="24dp"
+					android:layout_marginBottom="32dp"
 					android:orientation="vertical"
 					app:layout_constraintBottom_toTopOf="@+id/slider"
 					app:layout_constraintEnd_toEndOf="parent"
@@ -217,10 +217,12 @@
 
 				<FrameLayout
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+					android:layout_height="48dp"
 					app:layout_constraintBottom_toTopOf="@id/duration_frame"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintStart_toStartOf="parent">
+					app:layout_constraintStart_toStartOf="parent"
+					android:layout_marginHorizontal="8dp"
+					android:layout_marginBottom="0.5dp">
 
 					<SeekBar
 						android:id="@+id/slider_squiggly"
@@ -231,11 +233,9 @@
 						android:progress="0"
 						style="@style/MediaPlayer.ProgressBar"
 						app:labelBehavior="gone"
-						tools:progress="20"
 						android:visibility="gone"
-						android:layout_marginHorizontal="8dp"
-						android:layout_marginBottom="0.5dp"
-						tools:visibility="visible"/>
+						tools:visibility="visible"
+						tools:progress="20"/>
 
 					<com.google.android.material.slider.Slider
 						android:id="@+id/slider_vert"
@@ -247,10 +247,6 @@
 						app:thumbRadius="8dp"
 						app:thumbElevation="0dp"
 						tools:value="0.5"
-						android:layout_marginHorizontal="8dp"
-						app:layout_constraintBottom_toTopOf="@id/duration_frame"
-						app:layout_constraintEnd_toEndOf="parent"
-						app:layout_constraintStart_toStartOf="parent"
 						tools:visibility="visible"/>
 
 				</FrameLayout>
