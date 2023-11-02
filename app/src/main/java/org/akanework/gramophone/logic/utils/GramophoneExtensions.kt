@@ -12,35 +12,35 @@ import androidx.media3.session.MediaController
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 fun MediaController.playOrPause() {
-	if (isPlaying) {
-		pause()
-	} else {
-		play()
-	}
+    if (isPlaying) {
+        pause()
+    } else {
+        play()
+    }
 }
 
 fun MediaItem.getUri(): Uri {
-	return localConfiguration!!.uri
+    return localConfiguration!!.uri
 }
 
 fun Activity.closeKeyboard() {
-	if (currentFocus != null) {
-		val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-		imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
-	}
+    if (currentFocus != null) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+    }
 }
 
 fun View.showSoftKeyboard() {
-	if (requestFocus()) {
-		val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-		imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-	}
+    if (requestFocus()) {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+    }
 }
 
 fun Drawable.startAnimation() {
-	when (this) {
-		is AnimatedVectorDrawable -> start()
-		is AnimatedVectorDrawableCompat -> start()
-		else -> throw IllegalArgumentException()
-	}
+    when (this) {
+        is AnimatedVectorDrawable -> start()
+        is AnimatedVectorDrawableCompat -> start()
+        else -> throw IllegalArgumentException()
+    }
 }

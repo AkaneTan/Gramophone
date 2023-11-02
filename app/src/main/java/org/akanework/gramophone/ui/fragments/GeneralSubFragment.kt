@@ -10,9 +10,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -41,7 +41,8 @@ class GeneralSubFragment : BaseFragment(true) {
                 val item = libraryViewModel.albumItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_album)
                 itemList = item.songList
-                helper = Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! + it.mediaMetadata.discNumber!! * 1000 }
+                helper =
+                    Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! + it.mediaMetadata.discNumber!! * 1000 }
             }
 
             /*R.id.artist -> {
@@ -86,7 +87,8 @@ class GeneralSubFragment : BaseFragment(true) {
             else -> throw IllegalArgumentException()
         }
 
-        val songAdapter = SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true)
+        val songAdapter =
+            SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true)
         recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {

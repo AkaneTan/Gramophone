@@ -3,9 +3,9 @@ package org.akanework.gramophone.ui.adapters
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 /**
@@ -15,20 +15,24 @@ class PlaylistAdapter(
     private val mainActivity: MainActivity,
     playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
 ) : BaseAdapter<MediaStoreUtils.Playlist>
-    (mainActivity,
+    (
+    mainActivity,
     liveData = playlistList,
     sortHelper = StoreItemHelper(),
     naturalOrderHelper = null,
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.items,
     ownsView = true,
-    defaultLayoutType = LayoutType.LIST) {
+    defaultLayoutType = LayoutType.LIST
+) {
 
     override val defaultCover = R.drawable.ic_default_cover_playlist
 
     override fun virtualTitleOf(item: MediaStoreUtils.Playlist): String {
-        return context.getString(if (item is MediaStoreUtils.RecentlyAdded)
-            R.string.recently_added else R.string.unknown_playlist)
+        return context.getString(
+            if (item is MediaStoreUtils.RecentlyAdded)
+                R.string.recently_added else R.string.unknown_playlist
+        )
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
@@ -56,6 +60,7 @@ class PlaylistAdapter(
                     )
                     true
                 }
+
                 else -> false
             }
         }

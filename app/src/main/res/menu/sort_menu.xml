@@ -5,17 +5,17 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/album_artist"
-            android:title="@string/album_artist"
             android:checkable="true"
             android:orderInCategory="-1"
+            android:title="@string/album_artist"
             android:visible="false"
-            app:showAsAction="never"/>
+            app:showAsAction="never" />
         <item
             android:id="@+id/natural"
-            android:title="@string/natural_order"
             android:orderInCategory="0"
-            tools:checked="true"
-            app:showAsAction="never"/>
+            android:title="@string/natural_order"
+            app:showAsAction="never"
+            tools:checked="true" />
         <item
             android:id="@+id/name"
             android:orderInCategory="1"
@@ -40,27 +40,27 @@
     </group>
 
     <item
-        android:title="@string/layout"
         android:id="@+id/display"
-        android:orderInCategory="999">
+        android:orderInCategory="999"
+        android:title="@string/layout">
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/compact_list"
-                    android:title="@string/compact_list"
                     android:orderInCategory="0"
-                    app:showAsAction="never"/>
+                    android:title="@string/compact_list"
+                    app:showAsAction="never" />
                 <item
                     android:id="@+id/list"
-                    android:title="@string/list"
                     android:orderInCategory="1"
-                    app:showAsAction="never"/>
+                    android:title="@string/list"
+                    app:showAsAction="never" />
                 <item
                     android:id="@+id/grid"
-                    android:title="@string/grid"
                     android:orderInCategory="2"
-                    tools:checked="true"
-                    app:showAsAction="never"/>
+                    android:title="@string/grid"
+                    app:showAsAction="never"
+                    tools:checked="true" />
             </group>
         </menu>
     </item>

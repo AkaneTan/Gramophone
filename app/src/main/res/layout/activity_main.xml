@@ -35,7 +35,7 @@
         android:layout_gravity="start"
         android:listDivider="?attr/colorPrimary"
         app:itemVerticalPadding="14dp"
-        app:subheaderTextAppearance="@style/SubHeaderAppearance"
-        app:menu="@menu/navigation_menu" />
+        app:menu="@menu/navigation_menu"
+        app:subheaderTextAppearance="@style/SubHeaderAppearance" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /* derived from //device/apps/common/res/anim/slide_out_right.xml
 **
 ** Copyright 2007, The Android Open Source Project
@@ -19,8 +18,12 @@
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android">
-	<translate android:fromXDelta="0" android:toXDelta="-25%p"
-		android:duration="150"/>
-	<alpha android:fromAlpha="1.0" android:toAlpha="0.0"
-		android:duration="150" />
+    <translate
+        android:duration="150"
+        android:fromXDelta="0"
+        android:toXDelta="-25%p" />
+    <alpha
+        android:duration="150"
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0" />
 </set>

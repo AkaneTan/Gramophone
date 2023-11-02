@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:paddingStart="16dp"
-    android:paddingEnd="4dp"
-    android:focusable="true">
+    android:paddingEnd="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,8 +22,8 @@
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
             android:background="?attr/colorSurfaceContainer"
-            android:src="@drawable/ic_default_cover"
-            android:importantForAccessibility="no" />
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_default_cover" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -40,8 +40,8 @@
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
                 android:textSize="16sp"
-                tools:text="Example Title"
-                tools:targetApi="p" />
+                tools:targetApi="p"
+                tools:text="Example Title" />
 
             <TextView
                 android:id="@+id/artist"
@@ -51,8 +51,8 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
                 android:textSize="15sp"
-                tools:text="Example Artist"
-                tools:targetApi="p" />
+                tools:targetApi="p"
+                tools:text="Example Artist" />
 
         </LinearLayout>
 

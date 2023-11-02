@@ -5,9 +5,9 @@ import android.view.MenuItem
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 
 /**
@@ -18,14 +18,16 @@ class ArtistAdapter(
     private val artistList: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
     private val albumArtists: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
 ) : BaseAdapter<MediaStoreUtils.Artist>
-    (mainActivity,
+    (
+    mainActivity,
     liveData = null,
     sortHelper = StoreItemHelper(),
     naturalOrderHelper = null,
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.artists,
     ownsView = true,
-    defaultLayoutType = LayoutType.LIST) {
+    defaultLayoutType = LayoutType.LIST
+) {
 
     override fun virtualTitleOf(item: MediaStoreUtils.Artist): String {
         return context.getString(R.string.unknown_artist)

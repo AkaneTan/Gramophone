@@ -18,7 +18,7 @@
         <item name="android:textFontWeight" tools:targetApi="p">700</item>
     </style>
 
-	<style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
+    <style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.None</item>
     </style>
 

@@ -1,6 +1,5 @@
 package org.akanework.gramophone.ui.viewmodels
 
-import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem

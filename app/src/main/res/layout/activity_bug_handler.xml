@@ -32,8 +32,8 @@
             android:id="@+id/error"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="11sp"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="11sp" />
 
     </androidx.core.widget.NestedScrollView>
 

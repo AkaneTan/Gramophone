@@ -1,83 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory
-        android:title="@string/settings_category_info">
+    <PreferenceCategory android:title="@string/settings_category_info">
         <Preference
+            android:icon="@drawable/widgets_art"
             android:key="app_name"
-            android:title="@string/settings_app_name"
             android:summary="@string/app_name"
-            android:icon="@drawable/widgets_art" />
+            android:title="@string/settings_app_name" />
         <Preference
+            android:icon="@drawable/ic_conversion_path"
             android:key="app_version"
-            android:title="@string/settings_version"
             android:summary="@string/unknown_version"
-            android:icon="@drawable/ic_conversion_path"/>
+            android:title="@string/settings_version" />
         <Preference
-            android:title="@string/settings_contributors"
+            android:icon="@drawable/artist_art"
             android:summary="@string/settings_contributors_detail"
-            android:icon="@drawable/artist_art"/>
+            android:title="@string/settings_contributors" />
         <Preference
-            android:title="@string/settings_repository"
             android:icon="@drawable/ic_language"
-            android:summary="https://github.com/AkaneTan/Gramophone">
+            android:summary="https://github.com/AkaneTan/Gramophone"
+            android:title="@string/settings_repository">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/AkaneTan/Gramophone" />
         </Preference>
         <Preference
-            android:title="Telegram"
             android:icon="@drawable/ic_telegram"
-            android:summary="@string/check_for_updates">
+            android:summary="@string/check_for_updates"
+            android:title="Telegram">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://t.me/AkaneDevRel" />
         </Preference>
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/settings_category_appearance">
+    <PreferenceCategory android:title="@string/settings_category_appearance">
         <DropDownPreference
-            android:key="theme_mode"
-            android:icon="@drawable/daynight_art"
-            android:title="@string/settings_app_theme"
+            android:defaultValue="0"
             android:entries="@array/theme_switch"
             android:entryValues="@array/theme_switch_val"
-            android:defaultValue="0"
-            app:useSimpleSummaryProvider="true"/>
+            android:icon="@drawable/daynight_art"
+            android:key="theme_mode"
+            android:title="@string/settings_app_theme"
+            app:useSimpleSummaryProvider="true" />
         <SwitchPreferenceCompat
-            android:key="default_progress_bar"
-            android:title="@string/settings_default_progress_bar"
-            android:summary="@string/settings_default_progress_bar_summary"
             android:defaultValue="false"
             android:icon="@drawable/ic_draw_abstract"
+            android:key="default_progress_bar"
+            android:summary="@string/settings_default_progress_bar_summary"
+            android:title="@string/settings_default_progress_bar"
             android:widgetLayout="@layout/preference_material_switch" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/settings_category_behavior">
+    <PreferenceCategory android:title="@string/settings_category_behavior">
         <SwitchPreferenceCompat
-            android:key="floatoutput"
-            android:title="@string/settings_float_output"
-            android:summary="@string/settings_float_output_summary"
             android:defaultValue="false"
             android:icon="@drawable/ic_earthquake"
+            android:key="floatoutput"
+            android:summary="@string/settings_float_output_summary"
+            android:title="@string/settings_float_output"
             android:widgetLayout="@layout/preference_material_switch" />
         <SeekBarPreference
-            android:key="mediastore_filter"
-            android:title="@string/settings_mediastore_filter"
-            android:summary="@string/settings_mediastore_filter_summary"
-            android:max="120"
             android:defaultValue="@integer/filter_default_sec"
             android:icon="@drawable/filter_art"
+            android:key="mediastore_filter"
+            android:max="120"
+            android:summary="@string/settings_mediastore_filter_summary"
+            android:title="@string/settings_mediastore_filter"
             app:showSeekBarValue="true" />
     </PreferenceCategory>
 
     <!-- For extra space below -->
     <Preference
-        android:title=""
-        android:enabled="false" />
+        android:enabled="false"
+        android:title="" />
 
     <Preference
-        android:title=""
-        android:enabled="false" />
+        android:enabled="false"
+        android:title="" />
 
 </PreferenceScreen>

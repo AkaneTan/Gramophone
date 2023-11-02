@@ -83,7 +83,7 @@
                 android:checkable="false"
                 android:icon="@drawable/ic_info"
                 android:title="@string/home_menu_about"
-                app:showAsAction="ifRoom"/>
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>

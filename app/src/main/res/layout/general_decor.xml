@@ -14,8 +14,8 @@
         android:padding="8dp"
         android:textColor="?attr/colorPrimary"
         android:textFontWeight="500"
-        tools:text="0 Song"
-        tools:targetApi="p" />
+        tools:targetApi="p"
+        tools:text="0 Song" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sort"

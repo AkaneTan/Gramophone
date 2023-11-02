@@ -10,55 +10,55 @@ import androidx.customview.widget.ViewDragHelper
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.lang.reflect.Field
 
-class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet)
-	: BottomSheetBehavior<T>(context, attrs) {
+class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet) :
+    BottomSheetBehavior<T>(context, attrs) {
 
-	companion object {
-		fun <T : View> from(v: T): MyBottomSheetBehavior<T> {
-			return BottomSheetBehavior.from<T>(v) as MyBottomSheetBehavior<T>
-		}
-	}
+    companion object {
+        fun <T : View> from(v: T): MyBottomSheetBehavior<T> {
+            return BottomSheetBehavior.from<T>(v) as MyBottomSheetBehavior<T>
+        }
+    }
 
-	init {
-		state = STATE_HIDDEN
-		maxWidth = ViewGroup.LayoutParams.MATCH_PARENT
-		isGestureInsetBottomIgnored = true
-	}
+    init {
+        state = STATE_HIDDEN
+        maxWidth = ViewGroup.LayoutParams.MATCH_PARENT
+        isGestureInsetBottomIgnored = true
+    }
 
-	@SuppressLint("RestrictedApi")
-	override fun isHideableWhenDragging(): Boolean {
-		return false
-	}
+    @SuppressLint("RestrictedApi")
+    override fun isHideableWhenDragging(): Boolean {
+        return false
+    }
 
-	// based on https://stackoverflow.com/a/63474805
-	private object BottomSheetUtil {
-		val viewDragHelper: Field = BottomSheetBehavior::class.java
-			.getDeclaredField("viewDragHelper")
-			.apply { isAccessible = true }
-		val mScroller: Field = ViewDragHelper::class.java
-			.getDeclaredField("mScroller")
-			.apply { isAccessible = true }
-	}
+    // based on https://stackoverflow.com/a/63474805
+    private object BottomSheetUtil {
+        val viewDragHelper: Field = BottomSheetBehavior::class.java
+            .getDeclaredField("viewDragHelper")
+            .apply { isAccessible = true }
+        val mScroller: Field = ViewDragHelper::class.java
+            .getDeclaredField("mScroller")
+            .apply { isAccessible = true }
+    }
 
-	private fun getViewDragHelper(): ViewDragHelper? =
-		BottomSheetUtil.viewDragHelper.get(this) as? ViewDragHelper?
+    private fun getViewDragHelper(): ViewDragHelper? =
+        BottomSheetUtil.viewDragHelper.get(this) as? ViewDragHelper?
 
-	private fun ViewDragHelper.getScroller(): OverScroller? =
-		BottomSheetUtil.mScroller.get(this) as? OverScroller?
+    private fun ViewDragHelper.getScroller(): OverScroller? =
+        BottomSheetUtil.mScroller.get(this) as? OverScroller?
 
-	fun setStateWithoutAnimation(state: Int) {
-		setState(state)
-		getViewDragHelper()!!.getScroller()!!.abortAnimation()
-	}
+    fun setStateWithoutAnimation(state: Int) {
+        setState(state)
+        getViewDragHelper()!!.getScroller()!!.abortAnimation()
+    }
 
-	@SuppressLint("RestrictedApi")
-	override fun handleBackInvoked() {
-		if (state != STATE_HIDDEN) {
-			setHideableInternal(false)
-		}
-		super.handleBackInvoked()
-		setHideableInternal(true)
-	}
+    @SuppressLint("RestrictedApi")
+    override fun handleBackInvoked() {
+        if (state != STATE_HIDDEN) {
+            setHideableInternal(false)
+        }
+        super.handleBackInvoked()
+        setHideableInternal(true)
+    }
 }
 
 

@@ -35,7 +35,8 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 3
-        versionName = "1.0.2" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
+        versionName =
+            "1.0.2" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
         setProperty("archivesBaseName", "Gramophone-$versionName")
     }
 

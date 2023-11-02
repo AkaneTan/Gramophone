@@ -13,9 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.getUri
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -30,25 +30,29 @@ class SongAdapter(
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
     ownsView: Boolean
 ) : BaseAdapter<MediaItem>
-    (mainActivity,
+    (
+    mainActivity,
     liveData = songList,
     sortHelper = MediaItemHelper(),
     naturalOrderHelper = if (canSort) helper else null,
     initialSortType = if (canSort)
-            (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
+        (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
     else Sorter.Type.None,
     pluralStr = R.plurals.songs,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.COMPACT_LIST) {
+    defaultLayoutType = LayoutType.COMPACT_LIST
+) {
 
-    constructor(mainActivity: MainActivity,
-                songList: List<MediaItem>,
-                canSort: Boolean,
-                helper: Sorter.NaturalOrderHelper<MediaItem>?,
-                ownsView: Boolean)
+    constructor(
+        mainActivity: MainActivity,
+        songList: List<MediaItem>,
+        canSort: Boolean,
+        helper: Sorter.NaturalOrderHelper<MediaItem>?,
+        ownsView: Boolean
+    )
             : this(mainActivity, null, canSort, helper, ownsView) {
-                updateList(songList, now = true, false)
-            }
+        updateList(songList, now = true, false)
+    }
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
 
@@ -175,12 +179,14 @@ class SongAdapter(
         }
     }
 
-    class MediaItemHelper(types: Set<Sorter.Type> = setOf(
-        Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
-        Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
-        Sorter.Type.ByAlbumTitleDescending, Sorter.Type.ByAlbumTitleAscending,
-        Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending))
-        : Sorter.Helper<MediaItem>(types) {
+    class MediaItemHelper(
+        types: Set<Sorter.Type> = setOf(
+            Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
+            Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
+            Sorter.Type.ByAlbumTitleDescending, Sorter.Type.ByAlbumTitleAscending,
+            Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending
+        )
+    ) : Sorter.Helper<MediaItem>(types) {
         override fun getId(item: MediaItem): String {
             return item.mediaId
         }

@@ -14,14 +14,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.PopupTextProvider
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 
-class FolderAdapter(mainActivity: MainActivity,
-                    private val liveData: MutableLiveData<MediaStoreUtils.FileNode>)
-    : AdapterFragment.BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
+class FolderAdapter(
+    mainActivity: MainActivity,
+    private val liveData: MutableLiveData<MediaStoreUtils.FileNode>
+) : AdapterFragment.BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
     private val folderPopAdapter: FolderPopAdapter = FolderPopAdapter(this)
     private val folderAdapter: FolderListAdapter =
         FolderListAdapter(listOf(), this)
@@ -134,9 +135,10 @@ class FolderAdapter(mainActivity: MainActivity,
     override fun getItemCount() = 0
 
 
-    private class FolderListAdapter(private var folderList: List<MediaStoreUtils.FileNode>,
-                                    frag: FolderAdapter)
-        : FolderCardAdapter(frag), PopupTextProvider {
+    private class FolderListAdapter(
+        private var folderList: List<MediaStoreUtils.FileNode>,
+        frag: FolderAdapter
+    ) : FolderCardAdapter(frag), PopupTextProvider {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = folderList[position]
@@ -212,8 +214,8 @@ class FolderAdapter(mainActivity: MainActivity,
         override fun getItemCount(): Int = if (enabled) 1 else 0
     }
 
-    private abstract class FolderCardAdapter(protected val folderFragment: FolderAdapter)
-        : RecyclerView.Adapter<FolderCardAdapter.ViewHolder>() {
+    private abstract class FolderCardAdapter(protected val folderFragment: FolderAdapter) :
+        RecyclerView.Adapter<FolderCardAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(
                 LayoutInflater

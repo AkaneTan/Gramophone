@@ -12,7 +12,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 
-class SettingsTopFragment : BasePreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class SettingsTopFragment : BasePreferenceFragment(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_top, rootKey)
         val versionPrefs = findPreference<Preference>("app_version")
@@ -45,9 +46,11 @@ class SettingsTopFragment : BasePreferenceFragment(), SharedPreferences.OnShared
                 "0" -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
+
                 "1" -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 }
+
                 "2" -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }

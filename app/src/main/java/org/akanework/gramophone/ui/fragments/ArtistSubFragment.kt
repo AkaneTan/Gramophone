@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -33,11 +33,16 @@ class ArtistSubFragment : BaseFragment(true) {
         val itemType = requireArguments().getInt("Item")
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
-        val item = libraryViewModel.let { if (itemType == R.id.album_artist)
-            it.albumArtistItemList else it.artistItemList }.value!![position]
-        val albumAdapter = AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList())
-        val songAdapter = SongAdapter(requireActivity() as MainActivity,
-            item.songList, true, null, false)
+        val item = libraryViewModel.let {
+            if (itemType == R.id.album_artist)
+                it.albumArtistItemList else it.artistItemList
+        }.value!![position]
+        val albumAdapter =
+            AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList())
+        val songAdapter = SongAdapter(
+            requireActivity() as MainActivity,
+            item.songList, true, null, false
+        )
         recyclerView.layoutManager = GridLayoutManager(context, 2).apply {
             spanSizeLookup = object : SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {

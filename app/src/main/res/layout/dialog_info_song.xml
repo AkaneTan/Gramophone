@@ -13,8 +13,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_title">
+            android:hint="@string/dialog_title"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
@@ -27,8 +27,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_artist">
+            android:hint="@string/dialog_artist"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/artist"
@@ -41,8 +41,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_album">
+            android:hint="@string/dialog_album"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/album"
@@ -55,8 +55,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_album_artist">
+            android:hint="@string/dialog_album_artist"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/album_artist"
@@ -69,8 +69,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_track_number">
+            android:hint="@string/dialog_track_number"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/track_number"
@@ -83,8 +83,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_year">
+            android:hint="@string/dialog_year"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/year"
@@ -97,8 +97,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_genre">
+            android:hint="@string/dialog_genre"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/genre"
@@ -111,8 +111,8 @@
             style="?attr/textInputOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/dialog_path">
+            android:hint="@string/dialog_path"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/path"

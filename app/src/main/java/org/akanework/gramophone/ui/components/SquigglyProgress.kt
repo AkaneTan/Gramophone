@@ -28,20 +28,19 @@ import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import android.view.animation.PathInterpolator
 import androidx.annotation.VisibleForTesting
-
-import kotlin.math.abs
-import kotlin.math.cos
-
 import org.akanework.gramophone.logic.utils.GramophoneUtils.lerp
 import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInv
 import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInvSat
 import org.akanework.gramophone.logic.utils.GramophoneUtils.setAlphaComponent
+import kotlin.math.abs
+import kotlin.math.cos
 
 class SquigglyProgress : Drawable() {
 
     companion object {
         private const val TWO_PI = (Math.PI * 2f).toFloat()
-        @VisibleForTesting internal const val DISABLED_ALPHA = 77
+        @VisibleForTesting
+        internal const val DISABLED_ALPHA = 77
     }
 
     private val wavePaint = Paint()
@@ -54,17 +53,22 @@ class SquigglyProgress : Drawable() {
 
     /* distance over which amplitude drops to zero, measured in wavelengths */
     private val transitionPeriods = 1.5f
+
     /* wave endpoint as percentage of bar when play position is zero */
     private val minWaveEndpoint = 0f
+
     /* wave endpoint as percentage of bar when play position matches wave endpoint */
     private val matchedWaveEndpoint = 1f
 
     // Horizontal length of the sine wave
     var waveLength = 0f
+
     // Height of each peak of the sine wave
     var lineAmplitude = 0f
+
     // Line speed in px per second
     var phaseSpeed = 0f
+
     // Progress stroke width, both for wave and solid line
     var strokeWidth = 0f
         set(value) {
@@ -219,7 +223,8 @@ class SquigglyProgress : Drawable() {
         canvas.restore()
     }
 
-    @Deprecated("Deprecated in Java",
+    @Deprecated(
+        "Deprecated in Java",
         ReplaceWith("PixelFormat.TRANSLUCENT", "android.graphics.PixelFormat")
     )
     override fun getOpacity(): Int {

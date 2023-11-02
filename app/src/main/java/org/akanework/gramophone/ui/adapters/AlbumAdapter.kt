@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -15,14 +15,16 @@ class AlbumAdapter(
     albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>?,
     ownsView: Boolean = true
 ) : BaseAdapter<MediaStoreUtils.Album>
-    (mainActivity,
+    (
+    mainActivity,
     liveData = albumList,
     sortHelper = StoreAlbumHelper(),
     naturalOrderHelper = null,
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.albums,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.GRID) {
+    defaultLayoutType = LayoutType.GRID
+) {
 
     private val libraryViewModel: LibraryViewModel by mainActivity.viewModels()
 

@@ -17,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -169,7 +168,8 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 in tabs -> {
                     viewPager2.setCurrentItem(tabs.indices
-                        .find { entry -> tabs[entry] == it.itemId }!!, true)
+                        .find { entry -> tabs[entry] == it.itemId }!!, true
+                    )
                     drawerLayout.close()
                 }
 
