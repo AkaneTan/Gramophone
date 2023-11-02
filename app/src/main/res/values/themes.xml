@@ -31,5 +31,10 @@
         <item name="android:splitTrack">false</item>
     </style>
 
+    <style name="SubHeaderAppearance">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textFontWeight" tools:targetApi="p">700</item>
+    </style>
+
     <style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
 </resources>
