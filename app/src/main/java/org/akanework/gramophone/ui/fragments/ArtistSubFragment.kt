@@ -22,7 +22,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 @androidx.annotation.OptIn(UnstableApi::class)
 class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
-    private val popUpTextList = mutableListOf<CharSequence>("-")
+
+    private lateinit var albumAdapter: AlbumAdapter
+    private lateinit var songAdapter: SongAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,16 +41,9 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
             if (itemType == R.id.album_artist)
                 it.albumArtistItemList else it.artistItemList
         }.value!![position]
-        item.albumList.forEach {
-            popUpTextList.add(it.title?.first().toString())
-        }
-        popUpTextList.add("-")
-        item.songList.forEach {
-            popUpTextList.add(it.mediaMetadata.title?.first().toString())
-        }
-        val albumAdapter =
+        albumAdapter =
             AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList())
-        val songAdapter = SongAdapter(
+        songAdapter = SongAdapter(
             requireActivity() as MainActivity,
             item.songList, true, null, false
         )
@@ -79,6 +74,14 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     }
 
     override fun getPopupText(position: Int): CharSequence {
-        return popUpTextList[position]
+        return if (position == 0) {
+            "-"
+        } else if (position > 0 && position <= albumAdapter.itemCount) {
+            albumAdapter.getPopupText(position - 1)
+        } else if (position == albumAdapter.itemCount + 1) {
+            "-"
+        } else {
+            songAdapter.getPopupText(position - albumAdapter.itemCount - 1)
+        }
     }
 }
