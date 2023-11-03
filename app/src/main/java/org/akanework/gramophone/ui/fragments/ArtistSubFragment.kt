@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
@@ -19,8 +20,9 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
-class ArtistSubFragment : BaseFragment(true) {
+class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private val popUpTextList = mutableListOf<CharSequence>("-")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +39,13 @@ class ArtistSubFragment : BaseFragment(true) {
             if (itemType == R.id.album_artist)
                 it.albumArtistItemList else it.artistItemList
         }.value!![position]
+        item.albumList.forEach {
+            popUpTextList.add(it.title?.first().toString())
+        }
+        popUpTextList.add("-")
+        item.songList.forEach {
+            popUpTextList.add(it.mediaMetadata.title?.first().toString())
+        }
         val albumAdapter =
             AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList())
         val songAdapter = SongAdapter(
@@ -55,7 +64,7 @@ class ArtistSubFragment : BaseFragment(true) {
         // TODO display albumList too
 
         FastScrollerBuilder(recyclerView).apply {
-            setPopupTextProvider(songAdapter)
+            setPopupTextProvider(this@ArtistSubFragment)
             useMd2Style()
             build()
         }
@@ -67,5 +76,9 @@ class ArtistSubFragment : BaseFragment(true) {
         topAppBar.title = item.title ?: requireContext().getString(R.string.unknown_artist)
 
         return rootView
+    }
+
+    override fun getPopupText(position: Int): CharSequence {
+        return popUpTextList[position]
     }
 }
