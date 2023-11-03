@@ -4,5 +4,5 @@
     <dimen name="media_seekbar_progress_wavelength">22.5dp</dimen>
     <dimen name="media_seekbar_progress_amplitude">2dp</dimen>
     <dimen name="media_seekbar_progress_phase">8dp</dimen>
-    <dimen name="media_seekbar_progress_stroke_width">2dp</dimen>
+    <dimen name="media_seekbar_progress_stroke_width">2.5dp</dimen>
 </resources>

@@ -601,7 +601,10 @@ class PlayerBottomSheet private constructor(
                     AppCompatResources.getDrawable(context, R.drawable.play_anim)
                 bottomSheetFullControllerButton.icon =
                     AppCompatResources.getDrawable(context, R.drawable.play_anim)
+                bottomSheetFullControllerButton.background =
+                    AppCompatResources.getDrawable(context, R.drawable.bg_play_anim)
                 bottomSheetFullControllerButton.icon.startAnimation()
+                bottomSheetFullControllerButton.background.startAnimation()
                 bottomSheetPreviewControllerButton.icon.startAnimation()
                 bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
             }
@@ -618,7 +621,10 @@ class PlayerBottomSheet private constructor(
                     AppCompatResources.getDrawable(context, R.drawable.pause_anim)
                 bottomSheetFullControllerButton.icon =
                     AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+                bottomSheetFullControllerButton.background =
+                    AppCompatResources.getDrawable(context, R.drawable.bg_pause_anim)
                 bottomSheetFullControllerButton.icon.startAnimation()
+                bottomSheetFullControllerButton.background.startAnimation()
                 bottomSheetPreviewControllerButton.icon.startAnimation()
                 bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
             }

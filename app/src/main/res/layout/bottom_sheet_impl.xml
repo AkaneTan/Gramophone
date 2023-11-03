@@ -122,25 +122,34 @@
             app:iconPadding="0dp"
             app:iconSize="28dp"
             app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintBottom_toTopOf="@id/full_sheet_cover"
+            app:layout_constraintBottom_toTopOf="@id/cover_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <ImageView
-            android:id="@+id/full_sheet_cover"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cover_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="18dp"
             android:layout_marginTop="16dp"
-            android:contentDescription="@string/dialog_album"
-            android:src="@drawable/ic_default_cover"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/slide_down" />
+            app:layout_constraintTop_toBottomOf="@id/slide_down"
+            app:strokeWidth="0dp"
+            app:cardCornerRadius="8dp">
+
+            <ImageView
+                android:id="@+id/full_sheet_cover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/dialog_album"
+                android:src="@drawable/ic_default_cover" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/controls"
@@ -154,7 +163,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_min="250dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/full_sheet_cover">
+            app:layout_constraintTop_toBottomOf="@id/cover_frame">
 
             <LinearLayout
                 android:id="@+id/textLayout"
@@ -268,15 +277,15 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sheet_mid_button"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="18dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
-                android:background="@drawable/ic_flower"
+                android:background="@drawable/bg_play_anim"
                 app:backgroundTint="?attr/colorSecondaryContainer"
                 app:icon="@drawable/play_anim"
                 app:iconGravity="textStart"
