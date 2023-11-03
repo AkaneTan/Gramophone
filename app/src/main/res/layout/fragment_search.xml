@@ -59,7 +59,7 @@
             android:layout_width="125dp"
             android:layout_height="125dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/seniorious"
+            android:src="@drawable/ic_seniorious"
             android:importantForAccessibility="no" />
 
         <TextView
