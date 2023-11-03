@@ -56,8 +56,6 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
         }
         recyclerView.adapter = ConcatAdapter(albumAdapter.concatAdapter, songAdapter.concatAdapter)
 
-        // TODO display albumList too
-
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(this@ArtistSubFragment)
             useMd2Style()
@@ -74,14 +72,10 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     }
 
     override fun getPopupText(position: Int): CharSequence {
-        return if (position == 0) {
-            "-"
-        } else if (position > 0 && position <= albumAdapter.itemCount) {
-            albumAdapter.getPopupText(position - 1)
-        } else if (position == albumAdapter.itemCount + 1) {
-            "-"
+        return if (position < albumAdapter.itemCount) {
+            albumAdapter.getPopupText(position)
         } else {
-            songAdapter.getPopupText(position - albumAdapter.itemCount - 1)
+            songAdapter.getPopupText(position - albumAdapter.itemCount)
         }
     }
 }
