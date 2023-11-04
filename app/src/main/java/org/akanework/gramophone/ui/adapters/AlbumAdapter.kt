@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -35,6 +36,41 @@ class AlbumAdapter(
 
     override fun virtualTitleOf(item: MediaStoreUtils.Album): String {
         return context.getString(R.string.unknown_album)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (layoutType == LayoutType.GRID) {
+            val item = list[position]
+            holder.title.text = titleOf(item) ?: virtualTitleOf(item)
+            holder.subTitle.text = subTitleOf(item)
+            Glide
+                .with(holder.songCover.context)
+                .load(coverOf(item))
+                .placeholder(defaultCover)
+                .into(holder.songCover)
+            holder.itemView.setOnClickListener { onClick(item) }
+            holder.itemView.setOnLongClickListener {
+                val popupMenu = PopupMenu(it.context, it)
+                onMenu(item, popupMenu)
+                popupMenu.show()
+                true
+            }
+        } else {
+            val item = list[position]
+            holder.title.text = titleOf(item) ?: virtualTitleOf(item)
+            holder.subTitle.text = subTitleOf(item)
+            Glide
+                .with(holder.songCover.context)
+                .load(coverOf(item))
+                .placeholder(defaultCover)
+                .into(holder.songCover)
+            holder.itemView.setOnClickListener { onClick(item) }
+            holder.moreButton.setOnClickListener {
+                val popupMenu = PopupMenu(it.context, it)
+                onMenu(item, popupMenu)
+                popupMenu.show()
+            }
+        }
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {

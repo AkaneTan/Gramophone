@@ -248,13 +248,13 @@ abstract class BaseAdapter<T>(
         return sorter.sortingHelper.getId(item)
     }
 
-    private fun titleOf(item: T): String? {
+    fun titleOf(item: T): String? {
         return if (sorter.sortingHelper.canGetTitle())
             sorter.sortingHelper.getTitle(item) else "null"
     }
 
     protected abstract fun virtualTitleOf(item: T): String
-    private fun subTitleOf(item: T): String {
+    fun subTitleOf(item: T): String {
         return if (sorter.sortingHelper.canGetArtist())
             sorter.sortingHelper.getArtist(item) ?: context.getString(R.string.unknown_artist)
         else if (sorter.sortingHelper.canGetSize()) {
@@ -265,7 +265,7 @@ abstract class BaseAdapter<T>(
         } else "null"
     }
 
-    private fun coverOf(item: T): Uri? {
+    fun coverOf(item: T): Uri? {
         return sorter.sortingHelper.getCover(item)
     }
 
