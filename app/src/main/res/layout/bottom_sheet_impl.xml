@@ -15,18 +15,27 @@
         tools:alpha="1"
         tools:visibility="gone">
 
-        <ImageView
-            android:id="@+id/preview_album_cover"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/preview_album_frame"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginVertical="8dp"
             android:layout_marginStart="16dp"
-            android:background="?attr/colorSurfaceContainer"
-            android:contentDescription="@string/dialog_album"
-            android:src="@drawable/ic_default_cover"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            style="?materialCardViewFilledStyle"
+            app:cardCornerRadius="3dp">
+
+            <ImageView
+                android:id="@+id/preview_album_cover"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="?attr/colorSurfaceContainer"
+                android:contentDescription="@string/dialog_album"
+                android:src="@drawable/ic_default_cover" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -35,7 +44,7 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/preview_control"
-            app:layout_constraintStart_toEndOf="@id/preview_album_cover"
+            app:layout_constraintStart_toEndOf="@id/preview_album_frame"
             app:layout_constraintTop_toTopOf="parent">
 
             <org.akanework.gramophone.ui.components.MarqueeTextView
@@ -68,7 +77,7 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:icon="@drawable/pause_art"
+            app:icon="@drawable/ic_pause"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="24dp"
@@ -88,7 +97,7 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:icon="@drawable/next_art"
+            app:icon="@drawable/ic_skip_next"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="24dp"
@@ -114,7 +123,7 @@
             android:id="@+id/slide_down"
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:layout_marginStart="18dp"
+            android:layout_marginStart="22dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/rp_buttons"
             app:icon="@drawable/ic_expand_more"
@@ -133,7 +142,7 @@
             android:id="@+id/cover_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginHorizontal="18dp"
+            android:layout_marginHorizontal="22dp"
             android:layout_marginTop="16dp"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -169,7 +178,7 @@
                 android:id="@+id/textLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginHorizontal="24dp"
                 android:layout_marginBottom="12dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/slider"
@@ -207,7 +216,7 @@
                 android:id="@+id/slider"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="12dp"
                 android:layout_marginBottom="0.5dp"
                 app:layout_constraintBottom_toTopOf="@id/duration_frame"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -246,7 +255,7 @@
                 android:id="@+id/duration_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginHorizontal="24dp"
                 app:layout_constraintBottom_toTopOf="@id/sheet_mid_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -349,9 +358,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:paddingStart="8dp"
+            android:paddingStart="12dp"
             android:paddingTop="4dp"
-            android:paddingEnd="8dp"
+            android:paddingEnd="12dp"
             android:paddingBottom="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/controls"

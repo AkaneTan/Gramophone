@@ -15,19 +15,27 @@
         tools:alpha="1"
         tools:visibility="gone">
 
-        <ImageView
-            android:id="@+id/preview_album_cover"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/preview_album_frame"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginVertical="8dp"
             android:layout_marginStart="16dp"
-            android:background="?attr/colorSurfaceContainer"
-            android:contentDescription="@string/dialog_album"
-            android:src="@drawable/ic_default_cover"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            style="?materialCardViewFilledStyle"
+            app:cardCornerRadius="3dp">
 
+            <ImageView
+                android:id="@+id/preview_album_cover"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="?attr/colorSurfaceContainer"
+                android:contentDescription="@string/dialog_album"
+                android:src="@drawable/ic_default_cover" />
+
+        </com.google.android.material.card.MaterialCardView>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -35,7 +43,7 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/preview_control"
-            app:layout_constraintStart_toEndOf="@id/preview_album_cover"
+            app:layout_constraintStart_toEndOf="@id/preview_album_frame"
             app:layout_constraintTop_toTopOf="parent">
 
             <org.akanework.gramophone.ui.components.MarqueeTextView

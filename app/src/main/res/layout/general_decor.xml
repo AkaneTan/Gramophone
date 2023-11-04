@@ -13,6 +13,7 @@
         android:layout_marginStart="8dp"
         android:padding="8dp"
         android:textColor="?attr/colorPrimary"
+        android:textSize="15sp"
         android:textFontWeight="500"
         tools:targetApi="p"
         tools:text="0 Song" />

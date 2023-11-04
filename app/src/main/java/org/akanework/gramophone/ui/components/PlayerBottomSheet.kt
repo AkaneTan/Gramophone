@@ -93,6 +93,9 @@ class PlayerBottomSheet private constructor(
     private val progressDrawable: SquigglyProgress
     private var isLegacyProgressEnabled: Boolean = false
 
+    private var playlistNowPlaying: TextView? = null
+    private var playlistNowPlayingCover: ImageView? = null
+
     private val activity
         get() = context as MainActivity
     private val lifecycleOwner: LifecycleOwner
@@ -305,7 +308,15 @@ class PlayerBottomSheet private constructor(
             val playlistBottomSheet = BottomSheetDialog(context)
             playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
             val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerview)!!
-            val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), instance)
+            val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
+            playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
+            playlistNowPlaying!!.text = instance.currentMediaItem?.mediaMetadata?.title
+            playlistNowPlayingCover = playlistBottomSheet.findViewById(R.id.now_playing_cover)
+            Glide
+                .with(playlistNowPlayingCover!!)
+                .load(instance.currentMediaItem?.mediaMetadata?.artworkUri)
+                .placeholder(R.drawable.ic_default_cover)
+                .into(playlistNowPlayingCover!!)
             recyclerView.layoutManager = LinearLayoutManager(context)
             recyclerView.adapter = playlistAdapter
             recyclerView.scrollToPosition(instance.currentMediaItemIndex)
@@ -494,6 +505,14 @@ class PlayerBottomSheet private constructor(
             bottomSheetFullDuration.text =
                 mediaItem?.mediaMetadata?.extras?.getLong("Duration")
                     ?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
+            if (playlistNowPlaying != null) {
+                playlistNowPlaying!!.text = mediaItem?.mediaMetadata?.title
+                Glide
+                    .with(playlistNowPlayingCover!!)
+                    .load(mediaItem?.mediaMetadata?.artworkUri)
+                    .placeholder(R.drawable.ic_default_cover)
+                    .into(playlistNowPlayingCover!!)
+            }
         }
         var newState = standardBottomSheetBehavior!!.state
         if (instance.mediaItemCount != 0 && visible) {
@@ -665,8 +684,9 @@ class PlayerBottomSheet private constructor(
 
     class PlaylistCardAdapter(
         private val playlist: MutableList<MediaItem>,
-        private val instance: MediaController
+        private val activity: MainActivity
     ) : RecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
+
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
@@ -674,7 +694,7 @@ class PlayerBottomSheet private constructor(
             ViewHolder(
                 LayoutInflater
                     .from(parent.context)
-                    .inflate(R.layout.adapter_list_card_smaller, parent, false),
+                    .inflate(R.layout.adapter_list_card_playlist, parent, false),
             )
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -686,10 +706,15 @@ class PlayerBottomSheet private constructor(
                 .placeholder(R.drawable.ic_default_cover)
                 .into(holder.songCover)
             holder.closeButton.setOnClickListener {
+                val instance = activity.getPlayer()
                 val pos = holder.bindingAdapterPosition
                 playlist.removeAt(pos)
                 notifyItemRemoved(pos)
                 instance.removeMediaItem(pos)
+            }
+            holder.itemView.setOnClickListener {
+                val instance = activity.getPlayer()
+                instance.seekToDefaultPosition(holder.absoluteAdapterPosition)
             }
         }
 

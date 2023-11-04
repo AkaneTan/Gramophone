@@ -68,7 +68,7 @@
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/more"
+        android:id="@+id/close"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="end|center_vertical"
@@ -77,7 +77,7 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:icon="@drawable/ic_more_vert"
+        app:icon="@drawable/ic_close"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"

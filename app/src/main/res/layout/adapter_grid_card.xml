@@ -7,56 +7,62 @@
     android:layout_gravity="center_horizontal"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?selectableItemBackground"
     android:gravity="center_horizontal"
-    android:paddingStart="16dp"
     android:paddingTop="8dp"
-    android:paddingEnd="16dp"
     android:paddingBottom="16dp"
+    android:foreground="?selectableItemBackground"
     tools:ignore="UnusedAttribute"
     tools:targetApi="m">
 
-    <ImageView
-        android:id="@+id/cover"
-        android:layout_width="164dp"
-        android:layout_height="164dp"
-        android:background="?attr/colorSurfaceContainer"
-        android:importantForAccessibility="no"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_default_cover" />
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cover_frame"
+        android:layout_width="166dp"
+        android:layout_height="166dp"
+        style="?materialCardViewFilledStyle"
+        app:cardCornerRadius="4dp">
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorSurfaceContainer"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_default_cover" />
+
+    </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/cover"
-        android:layout_alignStart="@id/cover"
-        android:layout_alignEnd="@id/more"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="28dp"
+        android:layout_below="@id/cover_frame"
+        android:layout_alignStart="@id/cover_frame"
+        android:layout_alignEnd="@id/cover_frame"
+        android:layout_marginTop="12dp"
         android:orientation="vertical"
-        android:paddingEnd="8dp"
         tools:ignore="RtlSymmetry">
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textColor="?attr/colorOnSurface"
             android:textFontWeight="500"
-            android:textSize="14sp"
+            android:textSize="15sp"
+            android:gravity="center"
             tools:targetApi="p"
             tools:text="Example Title" />
 
         <TextView
             android:id="@+id/artist"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textFontWeight="400"
-            android:textSize="14sp"
+            android:textFontWeight="500"
+            android:textSize="15sp"
+            android:gravity="center"
             tools:targetApi="p"
             tools:text="Example Artist" />
 
@@ -64,20 +70,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/more"
-        android:layout_width="28dp"
-        android:layout_height="34dp"
-        android:layout_below="@id/cover"
-        android:layout_alignEnd="@id/cover"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/rp_buttons"
-        android:insetLeft="0dp"
-        android:insetTop="0dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
-        app:icon="@drawable/ic_more_vert"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:iconSize="24dp"
-        app:iconTint="?attr/colorOnSurface" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
 </RelativeLayout>

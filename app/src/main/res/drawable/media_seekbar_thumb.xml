@@ -18,8 +18,8 @@
     xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
         <vector
-            android:width="4dp"
-            android:height="16dp"
+            android:width="5dp"
+            android:height="20dp"
             android:viewportWidth="4"
             android:viewportHeight="16">
             <group android:name="_R_G">

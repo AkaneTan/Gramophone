@@ -49,6 +49,13 @@
             android:summary="@string/settings_default_progress_bar_summary"
             android:title="@string/settings_default_progress_bar"
             android:widgetLayout="@layout/preference_material_switch" />
+        <!-- <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:icon="@drawable/ic_rounded_corner"
+            android:key="round_element"
+            android:summary="@string/settings_round_corner_summary"
+            android:title="@string/settings_round_corner"
+            android:widgetLayout="@layout/preference_material_switch" /> -->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_behavior">
         <SwitchPreferenceCompat
