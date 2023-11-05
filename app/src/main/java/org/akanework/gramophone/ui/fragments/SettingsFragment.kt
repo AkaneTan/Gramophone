@@ -9,6 +9,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.slider.Slider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.ui.MainActivity
 
 class SettingsFragment : BaseFragment(false) {
 
@@ -31,6 +32,7 @@ class SettingsFragment : BaseFragment(false) {
         super.onDestroyView()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
+        val isContentBasedColorEnabled = prefs.getBoolean("content_based_color", true)
         val bottomSheetFullSlider = requireActivity().findViewById<Slider>(R.id.slider_vert)
         val bottomSheetFullSeekBar = requireActivity().findViewById<SeekBar>(R.id.slider_squiggly)
         if (isLegacyProgressEnabled) {
@@ -39,6 +41,9 @@ class SettingsFragment : BaseFragment(false) {
         } else {
             bottomSheetFullSlider.visibility = View.GONE
             bottomSheetFullSeekBar.visibility = View.VISIBLE
+        }
+        if (!isContentBasedColorEnabled) {
+            (activity as MainActivity).getPlayerSheet().removeColorScheme()
         }
     }
 }

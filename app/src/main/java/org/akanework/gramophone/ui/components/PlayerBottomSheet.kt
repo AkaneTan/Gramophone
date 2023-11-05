@@ -118,6 +118,8 @@ class PlayerBottomSheet private constructor(
 
     private var wrappedContext: Context? = null
 
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+
     private val activity
         get() = context as MainActivity
     private val lifecycleOwner: LifecycleOwner
@@ -160,7 +162,6 @@ class PlayerBottomSheet private constructor(
         get() = standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_HIDDEN
 
     init {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
         inflate(context, R.layout.bottom_sheet_impl, this)
         id = R.id.player_layout
@@ -517,6 +518,141 @@ class PlayerBottomSheet private constructor(
 
     fun getPlayer(): MediaController = instance
 
+    fun removeColorScheme() {
+        wrappedContext = null
+        val colorSurface = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorSurface,
+            -1
+        )
+
+        val colorOnSurface = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorOnSurface,
+            -1
+        )
+
+        val colorOnSurfaceVariant = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorOnSurfaceVariant,
+            -1
+        )
+
+        val colorPrimary =
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorPrimary,
+                -1
+            )
+
+        val colorSecondaryContainer =
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorSecondaryContainer,
+                -1
+            )
+
+        val colorOnSecondaryContainer =
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorOnSecondaryContainer,
+                -1
+            )
+
+        val colorSurfaceContainerHighest =
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorSurfaceContainerHighest,
+                -1
+            )
+
+        val selectorBackground =
+            AppCompatResources.getColorStateList(
+                context,
+                R.color.sl_check_button
+            )
+
+        val colorError =
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorError,
+                -1
+            )
+
+        val colorAccent =
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorAccent,
+                -1
+            )
+        Log.d("TAG", "SET!")
+        val mTransition = TransitionDrawable(
+            arrayOf(
+                ColorDrawable(fullPlayerFinalColor),
+                ColorDrawable(colorSurface)
+            )
+        )
+        fullPlayer.background = mTransition
+        mTransition.startTransition(50)
+
+        fullPlayerFinalColor = colorSurface
+
+        bottomSheetFullTitle.setTextColor(
+            colorOnSurface
+        )
+        bottomSheetFullSubtitle.setTextColor(
+            colorOnSurfaceVariant
+        )
+
+        bottomSheetFullSlider.thumbTintList =
+            ColorStateList.valueOf(colorPrimary)
+        bottomSheetFullSlider.trackInactiveTintList =
+            ColorStateList.valueOf(colorSurfaceContainerHighest)
+        bottomSheetFullSlider.trackActiveTintList =
+            ColorStateList.valueOf(colorPrimary)
+        bottomSheetFullSeekBar.progressTintList =
+            ColorStateList.valueOf(colorPrimary)
+        bottomSheetFullSeekBar.secondaryProgressTintList =
+            ColorStateList.valueOf(colorSecondaryContainer)
+        bottomSheetFullSeekBar.thumbTintList =
+            ColorStateList.valueOf(colorPrimary)
+
+        bottomSheetTimerButton.iconTint =
+            selectorBackground
+        bottomSheetPlaylistButton.iconTint =
+            selectorBackground
+        bottomSheetShuffleButton.iconTint =
+            selectorBackground
+        bottomSheetLoopButton.iconTint =
+            selectorBackground
+        bottomSheetLyricButton.iconTint =
+            selectorBackground
+        bottomSheetFavoriteButton.iconTint =
+            ColorStateList.valueOf(colorError)
+
+        bottomSheetFullControllerButton.iconTint =
+            ColorStateList.valueOf(colorOnSecondaryContainer)
+
+        bottomSheetFullControllerButton.backgroundTintList =
+            ColorStateList.valueOf(colorSecondaryContainer)
+
+        bottomSheetFullNextButton.iconTint =
+            ColorStateList.valueOf(colorOnSurface)
+        bottomSheetFullPreviousButton.iconTint =
+            ColorStateList.valueOf(colorOnSurface)
+        bottomSheetFullSlideUpButton.iconTint =
+            ColorStateList.valueOf(colorOnSurface)
+        bottomSheetInfoButton.iconTint =
+            ColorStateList.valueOf(colorOnSurface)
+
+        bottomSheetFullPosition.setTextColor(
+            colorAccent
+        )
+        bottomSheetFullDuration.setTextColor(
+            colorAccent
+        )
+    }
+
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
@@ -555,7 +691,7 @@ class PlayerBottomSheet private constructor(
                     .into(playlistNowPlayingCover!!)
             }
 
-            if (Build.VERSION.SDK_INT >= 26) {
+            if (Build.VERSION.SDK_INT >= 26 && prefs.getBoolean("content_based_color", true)) {
                 CoroutineScope(Dispatchers.Default).launch {
                     try {
                         val inputStream: InputStream? =
@@ -645,7 +781,7 @@ class PlayerBottomSheet private constructor(
                                 )
                             )
                             fullPlayer.background = mTransition
-                            mTransition.startTransition(50)
+                            mTransition.startTransition(150)
 
                             fullPlayerFinalColor = colorSurface
 

@@ -49,6 +49,13 @@
             android:summary="@string/settings_default_progress_bar_summary"
             android:title="@string/settings_default_progress_bar"
             android:widgetLayout="@layout/preference_material_switch" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:icon="@drawable/ic_colors"
+            android:key="content_based_color"
+            android:summary="@string/settings_content_based_color_summary"
+            android:title="@string/settings_content_based_color"
+            android:widgetLayout="@layout/preference_material_switch" />
         <!-- <SwitchPreferenceCompat
             android:defaultValue="true"
             android:icon="@drawable/ic_rounded_corner"
