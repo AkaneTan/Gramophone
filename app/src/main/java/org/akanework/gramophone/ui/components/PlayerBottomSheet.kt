@@ -55,6 +55,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -117,6 +118,7 @@ class PlayerBottomSheet private constructor(
     private var playlistNowPlayingCover: ImageView? = null
 
     private var wrappedContext: Context? = null
+    private var currentJob: Job? = null
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -692,10 +694,9 @@ class PlayerBottomSheet private constructor(
             }
 
             if (Build.VERSION.SDK_INT >= 26 && prefs.getBoolean("content_based_color", true)) {
-                val currentSong = instance.currentMediaItem?.mediaMetadata?.title
-                CoroutineScope(Dispatchers.Default).launch {
+                currentJob?.cancel()
+                currentJob = CoroutineScope(Dispatchers.Default).launch {
                     try {
-                        Log.d("TAG", "$currentSong")
                         val inputStream: InputStream? =
                             context.contentResolver.openInputStream(mediaItem?.mediaMetadata?.artworkUri!!)
                         val bitmap = BitmapFactory.decodeStream(inputStream)
@@ -775,10 +776,6 @@ class PlayerBottomSheet private constructor(
                             )
 
                         withContext(Dispatchers.Main) {
-                            val songOnApply = instance.currentMediaItem?.mediaMetadata?.title
-                            if (currentSong != songOnApply) {
-                                return@withContext
-                            }
                             val mTransition = TransitionDrawable(
                                 arrayOf(
                                     ColorDrawable(fullPlayerFinalColor),
