@@ -1,13 +1,10 @@
 package org.akanework.gramophone.ui.components
 
-import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
 import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Build
@@ -28,7 +25,6 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
