@@ -113,8 +113,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0"
-        android:background="?attr/colorSurface"
-        android:elevation="0dp"
         android:visibility="gone"
         tools:alpha="1"
         tools:visibility="visible">
@@ -138,6 +136,23 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/info"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rp_buttons"
+            app:icon="@drawable/ic_more_vert"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="28dp"
+            app:iconTint="?attr/colorOnSurface"
+            app:layout_constraintBottom_toTopOf="@id/cover_frame"
+            app:layout_constraintEnd_toEndOf="@id/cover_frame"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cover_frame"
             android:layout_width="0dp"
@@ -149,7 +164,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/slide_down"
             app:strokeWidth="0dp"
-            app:cardCornerRadius="8dp">
+            app:cardCornerRadius="16dp">
 
             <ImageView
                 android:id="@+id/full_sheet_cover"
@@ -189,19 +204,19 @@
                 <org.akanework.gramophone.ui.components.MarqueeTextView
                     android:id="@+id/full_song_name"
                     android:layout_width="match_parent"
-                    android:layout_height="32dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
                     android:textFontWeight="500"
-                    android:textSize="22sp"
+                    android:textSize="24sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
                 <org.akanework.gramophone.ui.components.MarqueeTextView
                     android:id="@+id/full_song_artist"
                     android:layout_width="match_parent"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurfaceVariant"
@@ -268,8 +283,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:text="@string/default_time"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textFontWeight="500"
+                    android:textColor="?attr/colorAccent"
+                    android:textFontWeight="600"
                     tools:targetApi="p" />
 
                 <TextView
@@ -278,8 +293,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="@string/default_time"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textFontWeight="500"
+                    android:textColor="?attr/colorAccent"
+                    android:textFontWeight="600"
                     tools:targetApi="p" />
 
             </FrameLayout>
@@ -362,6 +377,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
+            android:layout_marginHorizontal="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/controls"
             app:layout_constraintStart_toStartOf="@id/controls">
@@ -370,6 +386,7 @@
                 android:id="@+id/lyrics"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_weight="1"
                 android:background="@drawable/rp_buttons"
                 android:checkable="true"
                 android:insetLeft="0dp"
@@ -377,8 +394,7 @@
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 android:saveEnabled="false"
-                android:visibility="gone"
-                app:icon="@drawable/subtitles_art"
+                app:icon="@drawable/ic_article"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24sp"
@@ -388,6 +404,7 @@
                 android:id="@+id/sheet_loop"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_weight="1"
                 android:background="@drawable/rp_buttons"
                 android:checkable="true"
                 android:insetLeft="0dp"
@@ -405,6 +422,7 @@
                 android:id="@+id/sheet_random"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_weight="1"
                 android:background="@drawable/rp_buttons"
                 android:checkable="true"
                 android:insetLeft="0dp"
@@ -422,6 +440,7 @@
                 android:id="@+id/favor"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_weight="1"
                 android:background="@drawable/rp_buttons"
                 android:checkable="true"
                 android:insetLeft="0dp"
@@ -439,6 +458,7 @@
                 android:id="@+id/timer"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_weight="1"
                 android:background="@drawable/rp_buttons"
                 android:checkable="true"
                 android:insetLeft="0dp"
@@ -456,12 +476,13 @@
                 android:id="@+id/playlist"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_weight="1"
                 android:background="@drawable/rp_buttons"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
-                app:icon="@drawable/ic_playlist_play"
+                app:icon="@drawable/ic_segment"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24dp"

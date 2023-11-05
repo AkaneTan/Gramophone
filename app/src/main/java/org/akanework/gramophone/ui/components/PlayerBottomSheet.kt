@@ -1,15 +1,22 @@
 package org.akanework.gramophone.ui.components
 
+import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
 import android.content.ComponentName
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
+import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.TransitionDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +28,7 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -40,6 +48,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -47,6 +57,10 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
@@ -59,6 +73,7 @@ import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.logic.utils.startAnimation
 import org.akanework.gramophone.ui.MainActivity
+import java.io.InputStream
 
 
 class PlayerBottomSheet private constructor(
@@ -88,9 +103,10 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetShuffleButton: MaterialButton
     private val bottomSheetLoopButton: MaterialButton
     private val bottomSheetPlaylistButton: MaterialButton
-    private val bottomSheetLyricButton: MaterialButton
     private val bottomSheetTimerButton: MaterialButton
     private val bottomSheetFavoriteButton: MaterialButton
+    private val bottomSheetInfoButton: MaterialButton
+    private val bottomSheetLyricButton: MaterialButton
     private val bottomSheetFullSeekBar: SeekBar
     private val bottomSheetFullSlider: Slider
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
@@ -99,9 +115,12 @@ class PlayerBottomSheet private constructor(
     private val previewPlayer: View
     private val progressDrawable: SquigglyProgress
     private var isLegacyProgressEnabled: Boolean = false
+    private var fullPlayerFinalColor: Int = -1
 
     private var playlistNowPlaying: TextView? = null
     private var playlistNowPlayingCover: ImageView? = null
+
+    private var wrappedContext: Context? = null
 
     private val activity
         get() = context as MainActivity
@@ -167,12 +186,17 @@ class PlayerBottomSheet private constructor(
         bottomSheetFullSlideUpButton = findViewById(R.id.slide_down)
         bottomSheetShuffleButton = findViewById(R.id.sheet_random)
         bottomSheetLoopButton = findViewById(R.id.sheet_loop)
-        bottomSheetLyricButton = findViewById(R.id.lyrics)
         bottomSheetTimerButton = findViewById(R.id.timer)
         bottomSheetFavoriteButton = findViewById(R.id.favor)
         bottomSheetPlaylistButton = findViewById(R.id.playlist)
+        bottomSheetInfoButton = findViewById(R.id.info)
+        bottomSheetLyricButton = findViewById(R.id.lyrics)
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
+        fullPlayerFinalColor = MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorSurface
+        )
         if (isLegacyProgressEnabled) {
             bottomSheetFullSlider.visibility = View.VISIBLE
             bottomSheetFullSeekBar.visibility = View.GONE
@@ -503,14 +527,19 @@ class PlayerBottomSheet private constructor(
     ) {
         if (instance.mediaItemCount != 0) {
             Glide
-                .with(bottomSheetPreviewCover)
+                .with(context)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .placeholder(R.drawable.ic_default_cover)
                 .into(bottomSheetPreviewCover)
             Glide
-                .with(bottomSheetFullCover)
+                .with(context)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
-                .placeholder(R.drawable.ic_default_cover)
+                .placeholder(
+                    AppCompatResources.getDrawable(
+                        if (wrappedContext != null) wrappedContext!! else context,
+                        R.drawable.ic_default_cover
+                    )
+                )
                 .into(bottomSheetFullCover)
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetPreviewSubtitle.text =
@@ -524,11 +553,168 @@ class PlayerBottomSheet private constructor(
             if (playlistNowPlaying != null) {
                 playlistNowPlaying!!.text = mediaItem?.mediaMetadata?.title
                 Glide
-                    .with(playlistNowPlayingCover!!)
+                    .with(context)
                     .load(mediaItem?.mediaMetadata?.artworkUri)
                     .placeholder(R.drawable.ic_default_cover)
                     .into(playlistNowPlayingCover!!)
             }
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    try {
+                        val inputStream: InputStream? =
+                            context.contentResolver.openInputStream(mediaItem?.mediaMetadata?.artworkUri!!)
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        inputStream!!.close()
+
+                        wrappedContext = DynamicColors.wrapContextIfAvailable(
+                            context,
+                            DynamicColorsOptions.Builder()
+                                .setContentBasedSource(bitmap)
+                                .build()
+                        )
+
+                        val colorSurface = MaterialColors.getColor(
+                            wrappedContext!!,
+                            com.google.android.material.R.attr.colorSurface,
+                            -1
+                        )
+
+                        val colorOnSurface = MaterialColors.getColor(
+                            wrappedContext!!,
+                            com.google.android.material.R.attr.colorOnSurface,
+                            -1
+                        )
+
+                        val colorOnSurfaceVariant = MaterialColors.getColor(
+                            wrappedContext!!,
+                            com.google.android.material.R.attr.colorOnSurfaceVariant,
+                            -1
+                        )
+
+                        val colorPrimary =
+                            MaterialColors.getColor(
+                                wrappedContext!!,
+                                com.google.android.material.R.attr.colorPrimary,
+                                -1
+                            )
+
+                        val colorSecondaryContainer =
+                            MaterialColors.getColor(
+                                wrappedContext!!,
+                                com.google.android.material.R.attr.colorSecondaryContainer,
+                                -1
+                            )
+
+                        val colorOnSecondaryContainer =
+                            MaterialColors.getColor(
+                                wrappedContext!!,
+                                com.google.android.material.R.attr.colorOnSecondaryContainer,
+                                -1
+                            )
+
+                        val colorSurfaceContainerHighest =
+                            MaterialColors.getColor(
+                                wrappedContext!!,
+                                com.google.android.material.R.attr.colorSurfaceContainerHighest,
+                                -1
+                            )
+
+                        val selectorBackground =
+                            AppCompatResources.getColorStateList(
+                                wrappedContext!!,
+                                R.color.sl_check_button
+                            )
+
+                        val colorError =
+                            MaterialColors.getColor(
+                                wrappedContext!!,
+                                com.google.android.material.R.attr.colorError,
+                                -1
+                            )
+
+                        val colorAccent =
+                            MaterialColors.getColor(
+                                wrappedContext!!,
+                                com.google.android.material.R.attr.colorAccent,
+                                -1
+                            )
+
+                        withContext(Dispatchers.Main) {
+                            Log.d("TAG", "SET!")
+                            val mTransition = TransitionDrawable(
+                                arrayOf(
+                                    ColorDrawable(fullPlayerFinalColor),
+                                    ColorDrawable(colorSurface)
+                                )
+                            )
+                            fullPlayer.background = mTransition
+                            mTransition.startTransition(50)
+
+                            fullPlayerFinalColor = colorSurface
+
+                            bottomSheetFullTitle.setTextColor(
+                                colorOnSurface
+                            )
+                            bottomSheetFullSubtitle.setTextColor(
+                                colorOnSurfaceVariant
+                            )
+
+                            bottomSheetFullSlider.thumbTintList =
+                                ColorStateList.valueOf(colorPrimary)
+                            bottomSheetFullSlider.trackInactiveTintList =
+                                ColorStateList.valueOf(colorSurfaceContainerHighest)
+                            bottomSheetFullSlider.trackActiveTintList =
+                                ColorStateList.valueOf(colorPrimary)
+                            bottomSheetFullSeekBar.progressTintList =
+                                ColorStateList.valueOf(colorPrimary)
+                            bottomSheetFullSeekBar.secondaryProgressTintList =
+                                ColorStateList.valueOf(colorSecondaryContainer)
+                            bottomSheetFullSeekBar.thumbTintList =
+                                ColorStateList.valueOf(colorPrimary)
+
+                            bottomSheetTimerButton.iconTint =
+                                selectorBackground
+                            bottomSheetPlaylistButton.iconTint =
+                                selectorBackground
+                            bottomSheetShuffleButton.iconTint =
+                                selectorBackground
+                            bottomSheetLoopButton.iconTint =
+                                selectorBackground
+                            bottomSheetLyricButton.iconTint =
+                                selectorBackground
+                            bottomSheetFavoriteButton.iconTint =
+                                ColorStateList.valueOf(colorError)
+
+                            bottomSheetFullControllerButton.iconTint =
+                                ColorStateList.valueOf(colorOnSecondaryContainer)
+
+                            bottomSheetFullControllerButton.backgroundTintList =
+                                ColorStateList.valueOf(colorSecondaryContainer)
+
+                            bottomSheetFullNextButton.iconTint =
+                                ColorStateList.valueOf(colorOnSurface)
+                            bottomSheetFullPreviousButton.iconTint =
+                                ColorStateList.valueOf(colorOnSurface)
+                            bottomSheetFullSlideUpButton.iconTint =
+                                ColorStateList.valueOf(colorOnSurface)
+                            bottomSheetInfoButton.iconTint =
+                                ColorStateList.valueOf(colorOnSurface)
+
+                            bottomSheetFullPosition.setTextColor(
+                                colorAccent
+                            )
+                            bottomSheetFullDuration.setTextColor(
+                                colorAccent
+                            )
+
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
             if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
                     .songList.contains(instance.currentMediaItem)) {
                 // TODO
@@ -649,7 +835,9 @@ class PlayerBottomSheet private constructor(
                 bottomSheetPreviewControllerButton.icon =
                     AppCompatResources.getDrawable(context, R.drawable.play_anim)
                 bottomSheetFullControllerButton.icon =
-                    AppCompatResources.getDrawable(context, R.drawable.play_anim)
+                    AppCompatResources.getDrawable(
+                        if (wrappedContext != null) wrappedContext!! else context,
+                        R.drawable.play_anim)
                 bottomSheetFullControllerButton.background =
                     AppCompatResources.getDrawable(context, R.drawable.bg_play_anim)
                 bottomSheetFullControllerButton.icon.startAnimation()
@@ -669,7 +857,9 @@ class PlayerBottomSheet private constructor(
                 bottomSheetPreviewControllerButton.icon =
                     AppCompatResources.getDrawable(context, R.drawable.pause_anim)
                 bottomSheetFullControllerButton.icon =
-                    AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+                    AppCompatResources.getDrawable(
+                        if (wrappedContext != null) wrappedContext!! else context,
+                        R.drawable.pause_anim)
                 bottomSheetFullControllerButton.background =
                     AppCompatResources.getDrawable(context, R.drawable.bg_pause_anim)
                 bottomSheetFullControllerButton.icon.startAnimation()
