@@ -369,23 +369,6 @@
             app:layout_constraintStart_toStartOf="@id/controls">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/timer"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/rp_buttons"
-                android:checkable="true"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                android:saveEnabled="false"
-                app:icon="@drawable/timer_art"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:iconSize="24sp"
-                app:iconTint="@color/sl_check_button" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/lyrics"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -432,6 +415,40 @@
                 android:insetBottom="0dp"
                 android:saveEnabled="false"
                 app:icon="@drawable/ic_shuffle"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24sp"
+                app:iconTint="@color/sl_check_button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/favor"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/rp_buttons"
+                android:checkable="true"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:saveEnabled="false"
+                app:icon="@drawable/sl_check_fav"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24sp"
+                app:iconTint="?attr/colorError" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/timer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/rp_buttons"
+                android:checkable="true"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:saveEnabled="false"
+                app:icon="@drawable/timer_art"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24sp"

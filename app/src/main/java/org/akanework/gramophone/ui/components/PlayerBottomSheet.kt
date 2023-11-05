@@ -1,10 +1,14 @@
 package org.akanework.gramophone.ui.components
 
 import android.content.ComponentName
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -50,10 +54,12 @@ import org.akanework.gramophone.logic.getTimer
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.utils.GramophoneUtils
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
 import org.akanework.gramophone.logic.utils.startAnimation
 import org.akanework.gramophone.ui.MainActivity
+
 
 class PlayerBottomSheet private constructor(
     context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
@@ -84,6 +90,7 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetPlaylistButton: MaterialButton
     private val bottomSheetLyricButton: MaterialButton
     private val bottomSheetTimerButton: MaterialButton
+    private val bottomSheetFavoriteButton: MaterialButton
     private val bottomSheetFullSeekBar: SeekBar
     private val bottomSheetFullSlider: Slider
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
@@ -162,6 +169,7 @@ class PlayerBottomSheet private constructor(
         bottomSheetLoopButton = findViewById(R.id.sheet_loop)
         bottomSheetLyricButton = findViewById(R.id.lyrics)
         bottomSheetTimerButton = findViewById(R.id.timer)
+        bottomSheetFavoriteButton = findViewById(R.id.favor)
         bottomSheetPlaylistButton = findViewById(R.id.playlist)
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
@@ -301,6 +309,14 @@ class PlayerBottomSheet private constructor(
                 Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
                 Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
                 else -> throw IllegalStateException()
+            }
+        }
+
+        bottomSheetFavoriteButton.addOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                instance.currentMediaItem?.let { insertIntoPlaylist(it) }
+            } else {
+                instance.currentMediaItem?.let { removeFromPlaylist(it) }
             }
         }
 
@@ -513,6 +529,12 @@ class PlayerBottomSheet private constructor(
                     .placeholder(R.drawable.ic_default_cover)
                     .into(playlistNowPlayingCover!!)
             }
+            if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
+                    .songList.contains(instance.currentMediaItem)) {
+                // TODO
+            } else {
+                // TODO
+            }
         }
         var newState = standardBottomSheetBehavior!!.state
         if (instance.mediaItemCount != 0 && visible) {
@@ -572,6 +594,14 @@ class PlayerBottomSheet private constructor(
                     instance.currentMediaItem,
                     Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
                 )
+                if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
+                        .songList.contains(instance.currentMediaItem)) {
+                    bottomSheetFavoriteButton.isChecked = true
+                    // TODO
+                } else {
+                    bottomSheetFavoriteButton.isChecked = false
+                    // TODO
+                }
                 handler.post { ready = true }
             },
             MoreExecutors.directExecutor(),
@@ -730,4 +760,36 @@ class PlayerBottomSheet private constructor(
         }
 
     }
+
+    @Suppress("DEPRECATION")
+    private fun insertIntoPlaylist(song: MediaItem) {
+        val playlistEntry = ContentValues()
+        val playlistId = activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition].id
+        playlistEntry.put(MediaStore.Audio.Playlists.Members.PLAYLIST_ID, playlistId)
+        playlistEntry.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.mediaId)
+
+        context.contentResolver.insert(
+            MediaStore.Audio.Playlists.Members.getContentUri(
+                "external",
+                playlistId
+            ), playlistEntry
+        )
+        activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition].songList.add(song)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun removeFromPlaylist(song: MediaItem) {
+        val selection = "${MediaStore.Audio.Playlists.Members.AUDIO_ID} = ?"
+        val selectionArgs = arrayOf(song.mediaId)
+        val playlistId = activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition].id
+
+        context.contentResolver.delete(
+            MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId),
+            selection,
+            selectionArgs
+        )
+        activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition].songList.remove(song)
+    }
+
+
 }

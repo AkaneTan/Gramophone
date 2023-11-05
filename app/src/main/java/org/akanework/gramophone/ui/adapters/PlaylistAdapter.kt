@@ -3,6 +3,7 @@ package org.akanework.gramophone.ui.adapters
 import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -13,7 +14,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class PlaylistAdapter(
     private val mainActivity: MainActivity,
-    playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
+    private val playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
 ) : BaseAdapter<MediaStoreUtils.Playlist>
     (
     mainActivity,
@@ -45,6 +46,16 @@ class PlaylistAdapter(
                     }
             },
         )
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        super.onBindViewHolder(holder, position, payloads)
+        if (playlistList.value!![position].title == context.getString(R.string.playlist_favourite)) {
+            Glide
+                .with(holder.songCover.context)
+                .load(R.drawable.ic_cover_favorite)
+                .into(holder.songCover)
+        }
     }
 
     override fun onMenu(item: MediaStoreUtils.Playlist, popupMenu: PopupMenu) {

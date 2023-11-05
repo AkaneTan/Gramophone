@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Import our viewModels.
-    private val libraryViewModel: LibraryViewModel by viewModels()
+    val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private val startActivity =

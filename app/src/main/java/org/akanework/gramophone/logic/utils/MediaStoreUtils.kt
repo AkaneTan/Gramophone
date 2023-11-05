@@ -2,6 +2,7 @@ package org.akanework.gramophone.logic.utils
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -18,11 +19,14 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import java.time.Instant
 import java.time.ZoneId
 
+
 /**
  * [MediaStoreUtils] contains all the methods for reading
  * from mediaStore.
  */
 object MediaStoreUtils {
+
+    var favPlaylistPosition = 0
 
     interface Item {
         val id: Long?
@@ -74,12 +78,12 @@ object MediaStoreUtils {
      */
     open class Playlist(
         override val id: Long,
-        override val title: String?,
-        override val songList: List<MediaItem>
+        override var title: String?,
+        override val songList: MutableList<MediaItem>
     ) : Item
 
     class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(id, null, songList
-        .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }) {
+        .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()) {
         private val rawList: List<MediaItem> = super.songList
         private var filteredList: List<MediaItem>? = null
         var minAddDate: Long = 0
@@ -89,7 +93,7 @@ object MediaStoreUtils {
                     filteredList = null
                 }
             }
-        override val songList: List<MediaItem>
+        override val songList: MutableList<MediaItem>
             get() {
                 if (filteredList == null) {
                     filteredList = rawList.filter {
@@ -438,12 +442,43 @@ object MediaStoreUtils {
                 val songs = getSongsInPlaylist(contentResolver, playlistId, songList)
 
                 // Create a Playlist object and add it to the list
-                val playlist = Playlist(playlistId, playlistName, songs)
+                val playlist = Playlist(playlistId, playlistName, songs.toMutableList())
                 playlists.add(playlist)
             }
         }
 
         cursor?.close()
+
+        if (playlists.none { it.title == "gramophone_favourite" }) {
+            val values = ContentValues()
+            @Suppress("DEPRECATION")
+            values.put(MediaStore.Audio.Playlists.NAME, "gramophone_favourite")
+
+            @Suppress("DEPRECATION")
+            values.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis())
+
+            values.put(
+                @Suppress("DEPRECATION")
+                MediaStore.Audio.Playlists.DATE_MODIFIED,
+                System.currentTimeMillis()
+            )
+
+
+            val resolver: ContentResolver = contentResolver
+            @Suppress("DEPRECATION")
+            val favPlaylistUri =
+                resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values)
+            if (favPlaylistUri != null) {
+                val playlistId = favPlaylistUri.lastPathSegment!!.toLong()
+                playlists.add(Playlist(playlistId, context.getString(R.string.playlist_favourite), mutableListOf()))
+            }
+        } else {
+            favPlaylistPosition = playlists.indexOfFirst { it.title == "gramophone_favourite" }
+            playlists[favPlaylistPosition].apply {
+                this.title = context.getString(R.string.playlist_favourite)
+            }
+        }
+
         return playlists
     }
 
