@@ -694,8 +694,6 @@ class PlayerBottomSheet private constructor(
             if (Build.VERSION.SDK_INT >= 26 && prefs.getBoolean("content_based_color", true)) {
                 CoroutineScope(Dispatchers.Default).launch {
                     try {
-                        val targetSong = instance.currentMediaItem?.mediaId
-
                         val inputStream: InputStream? =
                             context.contentResolver.openInputStream(mediaItem?.mediaMetadata?.artworkUri!!)
                         val bitmap = BitmapFactory.decodeStream(inputStream)
@@ -775,9 +773,6 @@ class PlayerBottomSheet private constructor(
                             )
 
                         withContext(Dispatchers.Main) {
-                            if (instance.currentMediaItem?.mediaId != targetSong) {
-                                return@withContext
-                            }
                             Log.d("TAG", "SET!")
                             val mTransition = TransitionDrawable(
                                 arrayOf(
