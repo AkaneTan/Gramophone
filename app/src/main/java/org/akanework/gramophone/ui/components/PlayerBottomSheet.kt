@@ -602,7 +602,7 @@ class PlayerBottomSheet private constructor(
                 mTransition.startTransition(300)
             }
 
-            delay(200)
+            delay(175)
             fullPlayerFinalColor = colorSurface
 
             withContext(Dispatchers.Main) {
@@ -788,7 +788,7 @@ class PlayerBottomSheet private constructor(
                             mTransition.startTransition(300)
                         }
 
-                        delay(200)
+                        delay(175)
                         fullPlayerFinalColor = colorSurface
 
                         withContext(Dispatchers.Main) {
