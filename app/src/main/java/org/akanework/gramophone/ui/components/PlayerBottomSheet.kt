@@ -56,6 +56,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -775,18 +776,22 @@ class PlayerBottomSheet private constructor(
                                 -1
                             )
 
-                        withContext(Dispatchers.Main) {
-                            val mTransition = TransitionDrawable(
-                                arrayOf(
-                                    ColorDrawable(fullPlayerFinalColor),
-                                    ColorDrawable(colorSurface)
-                                )
+                        val mTransition = TransitionDrawable(
+                            arrayOf(
+                                ColorDrawable(fullPlayerFinalColor),
+                                ColorDrawable(colorSurface)
                             )
+                        )
+
+                        withContext(Dispatchers.Main) {
                             fullPlayer.background = mTransition
-                            mTransition.startTransition(150)
+                            mTransition.startTransition(300)
+                        }
 
-                            fullPlayerFinalColor = colorSurface
+                        delay(150)
+                        fullPlayerFinalColor = colorSurface
 
+                        withContext(Dispatchers.Main) {
                             bottomSheetFullTitle.setTextColor(
                                 colorOnSurface
                             )
@@ -841,8 +846,8 @@ class PlayerBottomSheet private constructor(
                             bottomSheetFullDuration.setTextColor(
                                 colorAccent
                             )
-
                         }
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
