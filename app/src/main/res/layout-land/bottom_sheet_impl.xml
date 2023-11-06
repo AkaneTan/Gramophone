@@ -208,7 +208,7 @@
                 <org.akanework.gramophone.ui.components.MarqueeTextView
                     android:id="@+id/full_song_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="34dp"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
@@ -220,7 +220,8 @@
                 <org.akanework.gramophone.ui.components.MarqueeTextView
                     android:id="@+id/full_song_artist"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="26dp"
+                    android:layout_marginTop="2dp"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurfaceVariant"

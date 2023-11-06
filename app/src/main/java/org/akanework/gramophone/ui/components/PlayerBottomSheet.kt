@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Build
@@ -68,6 +69,7 @@ import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.utils.playOrPause
+import org.akanework.gramophone.logic.utils.setTextAnimation
 import org.akanework.gramophone.logic.utils.startAnimation
 import org.akanework.gramophone.ui.MainActivity
 import java.io.FileNotFoundException
@@ -79,6 +81,11 @@ class PlayerBottomSheet private constructor(
     Player.Listener, DefaultLifecycleObserver {
     constructor(context: Context, attributeSet: AttributeSet?)
             : this(context, attributeSet, 0, 0)
+
+    companion object {
+        const val BACKGROUND_COLOR_TRANSITION_SEC: Int = 250
+        const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 125
+    }
 
     private var sessionToken: SessionToken? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -602,10 +609,10 @@ class PlayerBottomSheet private constructor(
 
             withContext(Dispatchers.Main) {
                 fullPlayer.background = mTransition
-                mTransition.startTransition(300)
+                mTransition.startTransition(BACKGROUND_COLOR_TRANSITION_SEC)
             }
 
-            delay(150)
+            delay(FOREGROUND_COLOR_TRANSITION_SEC)
             fullPlayerFinalColor = colorSurface
 
             withContext(Dispatchers.Main) {
@@ -670,6 +677,184 @@ class PlayerBottomSheet private constructor(
     }
 
     @Suppress("DEPRECATION")
+    private fun addColorScheme(mediaItem: MediaItem?) {
+        currentJob?.cancel()
+        currentJob = CoroutineScope(Dispatchers.Default).launch {
+
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(
+                    activity.contentResolver,
+                    mediaItem?.mediaMetadata?.artworkUri
+                )
+                val originalBitmap: Bitmap = bitmap
+                val targetWidth = bitmap.width / 16
+                val targetHeight = bitmap.height / 16
+                val scaledBitmap =
+                    Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true)
+
+                wrappedContext = DynamicColors.wrapContextIfAvailable(
+                    context,
+                    DynamicColorsOptions.Builder()
+                        .setContentBasedSource(scaledBitmap)
+                        .build()
+                )
+
+                val colorSurface = MaterialColors.getColor(
+                    wrappedContext!!,
+                    com.google.android.material.R.attr.colorSurface,
+                    -1
+                )
+
+                val colorOnSurface = MaterialColors.getColor(
+                    wrappedContext!!,
+                    com.google.android.material.R.attr.colorOnSurface,
+                    -1
+                )
+
+                val colorOnSurfaceVariant = MaterialColors.getColor(
+                    wrappedContext!!,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                    -1
+                )
+
+                val colorPrimary =
+                    MaterialColors.getColor(
+                        wrappedContext!!,
+                        com.google.android.material.R.attr.colorPrimary,
+                        -1
+                    )
+
+                val colorSecondaryContainer =
+                    MaterialColors.getColor(
+                        wrappedContext!!,
+                        com.google.android.material.R.attr.colorSecondaryContainer,
+                        -1
+                    )
+
+                val colorOnSecondaryContainer =
+                    MaterialColors.getColor(
+                        wrappedContext!!,
+                        com.google.android.material.R.attr.colorOnSecondaryContainer,
+                        -1
+                    )
+
+                val colorSurfaceContainerHighest =
+                    MaterialColors.getColor(
+                        wrappedContext!!,
+                        com.google.android.material.R.attr.colorSurfaceContainerHighest,
+                        -1
+                    )
+
+                val selectorBackground =
+                    AppCompatResources.getColorStateList(
+                        wrappedContext!!,
+                        R.color.sl_check_button
+                    )
+
+                val colorError =
+                    MaterialColors.getColor(
+                        wrappedContext!!,
+                        com.google.android.material.R.attr.colorError,
+                        -1
+                    )
+
+                val colorAccent =
+                    MaterialColors.getColor(
+                        wrappedContext!!,
+                        com.google.android.material.R.attr.colorAccent,
+                        -1
+                    )
+
+                val mTransition = TransitionDrawable(
+                    arrayOf(
+                        ColorDrawable(fullPlayerFinalColor),
+                        ColorDrawable(colorSurface)
+                    )
+                )
+
+                withContext(Dispatchers.Main) {
+                    fullPlayer.background = mTransition
+                    mTransition.startTransition(BACKGROUND_COLOR_TRANSITION_SEC)
+                }
+
+                delay(FOREGROUND_COLOR_TRANSITION_SEC)
+                fullPlayerFinalColor = colorSurface
+
+                withContext(Dispatchers.Main) {
+                    bottomSheetFullTitle.setTextColor(
+                        colorOnSurface
+                    )
+                    bottomSheetFullSubtitle.setTextColor(
+                        colorOnSurfaceVariant
+                    )
+                    bottomSheetFullCoverFrame.backgroundTintList =
+                        ColorStateList.valueOf(colorSurface)
+
+                    bottomSheetFullSlider.thumbTintList =
+                        ColorStateList.valueOf(colorPrimary)
+                    bottomSheetFullSlider.trackInactiveTintList =
+                        ColorStateList.valueOf(colorSurfaceContainerHighest)
+                    bottomSheetFullSlider.trackActiveTintList =
+                        ColorStateList.valueOf(colorPrimary)
+                    bottomSheetFullSeekBar.progressTintList =
+                        ColorStateList.valueOf(colorPrimary)
+                    bottomSheetFullSeekBar.secondaryProgressTintList =
+                        ColorStateList.valueOf(colorSecondaryContainer)
+                    bottomSheetFullSeekBar.thumbTintList =
+                        ColorStateList.valueOf(colorPrimary)
+
+                    bottomSheetTimerButton.iconTint =
+                        selectorBackground
+                    bottomSheetPlaylistButton.iconTint =
+                        selectorBackground
+                    bottomSheetShuffleButton.iconTint =
+                        selectorBackground
+                    bottomSheetLoopButton.iconTint =
+                        selectorBackground
+                    bottomSheetLyricButton.iconTint =
+                        selectorBackground
+                    bottomSheetFavoriteButton.iconTint =
+                        ColorStateList.valueOf(colorError)
+
+                    bottomSheetFullControllerButton.iconTint =
+                        ColorStateList.valueOf(colorOnSecondaryContainer)
+
+                    bottomSheetFullControllerButton.backgroundTintList =
+                        ColorStateList.valueOf(colorSecondaryContainer)
+
+                    bottomSheetFullNextButton.iconTint =
+                        ColorStateList.valueOf(colorOnSurface)
+                    bottomSheetFullPreviousButton.iconTint =
+                        ColorStateList.valueOf(colorOnSurface)
+                    bottomSheetFullSlideUpButton.iconTint =
+                        ColorStateList.valueOf(colorOnSurface)
+                    bottomSheetInfoButton.iconTint =
+                        ColorStateList.valueOf(colorOnSurface)
+
+                    bottomSheetFullPosition.setTextColor(
+                        colorAccent
+                    )
+                    bottomSheetFullDuration.setTextColor(
+                        colorAccent
+                    )
+                }
+            } catch (e: Exception) {
+                if (e is FileNotFoundException) {
+                    withContext(Dispatchers.Main) {
+                        removeColorScheme(false)
+                        withContext(Dispatchers.Main) {
+                            Glide
+                                .with(context)
+                                .load(mediaItem?.mediaMetadata?.artworkUri)
+                                .placeholder(R.drawable.ic_default_cover)
+                                .into(bottomSheetFullCover)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
@@ -687,9 +872,9 @@ class PlayerBottomSheet private constructor(
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetPreviewSubtitle.text =
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
-            bottomSheetFullTitle.text = mediaItem?.mediaMetadata?.title
-            bottomSheetFullSubtitle.text =
-                mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
+            bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title)
+            bottomSheetFullSubtitle.setTextAnimation(
+                mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist))
             bottomSheetFullDuration.text =
                 mediaItem?.mediaMetadata?.extras?.getLong("Duration")
                     ?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
@@ -703,171 +888,7 @@ class PlayerBottomSheet private constructor(
             }
 
             if (Build.VERSION.SDK_INT >= 26 && prefs.getBoolean("content_based_color", true)) {
-                currentJob?.cancel()
-                currentJob = CoroutineScope(Dispatchers.Default).launch {
-                    try {
-                        val bitmap = MediaStore.Images.Media.getBitmap(activity.contentResolver, mediaItem?.mediaMetadata?.artworkUri)
-
-                        wrappedContext = DynamicColors.wrapContextIfAvailable(
-                            context,
-                            DynamicColorsOptions.Builder()
-                                .setContentBasedSource(bitmap)
-                                .build()
-                        )
-
-                        val colorSurface = MaterialColors.getColor(
-                            wrappedContext!!,
-                            com.google.android.material.R.attr.colorSurface,
-                            -1
-                        )
-
-                        val colorOnSurface = MaterialColors.getColor(
-                            wrappedContext!!,
-                            com.google.android.material.R.attr.colorOnSurface,
-                            -1
-                        )
-
-                        val colorOnSurfaceVariant = MaterialColors.getColor(
-                            wrappedContext!!,
-                            com.google.android.material.R.attr.colorOnSurfaceVariant,
-                            -1
-                        )
-
-                        val colorPrimary =
-                            MaterialColors.getColor(
-                                wrappedContext!!,
-                                com.google.android.material.R.attr.colorPrimary,
-                                -1
-                            )
-
-                        val colorSecondaryContainer =
-                            MaterialColors.getColor(
-                                wrappedContext!!,
-                                com.google.android.material.R.attr.colorSecondaryContainer,
-                                -1
-                            )
-
-                        val colorOnSecondaryContainer =
-                            MaterialColors.getColor(
-                                wrappedContext!!,
-                                com.google.android.material.R.attr.colorOnSecondaryContainer,
-                                -1
-                            )
-
-                        val colorSurfaceContainerHighest =
-                            MaterialColors.getColor(
-                                wrappedContext!!,
-                                com.google.android.material.R.attr.colorSurfaceContainerHighest,
-                                -1
-                            )
-
-                        val selectorBackground =
-                            AppCompatResources.getColorStateList(
-                                wrappedContext!!,
-                                R.color.sl_check_button
-                            )
-
-                        val colorError =
-                            MaterialColors.getColor(
-                                wrappedContext!!,
-                                com.google.android.material.R.attr.colorError,
-                                -1
-                            )
-
-                        val colorAccent =
-                            MaterialColors.getColor(
-                                wrappedContext!!,
-                                com.google.android.material.R.attr.colorAccent,
-                                -1
-                            )
-
-                        val mTransition = TransitionDrawable(
-                            arrayOf(
-                                ColorDrawable(fullPlayerFinalColor),
-                                ColorDrawable(colorSurface)
-                            )
-                        )
-
-                        withContext(Dispatchers.Main) {
-                            fullPlayer.background = mTransition
-                            mTransition.startTransition(300)
-                        }
-
-                        delay(150)
-                        fullPlayerFinalColor = colorSurface
-
-                        withContext(Dispatchers.Main) {
-                            bottomSheetFullTitle.setTextColor(
-                                colorOnSurface
-                            )
-                            bottomSheetFullSubtitle.setTextColor(
-                                colorOnSurfaceVariant
-                            )
-                            bottomSheetFullCoverFrame.backgroundTintList =
-                                ColorStateList.valueOf(colorSurface)
-
-                            bottomSheetFullSlider.thumbTintList =
-                                ColorStateList.valueOf(colorPrimary)
-                            bottomSheetFullSlider.trackInactiveTintList =
-                                ColorStateList.valueOf(colorSurfaceContainerHighest)
-                            bottomSheetFullSlider.trackActiveTintList =
-                                ColorStateList.valueOf(colorPrimary)
-                            bottomSheetFullSeekBar.progressTintList =
-                                ColorStateList.valueOf(colorPrimary)
-                            bottomSheetFullSeekBar.secondaryProgressTintList =
-                                ColorStateList.valueOf(colorSecondaryContainer)
-                            bottomSheetFullSeekBar.thumbTintList =
-                                ColorStateList.valueOf(colorPrimary)
-
-                            bottomSheetTimerButton.iconTint =
-                                selectorBackground
-                            bottomSheetPlaylistButton.iconTint =
-                                selectorBackground
-                            bottomSheetShuffleButton.iconTint =
-                                selectorBackground
-                            bottomSheetLoopButton.iconTint =
-                                selectorBackground
-                            bottomSheetLyricButton.iconTint =
-                                selectorBackground
-                            bottomSheetFavoriteButton.iconTint =
-                                ColorStateList.valueOf(colorError)
-
-                            bottomSheetFullControllerButton.iconTint =
-                                ColorStateList.valueOf(colorOnSecondaryContainer)
-
-                            bottomSheetFullControllerButton.backgroundTintList =
-                                ColorStateList.valueOf(colorSecondaryContainer)
-
-                            bottomSheetFullNextButton.iconTint =
-                                ColorStateList.valueOf(colorOnSurface)
-                            bottomSheetFullPreviousButton.iconTint =
-                                ColorStateList.valueOf(colorOnSurface)
-                            bottomSheetFullSlideUpButton.iconTint =
-                                ColorStateList.valueOf(colorOnSurface)
-                            bottomSheetInfoButton.iconTint =
-                                ColorStateList.valueOf(colorOnSurface)
-
-                            bottomSheetFullPosition.setTextColor(
-                                colorAccent
-                            )
-                            bottomSheetFullDuration.setTextColor(
-                                colorAccent
-                            )
-                        }
-
-                    } catch (e: Exception) {
-                        if (e is FileNotFoundException) {
-                            removeColorScheme(false)
-                            withContext(Dispatchers.Main) {
-                                Glide
-                                    .with(context)
-                                    .load(mediaItem?.mediaMetadata?.artworkUri)
-                                    .placeholder(R.drawable.ic_default_cover)
-                                    .into(bottomSheetFullCover)
-                            }
-                        }
-                    }
-                }
+                addColorScheme(mediaItem)
             }
 
             if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
