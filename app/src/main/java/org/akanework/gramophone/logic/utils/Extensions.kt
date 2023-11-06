@@ -4,11 +4,13 @@ import android.view.View
 import android.widget.TextView
 
 fun TextView.setTextAnimation(text: CharSequence?, duration: Long = 300, completion: (() -> Unit)? = null) {
-    fadOutAnimation(duration) {
-        this.text = text
-        fadInAnimation(duration) {
-            completion?.let {
-                it()
+    if (this.text != text) {
+        fadOutAnimation(duration) {
+            this.text = text
+            fadInAnimation(duration) {
+                completion?.let {
+                    it()
+                }
             }
         }
     }
