@@ -42,6 +42,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.google.android.material.color.MaterialColors
@@ -105,6 +106,7 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetLyricButton: MaterialButton
     private val bottomSheetFullSeekBar: SeekBar
     private val bottomSheetFullSlider: Slider
+    private val bottomSheetFullCoverFrame: MaterialCardView
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
     private val fullPlayer: View
@@ -172,6 +174,7 @@ class PlayerBottomSheet private constructor(
         bottomSheetPreviewControllerButton = findViewById(R.id.preview_control)
         bottomSheetPreviewNextButton = findViewById(R.id.preview_next)
         bottomSheetFullCover = findViewById(R.id.full_sheet_cover)
+        bottomSheetFullCoverFrame = findViewById(R.id.cover_frame)
         bottomSheetFullTitle = findViewById(R.id.full_song_name)
         bottomSheetFullSubtitle = findViewById(R.id.full_song_artist)
         bottomSheetFullPreviousButton = findViewById(R.id.sheet_previous_song)
@@ -602,7 +605,7 @@ class PlayerBottomSheet private constructor(
                 mTransition.startTransition(300)
             }
 
-            delay(175)
+            delay(150)
             fullPlayerFinalColor = colorSurface
 
             withContext(Dispatchers.Main) {
@@ -612,6 +615,8 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullSubtitle.setTextColor(
                     colorOnSurfaceVariant
                 )
+                bottomSheetFullCoverFrame.backgroundTintList =
+                    ColorStateList.valueOf(colorSurface)
 
                 bottomSheetFullSlider.thumbTintList =
                     ColorStateList.valueOf(colorPrimary)
@@ -788,7 +793,7 @@ class PlayerBottomSheet private constructor(
                             mTransition.startTransition(300)
                         }
 
-                        delay(175)
+                        delay(150)
                         fullPlayerFinalColor = colorSurface
 
                         withContext(Dispatchers.Main) {
@@ -798,6 +803,8 @@ class PlayerBottomSheet private constructor(
                             bottomSheetFullSubtitle.setTextColor(
                                 colorOnSurfaceVariant
                             )
+                            bottomSheetFullCoverFrame.backgroundTintList =
+                                ColorStateList.valueOf(colorSurface)
 
                             bottomSheetFullSlider.thumbTintList =
                                 ColorStateList.valueOf(colorPrimary)
