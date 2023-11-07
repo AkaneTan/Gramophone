@@ -683,7 +683,8 @@ class PlayerBottomSheet private constructor(
     }
 
     @Suppress("DEPRECATION")
-    private fun addColorScheme(mediaItem: MediaItem?) {
+    fun addColorScheme() {
+        val mediaItem = instance.currentMediaItem
         currentJob?.cancel()
         currentJob = CoroutineScope(Dispatchers.Default).launch {
 
@@ -901,7 +902,7 @@ class PlayerBottomSheet private constructor(
             }
 
             if (Build.VERSION.SDK_INT >= 26 && prefs.getBoolean("content_based_color", true)) {
-                addColorScheme(mediaItem)
+                addColorScheme()
             }
 
             if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]

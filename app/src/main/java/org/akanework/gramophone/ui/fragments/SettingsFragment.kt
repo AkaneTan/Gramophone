@@ -44,6 +44,8 @@ class SettingsFragment : BaseFragment(false) {
         }
         if (!isContentBasedColorEnabled) {
             (activity as MainActivity).getPlayerSheet().removeColorScheme()
+        } else {
+            (activity as MainActivity).getPlayerSheet().addColorScheme()
         }
     }
 }
