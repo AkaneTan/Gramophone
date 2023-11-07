@@ -1,12 +1,11 @@
 package org.akanework.gramophone.ui.components
 
+import android.animation.ValueAnimator
 import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -83,7 +82,7 @@ class PlayerBottomSheet private constructor(
             : this(context, attributeSet, 0, 0)
 
     companion object {
-        const val BACKGROUND_COLOR_TRANSITION_SEC: Int = 250
+        const val BACKGROUND_COLOR_TRANSITION_SEC: Long = 250
         const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 125
     }
 
@@ -600,16 +599,22 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
-            val mTransition = TransitionDrawable(
-                arrayOf(
-                    ColorDrawable(fullPlayerFinalColor),
-                    ColorDrawable(colorSurface)
-                )
+            val surfaceTransition = ValueAnimator.ofArgb(
+                fullPlayerFinalColor,
+                colorSurface
             )
 
+            surfaceTransition.apply {
+                addUpdateListener { animation ->
+                    fullPlayer.setBackgroundColor(
+                        animation.animatedValue as Int
+                    )
+                }
+                duration = BACKGROUND_COLOR_TRANSITION_SEC
+            }
+
             withContext(Dispatchers.Main) {
-                fullPlayer.background = mTransition
-                mTransition.startTransition(BACKGROUND_COLOR_TRANSITION_SEC)
+                surfaceTransition.start()
             }
 
             delay(FOREGROUND_COLOR_TRANSITION_SEC)
@@ -622,8 +627,9 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullSubtitle.setTextColor(
                     colorOnSurfaceVariant
                 )
-                bottomSheetFullCoverFrame.backgroundTintList =
-                    ColorStateList.valueOf(colorSurface)
+                bottomSheetFullCoverFrame.setCardBackgroundColor(
+                    colorSurface
+                )
 
                 bottomSheetFullSlider.thumbTintList =
                     ColorStateList.valueOf(colorPrimary)
@@ -765,16 +771,22 @@ class PlayerBottomSheet private constructor(
                         -1
                     )
 
-                val mTransition = TransitionDrawable(
-                    arrayOf(
-                        ColorDrawable(fullPlayerFinalColor),
-                        ColorDrawable(colorSurface)
-                    )
+                val surfaceTransition = ValueAnimator.ofArgb(
+                    fullPlayerFinalColor,
+                    colorSurface
                 )
 
+                surfaceTransition.apply {
+                    addUpdateListener { animation ->
+                        fullPlayer.setBackgroundColor(
+                            animation.animatedValue as Int
+                        )
+                    }
+                    duration = BACKGROUND_COLOR_TRANSITION_SEC
+                }
+
                 withContext(Dispatchers.Main) {
-                    fullPlayer.background = mTransition
-                    mTransition.startTransition(BACKGROUND_COLOR_TRANSITION_SEC)
+                    surfaceTransition.start()
                 }
 
                 delay(FOREGROUND_COLOR_TRANSITION_SEC)
@@ -787,8 +799,9 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullSubtitle.setTextColor(
                         colorOnSurfaceVariant
                     )
-                    bottomSheetFullCoverFrame.backgroundTintList =
-                        ColorStateList.valueOf(colorSurface)
+                    bottomSheetFullCoverFrame.setCardBackgroundColor(
+                        colorSurface
+                    )
 
                     bottomSheetFullSlider.thumbTintList =
                         ColorStateList.valueOf(colorPrimary)

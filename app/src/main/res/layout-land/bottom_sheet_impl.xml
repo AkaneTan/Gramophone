@@ -168,7 +168,7 @@
             app:layout_constraintStart_toEndOf="@id/slide_down"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp"
-            app:cardCornerRadius="8dp">
+            app:cardCornerRadius="16dp">
 
             <ImageView
                 android:id="@+id/full_sheet_cover"

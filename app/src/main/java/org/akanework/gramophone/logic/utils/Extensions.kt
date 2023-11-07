@@ -1,5 +1,7 @@
 package org.akanework.gramophone.logic.utils
 
+import android.content.Context
+import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 
@@ -42,3 +44,8 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
             }
         }
 }
+
+fun Context.toPx(dp: Int): Float = TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_DIP,
+    dp.toFloat(),
+    resources.displayMetrics)
