@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -54,6 +55,7 @@ class PlaylistAdapter(
             Glide
                 .with(holder.songCover.context)
                 .load(R.drawable.ic_cover_favorite)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .into(holder.songCover)
         }
     }

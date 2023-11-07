@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -46,6 +47,7 @@ class AlbumAdapter(
             Glide
                 .with(holder.songCover.context)
                 .load(coverOf(item))
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(defaultCover)
                 .into(holder.songCover)
             holder.itemView.setOnClickListener { onClick(item) }
@@ -62,6 +64,7 @@ class AlbumAdapter(
             Glide
                 .with(holder.songCover.context)
                 .load(coverOf(item))
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(defaultCover)
                 .into(holder.songCover)
             holder.itemView.setOnClickListener { onClick(item) }

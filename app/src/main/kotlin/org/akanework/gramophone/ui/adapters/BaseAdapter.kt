@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -234,6 +235,7 @@ abstract class BaseAdapter<T>(
         Glide
             .with(holder.songCover.context)
             .load(coverOf(item))
+            .transition(DrawableTransitionOptions.withCrossFade())
             .placeholder(defaultCover)
             .into(holder.songCover)
         holder.itemView.setOnClickListener { onClick(item) }
