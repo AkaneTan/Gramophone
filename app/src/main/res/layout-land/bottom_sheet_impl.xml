@@ -137,23 +137,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/info"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginBottom="26dp"
-            android:background="@drawable/rp_buttons"
-            app:icon="@drawable/ic_more_vert"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="28dp"
-            app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintEnd_toStartOf="@id/cover_frame"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/slide_down"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
         <!-- LANDSCAPE changed constraints and added marginBottom -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cover_frame"

@@ -22,17 +22,32 @@
         android:src="@drawable/folder_art"
         app:tint="?attr/colorOnSurface" />
 
-    <TextView
-        android:id="@+id/title"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
-        android:singleLine="true"
-        android:textColor="?attr/colorOnSurface"
-        android:textFontWeight="600"
-        android:textSize="16sp"
-        tools:targetApi="p"
-        tools:text="Example Title" />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp"
+            tools:targetApi="p"
+            tools:text="Example Title" />
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="14sp"
+            tools:targetApi="p"
+            tools:text="Example Title" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,12 +1,15 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
@@ -25,7 +28,7 @@ class FolderAdapter(
 ) : AdapterFragment.BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
     private val folderPopAdapter: FolderPopAdapter = FolderPopAdapter(this)
     private val folderAdapter: FolderListAdapter =
-        FolderListAdapter(listOf(), this)
+        FolderListAdapter(listOf(), mainActivity, this)
     private val songAdapter: SongAdapter =
         SongAdapter(mainActivity, listOf(), false, null, false)
     override val concatAdapter: ConcatAdapter =
@@ -137,12 +140,21 @@ class FolderAdapter(
 
     private class FolderListAdapter(
         private var folderList: List<MediaStoreUtils.FileNode>,
+        private val activity: MainActivity,
         frag: FolderAdapter
     ) : FolderCardAdapter(frag), PopupTextProvider {
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = folderList[position]
             holder.folderName.text = item.folderName
+            holder.folderSubtitle.text =
+                activity.resources.getQuantityString(
+                    R.plurals.items,
+                    (item.folderList.size +
+                        item.songList.size),
+                    (item.folderList.size +
+                        item.songList.size))
             holder.itemView.setOnClickListener {
                 folderFragment.enter(item.folderName)
             }
@@ -227,6 +239,7 @@ class FolderAdapter(
             view: View,
         ) : RecyclerView.ViewHolder(view) {
             val folderName: TextView = view.findViewById(R.id.title)
+            val folderSubtitle: TextView = view.findViewById(R.id.subtitle)
         }
     }
 }

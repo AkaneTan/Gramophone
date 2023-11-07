@@ -53,7 +53,7 @@ class PlaylistAdapter(
         super.onBindViewHolder(holder, position, payloads)
         if (playlistList.value!![position].title == context.getString(R.string.playlist_favourite)) {
             Glide
-                .with(holder.songCover.context)
+                .with(context)
                 .load(R.drawable.ic_cover_favorite)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(holder.songCover)

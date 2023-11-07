@@ -114,7 +114,6 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetPlaylistButton: MaterialButton
     private val bottomSheetTimerButton: MaterialButton
     private val bottomSheetFavoriteButton: MaterialButton
-    private val bottomSheetInfoButton: MaterialButton
     private val bottomSheetLyricButton: MaterialButton
     private val bottomSheetFullSeekBar: SeekBar
     private val bottomSheetFullSlider: Slider
@@ -205,7 +204,6 @@ class PlayerBottomSheet private constructor(
         bottomSheetTimerButton = findViewById(R.id.timer)
         bottomSheetFavoriteButton = findViewById(R.id.favor)
         bottomSheetPlaylistButton = findViewById(R.id.playlist)
-        bottomSheetInfoButton = findViewById(R.id.info)
         bottomSheetLyricButton = findViewById(R.id.lyrics)
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
@@ -618,12 +616,17 @@ class PlayerBottomSheet private constructor(
                     R.color.sl_check_button
                 )
 
-            val colorTertiary =
-                MaterialColors.getColor(
-                    context,
-                    com.google.android.material.R.attr.colorTertiary,
-                    -1
+            val selectorFavBackground =
+                AppCompatResources.getColorStateList(
+                    wrappedContext!!,
+                    R.color.sl_check_button
                 )
+
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorTertiary,
+                -1
+            )
 
             val colorAccent =
                 MaterialColors.getColor(
@@ -736,15 +739,13 @@ class PlayerBottomSheet private constructor(
                 bottomSheetLyricButton.iconTint =
                     selectorBackground
                 bottomSheetFavoriteButton.iconTint =
-                    ColorStateList.valueOf(colorTertiary)
+                    selectorFavBackground
 
                 bottomSheetFullNextButton.iconTint =
                     ColorStateList.valueOf(colorOnSurface)
                 bottomSheetFullPreviousButton.iconTint =
                     ColorStateList.valueOf(colorOnSurface)
                 bottomSheetFullSlideUpButton.iconTint =
-                    ColorStateList.valueOf(colorOnSurface)
-                bottomSheetInfoButton.iconTint =
                     ColorStateList.valueOf(colorOnSurface)
 
                 bottomSheetFullPosition.setTextColor(
@@ -833,12 +834,17 @@ class PlayerBottomSheet private constructor(
                         R.color.sl_check_button
                     )
 
-                val colorTertiary =
-                    MaterialColors.getColor(
+                val selectorFavBackground =
+                    AppCompatResources.getColorStateList(
                         wrappedContext!!,
-                        com.google.android.material.R.attr.colorTertiary,
-                        -1
+                        R.color.sl_check_button
                     )
+
+                MaterialColors.getColor(
+                    wrappedContext!!,
+                    com.google.android.material.R.attr.colorTertiary,
+                    -1
+                )
 
                 val colorAccent =
                     MaterialColors.getColor(
@@ -951,15 +957,13 @@ class PlayerBottomSheet private constructor(
                     bottomSheetLyricButton.iconTint =
                         selectorBackground
                     bottomSheetFavoriteButton.iconTint =
-                        ColorStateList.valueOf(colorTertiary)
+                        selectorFavBackground
 
                     bottomSheetFullNextButton.iconTint =
                         ColorStateList.valueOf(colorOnSurface)
                     bottomSheetFullPreviousButton.iconTint =
                         ColorStateList.valueOf(colorOnSurface)
                     bottomSheetFullSlideUpButton.iconTint =
-                        ColorStateList.valueOf(colorOnSurface)
-                    bottomSheetInfoButton.iconTint =
                         ColorStateList.valueOf(colorOnSurface)
 
                     bottomSheetFullPosition.setTextColor(
