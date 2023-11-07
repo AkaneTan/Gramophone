@@ -12,7 +12,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
         android:padding="8dp"
-        android:textColor="?attr/colorPrimary"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="15sp"
         android:textFontWeight="500"
         tools:targetApi="p"
