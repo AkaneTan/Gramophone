@@ -68,13 +68,13 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.getTimer
 import org.akanework.gramophone.logic.hasTimer
-import org.akanework.gramophone.logic.setTimer
-import org.akanework.gramophone.logic.utils.GramophoneUtils
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.setTextAnimation
+import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
+import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
+import org.akanework.gramophone.logic.utils.GramophoneUtils
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import java.io.FileNotFoundException
 import kotlin.math.min
@@ -88,8 +88,8 @@ class PlayerBottomSheet private constructor(
             : this(context, attributeSet, 0, 0)
 
     companion object {
-        const val BACKGROUND_COLOR_TRANSITION_SEC: Long = 250
-        const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 125
+        const val BACKGROUND_COLOR_TRANSITION_SEC: Long = 300
+        const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 150
     }
 
     private var sessionToken: SessionToken? = null
@@ -126,6 +126,9 @@ class PlayerBottomSheet private constructor(
     private val progressDrawable: SquigglyProgress
     private var isLegacyProgressEnabled: Boolean = false
     private var fullPlayerFinalColor: Int = -1
+    private var colorPrimaryFinalColor: Int = -1
+    private var colorSecondaryContainerFinalColor: Int = -1
+    private var colorOnSecondaryContainerFinalColor: Int = -1
 
     private var playlistNowPlaying: TextView? = null
     private var playlistNowPlayingCover: ImageView? = null
@@ -209,6 +212,18 @@ class PlayerBottomSheet private constructor(
         fullPlayerFinalColor = MaterialColors.getColor(
             this,
             com.google.android.material.R.attr.colorSurface
+        )
+        colorPrimaryFinalColor = MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorPrimary
+        )
+        colorOnSecondaryContainerFinalColor = MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorOnSecondaryContainer
+        )
+        colorSecondaryContainerFinalColor = MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorSecondaryContainer
         )
         if (isLegacyProgressEnabled) {
             bottomSheetFullSlider.visibility = View.VISIBLE
@@ -603,10 +618,10 @@ class PlayerBottomSheet private constructor(
                     R.color.sl_check_button
                 )
 
-            val colorError =
+            val colorTertiary =
                 MaterialColors.getColor(
                     context,
-                    com.google.android.material.R.attr.colorError,
+                    com.google.android.material.R.attr.colorTertiary,
                     -1
                 )
 
@@ -624,6 +639,20 @@ class PlayerBottomSheet private constructor(
                 backgroundProcessedColor
             )
 
+            val primaryTransition = ValueAnimator.ofArgb(
+                colorPrimaryFinalColor,
+                colorPrimary
+            )
+
+            val secondaryContainerTransition = ValueAnimator.ofArgb(
+                colorSecondaryContainerFinalColor,
+                colorSecondaryContainer
+            )
+
+            val onSecondaryContainerTransition = ValueAnimator.ofArgb(
+                colorOnSecondaryContainerFinalColor,
+                colorOnSecondaryContainer
+            )
 
             surfaceTransition.apply {
                 addUpdateListener { animation ->
@@ -634,12 +663,53 @@ class PlayerBottomSheet private constructor(
                 duration = BACKGROUND_COLOR_TRANSITION_SEC
             }
 
+            primaryTransition.apply {
+                addUpdateListener { animation ->
+                    val progressColor = animation.animatedValue as Int
+                    bottomSheetFullSlider.thumbTintList =
+                        ColorStateList.valueOf(progressColor)
+                    bottomSheetFullSlider.trackActiveTintList =
+                        ColorStateList.valueOf(progressColor)
+                    bottomSheetFullSeekBar.progressTintList =
+                        ColorStateList.valueOf(progressColor)
+                    bottomSheetFullSeekBar.thumbTintList =
+                        ColorStateList.valueOf(progressColor)
+                }
+                duration = BACKGROUND_COLOR_TRANSITION_SEC
+            }
+
+            secondaryContainerTransition.apply {
+                addUpdateListener { animation ->
+                    val progressColor = animation.animatedValue as Int
+                    bottomSheetFullSeekBar.secondaryProgressTintList =
+                        ColorStateList.valueOf(progressColor)
+                    bottomSheetFullControllerButton.backgroundTintList =
+                        ColorStateList.valueOf(progressColor)
+                }
+                duration = BACKGROUND_COLOR_TRANSITION_SEC
+            }
+
+            onSecondaryContainerTransition.apply {
+                addUpdateListener { animation ->
+                    val progressColor = animation.animatedValue as Int
+                    bottomSheetFullControllerButton.iconTint =
+                        ColorStateList.valueOf(progressColor)
+                }
+                duration = BACKGROUND_COLOR_TRANSITION_SEC
+            }
+
             withContext(Dispatchers.Main) {
                 surfaceTransition.start()
+                primaryTransition.start()
+                secondaryContainerTransition.start()
+                onSecondaryContainerTransition.start()
             }
 
             delay(FOREGROUND_COLOR_TRANSITION_SEC)
-            fullPlayerFinalColor = backgroundProcessing(colorSurface)
+            fullPlayerFinalColor = backgroundProcessing(backgroundProcessedColor)
+            colorPrimaryFinalColor = colorPrimary
+            colorSecondaryContainerFinalColor = colorSecondaryContainer
+            colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer
 
             withContext(Dispatchers.Main) {
                 bottomSheetFullTitle.setTextColor(
@@ -652,18 +722,8 @@ class PlayerBottomSheet private constructor(
                     colorSurface
                 )
 
-                bottomSheetFullSlider.thumbTintList =
-                    ColorStateList.valueOf(colorPrimary)
                 bottomSheetFullSlider.trackInactiveTintList =
                     ColorStateList.valueOf(colorSurfaceContainerHighest)
-                bottomSheetFullSlider.trackActiveTintList =
-                    ColorStateList.valueOf(colorPrimary)
-                bottomSheetFullSeekBar.progressTintList =
-                    ColorStateList.valueOf(colorPrimary)
-                bottomSheetFullSeekBar.secondaryProgressTintList =
-                    ColorStateList.valueOf(colorSecondaryContainer)
-                bottomSheetFullSeekBar.thumbTintList =
-                    ColorStateList.valueOf(colorPrimary)
 
                 bottomSheetTimerButton.iconTint =
                     selectorBackground
@@ -676,13 +736,7 @@ class PlayerBottomSheet private constructor(
                 bottomSheetLyricButton.iconTint =
                     selectorBackground
                 bottomSheetFavoriteButton.iconTint =
-                    ColorStateList.valueOf(colorError)
-
-                bottomSheetFullControllerButton.iconTint =
-                    ColorStateList.valueOf(colorOnSecondaryContainer)
-
-                bottomSheetFullControllerButton.backgroundTintList =
-                    ColorStateList.valueOf(colorSecondaryContainer)
+                    ColorStateList.valueOf(colorTertiary)
 
                 bottomSheetFullNextButton.iconTint =
                     ColorStateList.valueOf(colorOnSurface)
@@ -800,6 +854,21 @@ class PlayerBottomSheet private constructor(
                     backgroundProcessedColor
                 )
 
+                val primaryTransition = ValueAnimator.ofArgb(
+                    colorPrimaryFinalColor,
+                    colorPrimary
+                )
+
+                val secondaryContainerTransition = ValueAnimator.ofArgb(
+                    colorSecondaryContainerFinalColor,
+                    colorSecondaryContainer
+                )
+
+                val onSecondaryContainerTransition = ValueAnimator.ofArgb(
+                    colorOnSecondaryContainerFinalColor,
+                    colorOnSecondaryContainer
+                )
+
                 surfaceTransition.apply {
                     addUpdateListener { animation ->
                         fullPlayer.setBackgroundColor(
@@ -809,12 +878,53 @@ class PlayerBottomSheet private constructor(
                     duration = BACKGROUND_COLOR_TRANSITION_SEC
                 }
 
+                primaryTransition.apply {
+                    addUpdateListener { animation ->
+                        val progressColor = animation.animatedValue as Int
+                        bottomSheetFullSlider.thumbTintList =
+                            ColorStateList.valueOf(progressColor)
+                        bottomSheetFullSlider.trackActiveTintList =
+                            ColorStateList.valueOf(progressColor)
+                        bottomSheetFullSeekBar.progressTintList =
+                            ColorStateList.valueOf(progressColor)
+                        bottomSheetFullSeekBar.thumbTintList =
+                            ColorStateList.valueOf(progressColor)
+                    }
+                    duration = BACKGROUND_COLOR_TRANSITION_SEC
+                }
+
+                secondaryContainerTransition.apply {
+                    addUpdateListener { animation ->
+                        val progressColor = animation.animatedValue as Int
+                        bottomSheetFullSeekBar.secondaryProgressTintList =
+                            ColorStateList.valueOf(progressColor)
+                        bottomSheetFullControllerButton.backgroundTintList =
+                            ColorStateList.valueOf(progressColor)
+                    }
+                    duration = BACKGROUND_COLOR_TRANSITION_SEC
+                }
+
+                onSecondaryContainerTransition.apply {
+                    addUpdateListener { animation ->
+                        val progressColor = animation.animatedValue as Int
+                        bottomSheetFullControllerButton.iconTint =
+                            ColorStateList.valueOf(progressColor)
+                    }
+                    duration = BACKGROUND_COLOR_TRANSITION_SEC
+                }
+
                 withContext(Dispatchers.Main) {
                     surfaceTransition.start()
+                    primaryTransition.start()
+                    secondaryContainerTransition.start()
+                    onSecondaryContainerTransition.start()
                 }
 
                 delay(FOREGROUND_COLOR_TRANSITION_SEC)
                 fullPlayerFinalColor = backgroundProcessedColor
+                colorPrimaryFinalColor = colorPrimary
+                colorSecondaryContainerFinalColor = colorSecondaryContainer
+                colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer
 
                 withContext(Dispatchers.Main) {
                     bottomSheetFullTitle.setTextColor(
@@ -827,18 +937,8 @@ class PlayerBottomSheet private constructor(
                         colorSurface
                     )
 
-                    bottomSheetFullSlider.thumbTintList =
-                        ColorStateList.valueOf(colorPrimary)
                     bottomSheetFullSlider.trackInactiveTintList =
                         ColorStateList.valueOf(colorSurfaceContainerHighest)
-                    bottomSheetFullSlider.trackActiveTintList =
-                        ColorStateList.valueOf(colorPrimary)
-                    bottomSheetFullSeekBar.progressTintList =
-                        ColorStateList.valueOf(colorPrimary)
-                    bottomSheetFullSeekBar.secondaryProgressTintList =
-                        ColorStateList.valueOf(colorSecondaryContainer)
-                    bottomSheetFullSeekBar.thumbTintList =
-                        ColorStateList.valueOf(colorPrimary)
 
                     bottomSheetTimerButton.iconTint =
                         selectorBackground
@@ -852,12 +952,6 @@ class PlayerBottomSheet private constructor(
                         selectorBackground
                     bottomSheetFavoriteButton.iconTint =
                         ColorStateList.valueOf(colorTertiary)
-
-                    bottomSheetFullControllerButton.iconTint =
-                        ColorStateList.valueOf(colorOnSecondaryContainer)
-
-                    bottomSheetFullControllerButton.backgroundTintList =
-                        ColorStateList.valueOf(colorSecondaryContainer)
 
                     bottomSheetFullNextButton.iconTint =
                         ColorStateList.valueOf(colorOnSurface)
