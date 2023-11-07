@@ -779,10 +779,10 @@ class PlayerBottomSheet private constructor(
                         R.color.sl_check_button
                     )
 
-                val colorError =
+                val colorTertiary =
                     MaterialColors.getColor(
                         wrappedContext!!,
-                        com.google.android.material.R.attr.colorError,
+                        com.google.android.material.R.attr.colorTertiary,
                         -1
                     )
 
@@ -851,7 +851,7 @@ class PlayerBottomSheet private constructor(
                     bottomSheetLyricButton.iconTint =
                         selectorBackground
                     bottomSheetFavoriteButton.iconTint =
-                        ColorStateList.valueOf(colorError)
+                        ColorStateList.valueOf(colorTertiary)
 
                     bottomSheetFullControllerButton.iconTint =
                         ColorStateList.valueOf(colorOnSecondaryContainer)
