@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -39,6 +40,9 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -364,6 +368,7 @@ class PlayerBottomSheet private constructor(
             Glide
                 .with(playlistNowPlayingCover!!)
                 .load(instance.currentMediaItem?.mediaMetadata?.artworkUri)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(R.drawable.ic_default_cover)
                 .into(playlistNowPlayingCover!!)
             recyclerView.layoutManager = LinearLayoutManager(context)
@@ -872,15 +877,11 @@ class PlayerBottomSheet private constructor(
                 }
             } catch (e: Exception) {
                 if (e is FileNotFoundException) {
+                    removeColorScheme(false)
                     withContext(Dispatchers.Main) {
-                        removeColorScheme(false)
-                        withContext(Dispatchers.Main) {
-                            Glide
-                                .with(context)
-                                .load(mediaItem?.mediaMetadata?.artworkUri)
-                                .placeholder(R.drawable.ic_default_cover)
-                                .into(bottomSheetFullCover)
-                        }
+                        bottomSheetFullCover.setImageDrawable(
+                            AppCompatResources.getDrawable(context, R.drawable.ic_default_cover)
+                        )
                     }
                 }
             }
@@ -895,12 +896,30 @@ class PlayerBottomSheet private constructor(
             Glide
                 .with(context)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(R.drawable.ic_default_cover)
                 .into(bottomSheetPreviewCover)
             Glide
                 .with(context)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
-                .into(bottomSheetFullCover)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(
+                    object : CustomTarget<Drawable>(){
+                        override fun onResourceReady(
+                            resource: Drawable,
+                            transition: Transition<in Drawable>?
+                        ) {
+                            bottomSheetFullCover.setImageDrawable(resource)
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            // this is called when imageView is cleared on lifecycle call or for
+                            // some other reason.
+                            // if you are referencing the bitmap somewhere else too other than this imageView
+                            // clear it here as you can no longer have the bitmap
+                        }
+                    }
+                )
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetPreviewSubtitle.text =
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
@@ -915,6 +934,7 @@ class PlayerBottomSheet private constructor(
                 Glide
                     .with(context)
                     .load(mediaItem?.mediaMetadata?.artworkUri)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .placeholder(R.drawable.ic_default_cover)
                     .into(playlistNowPlayingCover!!)
             }
@@ -1131,6 +1151,7 @@ class PlayerBottomSheet private constructor(
             Glide
                 .with(holder.songCover.context)
                 .load(playlist[position].mediaMetadata.artworkUri)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(R.drawable.ic_default_cover)
                 .into(holder.songCover)
             holder.closeButton.setOnClickListener {
