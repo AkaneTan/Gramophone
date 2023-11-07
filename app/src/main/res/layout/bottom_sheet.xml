@@ -11,7 +11,7 @@
     android:elevation="1dp"
     android:focusable="true"
     app:behavior_hideable="true"
-    app:layout_behavior="org.akanework.gramophone.logic.utils.MyBottomSheetBehavior"
+    app:layout_behavior="org.akanework.gramophone.logic.ui.MyBottomSheetBehavior"
     app:paddingBottomSystemWindowInsets="false"
     app:paddingLeftSystemWindowInsets="false"
     app:paddingRightSystemWindowInsets="false"

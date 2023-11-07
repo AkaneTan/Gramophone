@@ -67,10 +67,10 @@ import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.utils.GramophoneUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.logic.utils.MyBottomSheetBehavior
-import org.akanework.gramophone.logic.utils.playOrPause
-import org.akanework.gramophone.logic.utils.setTextAnimation
-import org.akanework.gramophone.logic.utils.startAnimation
+import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
+import org.akanework.gramophone.logic.playOrPause
+import org.akanework.gramophone.logic.setTextAnimation
+import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.ui.MainActivity
 import java.io.FileNotFoundException
 import kotlin.math.min

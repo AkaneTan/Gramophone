@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.akanework.gramophone.logic.utils
+package org.akanework.gramophone.logic.calculation
 
 import java.math.BigInteger
 import java.text.Collator

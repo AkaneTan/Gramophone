@@ -1,7 +1,7 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.net.Uri
-import org.akanework.gramophone.logic.utils.SupportComparator
+import org.akanework.gramophone.logic.calculation.SupportComparator
 
 class Sorter<T>(
     val sortingHelper: Helper<T>,

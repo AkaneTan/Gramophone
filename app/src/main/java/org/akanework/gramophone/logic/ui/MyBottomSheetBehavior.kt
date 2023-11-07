@@ -1,4 +1,4 @@
-package org.akanework.gramophone.logic.utils
+package org.akanework.gramophone.logic.ui
 
 import android.annotation.SuppressLint
 import android.content.Context

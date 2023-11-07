@@ -1,5 +1,4 @@
-package org.akanework.gramophone.logic.utils
-
+package org.akanework.gramophone.logic.calculation
 
 class SupportComparator<T, U>(
     private val cmp: Comparator<U>,

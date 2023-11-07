@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.closeKeyboard
-import org.akanework.gramophone.logic.utils.showSoftKeyboard
+import org.akanework.gramophone.logic.closeKeyboard
+import org.akanework.gramophone.logic.showSoftKeyboard
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
