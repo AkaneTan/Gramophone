@@ -20,7 +20,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
-            app:cardCornerRadius="2dp"
+            app:cardCornerRadius="@dimen/list_round_corner_size"
             style="?materialCardViewFilledStyle">
 
             <ImageView

@@ -19,7 +19,7 @@
         android:layout_width="166dp"
         android:layout_height="166dp"
         style="?materialCardViewFilledStyle"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="@dimen/grid_round_corner_size">
 
         <ImageView
             android:id="@+id/cover"

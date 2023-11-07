@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="76dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="4dp">
@@ -21,7 +21,7 @@
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_gravity="center_vertical"
-            app:cardCornerRadius="2dp"
+            app:cardCornerRadius="@dimen/list_round_corner_size"
             style="?materialCardViewFilledStyle">
 
             <ImageView
