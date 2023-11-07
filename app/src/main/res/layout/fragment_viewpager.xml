@@ -25,6 +25,7 @@
             app:navigationIcon="@drawable/ic_menu"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/HeadlineTextAppearance"
+            app:titleCentered="true"
             tools:ignore="RtlSymmetry" />
 
         <com.google.android.material.tabs.TabLayout
@@ -33,10 +34,14 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
-            app:tabContentStart="60dp"
-            app:tabIndicator="@drawable/ic_indicator"
-            app:tabIndicatorHeight="2.5dp"
+            app:tabContentStart="28dp"
+            app:tabIndicator="@drawable/selected_chip_background"
+            app:tabIndicatorGravity="stretch"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorColor="?attr/colorSecondaryContainer"
             app:tabMode="scrollable"
+            app:tabPaddingStart="18dp"
+            app:tabPaddingEnd="18dp"
             app:tabTextAppearance="@style/TabTextAppearance">
 
             <com.google.android.material.tabs.TabItem
@@ -52,8 +57,7 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/category_artists"
-                android:textAllCaps="true" />
+                android:text="@string/category_artists" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="74dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:paddingStart="16dp"
-    android:paddingEnd="4dp">
+    tools:ignore="RtlSymmetry">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -77,7 +77,7 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:icon="@drawable/ic_more_vert"
+        app:icon="@drawable/ic_more_vert_alt"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"

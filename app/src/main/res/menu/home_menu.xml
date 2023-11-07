@@ -9,11 +9,4 @@
         android:title="@string/home_menu_search"
         app:showAsAction="ifRoom"
         tools:targetApi="o" />
-    <item
-        android:id="@+id/shuffle"
-        android:icon="@drawable/ic_shuffle"
-        android:iconTint="?attr/colorOnSurface"
-        android:title="@string/home_menu_shuffle"
-        app:showAsAction="ifRoom"
-        tools:targetApi="o" />
 </menu>

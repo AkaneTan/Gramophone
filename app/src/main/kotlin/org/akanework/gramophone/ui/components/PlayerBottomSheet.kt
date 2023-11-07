@@ -389,7 +389,7 @@ class PlayerBottomSheet private constructor(
             recyclerView.layoutManager = LinearLayoutManager(context)
             recyclerView.adapter = playlistAdapter
             recyclerView.scrollToPosition(instance.currentMediaItemIndex)
-            FastScrollerBuilder(recyclerView).useMd2Style().build()
+            FastScrollerBuilder(recyclerView).useMd2Style().setTrackDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_transparent)!!).build()
             playlistBottomSheet.show()
         }
 

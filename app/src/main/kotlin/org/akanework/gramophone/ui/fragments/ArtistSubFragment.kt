@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ConcatAdapter
@@ -58,6 +59,7 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
 
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(this@ArtistSubFragment)
+            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
             useMd2Style()
             build()
         }

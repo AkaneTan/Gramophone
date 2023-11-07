@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -47,6 +48,7 @@ class SearchFragment : BaseFragment(false) {
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(songAdapter)
             useMd2Style()
+            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
             build()
         }
 

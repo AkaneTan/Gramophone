@@ -28,10 +28,6 @@ class ViewPagerFragment : BaseFragment(true) {
 
         topAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.shuffle -> {
-                    (requireActivity() as MainActivity).shuffle()
-                }
-
                 R.id.search -> {
                     (requireActivity() as MainActivity).startFragment(SearchFragment())
                 }

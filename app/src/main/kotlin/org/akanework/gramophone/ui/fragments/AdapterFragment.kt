@@ -1,9 +1,11 @@
 package org.akanework.gramophone.ui.fragments
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +37,7 @@ class AdapterFragment : BaseFragment(null) {
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(adapter)
             useMd2Style()
+            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
             build()
         }
         return rootView

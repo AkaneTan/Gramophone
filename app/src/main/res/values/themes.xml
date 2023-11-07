@@ -15,6 +15,7 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">?attr/colorOnSecondaryContainer</item>
         <item name="android:textFontWeight" tools:targetApi="p">700</item>
     </style>
 
