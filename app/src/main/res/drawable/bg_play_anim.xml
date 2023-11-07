@@ -8,14 +8,29 @@
             android:height="94dp"
             android:viewportWidth="94"
             android:viewportHeight="94">
-            <path
-                android:name="path"
-                android:pathData="M 47 0.849 C 34.765 0.849 23.018 5.715 14.367 14.367 C 5.715 23.018 0.849 34.765 0.849 47 C 0.849 59.235 5.715 70.982 14.367 79.633 C 23.018 88.285 34.765 93.151 47 93.151 C 59.235 93.151 70.982 88.285 79.633 79.633 C 88.285 70.982 93.151 59.235 93.151 47 C 93.151 34.765 88.285 23.018 79.633 14.367 C 70.982 5.715 59.235 0.849 47 0.849 Z"
-                android:fillColor="#000000"
-                android:strokeWidth="1"/>
+            <group
+                android:name="group"
+                android:pivotX="47"
+                android:pivotY="47">
+                <path
+                    android:name="flower"
+                    android:pathData="M 47 0.849 C 34.765 0.849 23.018 5.715 14.367 14.367 C 5.715 23.018 0.849 34.765 0.849 47 C 0.849 59.235 5.715 70.982 14.367 79.633 C 23.018 88.285 34.765 93.151 47 93.151 C 59.235 93.151 70.982 88.285 79.633 79.633 C 88.285 70.982 93.151 59.235 93.151 47 C 93.151 34.765 88.285 23.018 79.633 14.367 C 70.982 5.715 59.235 0.849 47 0.849 Z"
+                    android:fillColor="#000000"/>
+            </group>
         </vector>
     </aapt:attr>
-    <target android:name="path">
+    <target android:name="group">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:duration="300"
+                android:valueFrom="0"
+                android:valueTo="30"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    <target android:name="flower">
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:propertyName="pathData"
