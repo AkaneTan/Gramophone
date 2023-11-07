@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -72,6 +73,7 @@ import org.akanework.gramophone.logic.utils.setTextAnimation
 import org.akanework.gramophone.logic.utils.startAnimation
 import org.akanework.gramophone.ui.MainActivity
 import java.io.FileNotFoundException
+import kotlin.math.min
 
 
 class PlayerBottomSheet private constructor(
@@ -528,6 +530,17 @@ class PlayerBottomSheet private constructor(
 
     fun getPlayer(): MediaController = instance
 
+    private fun backgroundProcessing(color: Int): Int {
+        val hsl = FloatArray(3)
+        ColorUtils.colorToHSL(color, hsl)
+
+        hsl[1] *= 1.2f
+        hsl[1] = min(hsl[1], 1f)
+        hsl[2] *= 0.99f
+
+        return ColorUtils.HSLToColor(hsl)
+    }
+
     fun removeColorScheme(removeWrappedContext: Boolean = true) {
         if (removeWrappedContext) {
             wrappedContext = null
@@ -599,10 +612,13 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
+            val backgroundProcessedColor = backgroundProcessing(colorSurface)
+
             val surfaceTransition = ValueAnimator.ofArgb(
                 fullPlayerFinalColor,
-                colorSurface
+                backgroundProcessedColor
             )
+
 
             surfaceTransition.apply {
                 addUpdateListener { animation ->
@@ -618,7 +634,7 @@ class PlayerBottomSheet private constructor(
             }
 
             delay(FOREGROUND_COLOR_TRANSITION_SEC)
-            fullPlayerFinalColor = colorSurface
+            fullPlayerFinalColor = backgroundProcessing(colorSurface)
 
             withContext(Dispatchers.Main) {
                 bottomSheetFullTitle.setTextColor(
@@ -772,9 +788,11 @@ class PlayerBottomSheet private constructor(
                         -1
                     )
 
+                val backgroundProcessedColor = backgroundProcessing(colorSurface)
+
                 val surfaceTransition = ValueAnimator.ofArgb(
                     fullPlayerFinalColor,
-                    colorSurface
+                    backgroundProcessedColor
                 )
 
                 surfaceTransition.apply {
@@ -791,7 +809,7 @@ class PlayerBottomSheet private constructor(
                 }
 
                 delay(FOREGROUND_COLOR_TRANSITION_SEC)
-                fullPlayerFinalColor = colorSurface
+                fullPlayerFinalColor = backgroundProcessedColor
 
                 withContext(Dispatchers.Main) {
                     bottomSheetFullTitle.setTextColor(
