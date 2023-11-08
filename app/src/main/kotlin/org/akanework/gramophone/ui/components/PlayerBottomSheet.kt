@@ -1002,12 +1002,6 @@ class PlayerBottomSheet private constructor(
                             bottomSheetFullCover.setImageDrawable(resource)
                         }
 
-                        override fun onLoadFailed(errorDrawable: Drawable?) {
-                            bottomSheetFullCover.setImageDrawable(
-                                AppCompatResources.getDrawable(context, R.drawable.ic_default_cover)
-                            )
-                        }
-
                         override fun onLoadCleared(placeholder: Drawable?) {
                             // this is called when imageView is cleared on lifecycle call or for
                             // some other reason.
@@ -1016,6 +1010,27 @@ class PlayerBottomSheet private constructor(
                         }
                     }
                 )
+            if (!prefs.getBoolean("content_based_color", true)) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        MediaStore.Images.Media.getBitmap(
+                            activity.contentResolver,
+                            mediaItem?.mediaMetadata?.artworkUri
+                        )
+                    } catch (e: Exception) {
+                        if (e is FileNotFoundException) {
+                            withContext(Dispatchers.Main) {
+                                bottomSheetFullCover.setImageDrawable(
+                                    AppCompatResources.getDrawable(
+                                        context,
+                                        R.drawable.ic_default_cover
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetPreviewSubtitle.text =
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
