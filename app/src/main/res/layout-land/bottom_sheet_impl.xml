@@ -25,7 +25,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             style="?materialCardViewFilledStyle"
-            app:cardCornerRadius="3dp">
+            app:cardCornerRadius="@dimen/list_round_corner_size">
 
             <ImageView
                 android:id="@+id/preview_album_cover"
