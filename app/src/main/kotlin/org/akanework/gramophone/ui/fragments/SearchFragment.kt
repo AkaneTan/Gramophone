@@ -12,7 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -21,6 +23,7 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.closeKeyboard
 import org.akanework.gramophone.logic.showSoftKeyboard
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
@@ -41,6 +44,16 @@ class SearchFragment : BaseFragment(false) {
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(), false, null, false)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
+
+        val processColor = ColorUtils.getColorBackground(
+            MaterialColors.getColor(
+                rootView,
+                android.R.attr.colorBackground
+            )
+        )
+        rootView.setBackgroundColor(processColor)
+        appBarLayout.setBackgroundColor(processColor)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter

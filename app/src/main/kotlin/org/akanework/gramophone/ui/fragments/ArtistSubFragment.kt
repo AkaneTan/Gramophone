@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.color.MaterialColors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
@@ -34,9 +37,19 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
+
         val position = requireArguments().getInt("Position")
         val itemType = requireArguments().getInt("Item")
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val processColor = ColorUtils.getColorBackground(
+            MaterialColors.getColor(
+                topAppBar,
+                android.R.attr.colorBackground
+            )
+        )
+        topAppBar.setBackgroundColor(processColor)
+        appBarLayout.setBackgroundColor(processColor)
 
         val item = libraryViewModel.let {
             if (itemType == R.id.album_artist)

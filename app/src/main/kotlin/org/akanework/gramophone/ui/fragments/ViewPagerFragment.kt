@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 
@@ -23,6 +26,7 @@ class ViewPagerFragment : BaseFragment(true) {
         val rootView = inflater.inflate(R.layout.fragment_viewpager, container, false)
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
 
         val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
 
@@ -41,6 +45,16 @@ class ViewPagerFragment : BaseFragment(true) {
         topAppBar.setNavigationOnClickListener {
             (requireActivity() as MainActivity).navigateDrawer(viewPager2.currentItem)
         }
+
+        val processColor = ColorUtils.getColorBackground(
+            MaterialColors.getColor(
+                topAppBar,
+                android.R.attr.colorBackground
+            )
+        )
+        topAppBar.setBackgroundColor(processColor)
+        appBarLayout.setBackgroundColor(processColor)
+        tabLayout.setBackgroundColor(processColor)
 
         // Connect ViewPager2.
         viewPager2.offscreenPageLimit = 9999

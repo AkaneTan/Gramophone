@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
@@ -108,6 +110,16 @@ class MainActivity : AppCompatActivity() {
         // Set content Views.
         setContentView(R.layout.activity_main)
         val rootContainer = findViewById<View>(R.id.rootContainer)
+        val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
+
+        val processColor = ColorUtils.getColorBackground(
+            MaterialColors.getColor(
+                coordinatorLayout,
+                android.R.attr.colorBackground
+            )
+        )
+        coordinatorLayout.setBackgroundColor(processColor)
+
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             rootContainer.setPadding(navBarInset.left, 0, navBarInset.right, 0)

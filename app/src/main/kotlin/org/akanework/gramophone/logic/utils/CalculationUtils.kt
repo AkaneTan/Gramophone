@@ -2,12 +2,14 @@ package org.akanework.gramophone.logic.utils
 
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
+import androidx.core.graphics.ColorUtils
+import kotlin.math.min
 
 /**
- * [GramophoneUtils] contains some methods for internal
+ * [CalculationUtils] contains some methods for internal
  * calculation.
  */
-object GramophoneUtils {
+object CalculationUtils {
 
     /**
      * [convertDurationToTimeStamp] makes a string format

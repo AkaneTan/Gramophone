@@ -24,7 +24,6 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -73,11 +72,11 @@ import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
-import org.akanework.gramophone.logic.utils.GramophoneUtils
+import org.akanework.gramophone.logic.utils.CalculationUtils
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import java.io.FileNotFoundException
-import kotlin.math.min
 
 
 class PlayerBottomSheet private constructor(
@@ -286,7 +285,7 @@ class PlayerBottomSheet private constructor(
                     val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
                     if (dest != null) {
                         bottomSheetFullPosition.text =
-                            GramophoneUtils.convertDurationToTimeStamp((progress.toLong()))
+                            CalculationUtils.convertDurationToTimeStamp((progress.toLong()))
                     }
                 }
             }
@@ -415,7 +414,7 @@ class PlayerBottomSheet private constructor(
                 val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
                 if (dest != null) {
                     bottomSheetFullPosition.text =
-                        GramophoneUtils.convertDurationToTimeStamp((value).toLong())
+                        CalculationUtils.convertDurationToTimeStamp((value).toLong())
                 }
             }
         }
@@ -426,6 +425,14 @@ class PlayerBottomSheet private constructor(
         bottomSheetFullSlideUpButton.setOnClickListener {
             standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+
+        removeColorScheme()
+        previewPlayer.setBackgroundColor(ColorUtils.getColorBackgroundElevated(
+            MaterialColors.getColor(
+                rootView,
+                android.R.attr.colorBackground
+            )
+        ))
     }
 
     private val bottomSheetCallback = object : BottomSheetCallback() {
@@ -483,7 +490,7 @@ class PlayerBottomSheet private constructor(
     private val positionRunnable = object : Runnable {
         override fun run() {
             val position =
-                GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
+                CalculationUtils.convertDurationToTimeStamp(instance.currentPosition)
             if (runnableRunning) {
                 val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
                 if (duration != null && !isUserTracking) {
@@ -547,17 +554,6 @@ class PlayerBottomSheet private constructor(
     }
 
     fun getPlayer(): MediaController = instance
-
-    private fun backgroundProcessing(color: Int): Int {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
-
-        hsl[1] *= 1.2f
-        hsl[1] = min(hsl[1], 1f)
-        hsl[2] *= 0.99f
-
-        return ColorUtils.HSLToColor(hsl)
-    }
 
     fun removeColorScheme(removeWrappedContext: Boolean = true) {
         if (removeWrappedContext) {
@@ -635,7 +631,7 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
-            val backgroundProcessedColor = backgroundProcessing(colorSurface)
+            val backgroundProcessedColor = ColorUtils.getColorBackgroundElevated(colorSurface)
 
             val surfaceTransition = ValueAnimator.ofArgb(
                 fullPlayerFinalColor,
@@ -853,7 +849,7 @@ class PlayerBottomSheet private constructor(
                         -1
                     )
 
-                val backgroundProcessedColor = backgroundProcessing(colorSurface)
+                val backgroundProcessedColor = ColorUtils.getColorBackgroundElevated(colorSurface)
 
                 val surfaceTransition = ValueAnimator.ofArgb(
                     fullPlayerFinalColor,
@@ -1032,7 +1028,7 @@ class PlayerBottomSheet private constructor(
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist))
             bottomSheetFullDuration.text =
                 mediaItem?.mediaMetadata?.extras?.getLong("Duration")
-                    ?.let { GramophoneUtils.convertDurationToTimeStamp(it) }
+                    ?.let { CalculationUtils.convertDurationToTimeStamp(it) }
             if (playlistNowPlaying != null) {
                 playlistNowPlaying!!.text = mediaItem?.mediaMetadata?.title
                 Glide
@@ -1068,7 +1064,7 @@ class PlayerBottomSheet private constructor(
                 standardBottomSheetBehavior!!.setStateWithoutAnimation(newState)
             } else standardBottomSheetBehavior!!.state = newState
         }
-        val position = GramophoneUtils.convertDurationToTimeStamp(instance.currentPosition)
+        val position = CalculationUtils.convertDurationToTimeStamp(instance.currentPosition)
         val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
         if (duration != null && !isUserTracking) {
             bottomSheetFullSeekBar.max = duration.toInt()

@@ -9,9 +9,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.color.MaterialColors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
@@ -28,6 +31,7 @@ class GeneralSubFragment : BaseFragment(true) {
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val bundle = requireArguments()
         val title: String?
@@ -36,6 +40,15 @@ class GeneralSubFragment : BaseFragment(true) {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         lateinit var itemList: List<MediaItem>
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
+
+        val processColor = ColorUtils.getColorBackground(
+            MaterialColors.getColor(
+                topAppBar,
+                android.R.attr.colorBackground
+            )
+        )
+        topAppBar.setBackgroundColor(processColor)
+        appBarLayout.setBackgroundColor(processColor)
 
         when (itemType) {
             R.id.album -> {

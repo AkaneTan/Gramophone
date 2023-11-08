@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.preference.PreferenceManager
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 
 class SettingsFragment : BaseFragment(false) {
@@ -20,6 +23,23 @@ class SettingsFragment : BaseFragment(false) {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+
+        val collapsingToolbar = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
+        val processColor = ColorUtils.getColorBackground(
+            MaterialColors.getColor(
+                topAppBar,
+                android.R.attr.colorBackground
+            )
+        )
+        val processColorElevated = ColorUtils.getColorBackgroundElevated(
+            MaterialColors.getColor(
+                topAppBar,
+                android.R.attr.colorBackground
+            )
+        )
+
+        collapsingToolbar.setBackgroundColor(processColor)
+        collapsingToolbar.setContentScrimColor(processColorElevated)
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

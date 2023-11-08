@@ -28,10 +28,10 @@ import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import android.view.animation.PathInterpolator
 import androidx.annotation.VisibleForTesting
-import org.akanework.gramophone.logic.utils.GramophoneUtils.lerp
-import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInv
-import org.akanework.gramophone.logic.utils.GramophoneUtils.lerpInvSat
-import org.akanework.gramophone.logic.utils.GramophoneUtils.setAlphaComponent
+import org.akanework.gramophone.logic.utils.CalculationUtils.lerp
+import org.akanework.gramophone.logic.utils.CalculationUtils.lerpInv
+import org.akanework.gramophone.logic.utils.CalculationUtils.lerpInvSat
+import org.akanework.gramophone.logic.utils.CalculationUtils.setAlphaComponent
 import kotlin.math.abs
 import kotlin.math.cos
 

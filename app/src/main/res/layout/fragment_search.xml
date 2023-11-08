@@ -2,18 +2,16 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="?attr/colorSurface"
     android:fitsSystemWindows="true"
     tools:context=".ui.fragments.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        app:contentScrim="?attr/colorSurface"
-        app:liftOnScrollColor="?attr/colorSurface"
-        app:statusBarScrim="?attr/colorSurface">
+        android:layout_height="64dp">
 
         <LinearLayout
             android:layout_width="match_parent"
