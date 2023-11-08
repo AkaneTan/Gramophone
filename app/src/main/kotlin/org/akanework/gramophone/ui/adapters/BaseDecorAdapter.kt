@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,8 @@ import org.akanework.gramophone.R
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
-    private val pluralStr: Int
+    private val pluralStr: Int,
+    private val indicatorResource: Int
 ) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
 
     protected val context: Context = adapter.context
@@ -102,6 +104,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
             onSortButtonPressed(popupMenu)
             popupMenu.show()
         }
+        holder.indicator.setImageResource(indicatorResource)
     }
 
     protected open fun onSortButtonPressed(popupMenu: PopupMenu) {}
@@ -114,6 +117,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
     ) : RecyclerView.ViewHolder(view) {
         val sortButton: MaterialButton = view.findViewById(R.id.sort)
         val counter: TextView = view.findViewById(R.id.song_counter)
+        val indicator: ImageView = view.findViewById(R.id.indicator)
     }
 
     fun updateSongCounter() {

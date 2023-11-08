@@ -40,7 +40,8 @@ class SongAdapter(
     else Sorter.Type.None,
     pluralStr = R.plurals.songs,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.COMPACT_LIST
+    defaultLayoutType = LayoutType.COMPACT_LIST,
+    indicatorResource = R.drawable.ic_music_note
 ) {
 
     constructor(

@@ -41,7 +41,8 @@ abstract class BaseAdapter<T>(
     initialSortType: Sorter.Type,
     private val pluralStr: Int,
     val ownsView: Boolean,
-    defaultLayoutType: LayoutType
+    defaultLayoutType: LayoutType,
+    private val indicatorResource: Int
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>,
     PopupTextProvider {
 
@@ -214,7 +215,7 @@ abstract class BaseAdapter<T>(
     }
 
     protected open fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<T>> {
-        return BaseDecorAdapter(this, pluralStr)
+        return BaseDecorAdapter(this, pluralStr, indicatorResource)
     }
 
     override fun getItemViewType(position: Int): Int {

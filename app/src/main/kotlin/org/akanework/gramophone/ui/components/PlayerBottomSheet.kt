@@ -1010,6 +1010,12 @@ class PlayerBottomSheet private constructor(
                             bottomSheetFullCover.setImageDrawable(resource)
                         }
 
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            bottomSheetFullCover.setImageDrawable(
+                                AppCompatResources.getDrawable(context, R.drawable.ic_default_cover)
+                            )
+                        }
+
                         override fun onLoadCleared(placeholder: Drawable?) {
                             // this is called when imageView is cleared on lifecycle call or for
                             // some other reason.

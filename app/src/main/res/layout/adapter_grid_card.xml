@@ -16,8 +16,8 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cover_frame"
-        android:layout_width="166dp"
-        android:layout_height="166dp"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
         style="?materialCardViewFilledStyle"
         app:cardCornerRadius="@dimen/grid_round_corner_size">
 
