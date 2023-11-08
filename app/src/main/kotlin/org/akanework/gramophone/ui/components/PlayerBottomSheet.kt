@@ -427,12 +427,6 @@ class PlayerBottomSheet private constructor(
         }
 
         removeColorScheme()
-        previewPlayer.setBackgroundColor(ColorUtils.getColorBackgroundElevated(
-            MaterialColors.getColor(
-                rootView,
-                android.R.attr.colorBackground
-            )
-        ))
     }
 
     private val bottomSheetCallback = object : BottomSheetCallback() {
