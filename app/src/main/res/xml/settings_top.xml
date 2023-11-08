@@ -13,6 +13,11 @@
             android:summary="@string/unknown_version"
             android:title="@string/settings_version" />
         <Preference
+            android:icon="@drawable/ic_cookie"
+            android:key="package_type"
+            android:summary="@string/unknown_version"
+            android:title="@string/settings_package_type" />
+        <Preference
             android:icon="@drawable/artist_art"
             android:summary="@string/settings_contributors_detail"
             android:title="@string/settings_contributors" />

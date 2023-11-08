@@ -17,7 +17,9 @@ class SettingsTopFragment : BasePreferenceFragment(),
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_top, rootKey)
         val versionPrefs = findPreference<Preference>("app_version")
+        val releaseType = findPreference<Preference>("package_type")
         versionPrefs!!.summary = BuildConfig.VERSION_NAME
+        releaseType!!.summary = BuildConfig.RELEASE_TYPE
     }
 
     override fun setDivider(divider: Drawable?) {
