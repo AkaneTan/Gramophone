@@ -362,11 +362,13 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetFavoriteButton.addOnCheckedChangeListener { _, isChecked ->
+            /*
             if (isChecked) {
                 instance.currentMediaItem?.let { insertIntoPlaylist(it) }
             } else {
                 instance.currentMediaItem?.let { removeFromPlaylist(it) }
             }
+             */
         }
 
         bottomSheetPlaylistButton.setOnClickListener {
