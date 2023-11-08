@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private val startActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode != Activity.RESULT_OK) {
+            if (it.resultCode != Activity.RESULT_OK || it.resultCode != Activity.RESULT_CANCELED) {
                 Toast.makeText(
                     applicationContext,
                     R.string.equalizer_not_found,
