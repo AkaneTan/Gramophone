@@ -618,7 +618,7 @@ class PlayerBottomSheet private constructor(
 
             val selectorFavBackground =
                 AppCompatResources.getColorStateList(
-                    wrappedContext!!,
+                    context,
                     R.color.sl_check_button
                 )
 
@@ -709,7 +709,7 @@ class PlayerBottomSheet private constructor(
             }
 
             delay(FOREGROUND_COLOR_TRANSITION_SEC)
-            fullPlayerFinalColor = backgroundProcessing(backgroundProcessedColor)
+            fullPlayerFinalColor = backgroundProcessedColor
             colorPrimaryFinalColor = colorPrimary
             colorSecondaryContainerFinalColor = colorSecondaryContainer
             colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer

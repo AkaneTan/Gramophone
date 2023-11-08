@@ -437,7 +437,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24sp"
-                app:iconTint="?attr/colorTertiary" />
+                app:iconTint="@color/sl_fav_button" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/timer"
