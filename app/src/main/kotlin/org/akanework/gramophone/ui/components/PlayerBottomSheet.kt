@@ -611,7 +611,7 @@ class PlayerBottomSheet private constructor(
             val selectorFavBackground =
                 AppCompatResources.getColorStateList(
                     context,
-                    R.color.sl_check_button
+                    R.color.sl_fav_button
                 )
 
             MaterialColors.getColor(
@@ -829,7 +829,7 @@ class PlayerBottomSheet private constructor(
                 val selectorFavBackground =
                     AppCompatResources.getColorStateList(
                         wrappedContext!!,
-                        R.color.sl_check_button
+                        R.color.sl_fav_button
                     )
 
                 MaterialColors.getColor(
