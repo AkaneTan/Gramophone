@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
-            app:tabContentStart="28dp"
+            app:tabContentStart="@dimen/tab_layout_content_start"
             app:tabIndicator="@drawable/selected_chip_background"
             app:tabIndicatorGravity="stretch"
             app:tabIndicatorFullWidth="true"
