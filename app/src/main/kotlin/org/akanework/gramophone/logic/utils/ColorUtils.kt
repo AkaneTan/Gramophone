@@ -15,47 +15,48 @@ object ColorUtils {
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING = 0.97f
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK = 1.5f
 
-    fun getColorBackgroundElevated(color: Int): Int {
+    private fun manipulateHsl(color: Int, chroma: Float, lighting: Float): Int {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
 
-        hsl[1] *= DEFAULT_COLOR_BACKGROUND_ELEVATED_CHROMA
+        hsl[1] *= chroma
         hsl[1] = min(hsl[1], 1f)
-        hsl[2] *= DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING
+        hsl[2] *= lighting
+        hsl[2] = min(hsl[2], 1f)
 
         return ColorUtils.HSLToColor(hsl)
     }
 
-    fun getColorBackground(color: Int): Int {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
+    fun getColorBackgroundElevated(color: Int): Int =
+        manipulateHsl(
+            color,
+            DEFAULT_COLOR_BACKGROUND_ELEVATED_CHROMA,
+            DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING
+        )
 
-        hsl[1] *= DEFAULT_COLOR_BACKGROUND_CHROMA
-        hsl[2] *= DEFAULT_COLOR_BACKGROUND_LIGHTING
-
-        return ColorUtils.HSLToColor(hsl)
-    }
+    fun getColorBackground(color: Int): Int =
+        manipulateHsl(
+            color,
+            DEFAULT_COLOR_BACKGROUND_CHROMA,
+            DEFAULT_COLOR_BACKGROUND_LIGHTING
+        )
 
     fun getColorToolbarElevated(color: Int, context: Context): Int {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color, hsl)
-
-        hsl[1] *= DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA
         val nightModeFlags: Int = context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK
-        when (nightModeFlags) {
-            Configuration.UI_MODE_NIGHT_YES -> {
-                hsl[2] *= DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK
-            }
-            Configuration.UI_MODE_NIGHT_NO -> {
-                hsl[2] *= DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING
-            }
-            Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                hsl[2] *= DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING
-            }
+        return if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            manipulateHsl(
+                color,
+                DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA,
+                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK
+            )
+        } else {
+            manipulateHsl(
+                color,
+                DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA,
+                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING
+            )
         }
-
-        return ColorUtils.HSLToColor(hsl)
     }
 
 }
