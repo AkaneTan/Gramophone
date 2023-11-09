@@ -149,7 +149,6 @@ class GramophonePlaybackService : MediaLibraryService(),
             .setWakeMode(C.WAKE_MODE_LOCAL)
             // we seek with SeekBar on a touchscreen anyway, we can afford loosing some exactness
             .setSeekParameters(SeekParameters.CLOSEST_SYNC)
-            .setSkipSilenceEnabled(false) // TODO add toggle?
             .setAudioAttributes(
                 AudioAttributes
                     .Builder()
