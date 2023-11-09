@@ -31,11 +31,12 @@ class SettingsFragment : BaseFragment(false) {
                 android.R.attr.colorBackground
             )
         )
-        val processColorElevated = ColorUtils.getColorBackgroundElevated(
+        val processColorElevated = ColorUtils.getColorToolbarElevated(
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
-            )
+            ),
+            requireContext()
         )
 
         collapsingToolbar.setBackgroundColor(processColor)
