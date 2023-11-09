@@ -1,7 +1,7 @@
 package org.akanework.gramophone.ui.components
 
 import android.content.Context
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.fluidrecyclerview.widget.GridLayoutManager
 
 class CustomGridLayoutManager(
     context: Context,

@@ -15,10 +15,10 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fluidrecyclerview.widget.ConcatAdapter
+import androidx.fluidrecyclerview.widget.DiffUtil
+import androidx.fluidrecyclerview.widget.LinearLayoutManager
+import androidx.fluidrecyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.button.MaterialButton
@@ -26,7 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.zhanghai.android.fastscroll.PopupTextProvider
+import org.akanework.fastscroller.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
@@ -301,7 +301,7 @@ abstract class BaseAdapter<T>(
         return rawList.indexOf(item)
     }
 
-    final override fun getPopupText(position: Int): CharSequence {
+    final override fun getPopupText(view: View, position: Int): CharSequence {
         // position here refers to pos in ConcatAdapter(!)
         return (if (position != 0)
             sorter.getFastScrollHintFor(list[position - 1], sortType)
