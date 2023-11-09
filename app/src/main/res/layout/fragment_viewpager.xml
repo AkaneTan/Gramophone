@@ -39,6 +39,7 @@
             app:tabIndicator="@drawable/selected_chip_background"
             app:tabIndicatorGravity="stretch"
             app:tabIndicatorFullWidth="true"
+            app:tabRippleColor="?attr/colorSurface"
             app:tabIndicatorColor="?attr/colorSecondaryContainer"
             app:tabMode="scrollable"
             app:tabPaddingStart="18dp"
