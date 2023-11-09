@@ -433,6 +433,7 @@
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 android:saveEnabled="false"
+                android:visibility="gone"
                 app:icon="@drawable/sl_check_fav"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
