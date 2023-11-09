@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
+import org.akanework.gramophone.logic.utils.ColorUtils
 import kotlin.system.exitProcess
 
 class GramophoneApplication : Application() {
@@ -25,6 +26,7 @@ class GramophoneApplication : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
+        ColorUtils.overrideAmoledColor = prefs.getBoolean("amoled", false)
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 

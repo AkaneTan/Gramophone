@@ -15,30 +15,52 @@ object ColorUtils {
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING = 0.97f
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK = 1.5f
 
-    private fun manipulateHsl(color: Int, chroma: Float, lighting: Float): Int {
+    var overrideAmoledColor = false
+
+    private fun manipulateHsl(
+        color: Int,
+        chroma: Float,
+        lighting: Float,
+        context: Context? = null,
+        overrideAmoledColor: Boolean = false
+    ): Int {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
 
         hsl[1] *= chroma
         hsl[1] = min(hsl[1], 1f)
+
         hsl[2] *= lighting
         hsl[2] = min(hsl[2], 1f)
+
+        if (overrideAmoledColor) {
+            if (context != null) {
+                val nightModeFlags: Int = context.resources.configuration.uiMode and
+                        Configuration.UI_MODE_NIGHT_MASK
+                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                    hsl[2] = 0f
+                }
+            }
+        }
 
         return ColorUtils.HSLToColor(hsl)
     }
 
-    fun getColorBackgroundElevated(color: Int): Int =
+    fun getColorBackgroundElevated(color: Int, context: Context): Int =
         manipulateHsl(
             color,
             DEFAULT_COLOR_BACKGROUND_ELEVATED_CHROMA,
-            DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING
+            DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING,
+            context
         )
 
-    fun getColorBackground(color: Int): Int =
+    fun getColorBackground(color: Int, context: Context): Int =
         manipulateHsl(
             color,
             DEFAULT_COLOR_BACKGROUND_CHROMA,
-            DEFAULT_COLOR_BACKGROUND_LIGHTING
+            DEFAULT_COLOR_BACKGROUND_LIGHTING,
+            context,
+            overrideAmoledColor
         )
 
     fun getColorToolbarElevated(color: Int, context: Context): Int {
@@ -48,13 +70,15 @@ object ColorUtils {
             manipulateHsl(
                 color,
                 DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA,
-                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK
+                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK,
+                context
             )
         } else {
             manipulateHsl(
                 color,
                 DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA,
-                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING
+                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING,
+                context
             )
         }
     }

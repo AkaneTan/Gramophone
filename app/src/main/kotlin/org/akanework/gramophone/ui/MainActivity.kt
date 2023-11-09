@@ -116,7 +116,8 @@ class MainActivity : AppCompatActivity() {
             MaterialColors.getColor(
                 coordinatorLayout,
                 android.R.attr.colorBackground
-            )
+            ),
+            this
         )
         coordinatorLayout.setBackgroundColor(processColor)
 

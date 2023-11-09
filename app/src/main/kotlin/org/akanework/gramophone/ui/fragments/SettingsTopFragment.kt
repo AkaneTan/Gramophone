@@ -11,6 +11,8 @@ import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.ColorUtils
+import org.akanework.gramophone.ui.MainActivity
 
 class SettingsTopFragment : BasePreferenceFragment(),
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -43,18 +45,27 @@ class SettingsTopFragment : BasePreferenceFragment(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == "theme_mode") {
-            when (sharedPreferences?.getString("theme_mode", "0")) {
-                "0" -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        when (key) {
+            "theme_mode" -> {
+                when (sharedPreferences?.getString("theme_mode", "0")) {
+                    "0" -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    }
+                    "1" -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    }
+                    "2" -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    }
                 }
-
-                "1" -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
-
-                "2" -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            "amoled" -> {
+                if (sharedPreferences?.getBoolean("amoled", false) == true) {
+                    ColorUtils.overrideAmoledColor = true
+                    requireActivity().recreate()
+                } else {
+                    ColorUtils.overrideAmoledColor = false
+                    requireActivity().recreate()
                 }
             }
         }

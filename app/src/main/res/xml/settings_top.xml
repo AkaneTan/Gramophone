@@ -49,10 +49,10 @@
             app:useSimpleSummaryProvider="true" />
         <SwitchPreferenceCompat
             android:defaultValue="false"
-            android:icon="@drawable/ic_draw_abstract"
-            android:key="default_progress_bar"
-            android:summary="@string/settings_default_progress_bar_summary"
-            android:title="@string/settings_default_progress_bar"
+            android:icon="@drawable/ic_filter_b_and_w"
+            android:key="amoled"
+            android:summary="@string/settings_amoled_summary"
+            android:title="@string/settings_amoled"
             android:widgetLayout="@layout/preference_material_switch" />
         <SwitchPreferenceCompat
             android:defaultValue="true"
@@ -60,6 +60,13 @@
             android:key="content_based_color"
             android:summary="@string/settings_content_based_color_summary"
             android:title="@string/settings_content_based_color"
+            android:widgetLayout="@layout/preference_material_switch" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_draw_abstract"
+            android:key="default_progress_bar"
+            android:summary="@string/settings_default_progress_bar_summary"
+            android:title="@string/settings_default_progress_bar"
             android:widgetLayout="@layout/preference_material_switch" />
         <!-- <SwitchPreferenceCompat
             android:defaultValue="true"

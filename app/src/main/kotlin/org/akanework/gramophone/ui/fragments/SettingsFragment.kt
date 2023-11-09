@@ -29,7 +29,8 @@ class SettingsFragment : BaseFragment(false) {
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
-            )
+            ),
+            requireContext()
         )
         val processColorElevated = ColorUtils.getColorToolbarElevated(
             MaterialColors.getColor(

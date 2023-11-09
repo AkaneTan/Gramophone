@@ -50,7 +50,8 @@ class ViewPagerFragment : BaseFragment(true) {
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
-            )
+            ),
+            requireContext()
         )
         topAppBar.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)
