@@ -26,6 +26,9 @@
   public *;
 }
 
+-dontwarn org.jaudiotagger.**
+-keep class org.jaudiotagger.** { *; }
+
 -assumenosideeffects class
                   android.util.Log {
     public static int v(...);
