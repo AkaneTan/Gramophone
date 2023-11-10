@@ -4,7 +4,7 @@
 [![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=azure)](https://t.me/AkaneFoundation)
 [![Static Badge](https://img.shields.io/badge/Matrix-Content?style=flat-square&logo=matrix&logoColor=black&color=azure)](https://matrix.to/#/#akanefoundation:matrix.org)
 
-A media3 music player with up-to-date md3 phonograph designs.
+A sane music player built with media3 and material design library that is following android's standard strictly.
 
 ## Features
 - Up-to-date material 3 design
@@ -12,6 +12,7 @@ A media3 music player with up-to-date md3 phonograph designs.
 - View and play your favorite music
 - Search your favourite music
 - Web streaming (coming soon!)
+- Synced lyrics
 - Manage & Add your playlist
 
 ## Why us?
