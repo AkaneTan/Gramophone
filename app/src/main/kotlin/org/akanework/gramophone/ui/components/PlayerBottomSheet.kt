@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +29,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
+import androidx.fluidrecyclerview.widget.LinearLayoutManager
+import androidx.fluidrecyclerview.widget.LinearSmoothScroller
+import androidx.fluidrecyclerview.widget.RecyclerView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
@@ -36,8 +41,6 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
-import androidx.fluidrecyclerview.widget.LinearLayoutManager
-import androidx.fluidrecyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.CustomTarget
@@ -65,7 +68,10 @@ import kotlinx.coroutines.withContext
 import org.akanework.fastscroller.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
+import org.akanework.gramophone.logic.fadInAnimation
+import org.akanework.gramophone.logic.fadOutAnimation
 import org.akanework.gramophone.logic.getTimer
+import org.akanework.gramophone.logic.getUri
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.setTextAnimation
@@ -76,6 +82,9 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import java.io.File
 import java.io.FileNotFoundException
 
 
@@ -89,6 +98,7 @@ class PlayerBottomSheet private constructor(
     companion object {
         const val BACKGROUND_COLOR_TRANSITION_SEC: Long = 300
         const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 150
+        const val LYRIC_FADE_TRANSITION_SEC: Long = 125
     }
 
     private var sessionToken: SessionToken? = null
@@ -117,8 +127,23 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetFullSeekBar: SeekBar
     private val bottomSheetFullSlider: Slider
     private val bottomSheetFullCoverFrame: MaterialCardView
+    private val bottomSheetFullLyricCloseButton: MaterialButton
+    private val bottomSheetFullLyricRecyclerView: RecyclerView
+    private val bottomSheetFullLyricList: MutableList<MediaStoreUtils.Lyric> = mutableListOf()
+    private val bottomSheetFullLyricAdapter: LyricAdapter = LyricAdapter(bottomSheetFullLyricList, activity)
+    private val bottomSheetFullLyricLinearLayoutManager = LinearLayoutManager(context)
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
+    private var smoothScroller =
+        object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+
+            override fun calculateTimeForScrolling(dx: Int): Int {
+                return 300
+            }
+        }
     private val fullPlayer: View
     private val previewPlayer: View
     private val progressDrawable: SquigglyProgress
@@ -204,6 +229,8 @@ class PlayerBottomSheet private constructor(
         bottomSheetFavoriteButton = findViewById(R.id.favor)
         bottomSheetPlaylistButton = findViewById(R.id.playlist)
         bottomSheetLyricButton = findViewById(R.id.lyrics)
+        bottomSheetFullLyricCloseButton = findViewById(R.id.close_lyrics)
+        bottomSheetFullLyricRecyclerView = findViewById(R.id.lyric_frame)
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
         fullPlayerFinalColor = MaterialColors.getColor(
@@ -428,6 +455,22 @@ class PlayerBottomSheet private constructor(
             standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
+        bottomSheetLyricButton.setOnClickListener {
+            bottomSheetFullLyricRecyclerView.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
+            bottomSheetFullLyricCloseButton.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
+        }
+
+        bottomSheetFullLyricCloseButton.setOnClickListener {
+            it.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+            bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+            bottomSheetLyricButton.isChecked = false
+        }
+
+        bottomSheetFullLyricRecyclerView.layoutManager =
+            bottomSheetFullLyricLinearLayoutManager
+        bottomSheetFullLyricRecyclerView.adapter =
+            bottomSheetFullLyricAdapter
+
         removeColorScheme()
     }
 
@@ -495,6 +538,35 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullSlider.valueTo = duration.toFloat()
                     bottomSheetFullSlider.value = instance.currentPosition.toFloat()
                     bottomSheetFullPosition.text = position
+                }
+                if (bottomSheetFullLyricList.isNotEmpty()) {
+                    val newIndex: Int
+
+                    val filteredList = bottomSheetFullLyricList.filterIndexed { _, lyric ->
+                        lyric.timeStamp <= instance.currentPosition
+                    }
+
+                    newIndex = if (filteredList.isNotEmpty()) {
+                        filteredList.indices.maxBy {
+                            filteredList[it].timeStamp
+                        }
+                    } else {
+                        -1
+                    }
+
+                    if (newIndex != -1 && newIndex != 0) {
+                        smoothScroller.targetPosition = newIndex
+                        bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
+                            smoothScroller
+                        )
+                        bottomSheetFullLyricAdapter.updateHighlight(newIndex,
+                            MaterialColors.getColor(
+                                if (wrappedContext != null) wrappedContext!! else context,
+                                com.google.android.material.R.attr.colorPrimary,
+                                -1
+                            )
+                        )
+                    }
                 }
             }
             if (instance.isPlaying) {
@@ -614,9 +686,9 @@ class PlayerBottomSheet private constructor(
                     R.color.sl_fav_button
                 )
 
-            MaterialColors.getColor(
+            val colorPrimaryVariant = MaterialColors.getColor(
                 context,
-                com.google.android.material.R.attr.colorTertiary,
+                com.google.android.material.R.attr.colorPrimaryVariant,
                 -1
             )
 
@@ -654,6 +726,10 @@ class PlayerBottomSheet private constructor(
                     fullPlayer.setBackgroundColor(
                         animation.animatedValue as Int
                     )
+                    bottomSheetFullLyricRecyclerView.setBackgroundColor(
+                        animation.animatedValue as Int
+                    )
+                    bottomSheetFullLyricAdapter
                 }
                 duration = BACKGROUND_COLOR_TRANSITION_SEC
             }
@@ -716,6 +792,7 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullCoverFrame.setCardBackgroundColor(
                     colorSurface
                 )
+                bottomSheetFullLyricAdapter.updateTextColor(colorPrimaryVariant, colorPrimary)
 
                 bottomSheetFullSlider.trackInactiveTintList =
                     ColorStateList.valueOf(colorSurfaceContainerHighest)
@@ -867,9 +944,18 @@ class PlayerBottomSheet private constructor(
                     colorOnSecondaryContainer
                 )
 
+                val colorPrimaryVariant = MaterialColors.getColor(
+                    wrappedContext!!,
+                    com.google.android.material.R.attr.colorPrimaryVariant,
+                    -1
+                )
+
                 surfaceTransition.apply {
                     addUpdateListener { animation ->
                         fullPlayer.setBackgroundColor(
+                            animation.animatedValue as Int
+                        )
+                        bottomSheetFullLyricRecyclerView.setBackgroundColor(
                             animation.animatedValue as Int
                         )
                     }
@@ -934,6 +1020,7 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullCoverFrame.setCardBackgroundColor(
                         colorSurface
                     )
+                    bottomSheetFullLyricAdapter.updateTextColor(colorPrimaryVariant, colorPrimary)
 
                     bottomSheetFullSlider.trackInactiveTintList =
                         ColorStateList.valueOf(colorSurfaceContainerHighest)
@@ -978,6 +1065,7 @@ class PlayerBottomSheet private constructor(
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
@@ -1059,6 +1147,26 @@ class PlayerBottomSheet private constructor(
                 // TODO
             } else {
                 // TODO
+            }
+            val audioFile = AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
+            val tag = audioFile.tag
+            val lyrics = tag.getFirst(FieldKey.LYRICS)
+            if (lyrics != null && lyrics.isNotEmpty()) {
+                bottomSheetFullLyricList.clear()
+                bottomSheetFullLyricList.addAll(MediaStoreUtils.parseLrcString(lyrics))
+                bottomSheetFullLyricAdapter.notifyDataSetChanged()
+            } else {
+                bottomSheetFullLyricList.clear()
+                bottomSheetFullLyricList.add(
+                    MediaStoreUtils.Lyric(0,
+                    context.getString(R.string.no_lyric_found)))
+                bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                bottomSheetFullLyricAdapter.updateHighlight(0,
+                    MaterialColors.getColor(
+                        if (wrappedContext != null) wrappedContext!! else context,
+                        com.google.android.material.R.attr.colorPrimary,
+                        -1
+                    ))
             }
         }
         var newState = standardBottomSheetBehavior!!.state
@@ -1239,6 +1347,83 @@ class PlayerBottomSheet private constructor(
             items.add(instance.getMediaItemAt(i))
         }
         return items
+    }
+
+    class LyricAdapter(
+        private val lyricList: MutableList<MediaStoreUtils.Lyric>,
+        private val activity: MainActivity
+    ) : RecyclerView.Adapter<LyricAdapter.ViewHolder>() {
+
+        private var defaultTextColor = MaterialColors.getColor(
+            activity,
+            com.google.android.material.R.attr.colorPrimaryVariant,
+            -1
+        )
+
+        private var highlightTextColor = MaterialColors.getColor(
+            activity,
+            com.google.android.material.R.attr.colorPrimary,
+            -1
+        )
+
+        private var currentBoldPos = 0
+
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): LyricAdapter.ViewHolder =
+            ViewHolder(
+                LayoutInflater
+                    .from(parent.context)
+                    .inflate(R.layout.lyrics, parent, false),
+            )
+
+        override fun onBindViewHolder(holder: LyricAdapter.ViewHolder, position: Int) {
+            holder.lyricCard.setOnClickListener {
+                activity.getPlayer().seekTo(
+                    lyricList[position].timeStamp
+                )
+            }
+            holder.lyricTextView.text =
+                lyricList[position].content
+            if (holder.bindingAdapterPosition == currentBoldPos) {
+                Log.d("TAG", "SET BOLD")
+                holder.lyricTextView.typeface = Typeface.defaultFromStyle(
+                    Typeface.BOLD
+                )
+                holder.lyricTextView.setTextColor(
+                    highlightTextColor
+                )
+            } else {
+                holder.lyricTextView.typeface = Typeface.DEFAULT
+                holder.lyricTextView.setTextColor(
+                    defaultTextColor
+                )
+            }
+        }
+
+        override fun getItemCount(): Int = lyricList.size
+
+        inner class ViewHolder(
+            view: View
+        ) : RecyclerView.ViewHolder(view) {
+            val lyricTextView: TextView = view.findViewById(R.id.lyric)
+            val lyricCard: MaterialCardView = view.findViewById(R.id.cardview)
+        }
+
+        fun updateTextColor(newColor: Int, newHighlightColor: Int) {
+            defaultTextColor = newColor
+            highlightTextColor = newHighlightColor
+            notifyDataSetChanged()
+        }
+
+        fun updateHighlight(position: Int, color: Int) {
+            if (currentBoldPos == position) return
+            notifyItemChanged(currentBoldPos)
+            currentBoldPos = position
+            highlightTextColor = color
+            notifyItemChanged(position)
+        }
     }
 
     class PlaylistCardAdapter(

@@ -97,6 +97,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.github.Helixform:FluidRecyclerView:main-SNAPSHOT")
     implementation("com.google.android.material:material:1.11.0-beta01")
+    implementation("net.jthink:jaudiotagger:3.0.1")
     implementation(project(":fastscroller"))
     ksp("com.github.bumptech.glide:ksp:4.15.1")
 }

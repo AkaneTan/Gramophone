@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -81,6 +82,11 @@ object MediaStoreUtils {
         override var title: String?,
         override val songList: MutableList<MediaItem>
     ) : Item
+
+    data class Lyric(
+        val timeStamp: Long = 0,
+        val content: String = ""
+    )
 
     class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(id, null, songList
         .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()) {
@@ -540,6 +546,34 @@ object MediaStoreUtils {
             libraryViewModel.playlistList.value = pairObject.playlistList
             libraryViewModel.folderStructure.value = pairObject.folderStructure
         }
+    }
+
+
+    fun parseLrcString(lrcContent: String) : MutableList<Lyric> {
+        val linesRegex = "\\[(\\d{2}:\\d{2}\\.\\d{2})](.*)".toRegex()
+        val list = mutableListOf<Lyric>()
+
+        lrcContent.lines().forEach { line ->
+            val matchResult = linesRegex.find(line)
+            if (matchResult != null) {
+                val startTime = parseTime(matchResult.groupValues[1])
+                val lyricLine = matchResult.groupValues[2]
+                list.add(Lyric(startTime, lyricLine))
+            }
+        }
+
+        return list
+    }
+
+    private fun parseTime(timeString: String): Long {
+        val timeRegex = "(\\d{2}):(\\d{2})\\.(\\d{2})".toRegex()
+        val matchResult = timeRegex.find(timeString)
+
+        val minutes = matchResult?.groupValues?.get(1)?.toLongOrNull() ?: 0
+        val seconds = matchResult?.groupValues?.get(2)?.toLongOrNull() ?: 0
+        val milliseconds = matchResult?.groupValues?.get(3)?.toLongOrNull() ?: 0
+
+        return minutes * 60000 + seconds * 1000 + milliseconds * 10
     }
 
 }
