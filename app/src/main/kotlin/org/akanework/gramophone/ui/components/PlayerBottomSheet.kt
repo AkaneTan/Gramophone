@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -1167,16 +1166,20 @@ class PlayerBottomSheet private constructor(
             val audioFile = AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
             val tag = audioFile.tag
             val lyrics = tag.getFirst(FieldKey.LYRICS)
-            if (lyrics != null && lyrics.isNotEmpty()) {
+            val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
+            if (lyrics != null && lyrics.isNotEmpty() && !bottomSheetFullLyricList.containsAll(parsedLyrics)) {
                 bottomSheetFullLyricList.clear()
-                bottomSheetFullLyricList.addAll(MediaStoreUtils.parseLrcString(lyrics))
+                bottomSheetFullLyricList.addAll(parsedLyrics)
                 bottomSheetFullLyricAdapter.notifyDataSetChanged()
                 resetToDefaultLyricPosition()
-            } else {
+            } else if (parsedLyrics.isEmpty()) {
                 bottomSheetFullLyricList.clear()
                 bottomSheetFullLyricList.add(
-                    MediaStoreUtils.Lyric(0,
-                    context.getString(R.string.no_lyric_found)))
+                    MediaStoreUtils.Lyric(
+                        0,
+                        context.getString(R.string.no_lyric_found)
+                    )
+                )
                 bottomSheetFullLyricAdapter.notifyDataSetChanged()
                 resetToDefaultLyricPosition()
             }
@@ -1399,7 +1402,6 @@ class PlayerBottomSheet private constructor(
             holder.lyricTextView.text =
                 lyricList[position].content
             if (holder.bindingAdapterPosition == currentBoldPos) {
-                Log.d("TAG", "SET BOLD")
                 holder.lyricTextView.typeface = Typeface.defaultFromStyle(
                     Typeface.BOLD
                 )
