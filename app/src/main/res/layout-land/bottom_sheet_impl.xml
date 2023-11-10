@@ -503,6 +503,7 @@
             android:layout_height="0dp"
             android:background="?attr/colorSurface"
             android:visibility="gone"
+            android:scrollbars="none"
             app:layout_constraintStart_toStartOf="@id/cover_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
