@@ -77,13 +77,6 @@
             android:widgetLayout="@layout/preference_material_switch" /> -->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_behavior">
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:icon="@drawable/ic_earthquake"
-            android:key="floatoutput"
-            android:summary="@string/settings_float_output_summary"
-            android:title="@string/settings_float_output"
-            android:widgetLayout="@layout/preference_material_switch" />
         <SeekBarPreference
             android:defaultValue="@integer/filter_default_sec"
             android:icon="@drawable/filter_art"
