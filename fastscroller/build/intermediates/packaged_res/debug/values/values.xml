@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="afs_md2_popup_elevation">3dp</dimen>
+    <dimen name="afs_md2_popup_margin_end">14dp</dimen>
+    <dimen name="afs_md2_popup_min_height">64dp</dimen>
+    <dimen name="afs_md2_popup_min_width">78dp</dimen>
+    <dimen name="afs_md2_popup_padding_end">29dp</dimen>
+    <dimen name="afs_md2_popup_padding_start">16dp</dimen>
+    <dimen name="afs_md2_popup_text_size">34dp</dimen>
+    <dimen name="afs_min_touch_target_size">48dp</dimen>
+    <dimen name="afs_popup_margin_end">16dp</dimen>
+    <dimen name="afs_popup_min_size">88dp</dimen>
+    <dimen name="afs_popup_text_size">45dp</dimen>
+</resources>

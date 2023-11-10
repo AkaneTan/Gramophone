@@ -90,15 +90,15 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.7.0-alpha06")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-beta01")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("com.google.android.material:material:1.11.0-beta01")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
     implementation("androidx.media3:media3-exoplayer:1.2.0-rc01")
     implementation("androidx.media3:media3-session:1.2.0-rc01")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    implementation("com.github.Helixform:FluidRecyclerView:main-SNAPSHOT")
     implementation("com.google.android.material:material:1.11.0-beta01")
+    implementation("me.zhanghai.android.fastscroll:library:1.2.0")
     implementation("net.jthink:jaudiotagger:3.0.1")
-    implementation(project(":fastscroller"))
     ksp("com.github.bumptech.glide:ksp:4.15.1")
 }
 

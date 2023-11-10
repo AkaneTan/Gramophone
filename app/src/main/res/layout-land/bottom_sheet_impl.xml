@@ -497,7 +497,7 @@
                 app:iconTint="?attr/colorOnSurface" />
         </LinearLayout>
 
-        <androidx.fluidrecyclerview.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/lyric_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"

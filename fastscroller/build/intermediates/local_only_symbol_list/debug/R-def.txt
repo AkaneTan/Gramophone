@@ -1,0 +1,19 @@
+R_DEF: Internal format may change without notice
+local
+dimen afs_md2_popup_elevation
+dimen afs_md2_popup_margin_end
+dimen afs_md2_popup_min_height
+dimen afs_md2_popup_min_width
+dimen afs_md2_popup_padding_end
+dimen afs_md2_popup_padding_start
+dimen afs_md2_popup_text_size
+dimen afs_min_touch_target_size
+dimen afs_popup_margin_end
+dimen afs_popup_min_size
+dimen afs_popup_text_size
+drawable afs_md2_thumb
+drawable afs_md2_track
+drawable afs_popup_background
+drawable afs_thumb
+drawable afs_thumb_stateful
+drawable afs_track
