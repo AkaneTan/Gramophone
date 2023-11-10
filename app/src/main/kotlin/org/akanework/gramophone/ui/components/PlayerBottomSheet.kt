@@ -577,6 +577,21 @@ class PlayerBottomSheet private constructor(
         }
     }
 
+    private fun resetToDefaultLyricPosition() {
+        smoothScroller.targetPosition = 0
+        bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
+            smoothScroller
+        )
+        bottomSheetFullLyricAdapter.updateHighlight(
+            0,
+            MaterialColors.getColor(
+                if (wrappedContext != null) wrappedContext!! else context,
+                com.google.android.material.R.attr.colorPrimary,
+                -1
+            )
+        )
+    }
+
     override fun onViewAdded(child: View?) {
         super.onViewAdded(child)
         post {
@@ -1155,18 +1170,14 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullLyricList.clear()
                 bottomSheetFullLyricList.addAll(MediaStoreUtils.parseLrcString(lyrics))
                 bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                resetToDefaultLyricPosition()
             } else {
                 bottomSheetFullLyricList.clear()
                 bottomSheetFullLyricList.add(
                     MediaStoreUtils.Lyric(0,
                     context.getString(R.string.no_lyric_found)))
                 bottomSheetFullLyricAdapter.notifyDataSetChanged()
-                bottomSheetFullLyricAdapter.updateHighlight(0,
-                    MaterialColors.getColor(
-                        if (wrappedContext != null) wrappedContext!! else context,
-                        com.google.android.material.R.attr.colorPrimary,
-                        -1
-                    ))
+                resetToDefaultLyricPosition()
             }
         }
         var newState = standardBottomSheetBehavior!!.state
