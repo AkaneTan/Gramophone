@@ -1,22 +1,19 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import me.zhanghai.android.fastscroll.PopupTextProvider
+import androidx.fluidrecyclerview.widget.ConcatAdapter
+import androidx.fluidrecyclerview.widget.DiffUtil
+import androidx.fluidrecyclerview.widget.LinearLayoutManager
+import androidx.fluidrecyclerview.widget.RecyclerView
+import org.akanework.fastscroller.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -113,18 +110,18 @@ class FolderAdapter(
         }
     }
 
-    override fun getPopupText(position: Int): CharSequence {
+    override fun getPopupText(view: View, position: Int): CharSequence {
         var newPos = position
         if (newPos < folderPopAdapter.itemCount) {
             return "-"
         }
         newPos -= folderPopAdapter.itemCount
         if (newPos < folderAdapter.itemCount) {
-            return folderAdapter.getPopupText(newPos)
+            return folderAdapter.getPopupText(view, newPos)
         }
         newPos -= folderAdapter.itemCount
         if (newPos < songAdapter.itemCount) {
-            return songAdapter.getPopupText(newPos + 1)
+            return songAdapter.getPopupText(view, newPos + 1)
         }
         throw IllegalStateException()
     }
@@ -160,7 +157,7 @@ class FolderAdapter(
             }
         }
 
-        override fun getPopupText(position: Int): CharSequence {
+        override fun getPopupText(view: View, position: Int): CharSequence {
             return folderList[position].folderName.first().toString()
         }
 

@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.RecyclerView
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
+import androidx.fluidrecyclerview.widget.ConcatAdapter
+import androidx.fluidrecyclerview.widget.RecyclerView
+import org.akanework.fastscroller.FastScrollerBuilder
+import org.akanework.fastscroller.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter

@@ -1,7 +1,6 @@
 package org.akanework.gramophone.ui.components
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
@@ -29,6 +28,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
+import androidx.fluidrecyclerview.widget.LinearLayoutManager
+import androidx.fluidrecyclerview.widget.LinearSmoothScroller
+import androidx.fluidrecyclerview.widget.RecyclerView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
@@ -38,9 +40,6 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.CustomTarget
@@ -65,7 +64,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.akanework.fastscroller.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.fadInAnimation
@@ -88,7 +87,7 @@ import org.jaudiotagger.tag.FieldKey
 import java.io.File
 import java.io.FileNotFoundException
 
-@SuppressLint("NotifyDataSetChanged")
+
 class PlayerBottomSheet private constructor(
     context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
 ) : FrameLayout(context, attributeSet, defStyleAttr, defStyleRes),
