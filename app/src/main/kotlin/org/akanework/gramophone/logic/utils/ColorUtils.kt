@@ -14,6 +14,8 @@ object ColorUtils {
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA = 0.6f
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING = 0.97f
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK = 1.5f
+    private const val DEFAULT_COLOR_PRIMARY_FAINTED_CHROMA = 0.4f
+    private const val DEFAULT_COLOR_PRIMARY_FAINTED_LIGHTING = 0.8f
 
     var overrideAmoledColor = false
 
@@ -81,6 +83,15 @@ object ColorUtils {
                 context
             )
         }
+    }
+
+    fun getColorPrimaryFainted(color: Int, context: Context): Int {
+        return manipulateHsl(
+            color,
+            DEFAULT_COLOR_PRIMARY_FAINTED_CHROMA,
+            DEFAULT_COLOR_PRIMARY_FAINTED_LIGHTING,
+            context
+        )
     }
 
 }

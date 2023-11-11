@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -74,6 +75,7 @@ import org.akanework.gramophone.logic.getTimer
 import org.akanework.gramophone.logic.getUri
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
+import org.akanework.gramophone.logic.px
 import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
@@ -134,16 +136,6 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetFullLyricLinearLayoutManager = LinearLayoutManager(context)
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
-    private var smoothScroller =
-        object : LinearSmoothScroller(context) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
-            }
-
-            override fun calculateTimeForScrolling(dx: Int): Int {
-                return 300
-            }
-        }
     private val fullPlayer: View
     private val previewPlayer: View
     private val progressDrawable: SquigglyProgress
@@ -554,18 +546,33 @@ class PlayerBottomSheet private constructor(
                         -1
                     }
 
-                    if (newIndex != -1 && newIndex != 0) {
+                    if (newIndex != -1 && newIndex != 0 &&
+                        newIndex != bottomSheetFullLyricAdapter.currentBoldPos) {
+                        val smoothScroller =
+                            object : LinearSmoothScroller(context) {
+                                override fun calculateDtToFit(
+                                    viewStart: Int,
+                                    viewEnd: Int,
+                                    boxStart: Int,
+                                    boxEnd: Int,
+                                    snapPreference: Int
+                                ): Int {
+                                    return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (128).px
+                                }
+
+                                override fun getVerticalSnapPreference(): Int {
+                                    return SNAP_TO_START
+                                }
+
+                                override fun calculateTimeForScrolling(dx: Int): Int {
+                                    return 300
+                                }
+                            }
                         smoothScroller.targetPosition = newIndex
                         bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
                             smoothScroller
                         )
-                        bottomSheetFullLyricAdapter.updateHighlight(newIndex,
-                            MaterialColors.getColor(
-                                if (wrappedContext != null) wrappedContext!! else context,
-                                com.google.android.material.R.attr.colorPrimary,
-                                -1
-                            )
-                        )
+                        bottomSheetFullLyricAdapter.updateHighlight(newIndex)
                     }
                 }
             }
@@ -578,18 +585,31 @@ class PlayerBottomSheet private constructor(
     }
 
     private fun resetToDefaultLyricPosition() {
+        val smoothScroller =
+            object : LinearSmoothScroller(context) {
+                override fun calculateDtToFit(
+                    viewStart: Int,
+                    viewEnd: Int,
+                    boxStart: Int,
+                    boxEnd: Int,
+                    snapPreference: Int
+                ): Int {
+                    return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (128).px
+                }
+
+                override fun getVerticalSnapPreference(): Int {
+                    return SNAP_TO_START
+                }
+
+                override fun calculateTimeForScrolling(dx: Int): Int {
+                    return 300
+                }
+            }
         smoothScroller.targetPosition = 0
         bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
             smoothScroller
         )
-        bottomSheetFullLyricAdapter.updateHighlight(
-            0,
-            MaterialColors.getColor(
-                if (wrappedContext != null) wrappedContext!! else context,
-                com.google.android.material.R.attr.colorPrimary,
-                -1
-            )
-        )
+        bottomSheetFullLyricAdapter.updateHighlight(0)
     }
 
     override fun onViewAdded(child: View?) {
@@ -701,12 +721,6 @@ class PlayerBottomSheet private constructor(
                     R.color.sl_fav_button
                 )
 
-            val colorPrimaryVariant = MaterialColors.getColor(
-                context,
-                com.google.android.material.R.attr.colorPrimaryVariant,
-                -1
-            )
-
             val colorAccent =
                 MaterialColors.getColor(
                     context,
@@ -807,7 +821,13 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullCoverFrame.setCardBackgroundColor(
                     colorSurface
                 )
-                bottomSheetFullLyricAdapter.updateTextColor(colorPrimaryVariant, colorPrimary)
+                bottomSheetFullLyricAdapter.updateTextColor(
+                    ColorUtils.getColorPrimaryFainted(
+                        colorPrimary,
+                        context
+                    ),
+                    colorPrimary
+                )
 
                 bottomSheetFullSlider.trackInactiveTintList =
                     ColorStateList.valueOf(colorSurfaceContainerHighest)
@@ -959,12 +979,6 @@ class PlayerBottomSheet private constructor(
                     colorOnSecondaryContainer
                 )
 
-                val colorPrimaryVariant = MaterialColors.getColor(
-                    wrappedContext!!,
-                    com.google.android.material.R.attr.colorPrimaryVariant,
-                    -1
-                )
-
                 surfaceTransition.apply {
                     addUpdateListener { animation ->
                         fullPlayer.setBackgroundColor(
@@ -1035,7 +1049,13 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullCoverFrame.setCardBackgroundColor(
                         colorSurface
                     )
-                    bottomSheetFullLyricAdapter.updateTextColor(colorPrimaryVariant, colorPrimary)
+                    bottomSheetFullLyricAdapter.updateTextColor(
+                        ColorUtils.getColorPrimaryFainted(
+                            colorPrimary,
+                            context
+                        ),
+                        colorPrimary
+                    )
 
                     bottomSheetFullSlider.trackInactiveTintList =
                         ColorStateList.valueOf(colorSurfaceContainerHighest)
@@ -1169,13 +1189,13 @@ class PlayerBottomSheet private constructor(
                 val tag = audioFile.tag
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
                 val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
-                if (lyrics != null && lyrics.isNotEmpty() && !bottomSheetFullLyricList.containsAll(
-                        parsedLyrics
-                    )
+                if (lyrics != null && lyrics.isNotEmpty() &&
+                    bottomSheetFullLyricList != parsedLyrics
                 ) {
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.addAll(parsedLyrics)
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    Log.d("TAG", "!")
                     resetToDefaultLyricPosition()
                 } else if (parsedLyrics.isEmpty()) {
                     bottomSheetFullLyricList.clear()
@@ -1186,6 +1206,7 @@ class PlayerBottomSheet private constructor(
                         )
                     )
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    Log.d("TAG", "2")
                     resetToDefaultLyricPosition()
                 }
             } catch (e: Exception) {
@@ -1196,6 +1217,7 @@ class PlayerBottomSheet private constructor(
                         context.getString(R.string.music_format_not_supported)
                     )
                 )
+                Log.d("TAG", "3")
                 bottomSheetFullLyricAdapter.notifyDataSetChanged()
                 resetToDefaultLyricPosition()
             }
@@ -1397,7 +1419,8 @@ class PlayerBottomSheet private constructor(
             -1
         )
 
-        private var currentBoldPos = 0
+        var currentBoldPos = 0
+        var currentTranslationPos = 0
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -1411,13 +1434,41 @@ class PlayerBottomSheet private constructor(
 
         override fun onBindViewHolder(holder: LyricAdapter.ViewHolder, position: Int) {
             holder.lyricCard.setOnClickListener {
+                val instance = activity.getPlayer()
+                if (!instance.isPlaying) {
+                    instance.play()
+                }
                 activity.getPlayer().seekTo(
                     lyricList[position].timeStamp
                 )
             }
-            holder.lyricTextView.text =
-                lyricList[position].content
-            if (holder.bindingAdapterPosition == currentBoldPos) {
+            if (lyricList[position].content.isNotEmpty()) {
+                holder.lyricTextView.text =
+                    lyricList[position].content
+            } else {
+                holder.lyricTextView.visibility = View.GONE
+            }
+            if (lyricList[position].isTranslation) {
+                holder.lyricTextView.textSize =
+                    20f
+                holder.lyricTextView.setPadding(
+                    (10).px,
+                    (2).px,
+                    (10).px,
+                    (18).px
+                )
+            } else {
+                holder.lyricTextView.textSize =
+                    28f
+                holder.lyricTextView.setPadding(
+                    (10).px,
+                    (18).px,
+                    (10).px,
+                    if (lyricList[position + 1].isTranslation) (2).px else (18).px
+                )
+            }
+            if (position == currentBoldPos || (position == currentTranslationPos && position != 0)) {
+                Log.d("TAG", "POS: $position")
                 holder.lyricTextView.typeface = Typeface.defaultFromStyle(
                     Typeface.BOLD
                 )
@@ -1425,6 +1476,7 @@ class PlayerBottomSheet private constructor(
                     highlightTextColor
                 )
             } else {
+                Log.d("TAG", "DEFAULTPOS: $position")
                 holder.lyricTextView.typeface = Typeface.DEFAULT
                 holder.lyricTextView.setTextColor(
                     defaultTextColor
@@ -1444,17 +1496,27 @@ class PlayerBottomSheet private constructor(
         fun updateTextColor(newColor: Int, newHighlightColor: Int) {
             defaultTextColor = newColor
             highlightTextColor = newHighlightColor
+            currentBoldPos = 0
+            currentTranslationPos = 0
+            notifyItemChanged(currentBoldPos)
+            notifyItemChanged(currentTranslationPos)
             notifyDataSetChanged()
         }
 
-        fun updateHighlight(position: Int, color: Int) {
+        fun updateHighlight(position: Int) {
             if (currentBoldPos == position) return
             notifyItemChanged(currentBoldPos)
             currentBoldPos = position
-            highlightTextColor = color
             notifyItemChanged(position)
+            val nextPos = position + 1
+            if (nextPos < lyricList.size && lyricList[nextPos].isTranslation) {
+                notifyItemChanged(currentTranslationPos)
+                currentTranslationPos = nextPos
+                notifyItemChanged(nextPos)
+            }
         }
     }
+
 
     class PlaylistCardAdapter(
         private val playlist: MutableList<MediaItem>,

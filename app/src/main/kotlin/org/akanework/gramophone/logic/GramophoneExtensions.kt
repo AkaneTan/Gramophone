@@ -2,6 +2,7 @@ package org.akanework.gramophone.logic
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources.getSystem
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -85,3 +86,7 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
             }
         }
 }
+
+val Int.dp: Int get() = (this / getSystem().displayMetrics.density).toInt()
+
+val Int.px: Int get() = (this * getSystem().displayMetrics.density).toInt()

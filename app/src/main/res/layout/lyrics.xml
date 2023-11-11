@@ -6,10 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginStart="14dp"
+    android:layout_marginEnd="14dp"
     android:focusable="true"
     android:clickable="true"
     app:strokeColor="@android:color/transparent"
@@ -21,8 +19,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?attr/colorPrimary"
-        android:textSize="25sp"
-        android:padding="10dp"
+        android:textSize="28sp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
         tools:text="轢き潰してきた その全てに 对着那被碾碎的 曾经的所有"/>
 
 </com.google.android.material.card.MaterialCardView>

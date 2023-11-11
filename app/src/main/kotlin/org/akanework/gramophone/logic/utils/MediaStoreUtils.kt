@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -85,7 +84,8 @@ object MediaStoreUtils {
 
     data class Lyric(
         val timeStamp: Long = 0,
-        val content: String = ""
+        val content: String = "",
+        val isTranslation: Boolean = false
     )
 
     class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(id, null, songList
@@ -549,16 +549,21 @@ object MediaStoreUtils {
     }
 
 
-    fun parseLrcString(lrcContent: String) : MutableList<Lyric> {
+    fun parseLrcString(lrcContent: String): MutableList<Lyric> {
         val linesRegex = "\\[(\\d{2}:\\d{2}\\.\\d{2})](.*)".toRegex()
         val list = mutableListOf<Lyric>()
+        var lastTimeStamp: Long? = null
 
         lrcContent.lines().forEach { line ->
             val matchResult = linesRegex.find(line)
             if (matchResult != null) {
                 val startTime = parseTime(matchResult.groupValues[1])
                 val lyricLine = matchResult.groupValues[2]
-                list.add(Lyric(startTime, lyricLine))
+
+                val isTranslation = lastTimeStamp != null && lastTimeStamp == startTime
+
+                list.add(Lyric(startTime, lyricLine, isTranslation))
+                lastTimeStamp = startTime
             }
         }
 
