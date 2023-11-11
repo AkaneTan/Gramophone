@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -546,7 +545,7 @@ class PlayerBottomSheet private constructor(
                         -1
                     }
 
-                    if (newIndex != -1 && newIndex != 0 &&
+                    if (newIndex != -1 &&
                         newIndex != bottomSheetFullLyricAdapter.currentBoldPos) {
                         val smoothScroller =
                             object : LinearSmoothScroller(context) {
@@ -609,7 +608,7 @@ class PlayerBottomSheet private constructor(
         bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
             smoothScroller
         )
-        bottomSheetFullLyricAdapter.updateHighlight(0)
+        bottomSheetFullLyricAdapter.updateHighlight(-1)
     }
 
     override fun onViewAdded(child: View?) {
@@ -1195,7 +1194,6 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.addAll(parsedLyrics)
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
-                    Log.d("TAG", "!")
                     resetToDefaultLyricPosition()
                 } else if (parsedLyrics.isEmpty()) {
                     bottomSheetFullLyricList.clear()
@@ -1206,7 +1204,6 @@ class PlayerBottomSheet private constructor(
                         )
                     )
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
-                    Log.d("TAG", "2")
                     resetToDefaultLyricPosition()
                 }
             } catch (e: Exception) {
@@ -1217,7 +1214,6 @@ class PlayerBottomSheet private constructor(
                         context.getString(R.string.music_format_not_supported)
                     )
                 )
-                Log.d("TAG", "3")
                 bottomSheetFullLyricAdapter.notifyDataSetChanged()
                 resetToDefaultLyricPosition()
             }
@@ -1419,8 +1415,8 @@ class PlayerBottomSheet private constructor(
             -1
         )
 
-        var currentBoldPos = 0
-        var currentTranslationPos = 0
+        var currentBoldPos = -1
+        var currentTranslationPos = -1
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -1443,6 +1439,7 @@ class PlayerBottomSheet private constructor(
                 )
             }
             if (lyricList[position].content.isNotEmpty()) {
+                holder.lyricTextView.visibility = View.VISIBLE
                 holder.lyricTextView.text =
                     lyricList[position].content
             } else {
@@ -1464,11 +1461,11 @@ class PlayerBottomSheet private constructor(
                     (10).px,
                     (18).px,
                     (10).px,
-                    if (lyricList[position + 1].isTranslation) (2).px else (18).px
+                    if (position + 1 < lyricList.size &&
+                        lyricList[position + 1].isTranslation) (2).px else (18).px
                 )
             }
-            if (position == currentBoldPos || (position == currentTranslationPos && position != 0)) {
-                Log.d("TAG", "POS: $position")
+            if (position == currentBoldPos || position == currentTranslationPos) {
                 holder.lyricTextView.typeface = Typeface.defaultFromStyle(
                     Typeface.BOLD
                 )
@@ -1476,7 +1473,6 @@ class PlayerBottomSheet private constructor(
                     highlightTextColor
                 )
             } else {
-                Log.d("TAG", "DEFAULTPOS: $position")
                 holder.lyricTextView.typeface = Typeface.DEFAULT
                 holder.lyricTextView.setTextColor(
                     defaultTextColor
@@ -1496,23 +1492,24 @@ class PlayerBottomSheet private constructor(
         fun updateTextColor(newColor: Int, newHighlightColor: Int) {
             defaultTextColor = newColor
             highlightTextColor = newHighlightColor
-            currentBoldPos = 0
-            currentTranslationPos = 0
-            notifyItemChanged(currentBoldPos)
-            notifyItemChanged(currentTranslationPos)
             notifyDataSetChanged()
         }
 
         fun updateHighlight(position: Int) {
             if (currentBoldPos == position) return
-            notifyItemChanged(currentBoldPos)
-            currentBoldPos = position
-            notifyItemChanged(position)
-            val nextPos = position + 1
-            if (nextPos < lyricList.size && lyricList[nextPos].isTranslation) {
-                notifyItemChanged(currentTranslationPos)
-                currentTranslationPos = nextPos
-                notifyItemChanged(nextPos)
+            if (position >= 0) {
+                notifyItemChanged(currentBoldPos)
+                currentBoldPos = position
+                notifyItemChanged(position)
+                val nextPos = position + 1
+                if (nextPos < lyricList.size && lyricList[nextPos].isTranslation) {
+                    notifyItemChanged(currentTranslationPos)
+                    currentTranslationPos = nextPos
+                    notifyItemChanged(nextPos)
+                }
+            } else {
+                currentBoldPos = -1
+                currentTranslationPos = -1
             }
         }
     }
