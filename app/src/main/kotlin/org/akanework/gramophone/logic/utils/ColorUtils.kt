@@ -11,7 +11,7 @@ object ColorUtils {
     private const val DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING = 0.99f
     private const val DEFAULT_COLOR_BACKGROUND_CHROMA = 0.9f
     private const val DEFAULT_COLOR_BACKGROUND_LIGHTING = 1.015f
-    private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA = 1.2f
+    private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA = 0.6f
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING = 0.97f
     private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK = 1.5f
 
