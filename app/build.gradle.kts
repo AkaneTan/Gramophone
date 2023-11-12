@@ -99,6 +99,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0-beta01")
     implementation("net.jthink:jaudiotagger:3.0.1")
     implementation(project(":fastscroller"))
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
 }
 
