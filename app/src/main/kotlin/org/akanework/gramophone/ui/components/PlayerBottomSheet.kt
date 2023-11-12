@@ -327,6 +327,7 @@ class PlayerBottomSheet private constructor(
                 if (mediaId != null) {
                     if (seekBar != null) {
                         instance.seekTo((seekBar.progress.toLong()))
+                        updateLyric(seekBar.progress.toLong())
                     }
                 }
                 isUserTracking = false
@@ -345,6 +346,7 @@ class PlayerBottomSheet private constructor(
                 val mediaId = instance.currentMediaItem?.mediaId
                 if (mediaId != null) {
                     instance.seekTo((slider.value.toLong()))
+                    updateLyric(slider.value.toLong())
                 }
                 isUserTracking = false
             }
