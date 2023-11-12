@@ -873,12 +873,14 @@ class PlayerBottomSheet private constructor(
 
                 val gradientDrawableUp = GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
+                    intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
                 )
+                gradientDrawableUp.gradientType = GradientDrawable.LINEAR_GRADIENT
                 val gradientDrawableDown = GradientDrawable(
                     GradientDrawable.Orientation.BOTTOM_TOP,
-                    intArrayOf(backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
+                    intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
                 )
+                gradientDrawableDown.gradientType = GradientDrawable.LINEAR_GRADIENT
                 bottomSheetFullLyricGradientViewUp.background = gradientDrawableUp
                 bottomSheetFullLyricGradientViewDown.background = gradientDrawableDown
             }
@@ -1112,12 +1114,14 @@ class PlayerBottomSheet private constructor(
 
                     val gradientDrawableUp = GradientDrawable(
                         GradientDrawable.Orientation.TOP_BOTTOM,
-                        intArrayOf(backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
+                        intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
                     )
+                    gradientDrawableUp.gradientType = GradientDrawable.LINEAR_GRADIENT
                     val gradientDrawableDown = GradientDrawable(
                         GradientDrawable.Orientation.BOTTOM_TOP,
-                        intArrayOf(backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
+                        intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
                     )
+                    gradientDrawableDown.gradientType = GradientDrawable.LINEAR_GRADIENT
                     bottomSheetFullLyricGradientViewUp.background = gradientDrawableUp
                     bottomSheetFullLyricGradientViewDown.background = gradientDrawableDown
                 }
