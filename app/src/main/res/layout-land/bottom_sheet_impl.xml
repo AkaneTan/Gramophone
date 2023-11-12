@@ -504,11 +504,28 @@
             android:background="?attr/colorSurface"
             android:visibility="gone"
             android:scrollbars="none"
+            android:clipToPadding="false"
+            android:paddingTop="42dp"
+            android:paddingBottom="42dp"
             app:layout_constraintStart_toStartOf="@id/cover_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:listitem="@layout/lyrics"/>
+
+        <View
+            android:id="@+id/gradient_view_up"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@id/lyric_frame" />
+
+        <View
+            android:id="@+id/gradient_view_down"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/lyric_frame" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
