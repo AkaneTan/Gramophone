@@ -60,14 +60,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private val startActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode != Activity.RESULT_OK || it.resultCode != Activity.RESULT_CANCELED) {
-                Toast.makeText(
-                    applicationContext,
-                    R.string.equalizer_not_found,
-                    Toast.LENGTH_LONG
-                ).show()
+        try {
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                // None
             }
+        } catch (e: Exception) {
+            Toast.makeText(
+                applicationContext,
+                R.string.equalizer_not_found,
+                Toast.LENGTH_LONG
+            ).show()
         }
 
     fun navigateDrawer(int: Int) {
