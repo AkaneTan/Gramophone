@@ -547,26 +547,7 @@ class PlayerBottomSheet private constructor(
             if (newIndex != -1 &&
                 duration != null &&
                 newIndex != bottomSheetFullLyricAdapter.currentBoldPos) {
-                val smoothScroller =
-                    object : LinearSmoothScroller(context) {
-                        override fun calculateDtToFit(
-                            viewStart: Int,
-                            viewEnd: Int,
-                            boxStart: Int,
-                            boxEnd: Int,
-                            snapPreference: Int
-                        ): Int {
-                            return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (128).px
-                        }
-
-                        override fun getVerticalSnapPreference(): Int {
-                            return SNAP_TO_START
-                        }
-
-                        override fun calculateTimeForScrolling(dx: Int): Int {
-                            return 300
-                        }
-                    }
+                val smoothScroller = createSmoothScroller()
                 smoothScroller.targetPosition = newIndex
                 bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
                     smoothScroller
@@ -575,6 +556,27 @@ class PlayerBottomSheet private constructor(
             }
         }
     }
+
+    private fun createSmoothScroller() =
+        object : LinearSmoothScroller(context) {
+            override fun calculateDtToFit(
+                viewStart: Int,
+                viewEnd: Int,
+                boxStart: Int,
+                boxEnd: Int,
+                snapPreference: Int
+            ): Int {
+                return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (128).px
+            }
+
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+
+            override fun calculateTimeForScrolling(dx: Int): Int {
+                return 300
+            }
+        }
 
     private val positionRunnable = object : Runnable {
         override fun run() {
@@ -600,26 +602,7 @@ class PlayerBottomSheet private constructor(
     }
 
     private fun resetToDefaultLyricPosition() {
-        val smoothScroller =
-            object : LinearSmoothScroller(context) {
-                override fun calculateDtToFit(
-                    viewStart: Int,
-                    viewEnd: Int,
-                    boxStart: Int,
-                    boxEnd: Int,
-                    snapPreference: Int
-                ): Int {
-                    return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (128).px
-                }
-
-                override fun getVerticalSnapPreference(): Int {
-                    return SNAP_TO_START
-                }
-
-                override fun calculateTimeForScrolling(dx: Int): Int {
-                    return 300
-                }
-            }
+        val smoothScroller = createSmoothScroller()
         smoothScroller.targetPosition = 0
         bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
             smoothScroller
