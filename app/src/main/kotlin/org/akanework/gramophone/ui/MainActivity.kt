@@ -1,7 +1,6 @@
 package org.akanework.gramophone.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -60,16 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private val startActivity =
-        try {
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                // None
-            }
-        } catch (e: Exception) {
-            Toast.makeText(
-                applicationContext,
-                R.string.equalizer_not_found,
-                Toast.LENGTH_LONG
-            ).show()
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
 
     fun navigateDrawer(int: Int) {
@@ -245,7 +235,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.equalizer -> {
                     val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
                         .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
-                    startActivity.launch(intent)
+                    try {
+                        startActivity.launch(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            applicationContext,
+                            R.string.equalizer_not_found,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
 
                 R.id.about -> {
