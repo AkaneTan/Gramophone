@@ -275,7 +275,7 @@
                 android:id="@+id/duration_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
+                android:layout_marginHorizontal="26dp"
                 app:layout_constraintBottom_toTopOf="@id/sheet_mid_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
