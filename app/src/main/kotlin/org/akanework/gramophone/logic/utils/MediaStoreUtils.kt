@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -300,8 +301,9 @@ object MediaStoreUtils {
                 // Process track numbers that have disc number added on.
                 // e.g. 1001 - Disc 01, Track 01.
                 if (trackNumber >= 1000) {
-                    discNumber = trackNumber / 100
-                    trackNumber %= 100
+                    discNumber = trackNumber / 1000
+                    trackNumber %= 1000
+                    Log.d("TAG", "discNumber: $discNumber, trackNumber: $trackNumber")
                 }
 
                 if (duration >= limitValue * 1000) {
