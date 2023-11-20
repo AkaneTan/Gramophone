@@ -9,11 +9,11 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.fluidrecyclerview.widget.ConcatAdapter
-import androidx.fluidrecyclerview.widget.DiffUtil
-import androidx.fluidrecyclerview.widget.LinearLayoutManager
-import androidx.fluidrecyclerview.widget.RecyclerView
-import org.akanework.fastscroller.PopupTextProvider
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity

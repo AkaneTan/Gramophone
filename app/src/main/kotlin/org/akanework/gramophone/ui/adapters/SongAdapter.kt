@@ -152,6 +152,8 @@ class SongAdapter(
                         .setText(item.mediaMetadata.albumArtist)
                     rootView.findViewById<TextInputEditText>(R.id.track_number)!!
                         .setText(item.mediaMetadata.trackNumber.toString())
+                    rootView.findViewById<TextInputEditText>(R.id.disc_number)!!
+                        .setText(item.mediaMetadata.discNumber.toString())
                     val year = item.mediaMetadata.releaseYear?.toString()
                     if (year != null) {
                         rootView.findViewById<TextInputEditText>(R.id.year)!!
