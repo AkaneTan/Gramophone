@@ -726,7 +726,7 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
-            val backgroundProcessedColor = ColorUtils.getColorBackgroundElevated(colorSurface, context)
+            val backgroundProcessedColor = ColorUtils.getColor(colorSurface, ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED, context)
 
             val surfaceTransition = ValueAnimator.ofArgb(
                 fullPlayerFinalColor,
@@ -819,8 +819,9 @@ class PlayerBottomSheet private constructor(
                     colorSurface
                 )
                 bottomSheetFullLyricAdapter.updateTextColor(
-                    ColorUtils.getColorPrimaryFainted(
+                    ColorUtils.getColor(
                         colorPrimary,
+                        ColorUtils.ColorType.COLOR_PRIMARY_FAINTED,
                         context
                     ),
                     colorPrimary
@@ -967,7 +968,10 @@ class PlayerBottomSheet private constructor(
                         -1
                     )
 
-                val backgroundProcessedColor = ColorUtils.getColorBackgroundElevated(colorSurface, context)
+                val backgroundProcessedColor = ColorUtils.getColor(
+                    colorSurface,
+                    ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
+                    context)
 
                 val surfaceTransition = ValueAnimator.ofArgb(
                     fullPlayerFinalColor,
@@ -1060,8 +1064,9 @@ class PlayerBottomSheet private constructor(
                         colorSurface
                     )
                     bottomSheetFullLyricAdapter.updateTextColor(
-                        ColorUtils.getColorPrimaryFainted(
+                        ColorUtils.getColor(
                             colorPrimary,
+                            ColorUtils.ColorType.COLOR_PRIMARY_FAINTED,
                             context
                         ),
                         colorPrimary

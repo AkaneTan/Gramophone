@@ -104,11 +104,12 @@ class MainActivity : AppCompatActivity() {
         val rootContainer = findViewById<View>(R.id.rootContainer)
         val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
 
-        val processColor = ColorUtils.getColorBackground(
+        val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 coordinatorLayout,
                 android.R.attr.colorBackground
             ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
             this
         )
         coordinatorLayout.setBackgroundColor(processColor)

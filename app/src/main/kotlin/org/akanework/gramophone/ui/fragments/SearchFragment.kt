@@ -46,11 +46,12 @@ class SearchFragment : BaseFragment(false) {
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
         val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
 
-        val processColor = ColorUtils.getColorBackground(
+        val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 rootView,
                 android.R.attr.colorBackground
             ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
             requireContext()
         )
         rootView.setBackgroundColor(processColor)

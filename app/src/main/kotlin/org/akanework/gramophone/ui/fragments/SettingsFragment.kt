@@ -25,18 +25,20 @@ class SettingsFragment : BaseFragment(false) {
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
 
         val collapsingToolbar = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
-        val processColor = ColorUtils.getColorBackground(
+        val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
             ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
             requireContext()
         )
-        val processColorElevated = ColorUtils.getColorToolbarElevated(
+        val processColorElevated = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
             ),
+            ColorUtils.ColorType.TOOLBAR_ELEVATED,
             requireContext()
         )
 

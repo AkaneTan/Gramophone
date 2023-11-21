@@ -41,11 +41,12 @@ class GeneralSubFragment : BaseFragment(true) {
         lateinit var itemList: List<MediaItem>
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
-        val processColor = ColorUtils.getColorBackground(
+        val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
             ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
             requireContext()
         )
         topAppBar.setBackgroundColor(processColor)

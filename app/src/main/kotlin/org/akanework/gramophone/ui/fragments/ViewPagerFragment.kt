@@ -46,11 +46,12 @@ class ViewPagerFragment : BaseFragment(true) {
             (requireActivity() as MainActivity).navigateDrawer(viewPager2.currentItem)
         }
 
-        val processColor = ColorUtils.getColorBackground(
+        val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
                 android.R.attr.colorBackground
             ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
             requireContext()
         )
         topAppBar.setBackgroundColor(processColor)

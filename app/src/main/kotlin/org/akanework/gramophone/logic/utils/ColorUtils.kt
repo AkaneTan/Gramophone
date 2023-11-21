@@ -6,92 +6,50 @@ import androidx.core.graphics.ColorUtils
 import kotlin.math.min
 
 object ColorUtils {
-
-    private const val DEFAULT_COLOR_BACKGROUND_ELEVATED_CHROMA = 1.2f
-    private const val DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING = 0.99f
-    private const val DEFAULT_COLOR_BACKGROUND_CHROMA = 0.9f
-    private const val DEFAULT_COLOR_BACKGROUND_LIGHTING = 1.015f
-    private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA = 0.6f
-    private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING = 0.97f
-    private const val DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK = 1.5f
-    private const val DEFAULT_COLOR_PRIMARY_FAINTED_CHROMA = 0.4f
-    private const val DEFAULT_COLOR_PRIMARY_FAINTED_LIGHTING = 0.8f
-
     var overrideAmoledColor = false
+
+    enum class ColorType(
+        var chroma: Float = 0f,
+        var lighting: Float = 0f,
+        var lightingDark: Float = 0f
+    ) {
+        COLOR_BACKGROUND_ELEVATED(1.2f, 0.99f, 0.99f),
+        COLOR_BACKGROUND(0.9f, 1.015f, 1.015f),
+        TOOLBAR_ELEVATED(0.6f, 0.97f, 1.5f),
+        COLOR_PRIMARY_FAINTED(0.4f, 0.8f, 0.8f)
+    }
 
     private fun manipulateHsl(
         color: Int,
-        chroma: Float,
-        lighting: Float,
-        context: Context? = null,
+        colorType: ColorType,
+        context: Context,
         overrideAmoledColor: Boolean = false
     ): Int {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
 
-        hsl[1] *= chroma
+        hsl[1] *= colorType.chroma
         hsl[1] = min(hsl[1], 1f)
 
-        hsl[2] *= lighting
-        hsl[2] = min(hsl[2], 1f)
-
-        if (overrideAmoledColor) {
-            if (context != null) {
-                val nightModeFlags: Int = context.resources.configuration.uiMode and
-                        Configuration.UI_MODE_NIGHT_MASK
-                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                    hsl[2] = 0f
-                }
+        if (isDarkMode(context)) {
+            hsl[2] *= colorType.lightingDark
+            hsl[2] = min(hsl[2], 1f)
+            if (overrideAmoledColor) {
+                hsl[2] = 0f
             }
+        } else {
+            hsl[2] *= colorType.lighting
+            hsl[2] = min(hsl[2], 1f)
         }
 
         return ColorUtils.HSLToColor(hsl)
     }
 
-    fun getColorBackgroundElevated(color: Int, context: Context): Int =
-        manipulateHsl(
-            color,
-            DEFAULT_COLOR_BACKGROUND_ELEVATED_CHROMA,
-            DEFAULT_COLOR_BACKGROUND_ELEVATED_LIGHTING,
-            context
-        )
+    fun getColor(color: Int, colorType: ColorType, context: Context): Int =
+        manipulateHsl(color, colorType, context)
 
-    fun getColorBackground(color: Int, context: Context): Int =
-        manipulateHsl(
-            color,
-            DEFAULT_COLOR_BACKGROUND_CHROMA,
-            DEFAULT_COLOR_BACKGROUND_LIGHTING,
-            context,
-            overrideAmoledColor
-        )
-
-    fun getColorToolbarElevated(color: Int, context: Context): Int {
-        val nightModeFlags: Int = context.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK
-        return if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            manipulateHsl(
-                color,
-                DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA,
-                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING_DARK,
-                context
-            )
-        } else {
-            manipulateHsl(
-                color,
-                DEFAULT_COLOR_TOOLBAR_ELEVATED_CHROMA,
-                DEFAULT_COLOR_TOOLBAR_ELEVATED_LIGHTING,
-                context
-            )
-        }
-    }
-
-    fun getColorPrimaryFainted(color: Int, context: Context): Int {
-        return manipulateHsl(
-            color,
-            DEFAULT_COLOR_PRIMARY_FAINTED_CHROMA,
-            DEFAULT_COLOR_PRIMARY_FAINTED_LIGHTING,
-            context
-        )
-    }
+    private fun isDarkMode(context: Context): Boolean =
+        context.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
 }
