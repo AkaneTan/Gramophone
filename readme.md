@@ -9,6 +9,7 @@ A sane music player built with media3 and material design library that is follow
 ## Features
 - Up-to-date material 3 design
 - Monet themed icon on Android 12+
+- Dynamic player UI monet color
 - View and play your favorite music
 - Search your favourite music
 - Web streaming (coming soon!)
