@@ -1,13 +1,17 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.divider.MaterialDivider
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +23,7 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+
 
 /**
  * [SongAdapter] is an adapter for displaying songs.
@@ -142,6 +147,9 @@ class SongAdapter(
                             dialog.dismiss()
                         }
                         .show()
+                    val topDivider = rootView.findViewById<MaterialDivider>(R.id.top_divider)
+                    val bottomDivider = rootView.findViewById<MaterialDivider>(R.id.bottom_divider)
+                    val nestedScrollView = rootView.findViewById<NestedScrollView>(R.id.nestedscrollview)
                     rootView.findViewById<TextInputEditText>(R.id.title)!!
                         .setText(item.mediaMetadata.title)
                     rootView.findViewById<TextInputEditText>(R.id.artist)!!
@@ -154,6 +162,26 @@ class SongAdapter(
                         .setText(item.mediaMetadata.trackNumber.toString())
                     rootView.findViewById<TextInputEditText>(R.id.disc_number)!!
                         .setText(item.mediaMetadata.discNumber.toString())
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        nestedScrollView!!.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+                            val bottomDiff: Int =
+                                nestedScrollView.getChildAt(
+                                    nestedScrollView.childCount - 1
+                                ).bottom - (
+                                    nestedScrollView.height
+                                        + scrollY
+                                )
+                            if (bottomDiff == 0) {
+                                bottomDivider!!.visibility = View.GONE
+                                topDivider!!.visibility = View.VISIBLE
+                            }
+
+                            if (scrollY == 0) {
+                                bottomDivider!!.visibility = View.VISIBLE
+                                topDivider!!.visibility = View.GONE
+                            }
+                        }
+                    }
                     val year = item.mediaMetadata.releaseYear?.toString()
                     if (year != null) {
                         rootView.findViewById<TextInputEditText>(R.id.year)!!
