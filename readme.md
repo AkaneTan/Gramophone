@@ -20,12 +20,15 @@ A sane music player built with media3 and material design library that is follow
 - Friendly for inline compile with custom ROMs
 
 ## Screenshots
-| ![Screenshot 1](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_1.png) | ![Screenshot 2](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_2.png) | ![Screenshot 3](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_3.png) |
+| ![Screenshot 1](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_1.jpg) | ![Screenshot 2](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_2.jpg) | ![Screenshot 3](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_3.jpg) |
 |---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| ![Screenshot 4](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_4.png) | ![Screenshot 5](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_5.png) | ![Screenshot 6](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_6.png) |
+| ![Screenshot 4](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_4.jpg) | ![Screenshot 5](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_5.jpg) | ![Screenshot 6](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_6.jpg) |
+|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| ![Screenshot 7](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_7.jpg) | ![Screenshot 8](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_8.jpg) | ![Screenshot 9](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_9.jpg) |
+
 
 ## Installation
-You can download the latest version of the app from the [releases page](https://github.com/AkaneTan/Gramophone/releases).
+You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDevRel). Github release is outdated and will be updated when 1.0.2's final release is out.
 
 ## Building
 To build this app, you will need the latest beta version of android studio and a fast network. Simply clone it and build it.
