@@ -17,15 +17,10 @@
 
 package org.akanework.gramophone.ui.fragments
 
-import android.R.attr.bottom
-import android.R.attr.left
-import android.R.attr.right
-import android.R.attr.top
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.size
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
@@ -34,8 +29,6 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.dp
-import org.akanework.gramophone.logic.px
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
@@ -125,8 +118,8 @@ class ViewPagerFragment : BaseFragment(true) {
         val firstTab = tabLayout.getTabAt(0)!!.view
         val lastParam = lastTab.layoutParams as ViewGroup.MarginLayoutParams
         val firstParam = firstTab.layoutParams as ViewGroup.MarginLayoutParams
-        lastParam.marginEnd = resources.getDimension(R.dimen.tab_layout_content_start).toInt()
-        firstParam.marginStart = resources.getDimension(R.dimen.tab_layout_content_start).toInt()
+        lastParam.marginEnd = resources.getDimension(R.dimen.tab_layout_content_padding).toInt()
+        firstParam.marginStart = resources.getDimension(R.dimen.tab_layout_content_padding).toInt()
         lastTab.layoutParams = lastParam
         firstTab.layoutParams = firstParam
 

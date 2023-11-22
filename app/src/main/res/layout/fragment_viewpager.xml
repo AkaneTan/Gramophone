@@ -32,7 +32,7 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
             app:tabIndicator="@drawable/selected_chip_background"
