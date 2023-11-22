@@ -8,7 +8,7 @@
 
         <shape android:shape="rectangle">
             <solid android:color="?attr/colorSecondaryContainer" />
-            <corners android:radius="128dp" />
+            <corners android:radius="12dp" />
         </shape>
 
     </item>
