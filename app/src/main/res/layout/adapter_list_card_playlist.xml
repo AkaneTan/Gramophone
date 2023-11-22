@@ -35,10 +35,12 @@
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical">
 
             <TextView
@@ -64,6 +66,16 @@
                 tools:text="Example Artist" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textFontWeight="500"
+            tools:targetApi="p"
+            tools:text="3 | Disc 1"/>
 
     </LinearLayout>
 

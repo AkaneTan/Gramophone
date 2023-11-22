@@ -1589,7 +1589,9 @@ class PlayerBottomSheet private constructor(
             holder.songName.text = playlist[holder.bindingAdapterPosition].mediaMetadata.title
             holder.songArtist.text = playlist[holder.bindingAdapterPosition].mediaMetadata.artist
             holder.indicator.text =
-                playlist[holder.bindingAdapterPosition].mediaMetadata.extras?.getLong("Duration").toString()
+                CalculationUtils.convertDurationToTimeStamp(
+                    playlist[holder.bindingAdapterPosition].mediaMetadata.extras?.getLong("Duration")!!
+                )
             Glide
                 .with(holder.songCover.context)
                 .load(playlist[position].mediaMetadata.artworkUri)

@@ -38,8 +38,6 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.getUri
-import org.akanework.gramophone.logic.px
-import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
@@ -98,6 +96,10 @@ class SongAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
         if (isTrackDiscNumAvailable) {
+            val frame = holder.frame
+            val frameMargin = frame.layoutParams as ViewGroup.MarginLayoutParams
+            frameMargin.marginEnd = (16).dp
+            frame.layoutParams = frameMargin
             val targetText =
                 list[position].mediaMetadata.trackNumber.toString() +
                 " | " + context.resources.getString(R.string.disc) + " " +
