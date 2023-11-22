@@ -118,6 +118,8 @@ abstract class BaseAdapter<T>(
         val songCover: ImageView = view.findViewById(R.id.cover)
         val title: TextView = view.findViewById(R.id.title)
         val subTitle: TextView = view.findViewById(R.id.artist)
+        val indicator: TextView = view.findViewById(R.id.indicator)
+        val frame: View = view.findViewById(R.id.frame)
         val moreButton: MaterialButton = view.findViewById(R.id.more)
     }
 

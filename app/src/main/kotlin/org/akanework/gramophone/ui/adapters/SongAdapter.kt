@@ -21,6 +21,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.widget.NestedScrollView
@@ -35,7 +36,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.getUri
+import org.akanework.gramophone.logic.px
+import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
@@ -50,7 +54,8 @@ class SongAdapter(
     songList: MutableLiveData<MutableList<MediaItem>>?,
     canSort: Boolean,
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
-    ownsView: Boolean
+    ownsView: Boolean,
+    private val isTrackDiscNumAvailable: Boolean = false
 ) : BaseAdapter<MediaItem>
     (
     mainActivity,
@@ -70,9 +75,10 @@ class SongAdapter(
         songList: List<MediaItem>,
         canSort: Boolean,
         helper: Sorter.NaturalOrderHelper<MediaItem>?,
-        ownsView: Boolean
+        ownsView: Boolean,
+        isTrackDiscNumAvailable: Boolean = false
     )
-            : this(mainActivity, null, canSort, helper, ownsView) {
+            : this(mainActivity, null, canSort, helper, ownsView, isTrackDiscNumAvailable) {
         updateList(songList, now = true, false)
     }
 
@@ -87,6 +93,17 @@ class SongAdapter(
         mediaController.setMediaItems(list, list.indexOf(item), C.TIME_UNSET)
         mediaController.prepare()
         mediaController.play()
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        super.onBindViewHolder(holder, position, payloads)
+        if (isTrackDiscNumAvailable) {
+            val targetText =
+                list[position].mediaMetadata.trackNumber.toString() +
+                " | " + context.resources.getString(R.string.disc) + " " +
+                    list[position].mediaMetadata.discNumber
+            holder.indicator.text = targetText
+        }
     }
 
     override fun onMenu(item: MediaItem, popupMenu: PopupMenu) {

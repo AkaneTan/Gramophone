@@ -35,6 +35,7 @@ class Sorter<T>(
         abstract fun getTitle(item: T): String?
         abstract fun getId(item: T): String
         abstract fun getCover(item: T): Uri?
+
         open fun getArtist(item: T): String? = throw UnsupportedOperationException()
         open fun getAlbumTitle(item: T): String? = throw UnsupportedOperationException()
         open fun getAlbumArtist(item: T): String? = throw UnsupportedOperationException()

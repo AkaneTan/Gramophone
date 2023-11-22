@@ -57,6 +57,7 @@ class GeneralSubFragment : BaseFragment(true) {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         lateinit var itemList: List<MediaItem>
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
+        var isTrackDiscNumAvailable = false
 
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
@@ -76,6 +77,7 @@ class GeneralSubFragment : BaseFragment(true) {
                 itemList = item.songList
                 helper =
                     Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! + it.mediaMetadata.discNumber!! * 1000 }
+                isTrackDiscNumAvailable = true
             }
 
             /*R.id.artist -> {
@@ -121,7 +123,7 @@ class GeneralSubFragment : BaseFragment(true) {
         }
 
         val songAdapter =
-            SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true)
+            SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true, isTrackDiscNumAvailable)
         recyclerView.adapter = songAdapter.concatAdapter
 
         FastScrollerBuilder(recyclerView).apply {

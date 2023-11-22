@@ -1588,6 +1588,8 @@ class PlayerBottomSheet private constructor(
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.songName.text = playlist[holder.bindingAdapterPosition].mediaMetadata.title
             holder.songArtist.text = playlist[holder.bindingAdapterPosition].mediaMetadata.artist
+            holder.indicator.text =
+                playlist[holder.bindingAdapterPosition].mediaMetadata.extras?.getLong("Duration").toString()
             Glide
                 .with(holder.songCover.context)
                 .load(playlist[position].mediaMetadata.artworkUri)
@@ -1615,6 +1617,7 @@ class PlayerBottomSheet private constructor(
             val songName: TextView = view.findViewById(R.id.title)
             val songArtist: TextView = view.findViewById(R.id.artist)
             val songCover: ImageView = view.findViewById(R.id.cover)
+            val indicator: TextView = view.findViewById(R.id.indicator)
             val closeButton: MaterialButton = view.findViewById(R.id.close)
         }
 
