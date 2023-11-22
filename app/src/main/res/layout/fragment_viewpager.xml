@@ -42,8 +42,8 @@
             app:tabRippleColor="?attr/colorSurface"
             app:tabIndicatorColor="?attr/colorSecondaryContainer"
             app:tabMode="scrollable"
-            app:tabPaddingStart="18dp"
-            app:tabPaddingEnd="18dp"
+            app:tabPaddingStart="14dp"
+            app:tabPaddingEnd="14dp"
             app:tabTextAppearance="@style/TabTextAppearance"
             tools:tabContentStart="28dp">
 
