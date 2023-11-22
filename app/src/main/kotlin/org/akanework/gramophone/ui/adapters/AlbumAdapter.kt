@@ -42,7 +42,8 @@ class AlbumAdapter(
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.albums,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.GRID
+    defaultLayoutType = LayoutType.GRID,
+    indicatorResource = R.drawable.album_art
 ) {
 
     private val libraryViewModel: LibraryViewModel by mainActivity.viewModels()

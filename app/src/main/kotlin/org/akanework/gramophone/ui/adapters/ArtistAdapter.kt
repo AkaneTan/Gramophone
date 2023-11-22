@@ -43,7 +43,8 @@ class ArtistAdapter(
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.artists,
     ownsView = true,
-    defaultLayoutType = LayoutType.LIST
+    defaultLayoutType = LayoutType.LIST,
+    R.drawable.album_art
 ) {
 
     override fun virtualTitleOf(item: MediaStoreUtils.Artist): String {
@@ -122,7 +123,7 @@ class ArtistAdapter(
 
     private class ArtistDecorAdapter(
         artistAdapter: ArtistAdapter
-    ) : BaseDecorAdapter<ArtistAdapter>(artistAdapter, R.plurals.artists) {
+    ) : BaseDecorAdapter<ArtistAdapter>(artistAdapter, R.plurals.artists, R.drawable.artist_art) {
 
         override fun onSortButtonPressed(popupMenu: PopupMenu) {
             popupMenu.menu.findItem(R.id.album_artist).isVisible = true

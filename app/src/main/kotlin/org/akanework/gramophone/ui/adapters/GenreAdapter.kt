@@ -40,7 +40,8 @@ class GenreAdapter(
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.items,
     ownsView = true,
-    defaultLayoutType = LayoutType.LIST
+    defaultLayoutType = LayoutType.LIST,
+    indicatorResource = R.drawable.genres_art
 ) {
 
     override val defaultCover = R.drawable.ic_default_cover_genre
