@@ -73,38 +73,9 @@ class ViewPagerFragment : BaseFragment(true) {
             requireContext()
         )
 
-        val containerColor = ColorUtils.getColor(
-            MaterialColors.getColor(
-                topAppBar,
-                com.google.android.material.R.attr.colorSecondaryContainer
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
-        )
-
-        val onContainerColor = ColorUtils.getColor(
-            MaterialColors.getColor(
-                topAppBar,
-                com.google.android.material.R.attr.colorOnSecondaryContainer
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
-        )
-
-        val surfaceColor = ColorUtils.getColor(
-            MaterialColors.getColor(
-                topAppBar,
-                com.google.android.material.R.attr.colorOnSurface
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
-        )
-
         topAppBar.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)
         tabLayout.setBackgroundColor(processColor)
-        tabLayout.setSelectedTabIndicatorColor(containerColor)
-        tabLayout.setTabTextColors(surfaceColor, onContainerColor)
 
         // Connect ViewPager2.
         viewPager2.offscreenPageLimit = 9999
