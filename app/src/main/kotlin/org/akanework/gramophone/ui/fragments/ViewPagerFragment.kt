@@ -17,10 +17,15 @@
 
 package org.akanework.gramophone.ui.fragments
 
+import android.R.attr.bottom
+import android.R.attr.left
+import android.R.attr.right
+import android.R.attr.top
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.size
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
@@ -29,9 +34,12 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.dp
+import org.akanework.gramophone.logic.px
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
+
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : BaseFragment(true) {
@@ -71,9 +79,39 @@ class ViewPagerFragment : BaseFragment(true) {
             ColorUtils.ColorType.COLOR_BACKGROUND,
             requireContext()
         )
+
+        val containerColor = ColorUtils.getColor(
+            MaterialColors.getColor(
+                topAppBar,
+                com.google.android.material.R.attr.colorSecondaryContainer
+            ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
+            requireContext()
+        )
+
+        val onContainerColor = ColorUtils.getColor(
+            MaterialColors.getColor(
+                topAppBar,
+                com.google.android.material.R.attr.colorOnSecondaryContainer
+            ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
+            requireContext()
+        )
+
+        val surfaceColor = ColorUtils.getColor(
+            MaterialColors.getColor(
+                topAppBar,
+                com.google.android.material.R.attr.colorOnSurface
+            ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
+            requireContext()
+        )
+
         topAppBar.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)
         tabLayout.setBackgroundColor(processColor)
+        tabLayout.setSelectedTabIndicatorColor(containerColor)
+        tabLayout.setTabTextColors(surfaceColor, onContainerColor)
 
         // Connect ViewPager2.
         viewPager2.offscreenPageLimit = 9999
@@ -82,6 +120,15 @@ class ViewPagerFragment : BaseFragment(true) {
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = getString(adapter.getLabelResId(position))
         }.attach()
+
+        val lastTab = tabLayout.getTabAt(6)!!.view
+        val firstTab = tabLayout.getTabAt(0)!!.view
+        val lastParam = lastTab.layoutParams as ViewGroup.MarginLayoutParams
+        val firstParam = firstTab.layoutParams as ViewGroup.MarginLayoutParams
+        lastParam.marginEnd = resources.getDimension(R.dimen.tab_layout_content_start).toInt()
+        firstParam.marginStart = resources.getDimension(R.dimen.tab_layout_content_start).toInt()
+        lastTab.layoutParams = lastParam
+        firstTab.layoutParams = firstParam
 
         return rootView
     }

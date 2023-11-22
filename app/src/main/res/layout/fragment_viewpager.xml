@@ -32,19 +32,19 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:background="@android:color/transparent"
             app:tabBackground="@android:color/transparent"
-            app:tabContentStart="@dimen/tab_layout_content_start"
             app:tabIndicator="@drawable/selected_chip_background"
             app:tabIndicatorGravity="stretch"
             app:tabIndicatorFullWidth="true"
             app:tabRippleColor="?attr/colorSurface"
             app:tabIndicatorColor="?attr/colorSecondaryContainer"
             app:tabMode="scrollable"
-            app:tabPaddingStart="18dp"
-            app:tabPaddingEnd="18dp"
-            app:tabTextAppearance="@style/TabTextAppearance">
+            app:tabPaddingStart="14dp"
+            app:tabPaddingEnd="14dp"
+            app:tabTextAppearance="@style/TabTextAppearance"
+            tools:tabContentStart="28dp">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
