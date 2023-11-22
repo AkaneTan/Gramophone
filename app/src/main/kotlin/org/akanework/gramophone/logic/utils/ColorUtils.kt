@@ -40,8 +40,7 @@ object ColorUtils {
     private fun manipulateHsl(
         color: Int,
         colorType: ColorType,
-        context: Context,
-        overrideAmoledColor: Boolean = false
+        context: Context
     ): Int {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
