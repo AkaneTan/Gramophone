@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.ui.fragments
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -42,14 +41,17 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class AdapterFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
+    private lateinit var adapter: BaseInterface<*>
+    private lateinit var recyclerView: RecyclerView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
+        recyclerView = rootView.findViewById(R.id.recyclerview)
+        adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
         recyclerView.adapter = adapter.concatAdapter
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(adapter)
@@ -71,6 +73,13 @@ class AdapterFragment : BaseFragment(null) {
             R.id.playlists -> PlaylistAdapter(m, v.playlistList)
             -1, null -> throw IllegalArgumentException("unset ID value")
             else -> throw IllegalArgumentException("invalid ID value")
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adapter.concatAdapter.adapters.forEach {
+            it.onDetachedFromRecyclerView(recyclerView)
         }
     }
 
