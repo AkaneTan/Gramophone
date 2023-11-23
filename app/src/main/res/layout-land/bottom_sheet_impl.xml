@@ -171,7 +171,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp"
             app:cardCornerRadius="16dp"
-            app:cardBackgroundColor="@android:color/transparent">
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
+            style="?materialCardViewElevatedStyle">
 
             <ImageView
                 android:id="@+id/full_sheet_cover"
@@ -507,6 +508,8 @@
             android:clipToPadding="false"
             android:paddingTop="42dp"
             android:paddingBottom="42dp"
+            android:elevation="4dp"
+            android:outlineProvider="none"
             app:layout_constraintStart_toStartOf="@id/cover_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -517,6 +520,8 @@
             android:id="@+id/gradient_view_up"
             android:layout_width="match_parent"
             android:layout_height="42dp"
+            android:elevation="4dp"
+            android:outlineProvider="none"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="@id/lyric_frame" />
 
@@ -524,6 +529,8 @@
             android:id="@+id/gradient_view_down"
             android:layout_width="match_parent"
             android:layout_height="42dp"
+            android:elevation="4dp"
+            android:outlineProvider="none"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/lyric_frame" />
 
