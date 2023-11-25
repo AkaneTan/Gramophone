@@ -120,6 +120,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val rootContainer = findViewById<View>(R.id.rootContainer)
         val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
+        // Initialize layouts.
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.navigation_view)
 
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
@@ -130,6 +133,8 @@ class MainActivity : AppCompatActivity() {
             this
         )
         coordinatorLayout.setBackgroundColor(processColor)
+        drawerLayout.setBackgroundColor(processColor)
+        navigationView.setBackgroundColor(processColor)
 
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -174,9 +179,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Initialize layouts.
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.navigation_view)
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
 
         ViewCompat.setOnApplyWindowInsetsListener(navigationView) { view, insets ->
