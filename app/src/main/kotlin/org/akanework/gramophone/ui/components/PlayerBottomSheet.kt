@@ -33,6 +33,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -376,6 +377,9 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetTimerButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             val picker =
                 MaterialTimePicker
                     .Builder()
@@ -395,6 +399,9 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetLoopButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             instance.repeatMode = when (instance.repeatMode) {
                 Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
                 Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
@@ -414,6 +421,9 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetPlaylistButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             val playlistBottomSheet = BottomSheetDialog(context)
             playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
             val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerview)!!
@@ -435,18 +445,33 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetPreviewControllerButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             instance.playOrPause()
         }
         bottomSheetFullControllerButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             instance.playOrPause()
         }
         bottomSheetPreviewNextButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             instance.seekToNextMediaItem()
         }
         bottomSheetFullPreviousButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             instance.seekToPreviousMediaItem()
         }
         bottomSheetFullNextButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             instance.seekToNextMediaItem()
         }
         bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
@@ -467,10 +492,16 @@ class PlayerBottomSheet private constructor(
         bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
 
         bottomSheetFullSlideUpButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         bottomSheetLyricButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             bottomSheetFullLyricRecyclerView.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricCloseButton.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricGradientViewUp.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
@@ -478,11 +509,20 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetFullLyricCloseButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
             it.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetLyricButton.isChecked = false
+        }
+
+        bottomSheetShuffleButton.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            }
         }
 
         bottomSheetFullLyricRecyclerView.layoutManager =
@@ -1463,7 +1503,7 @@ class PlayerBottomSheet private constructor(
         )
 
         var currentBoldPos = -1
-        var currentTranslationPos = -1
+        private var currentTranslationPos = -1
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -1477,6 +1517,9 @@ class PlayerBottomSheet private constructor(
 
         override fun onBindViewHolder(holder: LyricAdapter.ViewHolder, position: Int) {
             holder.lyricCard.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                }
                 val instance = activity.getPlayer()
                 if (!instance.isPlaying) {
                     instance.play()
@@ -1599,6 +1642,9 @@ class PlayerBottomSheet private constructor(
                 .placeholder(R.drawable.ic_default_cover)
                 .into(holder.songCover)
             holder.closeButton.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                }
                 val instance = activity.getPlayer()
                 val pos = holder.bindingAdapterPosition
                 playlist.removeAt(pos)
@@ -1606,6 +1652,9 @@ class PlayerBottomSheet private constructor(
                 instance.removeMediaItem(pos)
             }
             holder.itemView.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                }
                 val instance = activity.getPlayer()
                 instance.seekToDefaultPosition(holder.absoluteAdapterPosition)
             }
