@@ -21,6 +21,7 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -346,6 +347,7 @@ object MediaStoreUtils {
                                     .setArtworkUri(imgUri)
                                     .setTrackNumber(trackNumber)
                                     .setDiscNumber(discNumber)
+                                    .setGenre(genre)
                                     .setRecordingDay(dateTakenParsed?.first?.first)
                                     .setRecordingMonth(dateTakenParsed?.first?.second)
                                     .setRecordingYear(dateTakenParsed?.second)
@@ -359,6 +361,7 @@ object MediaStoreUtils {
                                         putString("Author", author)
                                         putLong("AddDate", addDate)
                                         putLong("Duration", duration)
+                                        putString("MimeType", mimeType)
                                         cdTrackNumber?.toIntOrNull()
                                             ?.let { it1 -> putInt("CdTrackNumber", it1) }
                                     })

@@ -17,17 +17,24 @@
 
 package org.akanework.gramophone.ui.adapters
 
+import android.content.res.ColorStateList
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDivider
 import com.google.android.material.textfield.TextInputEditText
@@ -38,6 +45,8 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.getUri
+import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
+import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
@@ -172,60 +181,46 @@ class SongAdapter(
                 }
 
                 R.id.details -> {
+                    val processColor = ColorUtils.getColor(
+                        MaterialColors.getColor(
+                            context,
+                            android.R.attr.colorBackground,
+                            -1
+                        ),
+                        ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
+                        context
+                    )
+                    val drawable = GradientDrawable()
+                    drawable.color =
+                        ColorStateList.valueOf(processColor)
+                    drawable.cornerRadius = 64f
                     val rootView = MaterialAlertDialogBuilder(mainActivity)
-                        .setTitle(R.string.dialog_information)
                         .setView(R.layout.dialog_info_song)
+                        .setBackground(drawable)
                         .setNeutralButton(R.string.dismiss) { dialog, _ ->
                             dialog.dismiss()
                         }
                         .show()
-                    val topDivider = rootView.findViewById<MaterialDivider>(R.id.top_divider)
-                    val bottomDivider = rootView.findViewById<MaterialDivider>(R.id.bottom_divider)
-                    val nestedScrollView = rootView.findViewById<NestedScrollView>(R.id.nestedscrollview)
-                    rootView.findViewById<TextInputEditText>(R.id.title)!!
-                        .setText(item.mediaMetadata.title)
-                    rootView.findViewById<TextInputEditText>(R.id.artist)!!
-                        .setText(item.mediaMetadata.artist)
-                    rootView.findViewById<TextInputEditText>(R.id.album)!!
-                        .setText(item.mediaMetadata.albumTitle)
-                    rootView.findViewById<TextInputEditText>(R.id.album_artist)!!
-                        .setText(item.mediaMetadata.albumArtist)
-                    rootView.findViewById<TextInputEditText>(R.id.track_number)!!
-                        .setText(item.mediaMetadata.trackNumber.toString())
-                    rootView.findViewById<TextInputEditText>(R.id.disc_number)!!
-                        .setText(item.mediaMetadata.discNumber.toString())
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        nestedScrollView!!.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-                            val bottomDiff: Int =
-                                nestedScrollView.getChildAt(
-                                    nestedScrollView.childCount - 1
-                                ).bottom - (
-                                    nestedScrollView.height
-                                        + scrollY
-                                )
-                            if (bottomDiff == 0) {
-                                bottomDivider!!.visibility = View.GONE
-                                topDivider!!.visibility = View.VISIBLE
-                            }
-
-                            if (scrollY == 0) {
-                                bottomDivider!!.visibility = View.VISIBLE
-                                topDivider!!.visibility = View.GONE
-                            }
-                        }
+                    rootView.findViewById<TextView>(R.id.title)!!.text = item.mediaMetadata.title
+                    rootView.findViewById<TextView>(R.id.artist)!!.text = item.mediaMetadata.artist
+                    rootView.findViewById<TextView>(R.id.album)!!.text = item.mediaMetadata.albumTitle
+                    if (!item.mediaMetadata.albumArtist.isNullOrBlank()) {
+                        rootView.findViewById<TextView>(R.id.album_artist)!!.text =
+                            item.mediaMetadata.albumArtist
                     }
+                    rootView.findViewById<TextView>(R.id.track_number)!!.text = item.mediaMetadata.trackNumber.toString()
+                    rootView.findViewById<TextView>(R.id.disc_number)!!.text = item.mediaMetadata.discNumber.toString()
                     val year = item.mediaMetadata.releaseYear?.toString()
                     if (year != null) {
-                        rootView.findViewById<TextInputEditText>(R.id.year)!!
-                            .setText(year)
+                        rootView.findViewById<TextView>(R.id.year)!!.text = year
                     }
                     val genre = item.mediaMetadata.genre?.toString()
                     if (genre != null) {
-                        rootView.findViewById<TextInputEditText>(R.id.genre)!!
-                            .setText(genre)
+                        rootView.findViewById<TextView>(R.id.genre)!!.text = genre
                     }
-                    rootView.findViewById<TextInputEditText>(R.id.path)!!
-                        .setText(item.getUri().toString())
+                    rootView.findViewById<TextView>(R.id.path)!!.text = item.getUri().toString()
+                    rootView.findViewById<TextView>(R.id.mime)!!.text = item.mediaMetadata.extras!!.getString("MimeType")
+                    rootView.findViewById<TextView>(R.id.duration)!!.text = convertDurationToTimeStamp(item.mediaMetadata.extras!!.getLong("Duration"))
                     true
                 }
                 /*
