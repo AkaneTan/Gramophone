@@ -28,6 +28,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -102,7 +103,6 @@ class MainActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             window.attributes = params
         }
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentLifecycleCallbacks() {
@@ -115,6 +115,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }, false)
+
+        enableEdgeToEdge()
 
         // Set content Views.
         setContentView(R.layout.activity_main)
