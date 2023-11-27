@@ -1309,21 +1309,39 @@ class PlayerBottomSheet private constructor(
                     AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
                 val tag = audioFile.tag
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
+                Log.d("TAG", "LRC: $lyrics")
                 val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
                 if (lyrics != null && lyrics.isNotEmpty() &&
-                    bottomSheetFullLyricList != parsedLyrics &&
-                    parsedLyrics.isNotEmpty()
+                    parsedLyrics.isNotEmpty() &&
+                    bottomSheetFullLyricList != parsedLyrics
                 ) {
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.addAll(parsedLyrics)
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
-                } else if (parsedLyrics.isEmpty()) {
+                } else if (parsedLyrics.isEmpty() && lyrics.isEmpty()) {
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.add(
                         MediaStoreUtils.Lyric(
                             0,
                             context.getString(R.string.no_lyric_found)
+                        )
+                    )
+                    bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    resetToDefaultLyricPosition()
+                } else {
+                    Log.d("TAG", "HI")
+                    bottomSheetFullLyricList.clear()
+                    bottomSheetFullLyricList.add(
+                        MediaStoreUtils.Lyric(
+                            0,
+                            context.getString(R.string.no_synced_lyric_found)
+                        )
+                    )
+                    bottomSheetFullLyricList.add(
+                        MediaStoreUtils.Lyric(
+                            1,
+                            lyrics
                         )
                     )
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
