@@ -23,11 +23,13 @@ import android.content.res.Resources.getSystem
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 fun MediaController.playOrPause() {
@@ -107,3 +109,22 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
 val Int.dp: Int get() = (this / getSystem().displayMetrics.density).toInt()
 
 val Int.px: Int get() = (this * getSystem().displayMetrics.density).toInt()
+
+// Custom commands handling for client side
+const val SERVICE_SET_TIMER = "set_timer"
+const val SERVICE_QUERY_TIMER = "query_timer"
+
+fun MediaController.getTimer(): Int =
+    sendCustomCommand(
+        SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY),
+        Bundle.EMPTY
+    ).get().extras.getInt("duration")
+
+fun MediaController.hasTimer(): Boolean = getTimer() > 0
+fun MediaController.setTimer(value: Int) {
+    sendCustomCommand(
+        SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY).apply {
+            customExtras.putInt("duration", value)
+        }, Bundle.EMPTY
+    )
+}

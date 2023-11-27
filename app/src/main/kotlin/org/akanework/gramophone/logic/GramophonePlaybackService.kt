@@ -43,7 +43,6 @@ import androidx.media3.exoplayer.video.VideoRendererEventListener
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
-import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
@@ -344,24 +343,4 @@ class GramophonePlaybackService : MediaLibraryService(),
             stopSelf()
         }
     }
-}
-
-// Custom commands handling for client side
-
-private const val SERVICE_SET_TIMER = "set_timer"
-private const val SERVICE_QUERY_TIMER = "query_timer"
-
-fun MediaController.getTimer(): Int =
-    sendCustomCommand(
-        SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY),
-        Bundle.EMPTY
-    ).get().extras.getInt("duration")
-
-fun MediaController.hasTimer(): Boolean = getTimer() > 0
-fun MediaController.setTimer(value: Int) {
-    sendCustomCommand(
-        SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY).apply {
-            customExtras.putInt("duration", value)
-        }, Bundle.EMPTY
-    )
 }
