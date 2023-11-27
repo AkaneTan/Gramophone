@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="V27.Theme.Gramophone" parent="V23.Theme.Gramophone">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">@bool/statusBarContentLight</item>
+    </style>
+
+    <style name="Theme.Gramophone" parent="V27.Theme.Gramophone" />
+</resources>

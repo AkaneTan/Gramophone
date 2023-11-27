@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="V23.Theme.Gramophone" parent="Base.Theme.Gramophone">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">@bool/statusBarContentLight</item>
+    </style>
+
+    <style name="Theme.Gramophone" parent="V23.Theme.Gramophone" />
+
+</resources>
