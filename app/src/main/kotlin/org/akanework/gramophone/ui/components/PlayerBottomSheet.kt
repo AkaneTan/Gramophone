@@ -1311,7 +1311,8 @@ class PlayerBottomSheet private constructor(
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
                 val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
                 if (lyrics != null && lyrics.isNotEmpty() &&
-                    bottomSheetFullLyricList != parsedLyrics
+                    bottomSheetFullLyricList != parsedLyrics &&
+                    parsedLyrics.isNotEmpty()
                 ) {
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.addAll(parsedLyrics)
