@@ -1319,7 +1319,7 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullLyricList.addAll(parsedLyrics)
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
-                } else if (parsedLyrics.isEmpty() && lyrics.isEmpty()) {
+                } else if (parsedLyrics.isEmpty() && lyrics.isEmpty() && bottomSheetFullLyricList != parsedLyrics) {
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.add(
                         MediaStoreUtils.Lyric(
@@ -1329,7 +1329,7 @@ class PlayerBottomSheet private constructor(
                     )
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
-                } else {
+                } else if (bottomSheetFullLyricList != parsedLyrics) {
                     Log.d("TAG", "HI")
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.add(
