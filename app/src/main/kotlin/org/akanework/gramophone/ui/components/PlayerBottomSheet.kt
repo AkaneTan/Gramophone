@@ -330,12 +330,9 @@ class PlayerBottomSheet private constructor(
                 }
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 isUserTracking = true
                 progressDrawable.animate = false
-                if (Build.VERSION.SDK_INT >= 23) {
-                    seekBar.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                }
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
@@ -356,9 +353,6 @@ class PlayerBottomSheet private constructor(
 
             override fun onStartTrackingTouch(slider: Slider) {
                 isUserTracking = true
-                if (Build.VERSION.SDK_INT >= 23) {
-                    slider.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                }
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
