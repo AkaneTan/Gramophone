@@ -33,6 +33,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -48,9 +49,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
@@ -60,6 +58,9 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.CustomTarget
@@ -147,7 +148,6 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetFullSeekBar: SeekBar
     private val bottomSheetFullSlider: Slider
     private val bottomSheetFullCoverFrame: MaterialCardView
-    private val bottomSheetFullLyricCloseButton: MaterialButton
     private val bottomSheetFullLyricRecyclerView: RecyclerView
     private val bottomSheetFullLyricList: MutableList<MediaStoreUtils.Lyric> = mutableListOf()
     private val bottomSheetFullLyricAdapter: LyricAdapter = LyricAdapter(bottomSheetFullLyricList, activity)
@@ -241,7 +241,6 @@ class PlayerBottomSheet private constructor(
         bottomSheetFavoriteButton = findViewById(R.id.favor)
         bottomSheetPlaylistButton = findViewById(R.id.playlist)
         bottomSheetLyricButton = findViewById(R.id.lyrics)
-        bottomSheetFullLyricCloseButton = findViewById(R.id.close_lyrics)
         bottomSheetFullLyricRecyclerView = findViewById(R.id.lyric_frame)
         bottomSheetFullLyricGradientViewUp = findViewById(R.id.gradient_view_up)
         bottomSheetFullLyricGradientViewDown = findViewById(R.id.gradient_view_down)
@@ -503,20 +502,8 @@ class PlayerBottomSheet private constructor(
                 it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
             }
             bottomSheetFullLyricRecyclerView.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetFullLyricCloseButton.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricGradientViewUp.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
             bottomSheetFullLyricGradientViewDown.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
-        }
-
-        bottomSheetFullLyricCloseButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23) {
-                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-            }
-            it.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetLyricButton.isChecked = false
         }
 
         bottomSheetShuffleButton.setOnClickListener {
@@ -674,21 +661,70 @@ class PlayerBottomSheet private constructor(
             standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
             bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
-                    standardBottomSheetBehavior!!.startBackProgress(backEvent)
+                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
+                    if (bottomSheetFullLyricRecyclerView.visibility ==
+                        View.VISIBLE) {
+                        bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetLyricButton.isChecked = false
+                    } else {
+                        standardBottomSheetBehavior!!.startBackProgress(backEvent)
+                    }
                 }
 
                 override fun handleOnBackProgressed(backEvent: BackEventCompat) {
-                    standardBottomSheetBehavior!!.updateBackProgress(backEvent)
+                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
+                    if (bottomSheetFullLyricRecyclerView.visibility ==
+                        View.VISIBLE) {
+                        bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetLyricButton.isChecked = false
+                    } else {
+                        standardBottomSheetBehavior!!.updateBackProgress(backEvent)
+                    }
                 }
 
                 override fun handleOnBackPressed() {
+                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
+                    if (bottomSheetFullLyricRecyclerView.visibility ==
+                            View.VISIBLE) {
+                        bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetLyricButton.isChecked = false
+                    } else {
                     standardBottomSheetBehavior!!.handleBackInvoked()
+                    }
                 }
 
                 override fun handleOnBackCancelled() {
-                    standardBottomSheetBehavior!!.cancelBackProgress()
+                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
+                    if (bottomSheetFullLyricRecyclerView.visibility ==
+                        View.VISIBLE) {
+                        bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                        bottomSheetLyricButton.isChecked = false
+                    } else {
+                        standardBottomSheetBehavior!!.cancelBackProgress()
+                    }
                 }
             }
+            /*
+            lyricSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
+                override fun handleOnBackPressed() {
+                    bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                    bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                    bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
+                    bottomSheetLyricButton.isChecked = false
+                    activity.onBackPressedDispatcher.addCallback(activity, bottomSheetBackCallback!!)
+                    bottomSheetBackCallback!!.isEnabled = true
+                }
+            }
+
+             */
             activity.onBackPressedDispatcher.addCallback(activity, bottomSheetBackCallback!!)
             standardBottomSheetBehavior!!.addBottomSheetCallback(bottomSheetCallback)
             lifecycleOwner.lifecycle.addObserver(this)

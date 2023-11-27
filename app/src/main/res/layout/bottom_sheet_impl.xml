@@ -136,26 +136,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/close_lyrics"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginEnd="22dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/rp_buttons"
-            android:visibility="gone"
-            app:icon="@drawable/ic_close"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="24dp"
-            app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintBottom_toTopOf="@id/cover_frame"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:visibility="visible" />
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cover_frame"
             android:layout_width="0dp"
@@ -498,16 +478,13 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/lyric_frame"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="match_parent"
             android:background="?attr/colorSurface"
             android:visibility="gone"
             android:scrollbars="none"
             android:clipToPadding="false"
             android:paddingTop="42dp"
             android:paddingBottom="42dp"
-            app:layout_constraintTop_toBottomOf="@id/slide_down"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:listitem="@layout/lyrics"/>
 
         <View
