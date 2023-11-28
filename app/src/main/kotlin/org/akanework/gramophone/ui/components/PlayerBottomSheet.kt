@@ -1312,6 +1312,7 @@ class PlayerBottomSheet private constructor(
                     parsedLyrics.isNotEmpty()
                 ) {
                     bottomSheetFullLyricList.clear()
+                    bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
                     bottomSheetFullLyricList.addAll(parsedLyrics)
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
