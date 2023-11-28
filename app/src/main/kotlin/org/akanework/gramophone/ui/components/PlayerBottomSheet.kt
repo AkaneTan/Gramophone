@@ -33,7 +33,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.Log
+import android.util.DisplayMetrics
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -88,6 +88,7 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
+import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
 import org.akanework.gramophone.logic.getTimer
@@ -610,15 +611,15 @@ class PlayerBottomSheet private constructor(
                 boxEnd: Int,
                 snapPreference: Int
             ): Int {
-                return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (128).px
+                return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (context.resources.displayMetrics.heightPixels / 3).dp
             }
 
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
 
-            override fun calculateTimeForScrolling(dx: Int): Int {
-                return 300
+            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                return 150f / displayMetrics.densityDpi
             }
         }
 
@@ -1549,57 +1550,36 @@ class PlayerBottomSheet private constructor(
             )
 
         override fun onBindViewHolder(holder: LyricAdapter.ViewHolder, position: Int) {
-            holder.lyricCard.setOnClickListener {
-                if (Build.VERSION.SDK_INT >= 23) {
-                    it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+            val lyric = lyricList[position]
+
+            with(holder.lyricCard) {
+                setOnClickListener {
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    }
+                    val instance = activity.getPlayer()
+                    if (!instance.isPlaying) {
+                        instance.play()
+                    }
+                    instance.seekTo(lyric.timeStamp)
                 }
-                val instance = activity.getPlayer()
-                if (!instance.isPlaying) {
-                    instance.play()
-                }
-                activity.getPlayer().seekTo(
-                    lyricList[position].timeStamp
-                )
             }
-            if (lyricList[position].content.isNotEmpty()) {
-                holder.lyricTextView.visibility = View.VISIBLE
-                holder.lyricTextView.text =
-                    lyricList[position].content
-            } else {
-                holder.lyricTextView.visibility = View.GONE
-            }
-            if (lyricList[position].isTranslation) {
-                holder.lyricTextView.textSize =
-                    20f
-                holder.lyricTextView.setPadding(
-                    (10).px,
-                    (2).px,
-                    (10).px,
-                    (18).px
-                )
-            } else {
-                holder.lyricTextView.textSize =
-                    28f
-                holder.lyricTextView.setPadding(
-                    (10).px,
-                    (18).px,
-                    (10).px,
-                    if (position + 1 < lyricList.size &&
-                        lyricList[position + 1].isTranslation) (2).px else (18).px
-                )
-            }
-            if (position == currentBoldPos || position == currentTranslationPos) {
-                holder.lyricTextView.typeface = Typeface.defaultFromStyle(
-                    Typeface.BOLD
-                )
-                holder.lyricTextView.setTextColor(
-                    highlightTextColor
-                )
-            } else {
-                holder.lyricTextView.typeface = Typeface.DEFAULT
-                holder.lyricTextView.setTextColor(
-                    defaultTextColor
-                )
+
+            with(holder.lyricTextView) {
+                visibility = if (lyric.content.isNotEmpty()) View.VISIBLE else View.GONE
+                text = lyric.content
+
+                val textSize = if (lyric.isTranslation) 20f else 28f
+                val paddingTop = if (lyric.isTranslation) 2.px else 18.px
+                val paddingBottom = if (position + 1 < lyricList.size &&
+                    lyricList[position + 1].isTranslation) 2.px else 18.px
+
+                this.textSize = textSize
+                setPadding(10.px, paddingTop, 10.px, paddingBottom)
+
+                val isBold = position == currentBoldPos || position == currentTranslationPos
+                typeface = if (isBold) Typeface.defaultFromStyle(Typeface.BOLD) else Typeface.DEFAULT
+                setTextColor(if (isBold) highlightTextColor else defaultTextColor)
             }
         }
 
