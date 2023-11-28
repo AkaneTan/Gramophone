@@ -130,7 +130,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -190,7 +191,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -251,54 +253,61 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp">
+                android:baselineAligned="false">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.Material3.CardView.Filled"
-                    app:cardBackgroundColor="?attr/colorPrimaryContainer"
-                    app:cardCornerRadius="128dp">
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dialog_mime"
+                        android:textFontWeight="500"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorAccent"
+                        tools:targetApi="p" />
 
                     <TextView
                         android:id="@+id/mime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp"
-                        android:textFontWeight="600"
-                        tools:text="MimeType"
-                        tools:targetApi="p" />
+                        android:layout_marginTop="4dp"
+                        android:textSize="22sp"
+                        android:textIsSelectable="true"
+                        android:text="@string/unknown_year"/>
 
-                </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    style="@style/Widget.Material3.CardView.Filled"
-                    app:cardBackgroundColor="?attr/colorPrimaryContainer"
-                    app:cardCornerRadius="128dp">
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dialog_duration"
+                        android:textFontWeight="500"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorAccent"
+                        tools:targetApi="p" />
 
                     <TextView
                         android:id="@+id/duration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        android:textFontWeight="600"
-                        tools:text="3:07"
-                        tools:targetApi="p" />
+                        android:layout_marginTop="4dp"
+                        android:textSize="22sp"
+                        android:textIsSelectable="true"
+                        android:text="@string/unknown_genre"/>
 
-                </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
             </LinearLayout>
 
