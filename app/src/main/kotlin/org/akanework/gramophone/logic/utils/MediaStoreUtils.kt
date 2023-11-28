@@ -36,6 +36,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import java.time.Instant
 import java.time.ZoneId
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -417,8 +418,6 @@ object MediaStoreUtils {
             Date(index.toLong(), cat?.toString(), songs)
         }.toMutableList()
 
-        Log.d("TAG", "${shallowRoot.folderList}")
-
         return LibraryStoreClass(
             songs,
             albumList,
@@ -588,21 +587,22 @@ object MediaStoreUtils {
     fun parseLrcString(lrcContent: String): MutableList<Lyric> {
         val linesRegex = "\\[(\\d{2}:\\d{2}\\.\\d{2})](.*)".toRegex()
         val list = mutableListOf<Lyric>()
-        var lastTimeStamp: Long? = null
+        val measureTime = measureTimeMillis {
 
-        lrcContent.lines().forEach { line ->
-            val matchResult = linesRegex.find(line)
-            if (matchResult != null) {
-                val startTime = parseTime(matchResult.groupValues[1])
-                val lyricLine = matchResult.groupValues[2]
-
-                val isTranslation = lastTimeStamp != null && lastTimeStamp == startTime
-
-                list.add(Lyric(startTime, lyricLine, isTranslation))
-                lastTimeStamp = startTime
+            lrcContent.lines().forEach { line ->
+                linesRegex.find(line)?.let { matchResult ->
+                    val startTime = parseTime(matchResult.groupValues[1])
+                    val lyricLine = matchResult.groupValues[2]
+                    val insertIndex = list.binarySearch { it.timeStamp.compareTo(startTime) }
+                    if (insertIndex < 0) {
+                        list.add(Lyric(startTime, lyricLine, false))
+                    } else {
+                        list.add(insertIndex + 1, Lyric(startTime, lyricLine, true))
+                    }
+                }
             }
         }
-
+        Log.d("TAG", "$measureTime")
         return list
     }
 
