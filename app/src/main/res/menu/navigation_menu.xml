@@ -35,6 +35,12 @@
             <item
                 android:id="@+id/folders"
                 android:checkable="true"
+                android:icon="@drawable/ic_hard_drive"
+                android:title="@string/filesystem"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/detailed_folders"
+                android:checkable="true"
                 android:icon="@drawable/folder_art"
                 android:title="@string/folders"
                 app:showAsAction="ifRoom" />

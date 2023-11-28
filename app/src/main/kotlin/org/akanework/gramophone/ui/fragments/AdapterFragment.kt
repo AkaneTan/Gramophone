@@ -32,6 +32,7 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
 import org.akanework.gramophone.ui.adapters.DateAdapter
+import org.akanework.gramophone.ui.adapters.DetailedFolderAdapter
 import org.akanework.gramophone.ui.adapters.FolderAdapter
 import org.akanework.gramophone.ui.adapters.GenreAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistAdapter
@@ -70,6 +71,7 @@ class AdapterFragment : BaseFragment(null) {
             R.id.genres -> GenreAdapter(m, v.genreItemList)
             R.id.dates -> DateAdapter(m, v.dateItemList)
             R.id.folders -> FolderAdapter(m, v.folderStructure)
+            R.id.detailed_folders -> DetailedFolderAdapter(m, v.shallowFolderStructure)
             R.id.playlists -> PlaylistAdapter(m, v.playlistList)
             -1, null -> throw IllegalArgumentException("unset ID value")
             else -> throw IllegalArgumentException("invalid ID value")

@@ -21,7 +21,6 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -141,7 +140,8 @@ object MediaStoreUtils {
         val genreList: MutableList<Genre>,
         val dateList: MutableList<Date>,
         val playlistList: MutableList<Playlist>,
-        val folderStructure: FileNode
+        val folderStructure: FileNode,
+        val shallowFolder: FileNode
     )
 
     data class FileNode(
@@ -152,13 +152,10 @@ object MediaStoreUtils {
 
     private fun handleMediaItem(mediaItem: MediaItem, path: String, rootNode: FileNode) {
         val rootFolderIndex = path.indexOf('/', 1)
-
         if (rootFolderIndex != -1) {
             val folderName = path.substring(1, rootFolderIndex)
             val remainingPath = path.substring(rootFolderIndex)
-
             val existingFolder = rootNode.folderList.find { it.folderName == folderName }
-
             if (existingFolder != null) {
                 handleMediaItem(mediaItem, remainingPath, existingFolder)
             } else {
@@ -168,6 +165,18 @@ object MediaStoreUtils {
             }
         } else {
             rootNode.songList.add(mediaItem)
+        }
+    }
+
+    private fun handleShallowMediaItem(mediaItem: MediaItem, path: String, shallowFolder: FileNode) {
+        val lastFolderName = path.substringBeforeLast("/").substringAfterLast("/")
+        val existingFolder = shallowFolder.folderList.find { it.folderName == lastFolderName }
+        if (existingFolder == null) {
+            val newFolder = FileNode(folderName = lastFolderName, mutableListOf(), mutableListOf())
+            newFolder.songList.add(mediaItem)
+            shallowFolder.folderList.add(newFolder)
+        } else {
+            existingFolder.songList.add(mediaItem)
         }
     }
 
@@ -223,6 +232,7 @@ object MediaStoreUtils {
             context.resources.getInteger(R.integer.filter_default_sec)
         )
         val root = FileNode(folderName = "storage", mutableListOf(), mutableListOf())
+        val shallowRoot = FileNode(folderName = "shallow", mutableListOf(), mutableListOf())
 
         // Initialize list and maps.
         val songs = mutableListOf<MediaItem>()
@@ -321,7 +331,6 @@ object MediaStoreUtils {
                 if (trackNumber >= 1000) {
                     discNumber = trackNumber / 1000
                     trackNumber %= 1000
-                    Log.d("TAG", "discNumber: $discNumber, trackNumber: $trackNumber")
                 }
 
                 if (duration >= limitValue * 1000) {
@@ -377,6 +386,7 @@ object MediaStoreUtils {
                     genreMap.getOrPut(Pair(genreId, genre)) { mutableListOf() }.add(songs.last())
                     dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
                     handleMediaItem(songs.last(), path.toString(), root)
+                    handleShallowMediaItem(songs.last(), path.toString(), shallowRoot)
                 }
             }
         }
@@ -407,6 +417,8 @@ object MediaStoreUtils {
             Date(index.toLong(), cat?.toString(), songs)
         }.toMutableList()
 
+        Log.d("TAG", "${shallowRoot.folderList}")
+
         return LibraryStoreClass(
             songs,
             albumList,
@@ -415,7 +427,8 @@ object MediaStoreUtils {
             genreList,
             dateList,
             getPlaylists(context, songs),
-            root
+            root,
+            shallowRoot
         )
     }
 
@@ -567,6 +580,7 @@ object MediaStoreUtils {
             libraryViewModel.dateItemList.value = pairObject.dateList
             libraryViewModel.playlistList.value = pairObject.playlistList
             libraryViewModel.folderStructure.value = pairObject.folderStructure
+            libraryViewModel.shallowFolderStructure.value = pairObject.shallowFolder
         }
     }
 

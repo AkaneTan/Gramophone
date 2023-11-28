@@ -85,7 +85,7 @@ class ViewPagerFragment : BaseFragment(true) {
             tab.text = getString(adapter.getLabelResId(position))
         }.attach()
 
-        val lastTab = tabLayout.getTabAt(6)!!.view
+        val lastTab = tabLayout.getTabAt(7)!!.view
         val firstTab = tabLayout.getTabAt(0)!!.view
         val lastParam = lastTab.layoutParams as ViewGroup.MarginLayoutParams
         val firstParam = firstTab.layoutParams as ViewGroup.MarginLayoutParams

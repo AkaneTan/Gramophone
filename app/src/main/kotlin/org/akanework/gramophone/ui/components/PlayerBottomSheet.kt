@@ -661,7 +661,6 @@ class PlayerBottomSheet private constructor(
             standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
             bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
-                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                         View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
@@ -674,7 +673,6 @@ class PlayerBottomSheet private constructor(
                 }
 
                 override fun handleOnBackProgressed(backEvent: BackEventCompat) {
-                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                         View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
@@ -687,7 +685,6 @@ class PlayerBottomSheet private constructor(
                 }
 
                 override fun handleOnBackPressed() {
-                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                             View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
@@ -700,7 +697,6 @@ class PlayerBottomSheet private constructor(
                 }
 
                 override fun handleOnBackCancelled() {
-                    Log.d("TAG", "Hi, ${bottomSheetFullLyricRecyclerView.visibility == View.VISIBLE}")
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                         View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)

@@ -50,4 +50,8 @@ class LibraryViewModel : ViewModel() {
         MutableLiveData(
             MediaStoreUtils.FileNode("storage", mutableListOf(), mutableListOf())
         )
+    val shallowFolderStructure: MutableLiveData<MediaStoreUtils.FileNode> =
+        MutableLiveData(
+            MediaStoreUtils.FileNode("shallowFolder", mutableListOf(), mutableListOf())
+        )
 }

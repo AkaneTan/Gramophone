@@ -41,7 +41,8 @@ class ViewPager2Adapter(
             R.id.genres,
             R.id.dates,
             R.id.folders,
-            R.id.playlists
+            R.id.detailed_folders,
+            R.id.playlists,
         )
     }
 
@@ -52,7 +53,8 @@ class ViewPager2Adapter(
             R.id.artists -> R.string.category_artists
             R.id.genres -> R.string.category_genres
             R.id.dates -> R.string.category_dates
-            R.id.folders -> R.string.folders
+            R.id.folders -> R.string.filesystem
+            R.id.detailed_folders -> R.string.folders
             R.id.playlists -> R.string.category_playlists
             else -> throw IllegalArgumentException("Invalid position: $position")
         }
