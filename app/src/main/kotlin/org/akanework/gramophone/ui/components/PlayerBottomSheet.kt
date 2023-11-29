@@ -1342,7 +1342,7 @@ class PlayerBottomSheet private constructor(
                                 context.getString(R.string.no_lyric_found)
                             )
                         )
-                    } else {
+                    } else if (parsedLyrics != bottomSheetFullLyricList) {
                         bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
                         bottomSheetFullLyricList.addAll(parsedLyrics)
                     }
