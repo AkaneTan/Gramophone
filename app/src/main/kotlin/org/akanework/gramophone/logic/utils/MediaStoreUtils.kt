@@ -602,7 +602,6 @@ object MediaStoreUtils {
                 }
             }
         }
-        Log.d("TAG", "$measureTime")
         return list
     }
 

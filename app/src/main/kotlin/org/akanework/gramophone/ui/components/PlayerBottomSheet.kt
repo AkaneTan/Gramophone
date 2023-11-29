@@ -34,6 +34,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -108,6 +109,7 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.system.measureTimeMillis
 
 
 class PlayerBottomSheet private constructor(
@@ -1235,7 +1237,7 @@ class PlayerBottomSheet private constructor(
                 .load(mediaItem?.mediaMetadata?.artworkUri)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(
-                    object : CustomTarget<Drawable>(){
+                    object : CustomTarget<Drawable>() {
                         override fun onResourceReady(
                             resource: Drawable,
                             transition: Transition<in Drawable>?
@@ -1277,7 +1279,8 @@ class PlayerBottomSheet private constructor(
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
             bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title)
             bottomSheetFullSubtitle.setTextAnimation(
-                mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist))
+                mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
+            )
             bottomSheetFullDuration.text =
                 mediaItem?.mediaMetadata?.extras?.getLong("Duration")
                     ?.let { CalculationUtils.convertDurationToTimeStamp(it) }
@@ -1296,7 +1299,8 @@ class PlayerBottomSheet private constructor(
             }
 
             if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
-                    .songList.contains(instance.currentMediaItem)) {
+                    .songList.contains(instance.currentMediaItem)
+            ) {
                 // TODO
             } else {
                 // TODO
@@ -1306,7 +1310,7 @@ class PlayerBottomSheet private constructor(
                     AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
                 val tag = audioFile.tag
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
-                val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
+                var parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
                 if (lyrics != null && lyrics.isNotEmpty() &&
                     bottomSheetFullLyricList != parsedLyrics &&
                     parsedLyrics.isNotEmpty()
@@ -1317,13 +1321,31 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
                 } else if (parsedLyrics.isEmpty()) {
-                    bottomSheetFullLyricList.clear()
-                    bottomSheetFullLyricList.add(
-                        MediaStoreUtils.Lyric(
-                            0,
-                            context.getString(R.string.no_lyric_found)
+                    try {
+                        val lrcFile = File(
+                            instance.currentMediaItem!!.getUri().toString()
+                                .substringBeforeLast('.') + ".lrc"
                         )
-                    )
+                        val stringBuilder = StringBuilder()
+                        lrcFile.forEachLine {
+                            stringBuilder.append(it).append("\n")
+                        }
+                        parsedLyrics = MediaStoreUtils.parseLrcString(stringBuilder.toString())
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    bottomSheetFullLyricList.clear()
+                    if (parsedLyrics.isEmpty()) {
+                        bottomSheetFullLyricList.add(
+                            MediaStoreUtils.Lyric(
+                                0,
+                                context.getString(R.string.no_lyric_found)
+                            )
+                        )
+                    } else {
+                        bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
+                        bottomSheetFullLyricList.addAll(parsedLyrics)
+                    }
                     bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
                 }
