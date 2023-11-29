@@ -910,8 +910,8 @@ class PlayerBottomSheet private constructor(
                 )
                 bottomSheetFullLyricAdapter.updateTextColor(
                     ColorUtils.getColor(
-                        colorPrimary,
-                        ColorUtils.ColorType.COLOR_PRIMARY_FAINTED,
+                        colorSecondaryContainerFinalColor,
+                        ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
                         context
                     ),
                     colorPrimary
@@ -1155,8 +1155,8 @@ class PlayerBottomSheet private constructor(
                     )
                     bottomSheetFullLyricAdapter.updateTextColor(
                         ColorUtils.getColor(
-                            colorPrimary,
-                            ColorUtils.ColorType.COLOR_PRIMARY_FAINTED,
+                            colorSecondaryContainerFinalColor,
+                            ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
                             context
                         ),
                         colorPrimary

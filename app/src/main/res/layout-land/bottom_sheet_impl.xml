@@ -151,7 +151,7 @@
             app:layout_constraintStart_toEndOf="@id/slide_down"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="22dp"
             app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
             <ImageView
