@@ -20,6 +20,8 @@ package org.akanework.gramophone.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -267,7 +269,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.about -> {
+                    val drawable = GradientDrawable()
+                    drawable.color =
+                        ColorStateList.valueOf(processColor)
+                    drawable.cornerRadius = 64f
                     val rootView = MaterialAlertDialogBuilder(this)
+                        .setBackground(drawable)
                         .setView(R.layout.dialog_about)
                         .show()
                     val versionTextView = rootView.findViewById<TextView>(R.id.version)!!
