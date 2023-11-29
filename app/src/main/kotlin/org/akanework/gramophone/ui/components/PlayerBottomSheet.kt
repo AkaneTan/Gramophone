@@ -1350,14 +1350,28 @@ class PlayerBottomSheet private constructor(
                     resetToDefaultLyricPosition()
                 }
             } catch (e: Exception) {
-                bottomSheetFullLyricList.clear()
-                bottomSheetFullLyricList.add(
-                    MediaStoreUtils.Lyric(
-                        0,
-                        context.getString(R.string.music_format_not_supported)
+                var parsedLyrics = mutableListOf(MediaStoreUtils.Lyric(
+                    0,
+                    context.getString(R.string.music_format_not_supported)
+                ))
+                try {
+                    val lrcFile = File(
+                        instance.currentMediaItem!!.getUri().toString()
+                            .substringBeforeLast('.') + ".lrc"
                     )
-                )
-                bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    val stringBuilder = StringBuilder()
+                    lrcFile.forEachLine {
+                        stringBuilder.append(it).append("\n")
+                    }
+                    val rawLrc = MediaStoreUtils.parseLrcString(stringBuilder.toString())
+                    if (rawLrc.isNotEmpty()) {
+                        parsedLyrics = rawLrc
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                bottomSheetFullLyricList.clear()
+                bottomSheetFullLyricList.addAll(parsedLyrics)
                 resetToDefaultLyricPosition()
             }
         }
