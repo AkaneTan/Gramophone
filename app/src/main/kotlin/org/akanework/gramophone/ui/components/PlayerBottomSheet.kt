@@ -118,7 +118,7 @@ class PlayerBottomSheet private constructor(
             : this(context, attributeSet, 0, 0)
 
     companion object {
-        const val SLIDER_UPDATE_INTERVAL: Long = 200
+        const val SLIDER_UPDATE_INTERVAL: Long = 100
         const val BACKGROUND_COLOR_TRANSITION_SEC: Long = 300
         const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 150
         const val LYRIC_FADE_TRANSITION_SEC: Long = 125
@@ -622,8 +622,8 @@ class PlayerBottomSheet private constructor(
                 return SNAP_TO_START
             }
 
-            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                return 150f / displayMetrics.densityDpi
+            override fun calculateTimeForDeceleration(dx: Int): Int {
+                return 300
             }
         }
 
