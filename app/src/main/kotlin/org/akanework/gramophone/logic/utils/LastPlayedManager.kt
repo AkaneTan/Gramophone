@@ -131,7 +131,13 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
                     val composer = b.readStringSafe()
                     val genre = b.readStringSafe()
                     val recordingDay = b.readInt()
-                    val recordingMonth = b.readInt()
+                    val recordingMonth =
+                        try {
+                            b.readInt()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            0
+                        }
                     val artistId = b.readLong()
                     val albumId = b.readLong()
                     val genreId = b.readLong()
