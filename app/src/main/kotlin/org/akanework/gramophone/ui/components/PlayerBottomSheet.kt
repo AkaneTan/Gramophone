@@ -120,6 +120,7 @@ class PlayerBottomSheet private constructor(
             : this(context, attributeSet, 0, 0)
 
     companion object {
+        const val SLIDER_UPDATE_INTERVAL: Long = 200
         const val BACKGROUND_COLOR_TRANSITION_SEC: Long = 300
         const val FOREGROUND_COLOR_TRANSITION_SEC: Long = 150
         const val LYRIC_FADE_TRANSITION_SEC: Long = 125
@@ -641,7 +642,7 @@ class PlayerBottomSheet private constructor(
                 updateLyric(duration)
             }
             if (instance.isPlaying) {
-                handler.postDelayed(this, instance.currentPosition % 1000)
+                handler.postDelayed(this, SLIDER_UPDATE_INTERVAL)
             } else {
                 runnableRunning = false
             }
@@ -1503,7 +1504,7 @@ class PlayerBottomSheet private constructor(
                 progressDrawable.animate = true
             }
             if (!runnableRunning) {
-                handler.postDelayed(positionRunnable, instance.currentPosition % 1000)
+                handler.postDelayed(positionRunnable, SLIDER_UPDATE_INTERVAL)
                 runnableRunning = true
             }
         } else if (instance.playbackState != Player.STATE_BUFFERING) {
