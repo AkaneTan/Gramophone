@@ -150,7 +150,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp"
-            app:cardCornerRadius="28dp"
+            app:cardCornerRadius="22dp"
             app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
             <ImageView
