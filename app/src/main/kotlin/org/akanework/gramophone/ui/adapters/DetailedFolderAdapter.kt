@@ -68,6 +68,10 @@ class DetailedFolderAdapter(
         recyclerView.layoutManager = null
     }
 
+    override fun getPopupText(view: View, position: Int): CharSequence {
+        return "-"
+    }
+
     override fun onChanged(value: MediaStoreUtils.FileNode) {
         root = value
         update(null)
@@ -122,22 +126,6 @@ class DetailedFolderAdapter(
             })
             it.startAnimation(animation)
         }
-    }
-
-    override fun getPopupText(view: View, position: Int): CharSequence {
-        var newPos = position
-        if (newPos < folderPopAdapter.itemCount) {
-            return "-"
-        }
-        newPos -= folderPopAdapter.itemCount
-        if (newPos < folderAdapter.itemCount) {
-            return folderAdapter.getPopupText(view, newPos)
-        }
-        newPos -= folderAdapter.itemCount
-        if (newPos < songAdapter.itemCount) {
-            return songAdapter.getPopupText(view, newPos + 1)
-        }
-        throw IllegalStateException()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
