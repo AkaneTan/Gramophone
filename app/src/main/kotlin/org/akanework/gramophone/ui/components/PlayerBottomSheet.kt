@@ -1222,6 +1222,7 @@ class PlayerBottomSheet private constructor(
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Suppress("DEPRECATION")
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
@@ -1315,16 +1316,20 @@ class PlayerBottomSheet private constructor(
                     AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
                 val tag = audioFile.tag
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
-                var parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
+                val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
+                val subList =
+                    if (bottomSheetFullLyricList.size > 0)
+                        bottomSheetFullLyricList.subList(1, bottomSheetFullLyricList.size)
+                    else
+                        mutableListOf()
                 if (lyrics != null && lyrics.isNotEmpty() &&
-                    bottomSheetFullLyricList != parsedLyrics &&
+                    subList != parsedLyrics &&
                     parsedLyrics.isNotEmpty()
                 ) {
-                    bottomSheetFullLyricAdapter.notifyItemRangeRemoved(0, bottomSheetFullLyricList.size)
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
                     bottomSheetFullLyricList.addAll(parsedLyrics)
-                    bottomSheetFullLyricAdapter.notifyItemRangeInserted(0, bottomSheetFullLyricList.size)
+                    bottomSheetFullLyricAdapter.notifyDataSetChanged()
                     resetToDefaultLyricPosition()
                 } else if (parsedLyrics.isEmpty()) {
                     try {
@@ -1336,27 +1341,30 @@ class PlayerBottomSheet private constructor(
                         lrcFile.forEachLine {
                             stringBuilder.append(it).append("\n")
                         }
-                        parsedLyrics = MediaStoreUtils.parseLrcString(stringBuilder.toString())
+                        parsedLyrics.addAll(MediaStoreUtils.parseLrcString(stringBuilder.toString()))
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    bottomSheetFullLyricAdapter.notifyItemRangeRemoved(0, parsedLyrics.size)
-                    bottomSheetFullLyricList.clear()
                     if (parsedLyrics.isEmpty()) {
+                        bottomSheetFullLyricList.clear()
                         bottomSheetFullLyricList.add(
                             MediaStoreUtils.Lyric(
                                 0,
                                 context.getString(R.string.no_lyric_found)
                             )
                         )
-                    } else if (parsedLyrics != bottomSheetFullLyricList) {
+                        bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                        resetToDefaultLyricPosition()
+                    } else if (parsedLyrics != subList) {
+                        bottomSheetFullLyricList.clear()
                         bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
                         bottomSheetFullLyricList.addAll(parsedLyrics)
+                        bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                        resetToDefaultLyricPosition()
                     }
-                    bottomSheetFullLyricAdapter.notifyItemRangeInserted(0, parsedLyrics.size)
-                    resetToDefaultLyricPosition()
                 }
             } catch (e: Exception) {
+                val subList = bottomSheetFullLyricList.subList(1, bottomSheetFullLyricList.size)
                 var parsedLyrics = mutableListOf(MediaStoreUtils.Lyric(
                     0,
                     context.getString(R.string.music_format_not_supported)
@@ -1372,14 +1380,18 @@ class PlayerBottomSheet private constructor(
                     }
                     val rawLrc = MediaStoreUtils.parseLrcString(stringBuilder.toString())
                     if (rawLrc.isNotEmpty()) {
+                        rawLrc.add(0, MediaStoreUtils.Lyric())
                         parsedLyrics = rawLrc
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                bottomSheetFullLyricList.clear()
-                bottomSheetFullLyricList.addAll(parsedLyrics)
-                resetToDefaultLyricPosition()
+                if (parsedLyrics != subList) {
+                    bottomSheetFullLyricList.clear()
+                    bottomSheetFullLyricList.addAll(parsedLyrics)
+                    bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    resetToDefaultLyricPosition()
+                }
             }
         }
         var newState = standardBottomSheetBehavior!!.state
