@@ -18,8 +18,8 @@
 package org.akanework.gramophone.ui.components
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.ComponentName
-import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
@@ -34,7 +34,6 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -109,7 +108,6 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import java.io.File
 import java.io.FileNotFoundException
-import kotlin.system.measureTimeMillis
 
 
 class PlayerBottomSheet private constructor(
@@ -413,6 +411,7 @@ class PlayerBottomSheet private constructor(
             }
         }
 
+        /*
         bottomSheetFavoriteButton.addOnCheckedChangeListener { _, isChecked ->
             /*
             if (isChecked) {
@@ -422,6 +421,8 @@ class PlayerBottomSheet private constructor(
             }
              */
         }
+
+         */
 
         bottomSheetPlaylistButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23) {
@@ -1299,6 +1300,7 @@ class PlayerBottomSheet private constructor(
                 addColorScheme()
             }
 
+            /*
             if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
                     .songList.contains(instance.currentMediaItem)
             ) {
@@ -1306,6 +1308,8 @@ class PlayerBottomSheet private constructor(
             } else {
                 // TODO
             }
+
+             */
             try {
                 val audioFile =
                     AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
@@ -1316,10 +1320,11 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullLyricList != parsedLyrics &&
                     parsedLyrics.isNotEmpty()
                 ) {
+                    bottomSheetFullLyricAdapter.notifyItemRangeRemoved(0, bottomSheetFullLyricList.size)
                     bottomSheetFullLyricList.clear()
                     bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
                     bottomSheetFullLyricList.addAll(parsedLyrics)
-                    bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    bottomSheetFullLyricAdapter.notifyItemRangeInserted(0, bottomSheetFullLyricList.size)
                     resetToDefaultLyricPosition()
                 } else if (parsedLyrics.isEmpty()) {
                     try {
@@ -1335,6 +1340,7 @@ class PlayerBottomSheet private constructor(
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
+                    bottomSheetFullLyricAdapter.notifyItemRangeRemoved(0, parsedLyrics.size)
                     bottomSheetFullLyricList.clear()
                     if (parsedLyrics.isEmpty()) {
                         bottomSheetFullLyricList.add(
@@ -1347,7 +1353,7 @@ class PlayerBottomSheet private constructor(
                         bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
                         bottomSheetFullLyricList.addAll(parsedLyrics)
                     }
-                    bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    bottomSheetFullLyricAdapter.notifyItemRangeInserted(0, parsedLyrics.size)
                     resetToDefaultLyricPosition()
                 }
             } catch (e: Exception) {
@@ -1435,6 +1441,7 @@ class PlayerBottomSheet private constructor(
                     instance.currentMediaItem,
                     Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
                 )
+                /*
                 if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
                         .songList.contains(instance.currentMediaItem)) {
                     bottomSheetFavoriteButton.isChecked = true
@@ -1443,6 +1450,8 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFavoriteButton.isChecked = false
                     // TODO
                 }
+
+                 */
                 handler.post { ready = true }
             },
             MoreExecutors.directExecutor(),
@@ -1630,6 +1639,7 @@ class PlayerBottomSheet private constructor(
             val lyricCard: MaterialCardView = view.findViewById(R.id.cardview)
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         fun updateTextColor(newColor: Int, newHighlightColor: Int) {
             defaultTextColor = newColor
             highlightTextColor = newHighlightColor
@@ -1725,6 +1735,7 @@ class PlayerBottomSheet private constructor(
 
     }
 
+    /*
     @Suppress("DEPRECATION")
     private fun insertIntoPlaylist(song: MediaItem) {
         val playlistEntry = ContentValues()
@@ -1754,6 +1765,8 @@ class PlayerBottomSheet private constructor(
         )
         activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition].songList.remove(song)
     }
+
+     */
 
 
 }
