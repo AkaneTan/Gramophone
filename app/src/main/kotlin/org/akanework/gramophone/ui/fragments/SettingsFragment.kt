@@ -18,10 +18,12 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -74,8 +76,11 @@ class SettingsFragment : BaseFragment(false) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
         val isContentBasedColorEnabled = prefs.getBoolean("content_based_color", true)
+        val isTitleCentered = prefs.getBoolean("centered_title", false)
         val bottomSheetFullSlider = requireActivity().findViewById<Slider>(R.id.slider_vert)
         val bottomSheetFullSeekBar = requireActivity().findViewById<SeekBar>(R.id.slider_squiggly)
+        val bottomSheetFullTitle = requireActivity().findViewById<TextView>(R.id.full_song_name)
+        val bottomSheetFullSubtitle = requireActivity().findViewById<TextView>(R.id.full_song_artist)
         if (isLegacyProgressEnabled) {
             bottomSheetFullSlider.visibility = View.VISIBLE
             bottomSheetFullSeekBar.visibility = View.GONE
@@ -87,6 +92,11 @@ class SettingsFragment : BaseFragment(false) {
             (activity as MainActivity).getPlayerSheet().removeColorScheme()
         } else {
             (activity as MainActivity).getPlayerSheet().addColorScheme()
+        }
+        if (isTitleCentered) {
+            bottomSheetFullTitle.gravity = Gravity.CENTER
+        } else {
+            bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
     }
 }

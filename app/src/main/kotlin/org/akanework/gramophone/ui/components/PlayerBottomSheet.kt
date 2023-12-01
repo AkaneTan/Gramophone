@@ -34,6 +34,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -161,7 +162,6 @@ class PlayerBottomSheet private constructor(
     private val fullPlayer: View
     private val previewPlayer: View
     private val progressDrawable: SquigglyProgress
-    private var isLegacyProgressEnabled: Boolean = false
     private var fullPlayerFinalColor: Int = -1
     private var colorPrimaryFinalColor: Int = -1
     private var colorSecondaryContainerFinalColor: Int = -1
@@ -217,7 +217,6 @@ class PlayerBottomSheet private constructor(
         get() = standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_HIDDEN
 
     init {
-        isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
         inflate(context, R.layout.bottom_sheet_impl, this)
         id = R.id.player_layout
         bottomSheetPreviewCover = findViewById(R.id.preview_album_cover)
@@ -264,12 +263,17 @@ class PlayerBottomSheet private constructor(
             this,
             com.google.android.material.R.attr.colorSecondaryContainer
         )
-        if (isLegacyProgressEnabled) {
+        if (prefs.getBoolean("default_progress_bar", false)) {
             bottomSheetFullSlider.visibility = View.VISIBLE
             bottomSheetFullSeekBar.visibility = View.GONE
         } else {
             bottomSheetFullSlider.visibility = View.GONE
             bottomSheetFullSeekBar.visibility = View.VISIBLE
+        }
+        if (prefs.getBoolean("centered_title", false)) {
+            bottomSheetFullTitle.gravity = Gravity.CENTER
+        } else {
+            bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
         ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
             view.onApplyWindowInsets(insets.toWindowInsets())

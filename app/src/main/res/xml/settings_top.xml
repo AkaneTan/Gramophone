@@ -68,6 +68,13 @@
             android:summary="@string/settings_default_progress_bar_summary"
             android:title="@string/settings_default_progress_bar"
             android:widgetLayout="@layout/preference_material_switch" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_format_align_center"
+            android:key="centered_title"
+            android:summary="@string/settings_title_center_summary"
+            android:title="@string/settings_title_center"
+            android:widgetLayout="@layout/preference_material_switch" />
         <!-- <SwitchPreferenceCompat
             android:defaultValue="true"
             android:icon="@drawable/ic_rounded_corner"
