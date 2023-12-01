@@ -76,7 +76,9 @@ class GeneralSubFragment : BaseFragment(true) {
                 title = item.title ?: requireContext().getString(R.string.unknown_album)
                 itemList = item.songList
                 helper =
-                    Sorter.NaturalOrderHelper { it.mediaMetadata.trackNumber!! + it.mediaMetadata.discNumber!! * 1000 }
+                    Sorter.NaturalOrderHelper {
+                        it.mediaMetadata.trackNumber?.plus(it.mediaMetadata.discNumber?.times(1000) ?: 0) ?: 0
+                    }
                 isTrackDiscNumAvailable = true
             }
 
