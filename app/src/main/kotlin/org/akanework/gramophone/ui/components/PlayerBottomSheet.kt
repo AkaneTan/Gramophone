@@ -272,8 +272,10 @@ class PlayerBottomSheet private constructor(
         }
         if (prefs.getBoolean("centered_title", false)) {
             bottomSheetFullTitle.gravity = Gravity.CENTER
+            bottomSheetFullSubtitle.gravity = Gravity.CENTER
         } else {
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
+            bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
         ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
             view.onApplyWindowInsets(insets.toWindowInsets())

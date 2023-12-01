@@ -95,8 +95,10 @@ class SettingsFragment : BaseFragment(false) {
         }
         if (isTitleCentered) {
             bottomSheetFullTitle.gravity = Gravity.CENTER
+            bottomSheetFullSubtitle.gravity = Gravity.CENTER
         } else {
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
+            bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
     }
 }
