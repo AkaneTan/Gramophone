@@ -1370,7 +1370,11 @@ class PlayerBottomSheet private constructor(
                     }
                 }
             } catch (e: Exception) {
-                val subList = bottomSheetFullLyricList.subList(1, bottomSheetFullLyricList.size)
+                val subList =
+                    if (bottomSheetFullLyricList.size > 0)
+                        bottomSheetFullLyricList.subList(1, bottomSheetFullLyricList.size)
+                    else
+                        mutableListOf()
                 var parsedLyrics = mutableListOf(MediaStoreUtils.Lyric(
                     0,
                     context.getString(R.string.music_format_not_supported)
