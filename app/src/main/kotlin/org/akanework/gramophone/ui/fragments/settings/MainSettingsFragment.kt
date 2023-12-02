@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.akanework.gramophone.ui.fragments
+package org.akanework.gramophone.ui.fragments.settings
 
 import android.os.Bundle
 import android.view.Gravity
@@ -32,15 +32,16 @@ import com.google.android.material.slider.Slider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
+import org.akanework.gramophone.ui.fragments.BaseFragment
 
-class SettingsFragment : BaseFragment(false) {
+class MainSettingsFragment : BaseFragment(false) {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_top_settings, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
 
         val collapsingToolbar = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)

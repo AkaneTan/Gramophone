@@ -18,8 +18,12 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.view.View
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
+import org.akanework.gramophone.logic.utils.ColorUtils
+import org.akanework.gramophone.ui.MainActivity
 
 abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +33,16 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val colorBackground = ColorUtils.getColor(
+            MaterialColors.getColor(view, android.R.attr.colorBackground),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
+            requireContext()
+        )
+        view.setBackgroundColor(colorBackground)
     }
 
 }

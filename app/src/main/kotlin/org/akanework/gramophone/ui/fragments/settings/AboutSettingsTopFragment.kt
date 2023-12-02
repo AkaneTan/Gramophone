@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.akanework.gramophone.ui.fragments
+package org.akanework.gramophone.ui.fragments.settings
 
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
@@ -24,7 +24,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
@@ -33,12 +32,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
-import org.akanework.gramophone.ui.MainActivity
+import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 
-class SettingsTopFragment : BasePreferenceFragment(),
+class AboutSettingsTopFragment : BasePreferenceFragment(),
     SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.settings_top, rootKey)
+        setPreferencesFromResource(R.xml.settings_about, rootKey)
         val versionPrefs = findPreference<Preference>("app_version")
         val releaseType = findPreference<Preference>("package_type")
         versionPrefs!!.summary = BuildConfig.VERSION_NAME
@@ -79,30 +78,6 @@ class SettingsTopFragment : BasePreferenceFragment(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            "theme_mode" -> {
-                when (sharedPreferences?.getString("theme_mode", "0")) {
-                    "0" -> {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    }
-                    "1" -> {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    }
-                    "2" -> {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    }
-                }
-            }
-            "amoled" -> {
-                if (sharedPreferences?.getBoolean("amoled", false) == true) {
-                    ColorUtils.overrideAmoledColor = true
-                    requireActivity().recreate()
-                } else {
-                    ColorUtils.overrideAmoledColor = false
-                    requireActivity().recreate()
-                }
-            }
-        }
     }
 
     override fun onStart() {

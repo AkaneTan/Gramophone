@@ -61,7 +61,7 @@ import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
 import org.akanework.gramophone.ui.fragments.SearchFragment
-import org.akanework.gramophone.ui.fragments.SettingsFragment
+import org.akanework.gramophone.ui.fragments.settings.MainSettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
@@ -243,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.settings -> {
-                    startFragment(SettingsFragment())
+                    startFragment(MainSettingsFragment())
                 }
 
                 R.id.search -> {

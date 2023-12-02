@@ -1,98 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory android:title="@string/settings_category_info">
-        <Preference
-            android:icon="@drawable/widgets_art"
-            android:key="app_name"
-            android:summary="@string/app_name"
-            android:title="@string/settings_app_name" />
-        <Preference
-            android:icon="@drawable/ic_conversion_path"
-            android:key="app_version"
-            android:summary="@string/unknown_version"
-            android:title="@string/settings_version" />
-        <Preference
-            android:icon="@drawable/ic_cookie"
-            android:key="package_type"
-            android:summary="@string/unknown_version"
-            android:title="@string/settings_package_type" />
-        <Preference
-            android:icon="@drawable/artist_art"
-            android:summary="@string/settings_contributors_detail"
-            android:title="@string/settings_contributors" />
-        <Preference
-            android:icon="@drawable/ic_language"
-            android:summary="https://github.com/AkaneTan/Gramophone"
-            android:title="@string/settings_repository">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/AkaneTan/Gramophone" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_telegram"
-            android:summary="@string/check_for_updates"
-            android:title="Telegram">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://t.me/AkaneDevRel" />
-        </Preference>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_appearance">
-        <DropDownPreference
-            android:defaultValue="0"
-            android:entries="@array/theme_switch"
-            android:entryValues="@array/theme_switch_val"
-            android:icon="@drawable/daynight_art"
-            android:key="theme_mode"
-            android:title="@string/settings_app_theme"
-            app:useSimpleSummaryProvider="true" />
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:icon="@drawable/ic_filter_b_and_w"
-            android:key="amoled"
-            android:summary="@string/settings_amoled_summary"
-            android:title="@string/settings_amoled"
-            android:widgetLayout="@layout/preference_material_switch" />
-        <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:icon="@drawable/ic_colors"
-            android:key="content_based_color"
-            android:summary="@string/settings_content_based_color_summary"
-            android:title="@string/settings_content_based_color"
-            android:widgetLayout="@layout/preference_material_switch" />
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:icon="@drawable/ic_draw_abstract"
-            android:key="default_progress_bar"
-            android:summary="@string/settings_default_progress_bar_summary"
-            android:title="@string/settings_default_progress_bar"
-            android:widgetLayout="@layout/preference_material_switch" />
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:icon="@drawable/ic_format_align_center"
-            android:key="centered_title"
-            android:summary="@string/settings_title_center_summary"
-            android:title="@string/settings_title_center"
-            android:widgetLayout="@layout/preference_material_switch" />
-        <!-- <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:icon="@drawable/ic_rounded_corner"
-            android:key="round_element"
-            android:summary="@string/settings_round_corner_summary"
-            android:title="@string/settings_round_corner"
-            android:widgetLayout="@layout/preference_material_switch" /> -->
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_behavior">
-        <SeekBarPreference
-            android:defaultValue="@integer/filter_default_sec"
-            android:icon="@drawable/filter_art"
-            android:key="mediastore_filter"
-            android:max="120"
-            android:summary="@string/settings_mediastore_filter_summary"
-            android:title="@string/settings_mediastore_filter"
-            app:showSeekBarValue="true" />
-    </PreferenceCategory>
+
+    <Preference
+        android:key="appearance"
+        android:title="@string/settings_category_appearance"
+        android:summary="@string/settings_appearance_summary"
+        android:icon="@drawable/ic_palette"
+        android:layout="@layout/basic_preference" />
+
+    <Preference
+        android:key="player"
+        android:title="@string/settings_player_ui"
+        android:summary="@string/settings_player_ui_summary"
+        android:icon="@drawable/ic_play_arrow"
+        android:layout="@layout/basic_preference" />
+
+    <Preference
+        android:key="behavior"
+        android:icon="@drawable/ic_manufacturing"
+        android:title="@string/settings_category_behavior"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_behavior_summary" />
+
+    <Preference
+        android:key="library"
+        android:icon="@drawable/ic_collections_bookmark"
+        android:title="@string/settings_library"
+        android:summary="@string/settings_library_summary"
+        android:layout="@layout/basic_preference"
+        app:isPreferenceVisible="false" />
+
+    <Preference
+        android:key="personalization"
+        android:icon="@drawable/ic_dashboard_customize"
+        android:title="@string/settings_customization"
+        android:summary="@string/settings_customization_summary"
+        android:layout="@layout/basic_preference"
+        app:isPreferenceVisible="false" />
+
+    <Preference
+        android:key="play"
+        android:icon="@drawable/ic_headphones"
+        android:title="@string/settings_player_options"
+        android:summary="@string/settings_player_options_summary"
+        android:layout="@layout/basic_preference"
+        app:isPreferenceVisible="false" />
+
+    <Preference
+        android:key="about"
+        android:title="@string/settings_about_app"
+        android:summary="@string/settings_about_gramophone"
+        android:icon="@drawable/ic_info"
+        android:layout="@layout/basic_preference" />
 
     <!-- For extra space below -->
     <Preference

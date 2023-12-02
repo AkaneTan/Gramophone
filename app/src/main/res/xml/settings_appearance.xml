@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     Copyright (C) 2023  Akane Foundation
+  ~
+  ~     Gramophone is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Gramophone is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <DropDownPreference
+        android:defaultValue="0"
+        android:entries="@array/theme_switch"
+        android:entryValues="@array/theme_switch_val"
+        android:icon="@drawable/daynight_art"
+        android:key="theme_mode"
+        android:title="@string/settings_app_theme"
+        android:layout="@layout/icon_dropdown_preference"
+        app:useSimpleSummaryProvider="true" />
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:icon="@drawable/ic_filter_b_and_w"
+        android:key="amoled"
+        android:summary="@string/settings_amoled_summary"
+        android:title="@string/settings_amoled"
+        android:layout="@layout/icon_switch_preference" />
+</PreferenceScreen>
