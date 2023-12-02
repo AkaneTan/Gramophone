@@ -207,12 +207,16 @@ class GramophonePlaybackService : MediaLibraryService(),
                 .build()
         lastPlayedManager = LastPlayedManager(this, mediaSession!!)
         handler.post {
-            val restoreInstance = lastPlayedManager.restore()
-            if (restoreInstance != null) {
-                player.setMediaItems(
-                    restoreInstance.mediaItems,
-                    restoreInstance.startIndex, restoreInstance.startPositionMs
-                )
+            try {
+                val restoreInstance = lastPlayedManager.restore()
+                if (restoreInstance != null) {
+                    player.setMediaItems(
+                        restoreInstance.mediaItems,
+                        restoreInstance.startIndex, restoreInstance.startPositionMs
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
