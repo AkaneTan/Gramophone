@@ -34,6 +34,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
@@ -225,7 +226,7 @@ class PlayerBottomSheet private constructor(
         bottomSheetPreviewControllerButton = findViewById(R.id.preview_control)
         bottomSheetPreviewNextButton = findViewById(R.id.preview_next)
         bottomSheetFullCover = findViewById(R.id.full_sheet_cover)
-        bottomSheetFullCoverFrame = findViewById(R.id.cover_frame)
+        bottomSheetFullCoverFrame = findViewById(R.id.album_cover_frame)
         bottomSheetFullTitle = findViewById(R.id.full_song_name)
         bottomSheetFullSubtitle = findViewById(R.id.full_song_artist)
         bottomSheetFullPreviousButton = findViewById(R.id.sheet_previous_song)
@@ -277,6 +278,8 @@ class PlayerBottomSheet private constructor(
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
             bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
+        bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", 22).px.toFloat()
+
         ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
             view.onApplyWindowInsets(insets.toWindowInsets())
             doOnLayout {

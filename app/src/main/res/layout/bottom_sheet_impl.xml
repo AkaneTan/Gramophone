@@ -129,7 +129,7 @@
             app:iconPadding="0dp"
             app:iconSize="28dp"
             app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintBottom_toTopOf="@id/cover_frame"
+            app:layout_constraintBottom_toTopOf="@id/album_cover_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -137,7 +137,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cover_frame"
+            android:id="@+id/album_cover_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="24dp"
@@ -171,7 +171,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_min="250dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cover_frame">
+            app:layout_constraintTop_toBottomOf="@id/album_cover_frame">
 
             <LinearLayout
                 android:id="@+id/textLayout"

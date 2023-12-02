@@ -133,12 +133,12 @@
             app:iconTint="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintTop_toTopOf="@id/cover_frame"
+            app:layout_constraintTop_toTopOf="@id/album_cover_frame"
             app:layout_constraintVertical_bias="0.0" />
 
         <!-- LANDSCAPE changed constraints and added marginBottom -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cover_frame"
+            android:id="@+id/album_cover_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="20dp"
@@ -174,7 +174,7 @@
             app:layout_constraintBottom_toTopOf="@id/actionBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_min="200dp"
-            app:layout_constraintStart_toEndOf="@id/cover_frame">
+            app:layout_constraintStart_toEndOf="@id/album_cover_frame">
 
             <LinearLayout
                 android:id="@+id/textLayout"

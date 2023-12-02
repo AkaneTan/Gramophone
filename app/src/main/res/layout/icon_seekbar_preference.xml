@@ -107,6 +107,6 @@
         android:progress="50"
         android:progressDrawable="@drawable/seekbar_progress"
         android:splitTrack="false"
-        android:thumb="@drawable/seekbar_thumb"/>
+        android:thumb="@android:color/transparent"/>
 
 </LinearLayout>

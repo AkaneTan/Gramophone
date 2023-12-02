@@ -27,9 +27,11 @@ import android.widget.TextView
 import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.px
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.BaseFragment
@@ -78,10 +80,12 @@ class MainSettingsFragment : BaseFragment(false) {
         val isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
         val isContentBasedColorEnabled = prefs.getBoolean("content_based_color", true)
         val isTitleCentered = prefs.getBoolean("centered_title", false)
-        val bottomSheetFullSlider = requireActivity().findViewById<Slider>(R.id.slider_vert)
-        val bottomSheetFullSeekBar = requireActivity().findViewById<SeekBar>(R.id.slider_squiggly)
-        val bottomSheetFullTitle = requireActivity().findViewById<TextView>(R.id.full_song_name)
-        val bottomSheetFullSubtitle = requireActivity().findViewById<TextView>(R.id.full_song_artist)
+        val activity = requireActivity()
+        val bottomSheetFullSlider = activity.findViewById<Slider>(R.id.slider_vert)
+        val bottomSheetFullSeekBar = activity.findViewById<SeekBar>(R.id.slider_squiggly)
+        val bottomSheetFullTitle = activity.findViewById<TextView>(R.id.full_song_name)
+        val bottomSheetFullSubtitle = activity.findViewById<TextView>(R.id.full_song_artist)
+        val bottomSheetFullCoverFrame = activity.findViewById<MaterialCardView>(R.id.album_cover_frame)
         if (isLegacyProgressEnabled) {
             bottomSheetFullSlider.visibility = View.VISIBLE
             bottomSheetFullSeekBar.visibility = View.GONE
@@ -101,5 +105,6 @@ class MainSettingsFragment : BaseFragment(false) {
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
             bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
+        bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", 22).px.toFloat()
     }
 }
