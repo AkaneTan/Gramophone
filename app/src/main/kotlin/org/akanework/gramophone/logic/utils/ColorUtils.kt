@@ -23,7 +23,7 @@ import androidx.core.graphics.ColorUtils
 import kotlin.math.min
 
 object ColorUtils {
-    var overrideAmoledColor = false
+    var overrideGlobalAmoledColor = false
 
     enum class ColorType(
         var chroma: Float = 0f,
@@ -40,7 +40,8 @@ object ColorUtils {
     private fun manipulateHsl(
         color: Int,
         colorType: ColorType,
-        context: Context
+        context: Context,
+        isAmoled: Boolean
     ): Int {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
@@ -50,7 +51,7 @@ object ColorUtils {
             hsl[2] = min(hsl[2], 1f)
             hsl[1] *= colorType.chromaDark
             hsl[1] = min(hsl[1], 1f)
-            if (overrideAmoledColor) {
+            if (overrideGlobalAmoledColor && isAmoled) {
                 hsl[2] = 0f
             }
         } else {
@@ -63,10 +64,10 @@ object ColorUtils {
         return ColorUtils.HSLToColor(hsl)
     }
 
-    fun getColor(color: Int, colorType: ColorType, context: Context): Int =
-        manipulateHsl(color, colorType, context)
+    fun getColor(color: Int, colorType: ColorType, context: Context, isAmoled: Boolean): Int =
+        manipulateHsl(color, colorType, context, isAmoled)
 
-    private fun isDarkMode(context: Context): Boolean =
+    fun isDarkMode(context: Context): Boolean =
         context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 

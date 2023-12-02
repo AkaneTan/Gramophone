@@ -69,7 +69,8 @@ class SearchFragment : BaseFragment(false) {
                 android.R.attr.colorBackground
             ),
             ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
+            requireContext(),
+            true
         )
         rootView.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)

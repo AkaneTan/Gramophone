@@ -829,7 +829,7 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
-            val backgroundProcessedColor = ColorUtils.getColor(colorSurface, ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED, context)
+            val backgroundProcessedColor = ColorUtils.getColor(colorSurface, ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED, context, true)
 
             val surfaceTransition = ValueAnimator.ofArgb(
                 fullPlayerFinalColor,
@@ -925,7 +925,8 @@ class PlayerBottomSheet private constructor(
                     ColorUtils.getColor(
                         colorSecondaryContainerFinalColor,
                         ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-                        context
+                        context,
+                        false
                     ),
                     colorPrimary
                 )
@@ -1074,7 +1075,8 @@ class PlayerBottomSheet private constructor(
                 val backgroundProcessedColor = ColorUtils.getColor(
                     colorSurface,
                     ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
-                    context)
+                    context,
+                    true)
 
                 val surfaceTransition = ValueAnimator.ofArgb(
                     fullPlayerFinalColor,
@@ -1170,7 +1172,8 @@ class PlayerBottomSheet private constructor(
                         ColorUtils.getColor(
                             colorSecondaryContainerFinalColor,
                             ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-                            context
+                            context,
+                            false
                         ),
                         colorPrimary
                     )

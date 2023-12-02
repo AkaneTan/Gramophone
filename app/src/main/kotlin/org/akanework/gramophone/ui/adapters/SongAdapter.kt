@@ -188,7 +188,8 @@ class SongAdapter(
                             -1
                         ),
                         ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
-                        context
+                        context,
+                        true
                     )
                     val drawable = GradientDrawable()
                     drawable.color =

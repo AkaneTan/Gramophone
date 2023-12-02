@@ -60,7 +60,8 @@ class AboutSettingsTopFragment : BasePreferenceFragment(),
                     android.R.attr.colorBackground
                 ),
                 ColorUtils.ColorType.COLOR_BACKGROUND,
-                requireContext()
+                requireContext(),
+                true
             )
             val drawable = GradientDrawable()
             drawable.color =

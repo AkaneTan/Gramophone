@@ -33,6 +33,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -74,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Import our viewModels.
-    val libraryViewModel: LibraryViewModel by viewModels()
+    private val libraryViewModel: LibraryViewModel by viewModels()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private val startActivity =
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("StringFormatMatches")
+    @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCompat.postponeEnterTransition(this)
@@ -132,7 +133,8 @@ class MainActivity : AppCompatActivity() {
                 android.R.attr.colorBackground
             ),
             ColorUtils.ColorType.COLOR_BACKGROUND,
-            this
+            this,
+            true
         )
         coordinatorLayout.setBackgroundColor(processColor)
         drawerLayout.setBackgroundColor(processColor)

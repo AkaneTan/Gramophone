@@ -46,7 +46,8 @@ class BehaviorSettingsFragment : BaseFragment(false) {
                 android.R.attr.colorBackground
             ),
             ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
+            requireContext(),
+            true
         )
         val processColorElevated = ColorUtils.getColor(
             MaterialColors.getColor(
@@ -54,7 +55,8 @@ class BehaviorSettingsFragment : BaseFragment(false) {
                 android.R.attr.colorBackground
             ),
             ColorUtils.ColorType.TOOLBAR_ELEVATED,
-            requireContext()
+            requireContext(),
+            true
         )
 
         collapsingToolbar.setBackgroundColor(processColor)

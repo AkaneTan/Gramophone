@@ -43,7 +43,7 @@ class GramophoneApplication : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-        ColorUtils.overrideAmoledColor = prefs.getBoolean("amoled", false)
+        ColorUtils.overrideGlobalAmoledColor = prefs.getBoolean("amoled", false)
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 

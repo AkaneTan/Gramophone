@@ -40,7 +40,8 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
         val colorBackground = ColorUtils.getColor(
             MaterialColors.getColor(view, android.R.attr.colorBackground),
             ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
+            requireContext(),
+            true
         )
         view.setBackgroundColor(colorBackground)
     }

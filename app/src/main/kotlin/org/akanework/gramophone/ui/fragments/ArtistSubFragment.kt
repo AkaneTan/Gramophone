@@ -65,7 +65,8 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
                 android.R.attr.colorBackground
             ),
             ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext()
+            requireContext(),
+            true
         )
         topAppBar.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)
