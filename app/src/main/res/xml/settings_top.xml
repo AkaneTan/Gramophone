@@ -40,12 +40,11 @@
         app:isPreferenceVisible="false" />
 
     <Preference
-        android:key="play"
+        android:key="audio"
         android:icon="@drawable/ic_headphones"
         android:title="@string/settings_player_options"
         android:summary="@string/settings_player_options_summary"
-        android:layout="@layout/basic_preference"
-        app:isPreferenceVisible="false" />
+        android:layout="@layout/basic_preference" />
 
     <Preference
         android:key="about"

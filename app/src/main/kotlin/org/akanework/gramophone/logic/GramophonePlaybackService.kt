@@ -31,15 +31,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.RenderersFactory
 import androidx.media3.exoplayer.SeekParameters
-import androidx.media3.exoplayer.audio.AudioRendererEventListener
-import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
-import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
-import androidx.media3.exoplayer.metadata.MetadataOutput
-import androidx.media3.exoplayer.text.TextOutput
-import androidx.media3.exoplayer.video.VideoRendererEventListener
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
@@ -48,6 +42,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
+import androidx.preference.PreferenceManager
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -115,6 +110,9 @@ class GramophonePlaybackService : MediaLibraryService(),
         }
 
     override fun onCreate() {
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
         customCommands =
             listOf(
                 CommandButton.Builder() // shuffle currently disabled, click will enable
@@ -155,26 +153,18 @@ class GramophonePlaybackService : MediaLibraryService(),
             )
         handler = Handler(Looper.getMainLooper())
 
-        val audioOnlyRenderersFactory =
-            RenderersFactory {
-                    handler: Handler,
-                    _: VideoRendererEventListener,
-                    audioListener: AudioRendererEventListener,
-                    _: TextOutput,
-                    _: MetadataOutput,
-                ->
-                arrayOf(
-                    MediaCodecAudioRenderer(this, MediaCodecSelector.DEFAULT, handler, audioListener)
-                )
-            }
-
         val player = ExoPlayer.Builder(
             this,
-            audioOnlyRenderersFactory
+            DefaultRenderersFactory(this)
+                .setEnableAudioFloatOutput(prefs.getBoolean("floatoutput", false))
+                .setEnableDecoderFallback(true)
+                .setEnableAudioTrackPlaybackParams(prefs.getBoolean("ps_hardware_acc", true)) // hardware/system-accelerated playback speed
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
         )
             .setWakeMode(C.WAKE_MODE_LOCAL)
             // we seek with SeekBar on a touchscreen anyway, we can afford loosing some exactness
             .setSeekParameters(SeekParameters.CLOSEST_SYNC)
+            .setSkipSilenceEnabled(prefs.getBoolean("skip_silence", false))
             .setAudioAttributes(
                 AudioAttributes
                     .Builder()
