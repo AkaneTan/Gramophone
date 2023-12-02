@@ -56,8 +56,8 @@ class AppearanceSettingsTopFragment : BasePreferenceFragment(),
                     }
                 }
             }
-            "amoled" -> {
-                if (sharedPreferences?.getBoolean("amoled", false) == true) {
+            "oled" -> {
+                if (sharedPreferences?.getBoolean("oled", false) == true) {
                     ColorUtils.overrideGlobalAmoledColor = true
                     requireActivity().recreate()
                 } else {

@@ -29,8 +29,8 @@
     <SwitchPreferenceCompat
         android:defaultValue="false"
         android:icon="@drawable/ic_filter_b_and_w"
-        android:key="amoled"
-        android:summary="@string/settings_amoled_summary"
-        android:title="@string/settings_amoled"
+        android:key="oled"
+        android:summary="@string/settings_oled_summary"
+        android:title="@string/settings_oled"
         android:layout="@layout/icon_switch_preference" />
 </PreferenceScreen>
