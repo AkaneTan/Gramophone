@@ -81,7 +81,7 @@ class MainSettingsFragment : BaseFragment(false) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
         val isContentBasedColorEnabled = prefs.getBoolean("content_based_color", true)
-        val isTitleCentered = prefs.getBoolean("centered_title", false)
+        val isTitleCentered = prefs.getBoolean("centered_title", true)
         val activity = requireActivity()
         val bottomSheetFullSlider = activity.findViewById<Slider>(R.id.slider_vert)
         val bottomSheetFullSeekBar = activity.findViewById<SeekBar>(R.id.slider_squiggly)

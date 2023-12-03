@@ -271,7 +271,7 @@ class PlayerBottomSheet private constructor(
             bottomSheetFullSlider.visibility = View.GONE
             bottomSheetFullSeekBar.visibility = View.VISIBLE
         }
-        if (prefs.getBoolean("centered_title", false)) {
+        if (prefs.getBoolean("centered_title", true)) {
             bottomSheetFullTitle.gravity = Gravity.CENTER
             bottomSheetFullSubtitle.gravity = Gravity.CENTER
         } else {
