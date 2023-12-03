@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.system.measureTimeMillis
@@ -339,7 +340,7 @@ object MediaStoreUtils {
                     songs.add(
                         MediaItem
                             .Builder()
-                            .setUri(Uri.parse(path))
+                            .setUri(Uri.fromFile(File(path)))
                             .setMediaId(id.toString())
                             .setMimeType(mimeType)
                             .setMediaMetadata(
