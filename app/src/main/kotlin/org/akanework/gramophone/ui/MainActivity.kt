@@ -147,51 +147,38 @@ class MainActivity : AppCompatActivity() {
             return@setOnApplyWindowInsetsListener insets
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.READ_MEDIA_AUDIO,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Ask if was denied.
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
-                    PERMISSION_READ_MEDIA_AUDIO,
-                )
-            } else {
-                if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-                    updateLibrary()
-                }
-            }
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.READ_MEDIA_AUDIO,
+            ) != PackageManager.PERMISSION_GRANTED)
+            || (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+                    && ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            ) != PackageManager.PERMISSION_GRANTED)
+            || (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    && ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            ) != PackageManager.PERMISSION_GRANTED)) {
+            // Ask if was denied.
+            ActivityCompat.requestPermissions(
+                this,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO)
+                else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                else
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PERMISSION_READ_MEDIA_AUDIO,
+            )
         } else {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                ) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Ask if was denied.
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    PERMISSION_READ_EXTERNAL_STORAGE,
-                )
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    PERMISSION_WRITE_EXTERNAL_STORAGE,
-                )
-            } else {
-                if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-                    updateLibrary()
-                }
+            if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
+                updateLibrary()
             }
         }
-
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
 
         ViewCompat.setOnApplyWindowInsetsListener(navigationView) { view, insets ->
