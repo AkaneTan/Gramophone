@@ -33,7 +33,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -72,6 +71,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PERMISSION_READ_MEDIA_AUDIO = 100
         private const val PERMISSION_READ_EXTERNAL_STORAGE = 101
+        private const val PERMISSION_WRITE_EXTERNAL_STORAGE = 102
     }
 
     // Import our viewModels.
@@ -168,6 +168,10 @@ class MainActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                ) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 // Ask if was denied.
@@ -175,6 +179,11 @@ class MainActivity : AppCompatActivity() {
                     this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSION_READ_EXTERNAL_STORAGE,
+                )
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    PERMISSION_WRITE_EXTERNAL_STORAGE,
                 )
             } else {
                 if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
@@ -310,11 +319,28 @@ class MainActivity : AppCompatActivity() {
 
             PERMISSION_READ_EXTERNAL_STORAGE -> {
                 if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     updateLibrary()
                 } else {
                     // TODO: Show a prompt here
+                }
+            }
+
+            PERMISSION_WRITE_EXTERNAL_STORAGE -> {
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    ) != PackageManager.PERMISSION_GRANTED) {
+                    updateLibrary()
+                } else {
+                    // TODO:  Show a prompt here
                 }
             }
         }
