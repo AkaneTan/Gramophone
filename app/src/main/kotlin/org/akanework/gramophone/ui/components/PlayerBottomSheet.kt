@@ -280,7 +280,7 @@ class PlayerBottomSheet private constructor(
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
         }
-        bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", 22).px.toFloat()
+        bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", context.resources.getInteger(R.integer.round_corner_radius)).px.toFloat()
 
         ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
             view.onApplyWindowInsets(insets.toWindowInsets())
