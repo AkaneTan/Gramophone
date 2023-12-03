@@ -219,7 +219,7 @@ class SongAdapter(
                     if (genre != null) {
                         rootView.findViewById<TextView>(R.id.genre)!!.text = genre
                     }
-                    rootView.findViewById<TextView>(R.id.path)!!.text = item.getUri().toString()
+                    rootView.findViewById<TextView>(R.id.path)!!.text = item.mediaMetadata.extras!!.getString("Path")
                     rootView.findViewById<TextView>(R.id.mime)!!.text = item.mediaMetadata.extras!!.getString("MimeType")
                     rootView.findViewById<TextView>(R.id.duration)!!.text = convertDurationToTimeStamp(item.mediaMetadata.extras!!.getLong("Duration"))
                     true

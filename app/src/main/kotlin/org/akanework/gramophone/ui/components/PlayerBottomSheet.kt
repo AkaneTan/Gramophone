@@ -33,8 +33,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
@@ -94,7 +92,6 @@ import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
 import org.akanework.gramophone.logic.getTimer
-import org.akanework.gramophone.logic.getUri
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.px
@@ -1328,9 +1325,10 @@ class PlayerBottomSheet private constructor(
             }
 
              */
+
             try {
                 val audioFile =
-                    AudioFileIO.read(File(instance.currentMediaItem!!.getUri().toString()))
+                    AudioFileIO.read(File(instance.currentMediaItem!!.mediaMetadata.extras!!.getString("Path")!!))
                 val tag = audioFile.tag
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
                 val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
@@ -1351,7 +1349,7 @@ class PlayerBottomSheet private constructor(
                 } else if (parsedLyrics.isEmpty()) {
                     try {
                         val lrcFile = File(
-                            instance.currentMediaItem!!.getUri().toString()
+                            instance.currentMediaItem!!.mediaMetadata.extras!!.getString("Path")!!
                                 .substringBeforeLast('.') + ".lrc"
                         )
                         val stringBuilder = StringBuilder()
@@ -1381,6 +1379,7 @@ class PlayerBottomSheet private constructor(
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 val subList =
                     if (bottomSheetFullLyricList.size > 0)
                         bottomSheetFullLyricList.subList(1, bottomSheetFullLyricList.size)
@@ -1392,7 +1391,7 @@ class PlayerBottomSheet private constructor(
                 ))
                 try {
                     val lrcFile = File(
-                        instance.currentMediaItem!!.getUri().toString()
+                        instance.currentMediaItem!!.mediaMetadata.extras!!.getString("Path")!!
                             .substringBeforeLast('.') + ".lrc"
                     )
                     val stringBuilder = StringBuilder()

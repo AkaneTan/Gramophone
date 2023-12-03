@@ -373,6 +373,7 @@ object MediaStoreUtils {
                                         putLong("AddDate", addDate)
                                         putLong("Duration", duration)
                                         putString("MimeType", mimeType)
+                                        putString("Path", path)
                                         cdTrackNumber?.toIntOrNull()
                                             ?.let { it1 -> putInt("CdTrackNumber", it1) }
                                     })
