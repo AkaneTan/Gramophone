@@ -17,6 +17,8 @@
 
 package org.akanework.gramophone.ui.fragments.settings
 
+import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -82,6 +84,7 @@ class MainSettingsFragment : BaseFragment(false) {
         val isLegacyProgressEnabled = prefs.getBoolean("default_progress_bar", false)
         val isContentBasedColorEnabled = prefs.getBoolean("content_based_color", true)
         val isTitleCentered = prefs.getBoolean("centered_title", true)
+        val isTitleBold = prefs.getBoolean("bold_title", false)
         val activity = requireActivity()
         val bottomSheetFullSlider = activity.findViewById<Slider>(R.id.slider_vert)
         val bottomSheetFullSeekBar = activity.findViewById<SeekBar>(R.id.slider_squiggly)
@@ -106,6 +109,11 @@ class MainSettingsFragment : BaseFragment(false) {
         } else {
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
             bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
+        }
+        if (isTitleBold && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
         }
         bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", 22).px.toFloat()
     }

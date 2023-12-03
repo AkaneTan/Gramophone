@@ -192,7 +192,7 @@
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
-                    android:textFontWeight="700"
+                    android:textFontWeight="500"
                     android:textSize="24sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />

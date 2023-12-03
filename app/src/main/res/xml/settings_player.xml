@@ -18,6 +18,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:icon="@drawable/ic_text_fields"
+        android:key="bold_title"
+        android:summary="@string/settings_title_bold_summary"
+        android:title="@string/settings_title_bold"
+        android:layout="@layout/icon_switch_preference"
+        android:widgetLayout="@layout/preference_material_switch" />
+    <SwitchPreferenceCompat
         android:defaultValue="true"
         android:icon="@drawable/ic_format_align_center"
         android:key="centered_title"

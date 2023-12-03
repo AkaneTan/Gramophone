@@ -278,6 +278,11 @@ class PlayerBottomSheet private constructor(
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
             bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
+        if (prefs.getBoolean("bold_title", false) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
+        }
         bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", 22).px.toFloat()
 
         ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
