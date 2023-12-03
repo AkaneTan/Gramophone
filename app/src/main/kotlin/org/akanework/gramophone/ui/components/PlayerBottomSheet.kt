@@ -201,7 +201,7 @@ class PlayerBottomSheet private constructor(
             if (field != value) {
                 field = value
                 standardBottomSheetBehavior?.state =
-                    if (controllerFuture?.isDone == true
+                    if (controllerFuture?.isDone == true && controllerFuture?.isCancelled == false
                         && controllerFuture!!.get().mediaItemCount != 0 && value
                     ) {
                         if (standardBottomSheetBehavior?.state
