@@ -58,4 +58,11 @@
         android:title="@string/settings_default_progress_bar"
         android:layout="@layout/icon_switch_preference"
         android:widgetLayout="@layout/preference_material_switch" />
+    <!-- For extra space below -->
+    <Preference
+        android:enabled="false"
+        android:title="" />
+    <Preference
+        android:enabled="false"
+        android:title="" />
 </PreferenceScreen>
