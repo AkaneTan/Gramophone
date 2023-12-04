@@ -248,7 +248,7 @@
                     android:visibility="gone"
                     app:labelBehavior="gone"
                     app:thumbElevation="0dp"
-                    app:thumbRadius="8dp"
+                    app:thumbRadius="9dp"
                     tools:value="0.5" />
 
             </FrameLayout>
@@ -361,9 +361,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:paddingStart="8dp"
+            android:paddingStart="24dp"
             android:paddingTop="4dp"
-            android:paddingEnd="8dp"
+            android:paddingEnd="24dp"
             android:paddingBottom="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/controls"
