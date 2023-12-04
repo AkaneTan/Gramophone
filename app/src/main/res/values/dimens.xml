@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="recyclerview_bottom_padding">90dp</dimen>
-    <dimen name="media_seekbar_progress_wavelength">25dp</dimen>
-    <dimen name="media_seekbar_progress_amplitude">2.25dp</dimen>
+    <dimen name="media_seekbar_progress_wavelength">27dp</dimen>
+    <dimen name="media_seekbar_progress_amplitude">2.7dp</dimen>
     <dimen name="media_seekbar_progress_phase">8dp</dimen>
-    <dimen name="media_seekbar_progress_stroke_width">3dp</dimen>
+    <dimen name="media_seekbar_progress_stroke_width">3.4dp</dimen>
     <dimen name="list_round_corner_size">4dp</dimen>
     <dimen name="grid_round_corner_size">6dp</dimen>
     <dimen name="tab_layout_content_padding">16dp</dimen>
