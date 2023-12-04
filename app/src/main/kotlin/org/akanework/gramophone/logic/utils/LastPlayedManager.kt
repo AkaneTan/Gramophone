@@ -80,6 +80,7 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
                 b.writeStringSafe(it.mediaMetadata.extras?.getString("Author"))
                 b.writeInt(it.mediaMetadata.extras?.getInt("CdTrackNumber"))
                 b.writeLong(it.mediaMetadata.extras?.getLong("Duration"))
+                b.writeStringUnsafe(it.mediaMetadata.extras?.getString("Path"))
                 b.toString()
             })
         editor.putStringSet("last_played_lst", lastPlayed.first)
@@ -138,6 +139,7 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
                     val author = b.readStringSafe()
                     val cdTrackNumber = b.readInt()
                     val duration = b.readLong()
+                    val path = b.readStringUnsafe()
                     MediaItem.Builder()
                         .setUri(uri)
                         .setMediaId(mediaId!!)
@@ -182,6 +184,7 @@ class LastPlayedManager(context: Context, private val mediaSession: MediaSession
                                     if (duration != null) {
                                         putLong("Duration", duration)
                                     }
+                                    putString("Path", path)
                                 })
                                 .build()
                         )
