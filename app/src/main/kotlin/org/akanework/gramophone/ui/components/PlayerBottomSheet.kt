@@ -107,6 +107,7 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.math.min
 
 
 class PlayerBottomSheet private constructor(
@@ -648,7 +649,8 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullSeekBar.max = duration.toInt()
                     bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
                     bottomSheetFullSlider.valueTo = duration.toFloat()
-                    bottomSheetFullSlider.value = instance.currentPosition.toFloat()
+                    bottomSheetFullSlider.value =
+                        min(instance.currentPosition.toFloat(), bottomSheetFullSlider.valueTo)
                     bottomSheetFullPosition.text = position
                 }
                 updateLyric(duration)
@@ -1434,7 +1436,8 @@ class PlayerBottomSheet private constructor(
             bottomSheetFullSeekBar.max = duration.toInt()
             bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
             bottomSheetFullSlider.valueTo = duration.toFloat()
-            bottomSheetFullSlider.value = instance.currentPosition.toFloat()
+            bottomSheetFullSlider.value =
+                min(instance.currentPosition.toFloat(), bottomSheetFullSlider.valueTo)
             bottomSheetFullPosition.text = position
         }
         updateLyric(duration)
