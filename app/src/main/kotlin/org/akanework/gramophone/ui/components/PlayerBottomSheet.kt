@@ -967,12 +967,12 @@ class PlayerBottomSheet private constructor(
 
                 val gradientDrawableUp = GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
+                    intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
                 )
                 gradientDrawableUp.gradientType = GradientDrawable.LINEAR_GRADIENT
                 val gradientDrawableDown = GradientDrawable(
                     GradientDrawable.Orientation.BOTTOM_TOP,
-                    intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
+                    intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
                 )
                 gradientDrawableDown.gradientType = GradientDrawable.LINEAR_GRADIENT
                 bottomSheetFullLyricGradientViewUp.background = gradientDrawableUp
@@ -1222,12 +1222,12 @@ class PlayerBottomSheet private constructor(
 
                     val gradientDrawableUp = GradientDrawable(
                         GradientDrawable.Orientation.TOP_BOTTOM,
-                        intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
+                        intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
                     )
                     gradientDrawableUp.gradientType = GradientDrawable.LINEAR_GRADIENT
                     val gradientDrawableDown = GradientDrawable(
                         GradientDrawable.Orientation.BOTTOM_TOP,
-                        intArrayOf(backgroundProcessedColor, Color.TRANSPARENT)
+                        intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
                     )
                     gradientDrawableDown.gradientType = GradientDrawable.LINEAR_GRADIENT
                     bottomSheetFullLyricGradientViewUp.background = gradientDrawableUp
