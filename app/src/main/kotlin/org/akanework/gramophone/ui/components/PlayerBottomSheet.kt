@@ -939,15 +939,15 @@ class PlayerBottomSheet private constructor(
                     ColorStateList.valueOf(colorSurfaceContainerHighest)
 
                 bottomSheetTimerButton.iconTint =
-                    selectorBackground
+                    ColorStateList.valueOf(colorOnSurface)
                 bottomSheetPlaylistButton.iconTint =
-                    selectorBackground
+                    ColorStateList.valueOf(colorOnSurface)
                 bottomSheetShuffleButton.iconTint =
                     selectorBackground
                 bottomSheetLoopButton.iconTint =
                     selectorBackground
                 bottomSheetLyricButton.iconTint =
-                    selectorBackground
+                    ColorStateList.valueOf(colorOnSurface)
                 bottomSheetFavoriteButton.iconTint =
                     selectorFavBackground
 
@@ -1194,15 +1194,15 @@ class PlayerBottomSheet private constructor(
                         ColorStateList.valueOf(colorSurfaceContainerHighest)
 
                     bottomSheetTimerButton.iconTint =
-                        selectorBackground
+                        ColorStateList.valueOf(colorOnSurface)
                     bottomSheetPlaylistButton.iconTint =
-                        selectorBackground
+                        ColorStateList.valueOf(colorOnSurface)
                     bottomSheetShuffleButton.iconTint =
                         selectorBackground
                     bottomSheetLoopButton.iconTint =
                         selectorBackground
                     bottomSheetLyricButton.iconTint =
-                        selectorBackground
+                        ColorStateList.valueOf(colorOnSurface)
                     bottomSheetFavoriteButton.iconTint =
                         selectorFavBackground
 

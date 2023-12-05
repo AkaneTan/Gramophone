@@ -389,7 +389,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24sp"
-                app:iconTint="@color/sl_check_button" />
+                app:iconTint="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sheet_loop"
@@ -458,11 +458,11 @@
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 android:saveEnabled="false"
-                app:icon="@drawable/timer_art"
+                app:icon="@drawable/sl_check_timer"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24sp"
-                app:iconTint="@color/sl_check_button" />
+                app:iconTint="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/playlist"
