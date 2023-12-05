@@ -37,7 +37,8 @@
             android:layout_marginStart="4dp"
             android:layout_gravity="center_vertical"
             android:importantForAccessibility="no"
-            tools:src="@drawable/settings_art" />
+            tools:src="@drawable/settings_art"
+            app:tint="?attr/colorOnSurface" />
 
         <LinearLayout
             android:layout_marginStart="20dp"
@@ -64,13 +65,6 @@
                 tools:text="Summary" />
 
         </LinearLayout>
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_separator"
-            android:layout_marginEnd="14dp" />
 
         <TextView
             android:id="@+id/seekbar_value"

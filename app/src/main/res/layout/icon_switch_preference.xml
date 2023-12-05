@@ -30,6 +30,7 @@
         android:layout_marginStart="4dp"
         android:layout_gravity="center_vertical"
         android:importantForAccessibility="no"
+        app:tint="?attr/colorOnSurface"
         tools:src="@drawable/settings_art">
 
     </ImageView>
