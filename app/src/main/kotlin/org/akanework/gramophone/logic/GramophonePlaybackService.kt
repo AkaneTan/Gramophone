@@ -162,8 +162,6 @@ class GramophonePlaybackService : MediaLibraryService(),
                 .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
         )
             .setWakeMode(C.WAKE_MODE_LOCAL)
-            // we seek with SeekBar on a touchscreen anyway, we can afford loosing some exactness
-            .setSeekParameters(SeekParameters.CLOSEST_SYNC)
             .setSkipSilenceEnabled(prefs.getBoolean("skip_silence", false))
             .setAudioAttributes(
                 AudioAttributes
