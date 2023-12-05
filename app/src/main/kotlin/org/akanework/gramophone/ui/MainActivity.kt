@@ -65,7 +65,11 @@ import org.akanework.gramophone.ui.fragments.settings.MainSettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
-
+/**
+ * MainActivity:
+ *   Core of gramophone, one and the only activity
+ * used across the application.
+ */
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -82,29 +86,46 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
 
-    fun navigateDrawer(int: Int) {
+    /**
+     * navigateDrawer:
+     *   Used to navigate activity drawer in child fragments
+     *
+     * @param targetDrawer: Target drawer
+     */
+    fun navigateDrawer(targetDrawer: Int) {
         drawerLayout.open()
-        navigationView.setCheckedItem(tabs[int])
+        navigationView.setCheckedItem(tabs[targetDrawer])
     }
 
+    /**
+     * updateLibrary:
+     *   Calls [updateLibraryWithInCoroutine] in MediaStoreUtils and updates library.
+     */
     private fun updateLibrary() {
         CoroutineScope(Dispatchers.Default).launch {
             updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
-
         }
     }
 
+    /**
+     * onCreate - core of MainActivity.
+     */
     @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // This is required for fragment navigate animation.
         ActivityCompat.postponeEnterTransition(this)
 
+        // Set cutout modes if target system is newer than pie.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val params = window.attributes
             params.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             window.attributes = params
         }
+
+        // Set edge-to-edge contents.
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
@@ -123,10 +144,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val rootContainer = findViewById<View>(R.id.rootContainer)
         val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
+
         // Initialize layouts.
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.navigation_view)
 
+        // Process our own color here.
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 coordinatorLayout,
@@ -136,10 +159,13 @@ class MainActivity : AppCompatActivity() {
             this,
             true
         )
+
+        // Override google's colors.
         coordinatorLayout.setBackgroundColor(processColor)
         drawerLayout.setBackgroundColor(processColor)
         navigationView.setBackgroundColor(processColor)
 
+        // Adjust insets so that bottom sheet can look more normal.
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             rootContainer.setPadding(navBarInset.left, 0, navBarInset.right, 0)
@@ -147,6 +173,7 @@ class MainActivity : AppCompatActivity() {
             return@setOnApplyWindowInsetsListener insets
         }
 
+        // Check all permissions.
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             && ContextCompat.checkSelfPermission(
                 this,
@@ -175,18 +202,23 @@ class MainActivity : AppCompatActivity() {
                 PERMISSION_READ_MEDIA_AUDIO,
             )
         } else {
+            // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
                 updateLibrary()
             }
         }
+
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
 
+        // Also adjust bottom sheet's insets.
         ViewCompat.setOnApplyWindowInsetsListener(navigationView) { view, insets ->
             val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             navigationView.setPadding(navBarInset.left, 0, 0, navBarInset.bottom)
             view.onApplyWindowInsets(insets.toWindowInsets())
             return@setOnApplyWindowInsetsListener insets
         }
+
+        // Bind navigationView's behavior.
         navigationView.setNavigationItemSelectedListener {
             val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
             val playerLayout = getPlayerSheet()
@@ -201,7 +233,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.refresh -> {
                     CoroutineScope(Dispatchers.Default).launch {
                         updateLibraryWithInCoroutine(libraryViewModel, applicationContext)
+
+                        // Show a snack bar when updating is completed.
                         withContext(Dispatchers.Main) {
+
                             val snackBar =
                                 Snackbar.make(
                                     fragmentContainerView,
@@ -214,6 +249,11 @@ class MainActivity : AppCompatActivity() {
                             snackBar.setAction(R.string.dismiss) {
                                 snackBar.dismiss()
                             }
+
+                            /*
+                             * Let's override snack bar's color here so it would
+                             * adapt dark mode.
+                             */
                             snackBar.setBackgroundTint(
                                 MaterialColors.getColor(
                                     snackBar.view,
@@ -232,6 +272,8 @@ class MainActivity : AppCompatActivity() {
                                     com.google.android.material.R.attr.colorOnSurface,
                                 ),
                             )
+
+                            // Set an anchor for snack bar.
                             if (playerLayout.visible && playerLayout.actuallyVisible)
                                 snackBar.anchorView = playerLayout
                             snackBar.show()
@@ -249,15 +291,18 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.shuffle -> {
+                    // Call shuffle method.
                     shuffle()
                 }
 
                 R.id.equalizer -> {
+                    // Start system EQ here.
                     val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
                         .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
                     try {
                         startActivity.launch(intent)
                     } catch (e: Exception) {
+                        // Let's show a toast here if no system inbuilt EQ was found.
                         Toast.makeText(
                             applicationContext,
                             R.string.equalizer_not_found,
@@ -286,6 +331,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * onRequestPermissionResult:
+     *   Update library after permission is granted.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -333,6 +382,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * shuffle:
+     *   Called by child fragment / drawer. It calls
+     * controller's shuffle method.
+     */
     fun shuffle() {
         libraryViewModel.mediaItemList.value?.takeIf { it.isNotEmpty() }?.let { it1 ->
             val controller = getPlayer()
@@ -344,6 +398,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * startFragment:
+     *   Used by child fragments / drawer to start
+     * a fragment inside MainActivity's fragment
+     * scope.
+     *
+     * @param frag: Target fragment.
+     */
     fun startFragment(frag: Fragment) {
         supportFragmentManager
             .beginTransaction()
@@ -357,6 +419,18 @@ class MainActivity : AppCompatActivity() {
         }, 50)
     }
 
+    /**
+     * getPlayerSheet:
+     *   Used by child fragment to get player sheet's
+     *  view. Notice this would always return a non-null
+     *  object since player layout is fixed in main
+     *  activity's layout.
+     */
     fun getPlayerSheet(): PlayerBottomSheet = findViewById(R.id.player_layout)
+
+    /**
+     * getPlayer:
+     *   Returns a media controller.
+     */
     fun getPlayer() = getPlayerSheet().getPlayer()
 }
