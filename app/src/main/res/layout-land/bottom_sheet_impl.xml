@@ -182,6 +182,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom="32dp"
+                android:minHeight="70dp"
+                android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/slider"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -191,7 +193,7 @@
                 <org.akanework.gramophone.ui.components.MarqueeTextView
                     android:id="@+id/full_song_name"
                     android:layout_width="match_parent"
-                    android:layout_height="34dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
@@ -203,13 +205,13 @@
                 <org.akanework.gramophone.ui.components.MarqueeTextView
                     android:id="@+id/full_song_artist"
                     android:layout_width="match_parent"
-                    android:layout_height="26dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textFontWeight="500"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
@@ -289,8 +291,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sheet_mid_button"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="18dp"
                 android:insetLeft="0dp"
@@ -311,8 +313,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sheet_previous_song"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_gravity="center"
                 android:layout_marginEnd="8dp"
                 android:layout_toStartOf="@id/sheet_mid_button"
@@ -334,8 +336,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sheet_next_song"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_gravity="center"
                 android:layout_marginStart="8dp"
                 android:layout_toEndOf="@id/sheet_mid_button"
