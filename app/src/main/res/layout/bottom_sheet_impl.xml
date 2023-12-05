@@ -194,7 +194,7 @@
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
                     android:textFontWeight="500"
-                    android:textSize="23sp"
+                    android:textSize="24sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
@@ -202,12 +202,12 @@
                     android:id="@+id/full_song_artist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="2dp"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textFontWeight="500"
-                    android:textSize="17sp"
+                    android:textSize="18sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
@@ -270,7 +270,6 @@
                     android:layout_gravity="start"
                     android:text="@string/default_time"
                     android:textColor="?attr/colorAccent"
-                    android:textSize="13sp"
                     android:textFontWeight="600"
                     tools:targetApi="p" />
 
@@ -281,7 +280,6 @@
                     android:layout_gravity="end"
                     android:text="@string/default_time"
                     android:textColor="?attr/colorAccent"
-                    android:textSize="13sp"
                     android:textFontWeight="600"
                     tools:targetApi="p" />
 
