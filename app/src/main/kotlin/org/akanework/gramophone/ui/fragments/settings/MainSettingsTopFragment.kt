@@ -87,6 +87,15 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
                     .add(R.id.container, AudioSettingsFragment())
                     .commit()
             }
+            "experimental" -> {
+                val supportFragmentManager = requireActivity().supportFragmentManager
+                supportFragmentManager
+                    .beginTransaction()
+                    .addToBackStack(System.currentTimeMillis().toString())
+                    .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
+                    .add(R.id.container, ExperimentalSettingsFragment())
+                    .commit()
+            }
         }
         return super.onPreferenceTreeClick(preference)
     }

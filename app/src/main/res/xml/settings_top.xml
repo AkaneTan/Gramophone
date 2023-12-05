@@ -47,6 +47,13 @@
         android:layout="@layout/basic_preference" />
 
     <Preference
+        android:key="experimental"
+        android:title="@string/settings_experimental_settings"
+        android:summary="@string/settings_experimental_settings_summary"
+        android:icon="@drawable/ic_experiment"
+        android:layout="@layout/basic_preference"/>
+
+    <Preference
         android:key="about"
         android:title="@string/settings_about_app"
         android:summary="@string/settings_about_gramophone"

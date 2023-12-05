@@ -993,8 +993,16 @@ class PlayerBottomSheet private constructor(
                     mediaItem?.mediaMetadata?.artworkUri
                 )
                 val originalBitmap: Bitmap = bitmap
-                val targetWidth = bitmap.width / 16
-                val targetHeight = bitmap.height / 16
+                val targetWidth =
+                    if (prefs.getBoolean("color_accuracy", false))
+                        bitmap.width / 4
+                    else
+                        bitmap.width / 16
+                val targetHeight =
+                    if (prefs.getBoolean("color_accuracy", false))
+                        bitmap.height / 4
+                    else
+                        bitmap.width / 16
                 val scaledBitmap =
                     Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true)
 
