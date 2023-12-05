@@ -198,7 +198,7 @@
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
                     android:textFontWeight="500"
-                    android:textSize="24sp"
+                    android:textSize="23sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
@@ -273,6 +273,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:text="@string/default_time"
+                    android:textSize="13sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textFontWeight="500"
                     tools:targetApi="p" />
@@ -283,6 +284,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="@string/default_time"
+                    android:textSize="13sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textFontWeight="500"
                     tools:targetApi="p" />

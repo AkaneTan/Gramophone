@@ -194,7 +194,7 @@
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
                     android:textFontWeight="500"
-                    android:textSize="24sp"
+                    android:textSize="23sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
@@ -270,6 +270,7 @@
                     android:layout_gravity="start"
                     android:text="@string/default_time"
                     android:textColor="?attr/colorAccent"
+                    android:textSize="13sp"
                     android:textFontWeight="600"
                     tools:targetApi="p" />
 
@@ -280,6 +281,7 @@
                     android:layout_gravity="end"
                     android:text="@string/default_time"
                     android:textColor="?attr/colorAccent"
+                    android:textSize="13sp"
                     android:textFontWeight="600"
                     tools:targetApi="p" />
 
