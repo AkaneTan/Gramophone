@@ -607,7 +607,7 @@ class PlayerBottomSheet private constructor(
 
             if (newIndex != -1 &&
                 duration != null &&
-                newIndex != bottomSheetFullLyricAdapter.currentBoldPos) {
+                newIndex != bottomSheetFullLyricAdapter.currentFocusPos) {
                 val smoothScroller = createSmoothScroller()
                 smoothScroller.targetPosition = newIndex
                 bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
@@ -1626,7 +1626,7 @@ class PlayerBottomSheet private constructor(
             -1
         )
 
-        var currentBoldPos = -1
+        var currentFocusPos = -1
         private var currentTranslationPos = -1
 
         override fun onCreateViewHolder(
@@ -1667,9 +1667,8 @@ class PlayerBottomSheet private constructor(
                 this.textSize = textSize
                 setPadding(10.px, paddingTop, 10.px, paddingBottom)
 
-                val isBold = position == currentBoldPos || position == currentTranslationPos
-                typeface = if (isBold) Typeface.defaultFromStyle(Typeface.BOLD) else Typeface.DEFAULT
-                setTextColor(if (isBold) highlightTextColor else defaultTextColor)
+                val isFocus = position == currentFocusPos || position == currentTranslationPos
+                setTextColor(if (isFocus) highlightTextColor else defaultTextColor)
             }
         }
 
@@ -1690,12 +1689,12 @@ class PlayerBottomSheet private constructor(
         }
 
         fun updateHighlight(position: Int) {
-            if (currentBoldPos == position) return
+            if (currentFocusPos == position) return
             if (position >= 0) {
-                currentBoldPos.let {
+                currentFocusPos.let {
                     notifyItemChanged(it)
-                    currentBoldPos = position
-                    notifyItemChanged(currentBoldPos)
+                    currentFocusPos = position
+                    notifyItemChanged(currentFocusPos)
                 }
 
                 if (position + 1 < lyricList.size &&
@@ -1710,7 +1709,7 @@ class PlayerBottomSheet private constructor(
                     currentTranslationPos = -1
                 }
             } else {
-                currentBoldPos = -1
+                currentFocusPos = -1
                 currentTranslationPos = -1
             }
         }
