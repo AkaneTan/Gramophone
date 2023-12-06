@@ -22,17 +22,16 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.media3.common.C
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
-    private val pluralStr: Int,
-    private val indicatorResource: Int
+    private val pluralStr: Int
 ) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
 
     protected val context: Context = adapter.context
@@ -48,6 +47,8 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 
     final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val count = adapter.itemCount
+        holder.playAll.visibility =
+            if (adapter is SongAdapter) View.VISIBLE else View.GONE
         holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
         holder.sortButton.visibility =
             if (adapter.sortType != Sorter.Type.None || adapter.ownsView) View.VISIBLE else View.GONE
@@ -121,7 +122,15 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
             onSortButtonPressed(popupMenu)
             popupMenu.show()
         }
-        holder.indicator.setImageResource(indicatorResource)
+        holder.playAll.setOnClickListener {
+            if (adapter is SongAdapter) {
+                val mediaController = adapter.getActivity().getPlayer()
+                val songList = adapter.getSongList()
+                mediaController.setMediaItems(songList, 0, C.TIME_UNSET)
+                mediaController.prepare()
+                mediaController.play()
+            }
+        }
     }
 
     protected open fun onSortButtonPressed(popupMenu: PopupMenu) {}
@@ -133,8 +142,8 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
         view: View,
     ) : RecyclerView.ViewHolder(view) {
         val sortButton: MaterialButton = view.findViewById(R.id.sort)
+        val playAll: MaterialButton = view.findViewById(R.id.play_all)
         val counter: TextView = view.findViewById(R.id.song_counter)
-        val indicator: ImageView = view.findViewById(R.id.indicator)
     }
 
     fun updateSongCounter() {

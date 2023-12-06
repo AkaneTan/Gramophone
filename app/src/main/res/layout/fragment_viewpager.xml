@@ -11,9 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        app:contentScrim="?attr/colorSurface"
-        app:liftOnScrollColor="?attr/colorSurface"
-        app:statusBarScrim="?attr/colorSurface">
+        app:contentScrim="?attr/colorSurfaceContainer"
+        app:liftOnScrollColor="?attr/colorSurfaceContainer"
+        app:statusBarScrim="?attr/colorSurfaceContainer">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
@@ -26,26 +26,28 @@
             app:title="@string/app_name"
             app:titleTextAppearance="@style/HeadlineTextAppearance"
             app:titleCentered="true"
+            android:background="?attr/colorSurfaceContainer"
             tools:ignore="RtlSymmetry" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@android:color/transparent"
+            android:paddingBottom="12dp"
+            android:background="?attr/colorSurfaceContainer"
             app:tabBackground="@android:color/transparent"
             app:tabIndicator="@drawable/selected_chip_background"
             app:tabIndicatorGravity="stretch"
             app:tabIndicatorFullWidth="true"
             app:tabMinWidth="0dp"
-            app:tabRippleColor="?attr/colorSurface"
-            app:tabIndicatorColor="?attr/colorSecondaryContainer"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabIndicatorColor="?attr/colorTertiaryContainer"
             app:tabMode="scrollable"
             app:tabPaddingStart="14dp"
             app:tabPaddingEnd="14dp"
             app:tabTextAppearance="@style/TabTextAppearance"
             app:tabTextColor="?attr/colorOnSurfaceVariant"
-            app:tabSelectedTextColor="?attr/colorOnSecondaryContainer"
+            app:tabSelectedTextColor="?attr/colorOnTertiaryContainer"
             tools:tabContentStart="28dp">
 
             <com.google.android.material.tabs.TabItem

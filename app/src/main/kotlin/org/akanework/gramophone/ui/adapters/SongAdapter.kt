@@ -74,8 +74,7 @@ class SongAdapter(
     else Sorter.Type.None,
     pluralStr = R.plurals.songs,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.COMPACT_LIST,
-    indicatorResource = R.drawable.ic_music_note
+    defaultLayoutType = LayoutType.COMPACT_LIST
 ) {
 
     constructor(
@@ -89,6 +88,10 @@ class SongAdapter(
             : this(mainActivity, null, canSort, helper, ownsView, isTrackDiscNumAvailable) {
         updateList(songList, now = true, false)
     }
+
+    fun getSongList() = list
+
+    fun getActivity() = mainActivity
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
 

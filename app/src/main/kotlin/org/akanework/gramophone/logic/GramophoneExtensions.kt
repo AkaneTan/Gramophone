@@ -31,6 +31,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RoundRectShape
+import androidx.core.content.ContextCompat
 
 fun MediaController.playOrPause() {
     if (isPlaying) {
@@ -109,6 +113,10 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
 val Int.dp: Int get() = (this / getSystem().displayMetrics.density).toInt()
 
 val Int.px: Int get() = (this * getSystem().displayMetrics.density).toInt()
+
+val Float.dp: Float get() = this / getSystem().displayMetrics.density
+
+val Float.px: Float get() = this * getSystem().displayMetrics.density
 
 // Custom commands handling for client side
 const val SERVICE_SET_TIMER = "set_timer"

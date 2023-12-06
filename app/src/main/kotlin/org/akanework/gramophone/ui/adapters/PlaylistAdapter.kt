@@ -40,8 +40,7 @@ class PlaylistAdapter(
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.items,
     ownsView = true,
-    defaultLayoutType = LayoutType.LIST,
-    indicatorResource = R.drawable.ic_playlist_play
+    defaultLayoutType = LayoutType.LIST
 ) {
 
     override val defaultCover = R.drawable.ic_default_cover_playlist

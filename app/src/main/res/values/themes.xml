@@ -3,6 +3,15 @@
     <style name="Base.Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/black</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
+    </style>
+
+    <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/BottomPlayerCornerShape</item>
     </style>
 
     <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">
@@ -19,7 +28,11 @@
     </style>
 
     <style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
-        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.None</item>
+        <item name="shapeAppearance">@style/BottomPlayerCornerShape</item>
+    </style>
+
+    <style name="BottomPlayerCornerShape">
+        <item name="cornerSize">0dp</item>
     </style>
 
     <style name="MediaPlayer.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">

@@ -74,7 +74,7 @@ class ViewPagerFragment : BaseFragment(true) {
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
-                android.R.attr.colorBackground
+                com.google.android.material.R.attr.colorSurfaceContainer
             ),
             ColorUtils.ColorType.COLOR_BACKGROUND,
             requireContext(),

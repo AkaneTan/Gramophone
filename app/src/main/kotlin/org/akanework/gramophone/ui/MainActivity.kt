@@ -33,6 +33,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -162,10 +163,28 @@ class MainActivity : AppCompatActivity() {
             true
         )
 
+        val colorSurfaceContainer = ColorUtils.getColor(
+            MaterialColors.getColor(
+                rootContainer,
+                com.google.android.material.R.attr.colorSurfaceContainer
+            ),
+            ColorUtils.ColorType.COLOR_BACKGROUND,
+            this,
+            true
+        )
+
         // Override google's colors.
         coordinatorLayout.setBackgroundColor(processColor)
         drawerLayout.setBackgroundColor(processColor)
         navigationView.setBackgroundColor(processColor)
+
+        val previewPlayer = findViewById<ConstraintLayout>(R.id.preview_player)
+        previewPlayer.setBackgroundColor(colorSurfaceContainer)
+        previewPlayer.backgroundTintList =
+                ColorStateList.valueOf(colorSurfaceContainer)
+        getPlayerSheet().setBackgroundColor(colorSurfaceContainer)
+        getPlayerSheet().backgroundTintList =
+                ColorStateList.valueOf(colorSurfaceContainer)
 
         // Adjust insets so that bottom sheet can look more normal.
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
