@@ -30,6 +30,8 @@ class GramophoneApplication : Application() {
         super.onCreate()
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
+        // Set application theme when launching.
         when (prefs.getString("theme_mode", "0")) {
             "0" -> {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
@@ -43,10 +45,14 @@ class GramophoneApplication : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
+
+        // Decide whether to override amoled background color or not
         ColorUtils.overrideGlobalAmoledColor = prefs.getBoolean("oled", false)
 
+        // Apply dynamic colors.
         DynamicColors.applyToActivitiesIfAvailable(this)
 
+        // Set up BugHandlerActivity.
         Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
             val exceptionMessage = android.util.Log.getStackTraceString(paramThrowable)
 

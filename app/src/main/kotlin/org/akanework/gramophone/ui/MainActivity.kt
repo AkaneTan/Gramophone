@@ -69,6 +69,8 @@ import kotlin.random.Random
  * MainActivity:
  *   Core of gramophone, one and the only activity
  * used across the application.
+ *
+ * @author AkaneTan, nift4
  */
 class MainActivity : AppCompatActivity() {
 
@@ -312,6 +314,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.about -> {
+                    // Display a card here.
                     val drawable = GradientDrawable()
                     drawable.color =
                         ColorStateList.valueOf(processColor)

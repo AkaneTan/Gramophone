@@ -24,7 +24,10 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-
+/**
+ * BugHandlerActivity:
+ *   An activity makes crash reporting easier.
+ */
 class BugHandlerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

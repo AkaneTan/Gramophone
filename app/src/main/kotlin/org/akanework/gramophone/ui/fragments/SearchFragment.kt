@@ -45,6 +45,13 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
+/**
+ * SearchFragment:
+ *   A fragment that contains a search bar which browses
+ * the library finding items matching user input.
+ *
+ * @author AkaneTan
+ */
 class SearchFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private val filteredList: MutableList<MediaItem> = mutableListOf()
@@ -63,6 +70,7 @@ class SearchFragment : BaseFragment(false) {
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
         val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
 
+        // Get our processed colors.
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 rootView,
@@ -72,12 +80,15 @@ class SearchFragment : BaseFragment(false) {
             requireContext(),
             true
         )
+
+        // Overlap google's color with our color.
         rootView.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter
 
+        // Build FastScroller.
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(songAdapter)
             useMd2Style()
@@ -90,8 +101,11 @@ class SearchFragment : BaseFragment(false) {
             if (text.isNullOrBlank()) {
                 songAdapter.updateList(listOf(), now = false, true)
             } else {
+                // Launch a coroutine for searching in the library.
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+                    // Clear the list from the last search.
                     filteredList.clear()
+                    // Filter the library.
                     libraryViewModel.mediaItemList.value?.filter {
                         val isMatchingTitle = it.mediaMetadata.title?.contains(text, true) ?: false
                         val isMatchingAlbum =

@@ -22,6 +22,13 @@ import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 
+/**
+ * LibraryViewModel:
+ *   A viewmodel that contains library information.
+ * Used across the application.
+ *
+ * @author AkaneTan, nift4
+ */
 class LibraryViewModel : ViewModel() {
     val mediaItemList: MutableLiveData<MutableList<MediaItem>> = MutableLiveData(mutableListOf())
     val albumItemList: MutableLiveData<MutableList<MediaStoreUtils.Album>> =

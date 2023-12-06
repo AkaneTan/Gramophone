@@ -33,7 +33,13 @@ import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 
-
+/**
+ * ViewPagerFragment:
+ *   A fragment that's in charge of displaying tabs
+ * and is connected to the drawer.
+ *
+ * @author AkaneTan
+ */
 @androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : BaseFragment(true) {
     override fun onCreateView(
@@ -41,11 +47,11 @@ class ViewPagerFragment : BaseFragment(true) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+
         val rootView = inflater.inflate(R.layout.fragment_viewpager, container, false)
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
-
         val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
 
         topAppBar.setOnMenuItemClickListener {
@@ -64,6 +70,7 @@ class ViewPagerFragment : BaseFragment(true) {
             (requireActivity() as MainActivity).navigateDrawer(viewPager2.currentItem)
         }
 
+        // Get our processed color from google's palette
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
@@ -74,11 +81,14 @@ class ViewPagerFragment : BaseFragment(true) {
             true
         )
 
+        // Overlap google's color with our color.
         topAppBar.setBackgroundColor(processColor)
         appBarLayout.setBackgroundColor(processColor)
         tabLayout.setBackgroundColor(processColor)
 
         // Connect ViewPager2.
+
+        // Set this to 9999 so it won't lag anymore.
         viewPager2.offscreenPageLimit = 9999
         val adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
         viewPager2.adapter = adapter
@@ -86,7 +96,12 @@ class ViewPagerFragment : BaseFragment(true) {
             tab.text = getString(adapter.getLabelResId(position))
         }.attach()
 
-        val lastTab = tabLayout.getTabAt(7)!!.view
+        /*
+         * Add margin to last and first tab.
+         * There's no attribute to let you set margin
+         * to the last tab.
+         */
+        val lastTab = tabLayout.getTabAt(tabLayout.tabCount - 1)!!.view
         val firstTab = tabLayout.getTabAt(0)!!.view
         val lastParam = lastTab.layoutParams as ViewGroup.MarginLayoutParams
         val firstParam = firstTab.layoutParams as ViewGroup.MarginLayoutParams
