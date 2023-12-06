@@ -44,6 +44,8 @@
             app:tabPaddingStart="14dp"
             app:tabPaddingEnd="14dp"
             app:tabTextAppearance="@style/TabTextAppearance"
+            app:tabTextColor="?attr/colorOnSurfaceVariant"
+            app:tabSelectedTextColor="?attr/colorOnSecondaryContainer"
             tools:tabContentStart="28dp">
 
             <com.google.android.material.tabs.TabItem
