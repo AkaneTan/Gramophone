@@ -76,7 +76,7 @@ class ViewPagerFragment : BaseFragment(true) {
                 topAppBar,
                 com.google.android.material.R.attr.colorSurfaceContainer
             ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
+            ColorUtils.ColorType.COLOR_BACKGROUND_TINTED,
             requireContext(),
             true
         )

@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                 rootContainer,
                 com.google.android.material.R.attr.colorSurfaceContainer
             ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
+            ColorUtils.ColorType.COLOR_BACKGROUND_TINTED,
             this,
             true
         )
