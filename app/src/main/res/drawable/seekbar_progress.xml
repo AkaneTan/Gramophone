@@ -7,7 +7,7 @@
                 android:radius="256dp"/>
             <solid android:color="?attr/colorSurfaceContainerHighest"/>
             <size
-                android:height="4dp"/>
+                android:height="15dp"/>
         </shape>
     </item>
 
