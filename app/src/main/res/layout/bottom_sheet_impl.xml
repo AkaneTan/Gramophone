@@ -482,13 +482,12 @@
         android:id="@+id/lyric_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:background="?attr/colorSurface"
         android:visibility="gone"
         android:scrollbars="none"
         android:clipToPadding="false"
-        android:paddingTop="42dp"
-        android:paddingBottom="42dp"
+        android:paddingTop="128dp"
+        android:paddingBottom="128dp"
         tools:listitem="@layout/lyrics"/>
 
 </merge>
