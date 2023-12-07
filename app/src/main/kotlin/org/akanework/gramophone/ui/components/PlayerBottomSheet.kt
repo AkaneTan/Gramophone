@@ -23,10 +23,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -154,8 +152,6 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetFullLyricList: MutableList<MediaStoreUtils.Lyric> = mutableListOf()
     private val bottomSheetFullLyricAdapter: LyricAdapter = LyricAdapter(bottomSheetFullLyricList, activity)
     private val bottomSheetFullLyricLinearLayoutManager = LinearLayoutManager(context)
-    private val bottomSheetFullLyricGradientViewUp: View
-    private val bottomSheetFullLyricGradientViewDown: View
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
     private val fullPlayer: View
@@ -242,8 +238,6 @@ class PlayerBottomSheet private constructor(
         bottomSheetPlaylistButton = findViewById(R.id.playlist)
         bottomSheetLyricButton = findViewById(R.id.lyrics)
         bottomSheetFullLyricRecyclerView = findViewById(R.id.lyric_frame)
-        bottomSheetFullLyricGradientViewUp = findViewById(R.id.gradient_view_up)
-        bottomSheetFullLyricGradientViewDown = findViewById(R.id.gradient_view_down)
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
         fullPlayerFinalColor = MaterialColors.getColor(
@@ -519,8 +513,6 @@ class PlayerBottomSheet private constructor(
                 it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
             }
             bottomSheetFullLyricRecyclerView.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetFullLyricGradientViewUp.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
-            bottomSheetFullLyricGradientViewDown.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
         }
 
         bottomSheetShuffleButton.setOnClickListener {
@@ -682,8 +674,6 @@ class PlayerBottomSheet private constructor(
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                         View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
                         standardBottomSheetBehavior!!.startBackProgress(backEvent)
@@ -694,8 +684,6 @@ class PlayerBottomSheet private constructor(
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                         View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
                         standardBottomSheetBehavior!!.updateBackProgress(backEvent)
@@ -706,8 +694,6 @@ class PlayerBottomSheet private constructor(
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                             View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
                     standardBottomSheetBehavior!!.handleBackInvoked()
@@ -718,8 +704,6 @@ class PlayerBottomSheet private constructor(
                     if (bottomSheetFullLyricRecyclerView.visibility ==
                         View.VISIBLE) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewUp.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
-                        bottomSheetFullLyricGradientViewDown.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
                         standardBottomSheetBehavior!!.cancelBackProgress()
@@ -964,19 +948,6 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullDuration.setTextColor(
                     colorAccent
                 )
-
-                val gradientDrawableUp = GradientDrawable(
-                    GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
-                )
-                gradientDrawableUp.gradientType = GradientDrawable.LINEAR_GRADIENT
-                val gradientDrawableDown = GradientDrawable(
-                    GradientDrawable.Orientation.BOTTOM_TOP,
-                    intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
-                )
-                gradientDrawableDown.gradientType = GradientDrawable.LINEAR_GRADIENT
-                bottomSheetFullLyricGradientViewUp.background = gradientDrawableUp
-                bottomSheetFullLyricGradientViewDown.background = gradientDrawableDown
             }
         }
     }
@@ -1219,19 +1190,6 @@ class PlayerBottomSheet private constructor(
                     bottomSheetFullDuration.setTextColor(
                         colorAccent
                     )
-
-                    val gradientDrawableUp = GradientDrawable(
-                        GradientDrawable.Orientation.TOP_BOTTOM,
-                        intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
-                    )
-                    gradientDrawableUp.gradientType = GradientDrawable.LINEAR_GRADIENT
-                    val gradientDrawableDown = GradientDrawable(
-                        GradientDrawable.Orientation.BOTTOM_TOP,
-                        intArrayOf(backgroundProcessedColor, backgroundProcessedColor, backgroundProcessedColor, Color.TRANSPARENT)
-                    )
-                    gradientDrawableDown.gradientType = GradientDrawable.LINEAR_GRADIENT
-                    bottomSheetFullLyricGradientViewUp.background = gradientDrawableUp
-                    bottomSheetFullLyricGradientViewDown.background = gradientDrawableDown
                 }
             } catch (e: Exception) {
                 if (e is FileNotFoundException) {

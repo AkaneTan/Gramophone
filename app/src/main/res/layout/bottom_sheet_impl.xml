@@ -476,32 +476,19 @@
                 app:iconTint="?attr/colorOnSurface" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/lyric_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorSurface"
-            android:visibility="gone"
-            android:scrollbars="none"
-            android:clipToPadding="false"
-            android:paddingTop="42dp"
-            android:paddingBottom="42dp"
-            tools:listitem="@layout/lyrics"/>
-
-        <View
-            android:id="@+id/gradient_view_up"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/lyric_frame" />
-
-        <View
-            android:id="@+id/gradient_view_down"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/lyric_frame" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/lyric_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="?attr/colorSurface"
+        android:visibility="gone"
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingTop="42dp"
+        android:paddingBottom="42dp"
+        tools:listitem="@layout/lyrics"/>
 
 </merge>
