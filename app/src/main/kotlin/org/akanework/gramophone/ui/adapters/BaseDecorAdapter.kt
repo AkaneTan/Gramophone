@@ -48,7 +48,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
     final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val count = adapter.itemCount
         holder.playAll.visibility =
-            if (adapter is SongAdapter) View.VISIBLE else View.GONE
+            if (adapter is SongAdapter && adapter.sortType != Sorter.Type.None) View.VISIBLE else View.GONE
         holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
         holder.sortButton.visibility =
             if (adapter.sortType != Sorter.Type.None || adapter.ownsView) View.VISIBLE else View.GONE
