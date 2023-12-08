@@ -241,7 +241,8 @@ class SongAdapter(
             Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
             Sorter.Type.ByArtistDescending, Sorter.Type.ByArtistAscending,
             Sorter.Type.ByAlbumTitleDescending, Sorter.Type.ByAlbumTitleAscending,
-            Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending
+            Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending,
+            Sorter.Type.ByAddDateDescending, Sorter.Type.ByAddDateAscending
         )
     ) : Sorter.Helper<MediaItem>(types) {
         override fun getId(item: MediaItem): String {
@@ -266,6 +267,10 @@ class SongAdapter(
 
         override fun getCover(item: MediaItem): Uri? {
             return item.mediaMetadata.artworkUri
+        }
+
+        override fun getDate(item: MediaItem): Long {
+            return item.mediaMetadata.extras!!.getLong("AddDate")
         }
     }
 }

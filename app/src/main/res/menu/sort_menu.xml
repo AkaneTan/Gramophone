@@ -37,6 +37,12 @@
             android:orderInCategory="4"
             android:title="@string/sort_by_size"
             app:showAsAction="never" />
+        <item
+            android:id="@+id/date"
+            android:checked="false"
+            android:orderInCategory="5"
+            android:title="@string/sort_by_date"
+            app:showAsAction="never" />
     </group>
 
     <item

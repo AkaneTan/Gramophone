@@ -19,6 +19,9 @@ package org.akanework.gramophone.logic.utils
 
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * [CalculationUtils] contains some methods for internal
@@ -42,6 +45,18 @@ object CalculationUtils {
         }
         return "$minutes:$seconds"
     }
+
+    /**
+     * convertUnixTimestampToMonthDay:
+     *   Converts unix timestamp to Month - Day format.
+     */
+    fun convertUnixTimestampToMonthDay(unixTimestamp: Long): String =
+        SimpleDateFormat(
+            "MM-dd",
+            Locale.getDefault()
+        ).format(
+            Date(unixTimestamp * 1000)
+        )
 
     /**
      * Set the alpha component of `color` to be `alpha`.

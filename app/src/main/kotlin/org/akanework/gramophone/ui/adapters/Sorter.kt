@@ -19,6 +19,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.net.Uri
 import org.akanework.gramophone.logic.comparators.SupportComparator
+import org.akanework.gramophone.logic.utils.CalculationUtils
 
 class Sorter<T>(
     val sortingHelper: Helper<T>,
@@ -40,6 +41,7 @@ class Sorter<T>(
         open fun getAlbumTitle(item: T): String? = throw UnsupportedOperationException()
         open fun getAlbumArtist(item: T): String? = throw UnsupportedOperationException()
         open fun getSize(item: T): Int = throw UnsupportedOperationException()
+        open fun getDate(item: T): Long = throw UnsupportedOperationException()
         fun canGetTitle(): Boolean = typesSupported.contains(Type.ByTitleAscending)
                 || typesSupported.contains(Type.ByTitleDescending)
 
@@ -54,6 +56,9 @@ class Sorter<T>(
 
         fun canGetSize(): Boolean = typesSupported.contains(Type.BySizeAscending)
                 || typesSupported.contains(Type.BySizeDescending)
+
+        fun canGetDate(): Boolean = typesSupported.contains(Type.ByAddDateAscending)
+                || typesSupported.contains(Type.ByAddDateDescending)
     }
 
     fun interface NaturalOrderHelper<T> {
@@ -66,7 +71,8 @@ class Sorter<T>(
         ByAlbumTitleDescending, ByAlbumTitleAscending,
         ByAlbumArtistDescending, ByAlbumArtistAscending,
         BySizeDescending, BySizeAscending,
-        NaturalOrder, None
+        NaturalOrder, ByAddDateDescending, ByAddDateAscending,
+        None
     }
 
     fun getSupportedTypes(): Set<Type> {
@@ -141,6 +147,18 @@ class Sorter<T>(
                 )
             }
 
+            Type.ByAddDateDescending -> {
+                SupportComparator.createInversionComparator(
+                    compareBy { sortingHelper.getDate(it) }, true
+                )
+            }
+
+            Type.ByAddDateAscending -> {
+                SupportComparator.createInversionComparator(
+                    compareBy { sortingHelper.getDate(it) }, false
+                )
+            }
+
             Type.NaturalOrder -> {
                 SupportComparator.createInversionComparator(
                     compareBy { naturalOrderHelper!!.lookup(it) }, false
@@ -172,6 +190,10 @@ class Sorter<T>(
 
             Type.BySizeDescending, Type.BySizeAscending -> {
                 sortingHelper.getSize(item).toString()
+            }
+
+            Type.ByAddDateDescending, Type.ByAddDateAscending -> {
+                CalculationUtils.convertUnixTimestampToMonthDay(sortingHelper.getDate(item))
             }
 
             Type.NaturalOrder -> {
