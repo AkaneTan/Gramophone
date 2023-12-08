@@ -22,9 +22,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 
 class ExperimentalSettingsTopFragment : BasePreferenceFragment(),

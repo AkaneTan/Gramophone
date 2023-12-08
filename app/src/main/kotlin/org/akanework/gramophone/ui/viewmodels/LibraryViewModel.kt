@@ -24,7 +24,7 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils
 
 /**
  * LibraryViewModel:
- *   A viewmodel that contains library information.
+ *   A ViewModel that contains library information.
  * Used across the application.
  *
  * @author AkaneTan, nift4

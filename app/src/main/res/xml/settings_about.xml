@@ -20,43 +20,43 @@
     <Preference
         android:icon="@drawable/widgets_art"
         android:key="app_name"
+        android:layout="@layout/basic_preference"
         android:summary="@string/app_name"
-        android:title="@string/settings_app_name"
-        android:layout="@layout/basic_preference"/>
+        android:title="@string/settings_app_name" />
     <Preference
         android:icon="@drawable/ic_conversion_path"
         android:key="app_version"
+        android:layout="@layout/basic_preference"
         android:summary="@string/unknown_version"
-        android:title="@string/settings_version"
-        android:layout="@layout/basic_preference"/>
+        android:title="@string/settings_version" />
     <Preference
         android:icon="@drawable/ic_cookie"
         android:key="package_type"
+        android:layout="@layout/basic_preference"
         android:summary="@string/unknown_version"
-        android:title="@string/settings_package_type"
-        android:layout="@layout/basic_preference"/>
+        android:title="@string/settings_package_type" />
     <Preference
         android:icon="@drawable/artist_art"
+        android:layout="@layout/basic_preference"
         android:summary="@string/settings_contributors_detail"
-        android:title="@string/settings_contributors"
-        android:layout="@layout/basic_preference"/>
+        android:title="@string/settings_contributors" />
     <PreferenceCategory
         android:title="@string/settings_category_links"
         app:iconSpaceReserved="false">
         <Preference
             android:icon="@drawable/ic_language"
+            android:layout="@layout/basic_preference"
             android:summary="https://github.com/AkaneTan/Gramophone"
-            android:title="@string/settings_repository"
-            android:layout="@layout/basic_preference">
+            android:title="@string/settings_repository">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/AkaneTan/Gramophone" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_telegram"
+            android:layout="@layout/basic_preference"
             android:summary="@string/check_for_updates"
-            android:title="Telegram"
-            android:layout="@layout/basic_preference">
+            android:title="Telegram">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://t.me/AkaneDevRel" />

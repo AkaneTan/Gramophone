@@ -150,7 +150,8 @@ class PlayerBottomSheet private constructor(
     private val bottomSheetFullCoverFrame: MaterialCardView
     private val bottomSheetFullLyricRecyclerView: RecyclerView
     private val bottomSheetFullLyricList: MutableList<MediaStoreUtils.Lyric> = mutableListOf()
-    private val bottomSheetFullLyricAdapter: LyricAdapter = LyricAdapter(bottomSheetFullLyricList, activity)
+    private val bottomSheetFullLyricAdapter: LyricAdapter =
+        LyricAdapter(bottomSheetFullLyricList, activity)
     private val bottomSheetFullLyricLinearLayoutManager = LinearLayoutManager(context)
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
@@ -270,12 +271,19 @@ class PlayerBottomSheet private constructor(
             bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
             bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
         }
-        if (prefs.getBoolean("bold_title", false) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (prefs.getBoolean(
+                "bold_title",
+                false
+            ) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        ) {
             bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
         }
-        bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", context.resources.getInteger(R.integer.round_corner_radius)).px.toFloat()
+        bottomSheetFullCoverFrame.radius = prefs.getInt(
+            "album_round_corner",
+            context.resources.getInteger(R.integer.round_corner_radius)
+        ).px.toFloat()
 
         ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
             view.onApplyWindowInsets(insets.toWindowInsets())
@@ -450,7 +458,12 @@ class PlayerBottomSheet private constructor(
             recyclerView.layoutManager = LinearLayoutManager(context)
             recyclerView.adapter = playlistAdapter
             recyclerView.scrollToPosition(instance.currentMediaItemIndex)
-            FastScrollerBuilder(recyclerView).useMd2Style().setTrackDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_transparent)!!).build()
+            FastScrollerBuilder(recyclerView).useMd2Style().setTrackDrawable(
+                AppCompatResources.getDrawable(
+                    context,
+                    R.drawable.ic_transparent
+                )!!
+            ).build()
             playlistBottomSheet.show()
         }
 
@@ -599,7 +612,8 @@ class PlayerBottomSheet private constructor(
 
             if (newIndex != -1 &&
                 duration != null &&
-                newIndex != bottomSheetFullLyricAdapter.currentFocusPos) {
+                newIndex != bottomSheetFullLyricAdapter.currentFocusPos
+            ) {
                 val smoothScroller = createSmoothScroller()
                 smoothScroller.targetPosition = newIndex
                 bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
@@ -619,7 +633,13 @@ class PlayerBottomSheet private constructor(
                 boxEnd: Int,
                 snapPreference: Int
             ): Int {
-                return super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference) + (context.resources.displayMetrics.heightPixels / 3).dp
+                return super.calculateDtToFit(
+                    viewStart,
+                    viewEnd,
+                    boxStart,
+                    boxEnd,
+                    snapPreference
+                ) + (context.resources.displayMetrics.heightPixels / 3).dp
             }
 
             override fun getVerticalSnapPreference(): Int {
@@ -672,7 +692,8 @@ class PlayerBottomSheet private constructor(
             bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
                     if (bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE) {
+                        View.VISIBLE
+                    ) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
@@ -682,7 +703,8 @@ class PlayerBottomSheet private constructor(
 
                 override fun handleOnBackProgressed(backEvent: BackEventCompat) {
                     if (bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE) {
+                        View.VISIBLE
+                    ) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
@@ -692,17 +714,19 @@ class PlayerBottomSheet private constructor(
 
                 override fun handleOnBackPressed() {
                     if (bottomSheetFullLyricRecyclerView.visibility ==
-                            View.VISIBLE) {
+                        View.VISIBLE
+                    ) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
-                    standardBottomSheetBehavior!!.handleBackInvoked()
+                        standardBottomSheetBehavior!!.handleBackInvoked()
                     }
                 }
 
                 override fun handleOnBackCancelled() {
                     if (bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE) {
+                        View.VISIBLE
+                    ) {
                         bottomSheetFullLyricRecyclerView.fadOutAnimation(LYRIC_FADE_TRANSITION_SEC)
                         bottomSheetLyricButton.isChecked = false
                     } else {
@@ -817,7 +841,12 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
-            val backgroundProcessedColor = ColorUtils.getColor(colorSurface, ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED, context, true)
+            val backgroundProcessedColor = ColorUtils.getColor(
+                colorSurface,
+                ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
+                context,
+                true
+            )
 
             val surfaceTransition = ValueAnimator.ofArgb(
                 fullPlayerFinalColor,
@@ -1059,7 +1088,8 @@ class PlayerBottomSheet private constructor(
                     colorSurface,
                     ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
                     context,
-                    true)
+                    true
+                )
 
                 val surfaceTransition = ValueAnimator.ofArgb(
                     fullPlayerFinalColor,
@@ -1296,7 +1326,13 @@ class PlayerBottomSheet private constructor(
 
             try {
                 val audioFile =
-                    AudioFileIO.read(File(instance.currentMediaItem!!.mediaMetadata.extras!!.getString("Path")!!))
+                    AudioFileIO.read(
+                        File(
+                            instance.currentMediaItem!!.mediaMetadata.extras!!.getString(
+                                "Path"
+                            )!!
+                        )
+                    )
                 val tag = audioFile.tag
                 val lyrics = tag.getFirst(FieldKey.LYRICS)
                 val parsedLyrics = MediaStoreUtils.parseLrcString(lyrics)
@@ -1353,10 +1389,12 @@ class PlayerBottomSheet private constructor(
                         bottomSheetFullLyricList.subList(1, bottomSheetFullLyricList.size)
                     else
                         mutableListOf()
-                var parsedLyrics = mutableListOf(MediaStoreUtils.Lyric(
-                    0,
-                    context.getString(R.string.music_format_not_supported)
-                ))
+                var parsedLyrics = mutableListOf(
+                    MediaStoreUtils.Lyric(
+                        0,
+                        context.getString(R.string.music_format_not_supported)
+                    )
+                )
                 try {
                     val lrcFile = File(
                         instance.currentMediaItem!!.mediaMetadata.extras!!.getString("Path")!!
@@ -1502,7 +1540,8 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullControllerButton.icon =
                     AppCompatResources.getDrawable(
                         if (wrappedContext != null) wrappedContext!! else context,
-                        R.drawable.play_anim)
+                        R.drawable.play_anim
+                    )
                 bottomSheetFullControllerButton.background =
                     AppCompatResources.getDrawable(context, R.drawable.bg_play_anim)
                 bottomSheetFullControllerButton.icon.startAnimation()
@@ -1524,7 +1563,8 @@ class PlayerBottomSheet private constructor(
                 bottomSheetFullControllerButton.icon =
                     AppCompatResources.getDrawable(
                         if (wrappedContext != null) wrappedContext!! else context,
-                        R.drawable.pause_anim)
+                        R.drawable.pause_anim
+                    )
                 bottomSheetFullControllerButton.background =
                     AppCompatResources.getDrawable(context, R.drawable.bg_pause_anim)
                 bottomSheetFullControllerButton.icon.startAnimation()
@@ -1620,7 +1660,8 @@ class PlayerBottomSheet private constructor(
                 val textSize = if (lyric.isTranslation) 20f else 28f
                 val paddingTop = if (lyric.isTranslation) 2.px else 18.px
                 val paddingBottom = if (position + 1 < lyricList.size &&
-                    lyricList[position + 1].isTranslation) 2.px else 18.px
+                    lyricList[position + 1].isTranslation
+                ) 2.px else 18.px
 
                 this.textSize = textSize
                 setPadding(10.px, paddingTop, 10.px, paddingBottom)
@@ -1656,7 +1697,8 @@ class PlayerBottomSheet private constructor(
                 }
 
                 if (position + 1 < lyricList.size &&
-                    lyricList[position + 1].isTranslation) {
+                    lyricList[position + 1].isTranslation
+                ) {
                     currentTranslationPos.let {
                         notifyItemChanged(it)
                         currentTranslationPos = position + 1

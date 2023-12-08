@@ -33,7 +33,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
@@ -158,7 +157,12 @@ class GramophonePlaybackService : MediaLibraryService(),
             DefaultRenderersFactory(this)
                 .setEnableAudioFloatOutput(prefs.getBoolean("floatoutput", false))
                 .setEnableDecoderFallback(true)
-                .setEnableAudioTrackPlaybackParams(prefs.getBoolean("ps_hardware_acc", true)) // hardware/system-accelerated playback speed
+                .setEnableAudioTrackPlaybackParams(
+                    prefs.getBoolean(
+                        "ps_hardware_acc",
+                        true
+                    )
+                ) // hardware/system-accelerated playback speed
                 .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
         )
             .setWakeMode(C.WAKE_MODE_LOCAL)

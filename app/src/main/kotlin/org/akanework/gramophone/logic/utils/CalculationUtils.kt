@@ -19,8 +19,6 @@ package org.akanework.gramophone.logic.utils
 
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
-import androidx.core.graphics.ColorUtils
-import kotlin.math.min
 
 /**
  * [CalculationUtils] contains some methods for internal

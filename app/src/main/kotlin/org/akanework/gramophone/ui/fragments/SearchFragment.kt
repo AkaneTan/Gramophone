@@ -92,7 +92,12 @@ class SearchFragment : BaseFragment(false) {
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(songAdapter)
             useMd2Style()
-            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
+            setTrackDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_transparent
+                )!!
+            )
             build()
         }
 

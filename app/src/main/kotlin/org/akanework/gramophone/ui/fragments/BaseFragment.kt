@@ -25,11 +25,22 @@ import com.google.android.material.transition.MaterialSharedAxis
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 
+/**
+ * BaseFragment:
+ *   It is a base fragment for all main fragments that
+ * can appear in MainActivity's FragmentContainer.
+ *   It creates material transitions easily and also make
+ * overlapping colors more convenient. It can also manage
+ * whether to show up bottom's mini player or not.
+ *
+ * @author AkaneTan, nift4
+ * @see MainActivity
+ */
 abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Enable material transitions.
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
@@ -39,6 +50,7 @@ abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
     // https://github.com/material-components/material-components-android/issues/1984#issuecomment-1089710991
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Overlap colors.
         val colorBackground = ColorUtils.getColor(
             MaterialColors.getColor(view, android.R.attr.colorBackground),
             ColorUtils.ColorType.COLOR_BACKGROUND,

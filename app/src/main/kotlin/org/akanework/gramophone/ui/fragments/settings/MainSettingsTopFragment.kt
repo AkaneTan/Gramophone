@@ -51,6 +51,7 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
                     .add(R.id.container, AppearanceSettingsFragment())
                     .commit()
             }
+
             "behavior" -> {
                 val supportFragmentManager = requireActivity().supportFragmentManager
                 supportFragmentManager
@@ -60,6 +61,7 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
                     .add(R.id.container, BehaviorSettingsFragment())
                     .commit()
             }
+
             "about" -> {
                 val supportFragmentManager = requireActivity().supportFragmentManager
                 supportFragmentManager
@@ -69,6 +71,7 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
                     .add(R.id.container, AboutSettingsFragment())
                     .commit()
             }
+
             "player" -> {
                 val supportFragmentManager = requireActivity().supportFragmentManager
                 supportFragmentManager
@@ -78,6 +81,7 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
                     .add(R.id.container, PlayerSettingsFragment())
                     .commit()
             }
+
             "audio" -> {
                 val supportFragmentManager = requireActivity().supportFragmentManager
                 supportFragmentManager
@@ -87,6 +91,7 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
                     .add(R.id.container, AudioSettingsFragment())
                     .commit()
             }
+
             "experimental" -> {
                 val supportFragmentManager = requireActivity().supportFragmentManager
                 supportFragmentManager

@@ -18,11 +18,11 @@
         android:paddingEnd="16dp">
 
         <com.google.android.material.card.MaterialCardView
+            style="?materialCardViewFilledStyle"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_gravity="center_vertical"
-            app:cardCornerRadius="@dimen/list_round_corner_size"
-            style="?materialCardViewFilledStyle">
+            app:cardCornerRadius="@dimen/list_round_corner_size">
 
             <ImageView
                 android:id="@+id/now_playing_cover"
@@ -46,10 +46,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
+                android:text="@string/now_playing"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="500"
                 android:textSize="16sp"
-                android:text="@string/now_playing"
                 tools:targetApi="p"
                 tools:text="Now playing" />
 
@@ -71,7 +71,7 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"

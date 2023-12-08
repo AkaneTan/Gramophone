@@ -40,6 +40,15 @@ import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
+/**
+ * ArtistSubFragment:
+ *   Separated from GeneralSubFragment and will be
+ * merged into it in future development.
+ *
+ * @author nift4
+ * @see BaseFragment
+ * @see GeneralSubFragment
+ */
 @androidx.annotation.OptIn(UnstableApi::class)
 class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
@@ -92,7 +101,12 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
 
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(this@ArtistSubFragment)
-            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
+            setTrackDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_transparent
+                )!!
+            )
             useMd2Style()
             build()
         }

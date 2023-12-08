@@ -25,7 +25,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

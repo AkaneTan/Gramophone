@@ -18,33 +18,22 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDivider
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.dp
-import org.akanework.gramophone.logic.getUri
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -111,8 +100,8 @@ class SongAdapter(
         if (isTrackDiscNumAvailable) {
             val targetText =
                 list[position].mediaMetadata.trackNumber.toString() +
-                " | " + context.resources.getString(R.string.disc) + " " +
-                    list[position].mediaMetadata.discNumber
+                        " | " + context.resources.getString(R.string.disc) + " " +
+                        list[position].mediaMetadata.discNumber
             holder.indicator.text = targetText
         }
     }
@@ -207,13 +196,16 @@ class SongAdapter(
                         .show()
                     rootView.findViewById<TextView>(R.id.title)!!.text = item.mediaMetadata.title
                     rootView.findViewById<TextView>(R.id.artist)!!.text = item.mediaMetadata.artist
-                    rootView.findViewById<TextView>(R.id.album)!!.text = item.mediaMetadata.albumTitle
+                    rootView.findViewById<TextView>(R.id.album)!!.text =
+                        item.mediaMetadata.albumTitle
                     if (!item.mediaMetadata.albumArtist.isNullOrBlank()) {
                         rootView.findViewById<TextView>(R.id.album_artist)!!.text =
                             item.mediaMetadata.albumArtist
                     }
-                    rootView.findViewById<TextView>(R.id.track_number)!!.text = item.mediaMetadata.trackNumber.toString()
-                    rootView.findViewById<TextView>(R.id.disc_number)!!.text = item.mediaMetadata.discNumber.toString()
+                    rootView.findViewById<TextView>(R.id.track_number)!!.text =
+                        item.mediaMetadata.trackNumber.toString()
+                    rootView.findViewById<TextView>(R.id.disc_number)!!.text =
+                        item.mediaMetadata.discNumber.toString()
                     val year = item.mediaMetadata.releaseYear?.toString()
                     if (year != null) {
                         rootView.findViewById<TextView>(R.id.year)!!.text = year
@@ -222,9 +214,12 @@ class SongAdapter(
                     if (genre != null) {
                         rootView.findViewById<TextView>(R.id.genre)!!.text = genre
                     }
-                    rootView.findViewById<TextView>(R.id.path)!!.text = item.mediaMetadata.extras!!.getString("Path")
-                    rootView.findViewById<TextView>(R.id.mime)!!.text = item.mediaMetadata.extras!!.getString("MimeType")
-                    rootView.findViewById<TextView>(R.id.duration)!!.text = convertDurationToTimeStamp(item.mediaMetadata.extras!!.getLong("Duration"))
+                    rootView.findViewById<TextView>(R.id.path)!!.text =
+                        item.mediaMetadata.extras!!.getString("Path")
+                    rootView.findViewById<TextView>(R.id.mime)!!.text =
+                        item.mediaMetadata.extras!!.getString("MimeType")
+                    rootView.findViewById<TextView>(R.id.duration)!!.text =
+                        convertDurationToTimeStamp(item.mediaMetadata.extras!!.getLong("Duration"))
                     true
                 }
                 /*

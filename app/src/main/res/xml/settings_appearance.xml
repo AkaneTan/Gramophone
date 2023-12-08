@@ -23,14 +23,14 @@
         android:entryValues="@array/theme_switch_val"
         android:icon="@drawable/daynight_art"
         android:key="theme_mode"
-        android:title="@string/settings_app_theme"
         android:layout="@layout/icon_dropdown_preference"
+        android:title="@string/settings_app_theme"
         app:useSimpleSummaryProvider="true" />
     <SwitchPreferenceCompat
         android:defaultValue="false"
         android:icon="@drawable/ic_filter_b_and_w"
         android:key="oled"
+        android:layout="@layout/icon_switch_preference"
         android:summary="@string/settings_oled_summary"
-        android:title="@string/settings_oled"
-        android:layout="@layout/icon_switch_preference" />
+        android:title="@string/settings_oled" />
 </PreferenceScreen>

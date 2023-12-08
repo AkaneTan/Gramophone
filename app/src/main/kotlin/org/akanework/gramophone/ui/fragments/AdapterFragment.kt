@@ -17,24 +17,17 @@
 
 package org.akanework.gramophone.ui.fragments
 
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.MaterialColors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.px
-import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
@@ -46,6 +39,13 @@ import org.akanework.gramophone.ui.adapters.PlaylistAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
+/**
+ * AdapterFragment:
+ *   This fragment is the container for any list that contains
+ * recyclerview in the program.
+ *
+ * @author nift4
+ */
 class AdapterFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
@@ -65,7 +65,12 @@ class AdapterFragment : BaseFragment(null) {
         FastScrollerBuilder(recyclerView).apply {
             setPopupTextProvider(adapter)
             useMd2Style()
-            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
+            setTrackDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_transparent
+                )!!
+            )
             build()
         }
         return rootView

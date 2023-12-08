@@ -16,19 +16,19 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="20dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="20dp">
 
     <ImageView
         android:id="@android:id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="4dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="4dp"
         android:importantForAccessibility="no"
         app:tint="?attr/colorOnSurface"
         tools:src="@drawable/settings_art">
@@ -36,12 +36,12 @@
     </ImageView>
 
     <LinearLayout
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="16dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView

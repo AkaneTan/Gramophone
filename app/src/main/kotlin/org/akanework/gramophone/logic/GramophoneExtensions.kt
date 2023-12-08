@@ -31,10 +31,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import androidx.core.content.ContextCompat
 
 fun MediaController.playOrPause() {
     if (isPlaying) {
@@ -70,7 +66,11 @@ fun Drawable.startAnimation() {
     }
 }
 
-fun TextView.setTextAnimation(text: CharSequence?, duration: Long = 300, completion: (() -> Unit)? = null) {
+fun TextView.setTextAnimation(
+    text: CharSequence?,
+    duration: Long = 300,
+    completion: (() -> Unit)? = null
+) {
     if (this.text != text) {
         fadOutAnimation(duration) {
             this.text = text
@@ -85,7 +85,11 @@ fun TextView.setTextAnimation(text: CharSequence?, duration: Long = 300, complet
 
 // ViewExtensions
 
-fun View.fadOutAnimation(duration: Long = 300, visibility: Int = View.INVISIBLE, completion: (() -> Unit)? = null) {
+fun View.fadOutAnimation(
+    duration: Long = 300,
+    visibility: Int = View.INVISIBLE,
+    completion: (() -> Unit)? = null
+) {
     animate()
         .alpha(0f)
         .setDuration(duration)

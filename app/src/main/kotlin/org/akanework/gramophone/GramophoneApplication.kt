@@ -25,6 +25,13 @@ import com.google.android.material.color.DynamicColors
 import org.akanework.gramophone.logic.utils.ColorUtils
 import kotlin.system.exitProcess
 
+/**
+ * GramophoneApplication:
+ *   We recover some configuration and apply dynamic color
+ * here.
+ *
+ * @author AkaneTan, nift4
+ */
 class GramophoneApplication : Application() {
     override fun onCreate() {
         super.onCreate()

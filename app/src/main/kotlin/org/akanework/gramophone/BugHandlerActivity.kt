@@ -37,6 +37,8 @@ class BugHandlerActivity : AppCompatActivity() {
         val receivedText = intent.getStringExtra("exception_message")
         bugText.typeface = Typeface.MONOSPACE
         bugText.text = receivedText
+
+        // Make our life easier by copying the log to clipboard
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("error msg", receivedText)
         clipboard.setPrimaryClip(clip)

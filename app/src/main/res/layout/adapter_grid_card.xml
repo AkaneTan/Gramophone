@@ -7,10 +7,10 @@
     android:layout_gravity="center_horizontal"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?selectableItemBackground"
     android:gravity="center_horizontal"
     android:paddingTop="8dp"
     android:paddingBottom="16dp"
-    android:foreground="?selectableItemBackground"
     tools:ignore="UnusedAttribute"
     tools:targetApi="m">
 
@@ -28,9 +28,9 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cover_frame"
+        style="?materialCardViewFilledStyle"
         android:layout_width="170dp"
         android:layout_height="170dp"
-        style="?materialCardViewFilledStyle"
         app:cardCornerRadius="@dimen/grid_round_corner_size">
 
         <ImageView
@@ -58,11 +58,11 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:singleLine="true"
             android:textColor="?attr/colorOnSurface"
             android:textFontWeight="500"
             android:textSize="15sp"
-            android:gravity="center"
             tools:targetApi="p"
             tools:text="Example Title" />
 
@@ -70,11 +70,11 @@
             android:id="@+id/artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:singleLine="true"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textFontWeight="500"
             android:textSize="15sp"
-            android:gravity="center"
             tools:targetApi="p"
             tools:text="Example Artist" />
 
@@ -84,6 +84,6 @@
         android:id="@+id/more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </RelativeLayout>

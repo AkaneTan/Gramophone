@@ -26,7 +26,7 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 /**
- * [DateAdapter] is an adapter for displaying artists.
+ * [DateAdapter] is an adapter for displaying dates.
  */
 class DateAdapter(
     private val mainActivity: MainActivity,

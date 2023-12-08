@@ -39,7 +39,11 @@ android {
         versionCode = 3
         versionName =
             "1.0.2" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
-        buildConfigField("String", "RELEASE_TYPE", readProperties(file("../package.properties")).getProperty("releaseType"))
+        buildConfigField(
+            "String",
+            "RELEASE_TYPE",
+            readProperties(file("../package.properties")).getProperty("releaseType")
+        )
         setProperty("archivesBaseName", "Gramophone-$versionName")
     }
 

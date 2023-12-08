@@ -3,62 +3,62 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Preference
-        android:key="appearance"
-        android:title="@string/settings_category_appearance"
-        android:summary="@string/settings_appearance_summary"
         android:icon="@drawable/ic_palette"
-        android:layout="@layout/basic_preference" />
+        android:key="appearance"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_appearance_summary"
+        android:title="@string/settings_category_appearance" />
 
     <Preference
-        android:key="player"
-        android:title="@string/settings_player_ui"
-        android:summary="@string/settings_player_ui_summary"
         android:icon="@drawable/ic_play_arrow"
-        android:layout="@layout/basic_preference" />
+        android:key="player"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_player_ui_summary"
+        android:title="@string/settings_player_ui" />
 
     <Preference
-        android:key="behavior"
         android:icon="@drawable/ic_manufacturing"
-        android:title="@string/settings_category_behavior"
+        android:key="behavior"
         android:layout="@layout/basic_preference"
-        android:summary="@string/settings_behavior_summary" />
+        android:summary="@string/settings_behavior_summary"
+        android:title="@string/settings_category_behavior" />
 
     <Preference
-        android:key="library"
         android:icon="@drawable/ic_collections_bookmark"
-        android:title="@string/settings_library"
+        android:key="library"
+        android:layout="@layout/basic_preference"
         android:summary="@string/settings_library_summary"
-        android:layout="@layout/basic_preference"
+        android:title="@string/settings_library"
         app:isPreferenceVisible="false" />
 
     <Preference
-        android:key="personalization"
         android:icon="@drawable/ic_dashboard_customize"
-        android:title="@string/settings_customization"
-        android:summary="@string/settings_customization_summary"
+        android:key="personalization"
         android:layout="@layout/basic_preference"
+        android:summary="@string/settings_customization_summary"
+        android:title="@string/settings_customization"
         app:isPreferenceVisible="false" />
 
     <Preference
-        android:key="audio"
         android:icon="@drawable/ic_headphones"
-        android:title="@string/settings_player_options"
+        android:key="audio"
+        android:layout="@layout/basic_preference"
         android:summary="@string/settings_player_options_summary"
-        android:layout="@layout/basic_preference" />
+        android:title="@string/settings_player_options" />
 
     <Preference
-        android:key="experimental"
-        android:title="@string/settings_experimental_settings"
-        android:summary="@string/settings_experimental_settings_summary"
         android:icon="@drawable/ic_experiment"
-        android:layout="@layout/basic_preference"/>
+        android:key="experimental"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_experimental_settings_summary"
+        android:title="@string/settings_experimental_settings" />
 
     <Preference
-        android:key="about"
-        android:title="@string/settings_about_app"
-        android:summary="@string/settings_about_gramophone"
         android:icon="@drawable/ic_info"
-        android:layout="@layout/basic_preference" />
+        android:key="about"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_about_gramophone"
+        android:title="@string/settings_about_app" />
 
     <!-- For extra space below -->
     <Preference

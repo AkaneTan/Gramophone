@@ -38,6 +38,14 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
+/**
+ * GeneralSubFragment:
+ *   Inherited from [BaseFragment]. Sub fragment of all
+ * possible item types. TODO: Artist / AlbumArtist
+ *
+ * @see BaseFragment
+ * @author AkaneTan, nift4
+ */
 @androidx.annotation.OptIn(UnstableApi::class)
 class GeneralSubFragment : BaseFragment(true) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
@@ -47,18 +55,25 @@ class GeneralSubFragment : BaseFragment(true) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+
+        lateinit var itemList: List<MediaItem>
+
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+
         val bundle = requireArguments()
-        val title: String?
         val itemType = bundle.getInt("Item")
         val position = bundle.getInt("Position")
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        lateinit var itemList: List<MediaItem>
+
+        val title: String?
+
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
+
         var isTrackDiscNumAvailable = false
 
+        // Overlap google's color.
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
@@ -78,7 +93,9 @@ class GeneralSubFragment : BaseFragment(true) {
                 itemList = item.songList
                 helper =
                     Sorter.NaturalOrderHelper {
-                        it.mediaMetadata.trackNumber?.plus(it.mediaMetadata.discNumber?.times(1000) ?: 0) ?: 0
+                        it.mediaMetadata.trackNumber?.plus(
+                            it.mediaMetadata.discNumber?.times(1000) ?: 0
+                        ) ?: 0
                     }
                 isTrackDiscNumAvailable = true
             }
@@ -125,22 +142,37 @@ class GeneralSubFragment : BaseFragment(true) {
             else -> throw IllegalArgumentException()
         }
 
+        // Show title text.
+        topAppBar.title = title
+
         val songAdapter =
-            SongAdapter(requireActivity() as MainActivity, itemList, true, helper, true, isTrackDiscNumAvailable)
+            SongAdapter(
+                requireActivity() as MainActivity,
+                itemList,
+                true,
+                helper,
+                true,
+                isTrackDiscNumAvailable
+            )
+
         recyclerView.adapter = songAdapter.concatAdapter
 
+        // Build FastScroller.
         FastScrollerBuilder(recyclerView).apply {
             useMd2Style()
             setPopupTextProvider(songAdapter)
-            setTrackDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_transparent)!!)
+            setTrackDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_transparent
+                )!!
+            )
             build()
         }
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
-
-        topAppBar.title = title
 
         return rootView
     }

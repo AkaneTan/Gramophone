@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~     Copyright (C) 2023  Akane Foundation
   ~
   ~     Gramophone is free software: you can redistribute it and/or modify
@@ -22,9 +21,9 @@
         android:defaultValue="@integer/filter_default_sec"
         android:icon="@drawable/filter_art"
         android:key="mediastore_filter"
+        android:layout="@layout/icon_seekbar_preference"
         android:max="120"
         android:summary="@string/settings_mediastore_filter_summary"
         android:title="@string/settings_mediastore_filter"
-        android:layout="@layout/icon_seekbar_preference"
         app:showSeekBarValue="true" />
 </PreferenceScreen>

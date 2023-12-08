@@ -135,13 +135,16 @@ class AlphaNumericComparator : Comparator<String?> {
     override fun compare(s1: String?, s2: String?): Int {
         var ss1 = s1
         var ss2 = s2
-        if ((ss1 == null || ss1.trim { it <= ' ' }.isEmpty()) && ss2 != null && ss2.trim { it <= ' ' }.isNotEmpty()) {
+        if ((ss1 == null || ss1.trim { it <= ' ' }
+                .isEmpty()) && ss2 != null && ss2.trim { it <= ' ' }.isNotEmpty()) {
             return -1
         }
-        if ((ss2 == null || ss2.trim { it <= ' ' }.isEmpty()) && ss1 != null && ss1.trim { it <= ' ' }.isNotEmpty()) {
+        if ((ss2 == null || ss2.trim { it <= ' ' }
+                .isEmpty()) && ss1 != null && ss1.trim { it <= ' ' }.isNotEmpty()) {
             return 1
         }
-        if ((ss1 == null || ss1.trim { it <= ' ' }.isEmpty()) && (ss2 == null || ss2.trim { it <= ' ' }
+        if ((ss1 == null || ss1.trim { it <= ' ' }
+                .isEmpty()) && (ss2 == null || ss2.trim { it <= ' ' }
                 .isEmpty())) {
             return 0
         }

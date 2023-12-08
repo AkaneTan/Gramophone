@@ -166,9 +166,10 @@ class FolderAdapter(
                 activity.resources.getQuantityString(
                     R.plurals.items,
                     (item.folderList.size +
-                        item.songList.size),
+                            item.songList.size),
                     (item.folderList.size +
-                        item.songList.size))
+                            item.songList.size)
+                )
             holder.itemView.setOnClickListener {
                 folderFragment.enter(item.folderName)
             }

@@ -17,11 +17,11 @@
         android:orientation="horizontal">
 
         <com.google.android.material.card.MaterialCardView
+            style="?materialCardViewFilledStyle"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_gravity="center_vertical"
-            app:cardCornerRadius="@dimen/list_round_corner_size"
-            style="?materialCardViewFilledStyle">
+            app:cardCornerRadius="@dimen/list_round_corner_size">
 
             <ImageView
                 android:id="@+id/cover"
@@ -37,10 +37,10 @@
         <LinearLayout
             android:id="@+id/frame"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -76,7 +76,7 @@
             android:textFontWeight="500"
             android:textSize="15sp"
             tools:targetApi="p"
-            tools:text="1 | 3:30"/>
+            tools:text="1 | 3:30" />
 
     </LinearLayout>
 

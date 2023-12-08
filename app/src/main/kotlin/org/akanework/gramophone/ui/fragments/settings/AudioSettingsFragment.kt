@@ -21,7 +21,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentContainerView
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
@@ -39,7 +38,8 @@ class AudioSettingsFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_top_settings, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
 
-        val collapsingToolbar = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
+        val collapsingToolbar =
+            rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,

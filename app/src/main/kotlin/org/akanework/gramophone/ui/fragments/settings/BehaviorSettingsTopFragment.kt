@@ -18,20 +18,11 @@
 package org.akanework.gramophone.ui.fragments.settings
 
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.Preference
-import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 
 class BehaviorSettingsTopFragment : BasePreferenceFragment(),

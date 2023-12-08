@@ -40,6 +40,7 @@ class SquigglyProgress : Drawable() {
 
     companion object {
         private const val TWO_PI = (Math.PI * 2f).toFloat()
+
         @VisibleForTesting
         internal const val DISABLED_ALPHA = 77
     }

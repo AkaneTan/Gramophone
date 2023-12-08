@@ -25,7 +25,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -109,7 +108,8 @@ object MediaStoreUtils {
     )
 
     class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(id, null, songList
-        .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()) {
+        .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()
+    ) {
         private val rawList: List<MediaItem> = super.songList
         private var filteredList: List<MediaItem>? = null
         var minAddDate: Long = 0
@@ -170,7 +170,11 @@ object MediaStoreUtils {
         }
     }
 
-    private fun handleShallowMediaItem(mediaItem: MediaItem, path: String, shallowFolder: FileNode) {
+    private fun handleShallowMediaItem(
+        mediaItem: MediaItem,
+        path: String,
+        shallowFolder: FileNode
+    ) {
         val lastFolderName = path.substringBeforeLast("/").substringAfterLast("/")
         val existingFolder = shallowFolder.folderList.find { it.folderName == lastFolderName }
         if (existingFolder == null) {
@@ -507,12 +511,19 @@ object MediaStoreUtils {
 
 
             val resolver: ContentResolver = contentResolver
+
             @Suppress("DEPRECATION")
             val favPlaylistUri =
                 resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values)
             if (favPlaylistUri != null) {
                 val playlistId = favPlaylistUri.lastPathSegment!!.toLong()
-                playlists.add(Playlist(playlistId, context.getString(R.string.playlist_favourite), mutableListOf()))
+                playlists.add(
+                    Playlist(
+                        playlistId,
+                        context.getString(R.string.playlist_favourite),
+                        mutableListOf()
+                    )
+                )
             }
         } else {
             favPlaylistPosition = playlists.indexOfFirst { it.title == "gramophone_favourite" }

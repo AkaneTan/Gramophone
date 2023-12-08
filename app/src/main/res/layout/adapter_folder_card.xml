@@ -28,6 +28,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -38,6 +39,7 @@
             android:textSize="16sp"
             tools:targetApi="p"
             tools:text="Example Title" />
+
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="wrap_content"

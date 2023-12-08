@@ -181,10 +181,10 @@ class MainActivity : AppCompatActivity() {
         val previewPlayer = findViewById<ConstraintLayout>(R.id.preview_player)
         previewPlayer.setBackgroundColor(colorSurfaceContainer)
         previewPlayer.backgroundTintList =
-                ColorStateList.valueOf(colorSurfaceContainer)
+            ColorStateList.valueOf(colorSurfaceContainer)
         getPlayerSheet().setBackgroundColor(colorSurfaceContainer)
         getPlayerSheet().backgroundTintList =
-                ColorStateList.valueOf(colorSurfaceContainer)
+            ColorStateList.valueOf(colorSurfaceContainer)
 
         // Adjust insets so that bottom sheet can look more normal.
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
         // Check all permissions.
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-            && ContextCompat.checkSelfPermission(
+                    && ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.READ_MEDIA_AUDIO,
             ) != PackageManager.PERMISSION_GRANTED)
@@ -209,7 +209,8 @@ class MainActivity : AppCompatActivity() {
                     && ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            ) != PackageManager.PERMISSION_GRANTED)) {
+            ) != PackageManager.PERMISSION_GRANTED)
+        ) {
             // Ask if was denied.
             ActivityCompat.requestPermissions(
                 this,
@@ -218,8 +219,10 @@ class MainActivity : AppCompatActivity() {
                 else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 else
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    arrayOf(
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ),
                 PERMISSION_READ_MEDIA_AUDIO,
             )
         } else {
@@ -245,8 +248,9 @@ class MainActivity : AppCompatActivity() {
             val playerLayout = getPlayerSheet()
             when (it.itemId) {
                 in tabs -> {
-                    viewPager2.setCurrentItem(tabs.indices
-                        .find { entry -> tabs[entry] == it.itemId }!!, true
+                    viewPager2.setCurrentItem(
+                        tabs.indices
+                            .find { entry -> tabs[entry] == it.itemId }!!, true
                     )
                     drawerLayout.close()
                 }
@@ -395,7 +399,8 @@ class MainActivity : AppCompatActivity() {
                     ContextCompat.checkSelfPermission(
                         this,
                         android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    ) != PackageManager.PERMISSION_GRANTED) {
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
                     updateLibrary()
                 } else {
                     // TODO:  Show a prompt here

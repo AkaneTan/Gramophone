@@ -48,7 +48,8 @@ class MainSettingsFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_top_settings, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
 
-        val collapsingToolbar = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
+        val collapsingToolbar =
+            rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
         val processColor = ColorUtils.getColor(
             MaterialColors.getColor(
                 topAppBar,
@@ -90,7 +91,8 @@ class MainSettingsFragment : BaseFragment(false) {
         val bottomSheetFullSeekBar = activity.findViewById<SeekBar>(R.id.slider_squiggly)
         val bottomSheetFullTitle = activity.findViewById<TextView>(R.id.full_song_name)
         val bottomSheetFullSubtitle = activity.findViewById<TextView>(R.id.full_song_artist)
-        val bottomSheetFullCoverFrame = activity.findViewById<MaterialCardView>(R.id.album_cover_frame)
+        val bottomSheetFullCoverFrame =
+            activity.findViewById<MaterialCardView>(R.id.album_cover_frame)
         if (isLegacyProgressEnabled) {
             bottomSheetFullSlider.visibility = View.VISIBLE
             bottomSheetFullSeekBar.visibility = View.GONE
@@ -115,6 +117,9 @@ class MainSettingsFragment : BaseFragment(false) {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
         }
-        bottomSheetFullCoverFrame.radius = prefs.getInt("album_round_corner", requireContext().resources.getInteger(R.integer.round_corner_radius)).px.toFloat()
+        bottomSheetFullCoverFrame.radius = prefs.getInt(
+            "album_round_corner",
+            requireContext().resources.getInteger(R.integer.round_corner_radius)
+        ).px.toFloat()
     }
 }

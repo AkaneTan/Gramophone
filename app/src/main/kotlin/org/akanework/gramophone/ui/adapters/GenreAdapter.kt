@@ -26,7 +26,7 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 /**
- * [GenreAdapter] is an adapter for displaying artists.
+ * [GenreAdapter] is an adapter for displaying genres.
  */
 class GenreAdapter(
     private val mainActivity: MainActivity,

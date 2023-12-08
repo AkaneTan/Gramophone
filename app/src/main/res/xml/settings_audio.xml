@@ -15,27 +15,26 @@
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreferenceCompat
         android:defaultValue="false"
         android:icon="@drawable/ic_earthquake"
         android:key="floatoutput"
-        android:title="@string/settings_float_output"
+        android:layout="@layout/icon_switch_preference"
         android:summary="@string/settings_float_output_summary"
-        android:layout="@layout/icon_switch_preference" />
+        android:title="@string/settings_float_output" />
     <SwitchPreferenceCompat
         android:defaultValue="false"
         android:icon="@drawable/ic_skip_next"
         android:key="skip_silence"
-        android:title="@string/settings_skip_silence"
+        android:layout="@layout/icon_switch_preference"
         android:summary="@string/settings_skip_silence_summary"
-        android:layout="@layout/icon_switch_preference" />
+        android:title="@string/settings_skip_silence" />
     <SwitchPreferenceCompat
         android:defaultValue="true"
         android:icon="@drawable/ic_memory"
         android:key="ps_hardware_acc"
-        android:title="@string/settings_hardware_acceleration"
+        android:layout="@layout/icon_switch_preference"
         android:summary="@string/settings_hardware_acceleration_summary"
-        android:layout="@layout/icon_switch_preference" />
+        android:title="@string/settings_hardware_acceleration" />
 </PreferenceScreen>
