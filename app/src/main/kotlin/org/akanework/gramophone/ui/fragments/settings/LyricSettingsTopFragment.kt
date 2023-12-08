@@ -22,14 +22,13 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.preference.Preference
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 
-class PlayerSettingsTopFragment : BasePreferenceFragment(),
+class LyricSettingsTopFragment : BasePreferenceFragment(),
     SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.settings_player, rootKey)
+        setPreferencesFromResource(R.xml.settings_lyric, rootKey)
     }
 
     override fun setDivider(divider: Drawable?) {
@@ -41,19 +40,6 @@ class PlayerSettingsTopFragment : BasePreferenceFragment(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-    }
-
-    override fun onPreferenceTreeClick(preference: Preference): Boolean {
-        if (preference.key == "lyrics") {
-            val supportFragmentManager = requireActivity().supportFragmentManager
-            supportFragmentManager
-                .beginTransaction()
-                .addToBackStack(System.currentTimeMillis().toString())
-                .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
-                .add(R.id.container, LyricSettingsFragment())
-                .commit()
-        }
-        return super.onPreferenceTreeClick(preference)
     }
 
     override fun onStart() {

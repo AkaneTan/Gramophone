@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:icon="@drawable/ic_format_bold"
+        android:key="lyric_bold"
+        android:layout="@layout/icon_switch_preference"
+        android:summary="@string/settings_lyrics_bold_summary"
+        android:title="@string/settings_lyrics_bold"
+        android:widgetLayout="@layout/preference_material_switch" />
+
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:icon="@drawable/ic_align_center"
+        android:key="lyric_center"
+        android:layout="@layout/icon_switch_preference"
+        android:summary="@string/settings_lyrics_center_summary"
+        android:title="@string/settings_lyrics_center"
+        android:widgetLayout="@layout/preference_material_switch" />
+
+    <!-- For extra space below -->
+    <Preference
+        android:enabled="false"
+        android:title="" />
+
+    <Preference
+        android:enabled="false"
+        android:title="" />
+
+</PreferenceScreen>

@@ -1609,7 +1609,7 @@ class PlayerBottomSheet private constructor(
 
     class LyricAdapter(
         private val lyricList: MutableList<MediaStoreUtils.Lyric>,
-        private val activity: MainActivity
+        private val activity: MainActivity,
     ) : RecyclerView.Adapter<LyricAdapter.ViewHolder>() {
 
         private var defaultTextColor = MaterialColors.getColor(
@@ -1656,6 +1656,20 @@ class PlayerBottomSheet private constructor(
             with(holder.lyricTextView) {
                 visibility = if (lyric.content.isNotEmpty()) View.VISIBLE else View.GONE
                 text = lyric.content
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                    activity.getPreferences().getBoolean("lyric_bold", true)
+                ) {
+                    this.typeface = Typeface.create(null, 700, false)
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    this.typeface = Typeface.create(null, 500, false)
+                }
+
+                if (activity.getPreferences().getBoolean("lyric_center", false)) {
+                    this.gravity = Gravity.CENTER
+                } else {
+                    this.gravity = Gravity.START
+                }
 
                 val textSize = if (lyric.isTranslation) 20f else 28f
                 val paddingTop = if (lyric.isTranslation) 2.px else 18.px

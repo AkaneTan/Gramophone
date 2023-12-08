@@ -107,8 +107,9 @@ object MediaStoreUtils {
         val isTranslation: Boolean = false
     )
 
-    class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(id, null, songList
-        .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()
+    class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(
+        id, null, songList
+            .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()
     ) {
         private val rawList: List<MediaItem> = super.songList
         private var filteredList: List<MediaItem>? = null

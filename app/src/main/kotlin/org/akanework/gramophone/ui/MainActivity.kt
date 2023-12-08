@@ -19,6 +19,7 @@ package org.akanework.gramophone.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
@@ -45,6 +46,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -89,6 +91,8 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
 
+    private lateinit var prefs: SharedPreferences
+
     /**
      * navigateDrawer:
      *   Used to navigate activity drawer in child fragments
@@ -116,6 +120,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         // This is required for fragment navigate animation.
         ActivityCompat.postponeEnterTransition(this)
@@ -460,4 +466,10 @@ class MainActivity : AppCompatActivity() {
      *   Returns a media controller.
      */
     fun getPlayer() = getPlayerSheet().getPlayer()
+
+    /**
+     * getPreferences:
+     *   Returns a SharedPreference.
+     */
+    fun getPreferences() = prefs
 }

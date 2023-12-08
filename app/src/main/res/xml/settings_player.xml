@@ -58,6 +58,12 @@
         android:summary="@string/settings_default_progress_bar_summary"
         android:title="@string/settings_default_progress_bar"
         android:widgetLayout="@layout/preference_material_switch" />
+    <Preference
+        android:icon="@drawable/ic_lyrics"
+        android:key="lyrics"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_lyrics_configuration_summary"
+        android:title="@string/settings_lyrics_configuration" />
     <!-- For extra space below -->
     <Preference
         android:enabled="false"
