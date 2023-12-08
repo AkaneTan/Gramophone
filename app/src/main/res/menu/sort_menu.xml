@@ -38,10 +38,16 @@
             android:title="@string/sort_by_size"
             app:showAsAction="never" />
         <item
-            android:id="@+id/date"
+            android:id="@+id/add_date"
             android:checked="false"
             android:orderInCategory="5"
-            android:title="@string/sort_by_date"
+            android:title="@string/sort_by_add_date"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/mod_date"
+            android:checked="false"
+            android:orderInCategory="6"
+            android:title="@string/sort_by_modified_date"
             app:showAsAction="never" />
     </group>
 

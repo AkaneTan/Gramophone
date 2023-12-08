@@ -220,6 +220,7 @@ object MediaStoreUtils {
                 MediaStore.Audio.Media.TRACK,
                 MediaStore.Audio.Media.DURATION,
                 MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media.DATE_MODIFIED
             ).apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     add(MediaStore.Audio.Media.GENRE)
@@ -290,6 +291,7 @@ object MediaStoreUtils {
                 it.getColumnIndexOrThrow(MediaStore.Audio.Media.AUTHOR) else null
             val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
             val addDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
+            val modifiedDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
 
             while (it.moveToNext()) {
                 val id = it.getLong(idColumn)
@@ -317,6 +319,7 @@ object MediaStoreUtils {
                 val genre = genreColumn?.let { col -> it.getStringOrNull(col) }
                 val genreId = genreIdColumn?.let { col -> it.getLong(col) }
                 val addDate = it.getLong(addDateColumn)
+                val modifiedDate = it.getLong(modifiedDateColumn)
                 val dateTakenParsed = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     // the column exists since R, so we can always use these APIs
                     dateTaken?.toLongOrNull()?.let { it1 -> Instant.ofEpochMilli(it1) }
@@ -377,6 +380,7 @@ object MediaStoreUtils {
                                         putString("Author", author)
                                         putLong("AddDate", addDate)
                                         putLong("Duration", duration)
+                                        putLong("ModifiedDate", modifiedDate)
                                         putString("MimeType", mimeType)
                                         putString("Path", path)
                                         cdTrackNumber?.toIntOrNull()

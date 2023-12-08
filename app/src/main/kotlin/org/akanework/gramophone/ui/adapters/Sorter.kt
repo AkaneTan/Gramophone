@@ -41,7 +41,8 @@ class Sorter<T>(
         open fun getAlbumTitle(item: T): String? = throw UnsupportedOperationException()
         open fun getAlbumArtist(item: T): String? = throw UnsupportedOperationException()
         open fun getSize(item: T): Int = throw UnsupportedOperationException()
-        open fun getDate(item: T): Long = throw UnsupportedOperationException()
+        open fun getAddDate(item: T): Long = throw UnsupportedOperationException()
+        open fun getModifiedDate(item: T): Long = throw UnsupportedOperationException()
         fun canGetTitle(): Boolean = typesSupported.contains(Type.ByTitleAscending)
                 || typesSupported.contains(Type.ByTitleDescending)
 
@@ -57,8 +58,11 @@ class Sorter<T>(
         fun canGetSize(): Boolean = typesSupported.contains(Type.BySizeAscending)
                 || typesSupported.contains(Type.BySizeDescending)
 
-        fun canGetDate(): Boolean = typesSupported.contains(Type.ByAddDateAscending)
+        fun canGetAddDate(): Boolean = typesSupported.contains(Type.ByAddDateAscending)
                 || typesSupported.contains(Type.ByAddDateDescending)
+
+        fun canGetModifiedDate(): Boolean = typesSupported.contains(Type.ByModifiedDateAscending)
+                || typesSupported.contains(Type.ByModifiedDateDescending)
     }
 
     fun interface NaturalOrderHelper<T> {
@@ -72,6 +76,7 @@ class Sorter<T>(
         ByAlbumArtistDescending, ByAlbumArtistAscending,
         BySizeDescending, BySizeAscending,
         NaturalOrder, ByAddDateDescending, ByAddDateAscending,
+        ByModifiedDateDescending, ByModifiedDateAscending,
         None
     }
 
@@ -149,13 +154,25 @@ class Sorter<T>(
 
             Type.ByAddDateDescending -> {
                 SupportComparator.createInversionComparator(
-                    compareBy { sortingHelper.getDate(it) }, true
+                    compareBy { sortingHelper.getAddDate(it) }, true
                 )
             }
 
             Type.ByAddDateAscending -> {
                 SupportComparator.createInversionComparator(
-                    compareBy { sortingHelper.getDate(it) }, false
+                    compareBy { sortingHelper.getAddDate(it) }, false
+                )
+            }
+
+            Type.ByModifiedDateDescending -> {
+                SupportComparator.createInversionComparator(
+                    compareBy { sortingHelper.getModifiedDate(it) }, true
+                )
+            }
+
+            Type.ByModifiedDateAscending -> {
+                SupportComparator.createInversionComparator(
+                    compareBy { sortingHelper.getModifiedDate(it) }, false
                 )
             }
 
@@ -193,7 +210,11 @@ class Sorter<T>(
             }
 
             Type.ByAddDateDescending, Type.ByAddDateAscending -> {
-                CalculationUtils.convertUnixTimestampToMonthDay(sortingHelper.getDate(item))
+                CalculationUtils.convertUnixTimestampToMonthDay(sortingHelper.getAddDate(item))
+            }
+
+            Type.ByModifiedDateDescending, Type.ByModifiedDateAscending -> {
+                CalculationUtils.convertUnixTimestampToMonthDay(sortingHelper.getAddDate(item))
             }
 
             Type.NaturalOrder -> {
