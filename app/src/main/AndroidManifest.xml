@@ -29,6 +29,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Gramophone"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="upside_down_cake">
         <activity
             android:name=".BugHandlerActivity"
