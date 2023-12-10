@@ -29,6 +29,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -47,7 +48,9 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.lrcdecode.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LastPlayedManager
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 
 
@@ -71,6 +74,7 @@ class GramophonePlaybackService : MediaLibraryService(),
     }
 
     private var mediaSession: MediaLibrarySession? = null
+    private var lyrics: List<MediaStoreUtils.Lyric>? = null
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
@@ -109,7 +113,6 @@ class GramophonePlaybackService : MediaLibraryService(),
         }
 
     override fun onCreate() {
-
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         customCommands =
@@ -230,6 +233,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         mediaSession!!.player.release()
         mediaSession!!.release()
         mediaSession = null
+        lyrics = null
         super.onDestroy()
     }
 
@@ -283,6 +287,12 @@ class GramophonePlaybackService : MediaLibraryService(),
                 }
             }
 
+            SERVICE_GET_LYRICS -> {
+                SessionResult(SessionResult.RESULT_SUCCESS).also {
+                    it.extras.putParcelableArray("lyrics", lyrics?.toTypedArray())
+                }
+            }
+
             PLAYBACK_REPEAT_OFF -> {
                 session.player.repeatMode = Player.REPEAT_MODE_OFF
                 SessionResult(SessionResult.RESULT_SUCCESS)
@@ -315,7 +325,19 @@ class GramophonePlaybackService : MediaLibraryService(),
         return settable
     }
 
+    override fun onTracksChanged(tracks: Tracks) {
+        lyrics = null
+        for (i in tracks.groups) {
+            for (j in 0 until i.length) {
+                val trackMetadata = i.getTrackFormat(j).metadata ?: continue
+                lyrics = extractAndParseLyrics(
+                    mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata) ?: continue
+            }
+        }
+    }
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        lyrics = null
         lastPlayedManager.save()
     }
 
