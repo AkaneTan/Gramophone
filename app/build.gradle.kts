@@ -96,6 +96,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
     implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-exoplayer-midi:1.2.0")
     implementation("androidx.media3:media3-session:1.2.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("com.github.bumptech.glide:glide:4.15.1")
