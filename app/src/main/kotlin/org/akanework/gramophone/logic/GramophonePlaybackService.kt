@@ -25,7 +25,6 @@ import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -49,7 +48,7 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.lrcdecode.extractAndParseLyrics
+import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -70,7 +69,9 @@ class GramophonePlaybackService : MediaLibraryService(),
         private const val PLAYBACK_REPEAT_ALL = "repeat_all"
         private const val PLAYBACK_REPEAT_ONE = "repeat_one"
 
-        // sent to PlayerBottomSheet
+        const val SERVICE_SET_TIMER = "set_timer"
+        const val SERVICE_QUERY_TIMER = "query_timer"
+        const val SERVICE_GET_LYRICS = "get_lyrics"
         const val SERVICE_TIMER_CHANGED = "changed_timer"
     }
 

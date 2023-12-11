@@ -33,6 +33,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS
+import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_QUERY_TIMER
+import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import java.io.File
 
@@ -129,11 +132,6 @@ val Int.px: Int get() = (this.toFloat().px).toInt()
 val Float.dp: Float get() = this / getSystem().displayMetrics.density
 
 val Float.px: Float get() = this * getSystem().displayMetrics.density
-
-// Custom commands handling for client side
-const val SERVICE_SET_TIMER = "set_timer"
-const val SERVICE_QUERY_TIMER = "query_timer"
-const val SERVICE_GET_LYRICS = "get_lyrics"
 
 fun MediaController.getTimer(): Int =
     sendCustomCommand(

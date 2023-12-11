@@ -31,7 +31,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
@@ -87,7 +86,7 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
-import org.akanework.gramophone.logic.SERVICE_GET_LYRICS
+import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS
 import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
@@ -1351,6 +1350,7 @@ class PlayerBottomSheet private constructor(
     }
 
     private val sessionListener: MediaController.Listener = object : MediaController.Listener {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onCustomCommand(
             controller: MediaController,
             command: SessionCommand,
