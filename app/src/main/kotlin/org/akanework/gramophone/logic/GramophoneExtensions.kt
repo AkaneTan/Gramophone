@@ -23,18 +23,14 @@ import android.content.res.Resources.getSystem
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import androidx.core.net.toFile
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import java.io.File
 
 fun MediaController.playOrPause() {
     if (isPlaying) {
@@ -46,10 +42,6 @@ fun MediaController.playOrPause() {
 
 fun MediaItem.getUri(): Uri? {
     return localConfiguration?.uri
-}
-
-fun MediaItem.getFile(): File? {
-    return getUri()?.toFile()
 }
 
 fun Activity.closeKeyboard() {
@@ -122,9 +114,9 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
         }
 }
 
-val Int.dp: Int get() = (this.toFloat().dp).toInt()
+val Int.dp: Int get() = (this / getSystem().displayMetrics.density).toInt()
 
-val Int.px: Int get() = (this.toFloat().px).toInt()
+val Int.px: Int get() = (this * getSystem().displayMetrics.density).toInt()
 
 val Float.dp: Float get() = this / getSystem().displayMetrics.density
 
@@ -133,13 +125,13 @@ val Float.px: Float get() = this * getSystem().displayMetrics.density
 // Custom commands handling for client side
 const val SERVICE_SET_TIMER = "set_timer"
 const val SERVICE_QUERY_TIMER = "query_timer"
-const val SERVICE_GET_LYRICS = "get_lyrics"
 
 fun MediaController.getTimer(): Int =
     sendCustomCommand(
         SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY),
         Bundle.EMPTY
     ).get().extras.getInt("duration")
+
 fun MediaController.hasTimer(): Boolean = getTimer() > 0
 fun MediaController.setTimer(value: Int) {
     sendCustomCommand(
@@ -148,16 +140,3 @@ fun MediaController.setTimer(value: Int) {
         }, Bundle.EMPTY
     )
 }
-
-fun MediaController.getLyrics(): Array<MediaStoreUtils.Lyric>? =
-    sendCustomCommand(
-        SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
-        Bundle.EMPTY
-    ).get().extras.let {
-        @Suppress("UNCHECKED_CAST")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            it.getParcelableArray("lyrics", MediaStoreUtils.Lyric::class.java)
-        } else { @Suppress("deprecation")
-            it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>
-        }
-    }

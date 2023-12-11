@@ -24,7 +24,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
@@ -32,12 +31,12 @@ import androidx.media3.common.MediaMetadata
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -45,6 +44,8 @@ import java.time.ZoneId
  * from mediaStore.
  */
 object MediaStoreUtils {
+
+    var favPlaylistPosition = 0
 
     interface Item {
         val id: Long?
@@ -100,12 +101,11 @@ object MediaStoreUtils {
         override val songList: MutableList<MediaItem>
     ) : Item
 
-    @Parcelize
     data class Lyric(
         val timeStamp: Long = 0,
         val content: String = "",
         val isTranslation: Boolean = false
-    ) : Parcelable
+    )
 
     class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(
         id, null, songList
@@ -382,6 +382,7 @@ object MediaStoreUtils {
                                         putLong("Duration", duration)
                                         putLong("ModifiedDate", modifiedDate)
                                         putString("MimeType", mimeType)
+                                        putString("Path", path)
                                         cdTrackNumber?.toIntOrNull()
                                             ?.let { it1 -> putInt("CdTrackNumber", it1) }
                                     })
@@ -530,7 +531,10 @@ object MediaStoreUtils {
                 )
             }
         } else {
-            playlists.first { it.title == "gramophone_favourite" }.title = context.getString(R.string.playlist_favourite)
+            favPlaylistPosition = playlists.indexOfFirst { it.title == "gramophone_favourite" }
+            playlists[favPlaylistPosition].apply {
+                this.title = context.getString(R.string.playlist_favourite)
+            }
         }
 
         return playlists
@@ -597,5 +601,37 @@ object MediaStoreUtils {
         }
     }
 
+
+    fun parseLrcString(lrcContent: String): MutableList<Lyric> {
+        val linesRegex = "\\[(\\d{2}:\\d{2}\\.\\d{2})](.*)".toRegex()
+        val list = mutableListOf<Lyric>()
+        val measureTime = measureTimeMillis {
+
+            lrcContent.lines().forEach { line ->
+                linesRegex.find(line)?.let { matchResult ->
+                    val startTime = parseTime(matchResult.groupValues[1])
+                    val lyricLine = matchResult.groupValues[2]
+                    val insertIndex = list.binarySearch { it.timeStamp.compareTo(startTime) }
+                    if (insertIndex < 0) {
+                        list.add(Lyric(startTime, lyricLine, false))
+                    } else {
+                        list.add(insertIndex + 1, Lyric(startTime, lyricLine, true))
+                    }
+                }
+            }
+        }
+        return list
+    }
+
+    private fun parseTime(timeString: String): Long {
+        val timeRegex = "(\\d{2}):(\\d{2})\\.(\\d{2})".toRegex()
+        val matchResult = timeRegex.find(timeString)
+
+        val minutes = matchResult?.groupValues?.get(1)?.toLongOrNull() ?: 0
+        val seconds = matchResult?.groupValues?.get(2)?.toLongOrNull() ?: 0
+        val milliseconds = matchResult?.groupValues?.get(3)?.toLongOrNull() ?: 0
+
+        return minutes * 60000 + seconds * 1000 + milliseconds * 10
+    }
 
 }
