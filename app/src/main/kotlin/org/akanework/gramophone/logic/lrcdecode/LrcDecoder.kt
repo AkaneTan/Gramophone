@@ -1,14 +1,12 @@
 package org.akanework.gramophone.logic.lrcdecode
 
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.Metadata
-import androidx.media3.common.util.ParsableByteArray
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.extractor.metadata.id3.BinaryFrame
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import java.io.File
 import java.nio.charset.Charset
-import kotlin.system.measureTimeMillis
 
 @OptIn(UnstableApi::class)
 fun extractAndParseLyrics(musicFile: File?, metadata: Metadata): List<MediaStoreUtils.Lyric>? {
@@ -22,14 +20,7 @@ fun extractLyrics(musicFile: File?, metadata: Metadata): String? {
 	if (lrcFile?.exists() == true) {
 		return extractLrcFile(lrcFile)
 	}
-	for (i in 0 until metadata.length()) {
-		val metadataEntry = metadata.get(i)
-		if (metadataEntry is BinaryFrame && metadataEntry.id == "USLT") {
-			val ba = metadataEntry.data
-			return UsltFrameDecoder.decode(ParsableByteArray(ba), ba.size)
-		}
-	}
-	return null
+	return metadata.toString().substringAfter("LYRICS=").substringBefore(", VC: ")
 }
 
 private fun extractLrcFile(lrcFile: File): String {

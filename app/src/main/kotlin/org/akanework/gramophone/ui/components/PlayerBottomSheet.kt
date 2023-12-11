@@ -31,6 +31,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
@@ -86,6 +87,7 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
+import org.akanework.gramophone.logic.SERVICE_GET_LYRICS
 import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
@@ -679,7 +681,7 @@ class PlayerBottomSheet private constructor(
         bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
             smoothScroller
         )
-        bottomSheetFullLyricAdapter.updateHighlight(-1)
+        bottomSheetFullLyricAdapter.updateHighlight(0)
     }
 
     override fun onViewAdded(child: View?) {
@@ -1320,22 +1322,6 @@ class PlayerBottomSheet private constructor(
             }
 
              */
-
-            bottomSheetFullLyricList.clear()
-            val parsedLyrics = instance.getLyrics()
-            if (parsedLyrics?.isEmpty() != false) {
-                bottomSheetFullLyricList.add(
-                    MediaStoreUtils.Lyric(
-                        0,
-                        context.getString(R.string.no_lyric_found)
-                    )
-                )
-            } else {
-                bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
-                bottomSheetFullLyricList.addAll(parsedLyrics)
-            }
-            bottomSheetFullLyricAdapter.notifyDataSetChanged()
-            resetToDefaultLyricPosition()
         }
         var newState = standardBottomSheetBehavior!!.state
         if (instance.mediaItemCount != 0 && visible) {
@@ -1370,8 +1356,27 @@ class PlayerBottomSheet private constructor(
             command: SessionCommand,
             args: Bundle
         ): ListenableFuture<SessionResult> {
-            if (command.customAction == GramophonePlaybackService.SERVICE_TIMER_CHANGED) {
-                bottomSheetTimerButton.isChecked = controller.hasTimer()
+            when (command.customAction) {
+                GramophonePlaybackService.SERVICE_TIMER_CHANGED -> {
+                    bottomSheetTimerButton.isChecked = controller.hasTimer()
+                }
+                SERVICE_GET_LYRICS -> {
+                    bottomSheetFullLyricList.clear()
+                    val parsedLyrics = instance.getLyrics()
+                    if (parsedLyrics?.isEmpty() != false) {
+                        bottomSheetFullLyricList.add(
+                            MediaStoreUtils.Lyric(
+                                0,
+                                context.getString(R.string.no_lyric_found)
+                            )
+                        )
+                    } else {
+                        bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
+                        bottomSheetFullLyricList.addAll(parsedLyrics)
+                    }
+                    bottomSheetFullLyricAdapter.notifyDataSetChanged()
+                    resetToDefaultLyricPosition()
+                }
             }
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
         }

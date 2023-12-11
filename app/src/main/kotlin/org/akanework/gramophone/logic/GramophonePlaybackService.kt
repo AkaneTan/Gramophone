@@ -25,6 +25,7 @@ import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -253,6 +254,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         }
         availableSessionCommands.add(SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY))
+        availableSessionCommands.add(SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY))
         return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
             .setAvailableSessionCommands(availableSessionCommands.build())
             .build()
@@ -334,6 +336,10 @@ class GramophonePlaybackService : MediaLibraryService(),
                     mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata) ?: continue
             }
         }
+        mediaSession!!.broadcastCustomCommand(
+            SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+            Bundle.EMPTY
+        )
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {

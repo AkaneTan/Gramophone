@@ -476,18 +476,18 @@
                 app:iconTint="?attr/colorOnSurface" />
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lyric_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorSurface"
+            android:clipToPadding="false"
+            android:paddingTop="64dp"
+            android:paddingBottom="128dp"
+            android:scrollbars="none"
+            android:visibility="gone"
+            tools:listitem="@layout/lyrics" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lyric_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/colorSurface"
-        android:clipToPadding="false"
-        android:paddingTop="128dp"
-        android:paddingBottom="128dp"
-        android:scrollbars="none"
-        android:visibility="gone"
-        tools:listitem="@layout/lyrics" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </merge>
