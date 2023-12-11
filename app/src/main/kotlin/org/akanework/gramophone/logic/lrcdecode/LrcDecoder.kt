@@ -20,7 +20,10 @@ fun extractLyrics(musicFile: File?, metadata: Metadata): String? {
 	if (lrcFile?.exists() == true) {
 		return extractLrcFile(lrcFile)
 	}
-	return metadata.toString().substringAfter("LYRICS=").substringBefore(", VC: ")
+	val embedded = metadata.toString().substringAfter("LYRICS=").substringBefore(", VC: ")
+	return embedded.ifEmpty {
+		null
+	}
 }
 
 private fun extractLrcFile(lrcFile: File): String {
