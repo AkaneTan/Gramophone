@@ -305,7 +305,7 @@
                 app:icon="@drawable/play_anim"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconSize="40sp"
+                app:iconSize="42dp"
                 app:iconTint="?attr/colorOnSecondaryContainer"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
