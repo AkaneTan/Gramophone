@@ -17,6 +17,8 @@
 
 package org.akanework.gramophone.logic
 
+import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
@@ -25,11 +27,13 @@ import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.core.app.NotificationCompat
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -43,15 +47,17 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
+import cn.lyric.getter.api.API
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LastPlayedManager
+import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
+import kotlin.properties.Delegates
 
 
 /**
@@ -73,13 +79,52 @@ class GramophonePlaybackService : MediaLibraryService(),
         const val SERVICE_QUERY_TIMER = "query_timer"
         const val SERVICE_GET_LYRICS = "get_lyrics"
         const val SERVICE_TIMER_CHANGED = "changed_timer"
+
+        /** Flyme 状态栏歌词 TICKER 一直显示 */
+        private const val FLAG_ALWAYS_SHOW_TICKER = 0x1000000
+
+        /** 只更新 Flyme 状态栏歌词，不更新封面等 */
+        private const val FLAG_ONLY_UPDATE_TICKER = 0x2000000
+
     }
 
+    private val positionRunnable: Runnable by lazy {
+        object : Runnable {
+            override fun run() {
+                if (lyrics != null) {
+                    val player1 = this@GramophonePlaybackService.mediaSession!!.player.currentPosition
+                    nowLyric = lyrics!!.last { it.timeStamp <= player1 }.content
+                    handler.postDelayed(this, 300)
+                }
+            }
+        }
+    }
     private var mediaSession: MediaLibrarySession? = null
     private var lyrics: List<MediaStoreUtils.Lyric>? = null
     private lateinit var customCommands: List<CommandButton>
-    private lateinit var handler: Handler
+    private val handler: Handler by lazy { Handler(Looper.getMainLooper()) }
     private lateinit var lastPlayedManager: LastPlayedManager
+    private val notification: Notification by lazy {
+        NotificationCompat.Builder(this@GramophonePlaybackService, "YOUR_NOTIFICATION_CHANNEL_ID").apply {
+            setSmallIcon(R.drawable.ic_gramophone)
+            extras.putBoolean("ticker_icon_switch", false)
+        }.build().apply { flags = FLAG_ALWAYS_SHOW_TICKER or FLAG_ONLY_UPDATE_TICKER }
+    }
+    private val lga: API by lazy { API() }
+    private val manager: NotificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    var nowLyric: String by Delegates.observable("") { _, old, new ->
+        if (old == new || new.isEmpty()) return@observable
+        Log.d("Lyrics", new)
+//        模块，暂停歌词不用管
+        lga.sendLyric(new)
+//        flyme
+        notification.apply {
+            tickerText = new
+            manager.notify(114514, this)
+            //        在暂停的地方加个manager.cancelAll()就可以清楚歌词
+        }
+    }
+
 
     private fun getRepeatCommand() =
         when (mediaSession?.player!!.repeatMode) {
@@ -155,7 +200,6 @@ class GramophonePlaybackService : MediaLibraryService(),
                     .setIconResId(R.drawable.ic_repeat_one_on)
                     .build(),
             )
-        handler = Handler(Looper.getMainLooper())
 
         val player = ExoPlayer.Builder(
             this,
@@ -218,6 +262,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
         mediaSession!!.player.addListener(this)
+
         super.onCreate()
     }
 
@@ -317,6 +362,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         })
     }
 
+
     override fun onPlaybackResumption(
         mediaSession: MediaSession,
         controller: MediaSession.ControllerInfo
@@ -334,7 +380,9 @@ class GramophonePlaybackService : MediaLibraryService(),
             for (j in 0 until i.length) {
                 val trackMetadata = i.getTrackFormat(j).metadata ?: continue
                 lyrics = extractAndParseLyrics(
-                    mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata) ?: continue
+                    mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata
+                ) ?: continue
+                handler.postDelayed(positionRunnable, 0)
             }
         }
         mediaSession!!.broadcastCustomCommand(
