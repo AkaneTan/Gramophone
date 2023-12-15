@@ -31,6 +31,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
@@ -1402,6 +1403,10 @@ class PlayerBottomSheet private constructor(
                     instance.currentMediaItem,
                     Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
                 )
+                if (prefs.getBoolean("autoplay", false) && !instance.isPlaying) {
+                    Log.d("TAG", "${instance.mediaItemCount}, PLAY")
+                    instance.play()
+                }
                 /*
                 if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
                         .songList.contains(instance.currentMediaItem)) {
@@ -1413,7 +1418,9 @@ class PlayerBottomSheet private constructor(
                 }
 
                  */
-                handler.post { ready = true }
+                handler.post {
+                    ready = true
+                }
             },
             MoreExecutors.directExecutor(),
         )

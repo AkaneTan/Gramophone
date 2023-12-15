@@ -26,4 +26,11 @@
         android:summary="@string/settings_mediastore_filter_summary"
         android:title="@string/settings_mediastore_filter"
         app:showSeekBarValue="true" />
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:icon="@drawable/ic_autorenew"
+        android:key="autoplay"
+        android:layout="@layout/icon_switch_preference"
+        android:title="@string/settings_play_on_launch"
+        android:summary="@string/settings_play_on_launch_summary" />
 </PreferenceScreen>
