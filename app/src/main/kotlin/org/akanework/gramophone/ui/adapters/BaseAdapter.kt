@@ -19,6 +19,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Handler
@@ -32,6 +33,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,6 +47,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.fragments.AdapterFragment
@@ -74,6 +77,14 @@ abstract class BaseAdapter<T>(
     private var layoutManager: RecyclerView.LayoutManager? = null
     protected var recyclerView: RecyclerView? = null
         private set
+
+    private var prefs: SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
+
+    private var prefSortType: Sorter.Type = Sorter.Type.valueOf(
+        prefs.getString(FileOpUtils.getAdapterType(this).toString(), Sorter.Type.None.toString())!!
+    )
+
     var layoutType: LayoutType? = null
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
@@ -105,7 +116,12 @@ abstract class BaseAdapter<T>(
         get() = sorter.getSupportedTypes()
 
     init {
-        sortType = initialSortType
+        sortType =
+            if (prefSortType != Sorter.Type.None && prefSortType != initialSortType)
+                prefSortType
+            else
+                initialSortType
+
         liveData?.value?.let { updateList(it, now = true, canDiff = false) }
         layoutType = defaultLayoutType
     }

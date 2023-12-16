@@ -18,6 +18,7 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -25,9 +26,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.C
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.FileOpUtils
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
@@ -35,6 +38,9 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 ) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
 
     protected val context: Context = adapter.context
+
+    private var prefs: SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -106,6 +112,12 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                         if (!menuItem.isChecked) {
                             adapter.sort(buttonMap[menuItem.itemId]!!)
                             menuItem.isChecked = true
+                            prefs.edit()
+                                .putString(
+                                    FileOpUtils.getAdapterType(adapter).toString(),
+                                    buttonMap[menuItem.itemId].toString()
+                                )
+                                .apply()
                         }
                         true
                     }
