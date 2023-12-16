@@ -32,7 +32,8 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class AlbumAdapter(
     private val mainActivity: MainActivity,
     albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>?,
-    ownsView: Boolean = true
+    ownsView: Boolean = true,
+    isSubFragment: Boolean = false
 ) : BaseAdapter<MediaStoreUtils.Album>
     (
     mainActivity,
@@ -42,13 +43,14 @@ class AlbumAdapter(
     initialSortType = Sorter.Type.ByTitleAscending,
     pluralStr = R.plurals.albums,
     ownsView = ownsView,
-    defaultLayoutType = LayoutType.GRID
+    defaultLayoutType = LayoutType.GRID,
+    isSubFragment = isSubFragment
 ) {
 
     private val libraryViewModel: LibraryViewModel by mainActivity.viewModels()
 
-    constructor(mainActivity: MainActivity, albumList: List<MediaStoreUtils.Album>)
-            : this(mainActivity, null, false) {
+    constructor(mainActivity: MainActivity, albumList: List<MediaStoreUtils.Album>, isSubFragment: Boolean = false)
+            : this(mainActivity, null, false, isSubFragment = isSubFragment) {
         updateList(albumList, now = true, false)
     }
 

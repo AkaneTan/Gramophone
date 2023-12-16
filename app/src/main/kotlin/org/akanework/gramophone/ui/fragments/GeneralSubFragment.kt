@@ -152,7 +152,8 @@ class GeneralSubFragment : BaseFragment(true) {
                 true,
                 helper,
                 true,
-                isTrackDiscNumAvailable
+                isTrackDiscNumAvailable,
+                true
             )
 
         recyclerView.adapter = songAdapter.concatAdapter

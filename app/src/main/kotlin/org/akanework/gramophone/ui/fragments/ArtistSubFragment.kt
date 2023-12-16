@@ -85,10 +85,11 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
                 it.albumArtistItemList else it.artistItemList
         }.value!![position]
         albumAdapter =
-            AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList())
+            AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList(), true)
         songAdapter = SongAdapter(
             requireActivity() as MainActivity,
-            item.songList, true, null, false
+            item.songList, true, null, false,
+            isSubFragment = true
         )
         recyclerView.layoutManager = GridLayoutManager(context, 2).apply {
             spanSizeLookup = object : SpanSizeLookup() {

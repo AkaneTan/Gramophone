@@ -62,7 +62,8 @@ abstract class BaseAdapter<T>(
     initialSortType: Sorter.Type,
     private val pluralStr: Int,
     val ownsView: Boolean,
-    defaultLayoutType: LayoutType
+    defaultLayoutType: LayoutType,
+    private val isSubFragment: Boolean = false
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>,
     PopupTextProvider {
 
@@ -122,14 +123,14 @@ abstract class BaseAdapter<T>(
 
     init {
         sortType =
-            if (prefSortType != Sorter.Type.None && prefSortType != initialSortType)
+            if (prefSortType != Sorter.Type.None && prefSortType != initialSortType && !isSubFragment)
                 prefSortType
             else
                 initialSortType
 
         liveData?.value?.let { updateList(it, now = true, canDiff = false) }
         layoutType =
-            if (prefLayoutType != LayoutType.NONE && prefLayoutType != defaultLayoutType)
+            if (prefLayoutType != LayoutType.NONE && prefLayoutType != defaultLayoutType && !isSubFragment)
                 prefLayoutType
             else
                 defaultLayoutType
@@ -257,7 +258,7 @@ abstract class BaseAdapter<T>(
     }
 
     protected open fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<T>> {
-        return BaseDecorAdapter(this, pluralStr)
+        return BaseDecorAdapter(this, pluralStr, isSubFragment)
     }
 
     override fun getItemViewType(position: Int): Int {

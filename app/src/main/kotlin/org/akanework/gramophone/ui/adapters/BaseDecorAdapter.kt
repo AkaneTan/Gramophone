@@ -34,7 +34,8 @@ import org.akanework.gramophone.logic.utils.FileOpUtils
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
-    private val pluralStr: Int
+    private val pluralStr: Int,
+    private val isSubFragment: Boolean = false
 ) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
 
     protected val context: Context = adapter.context
@@ -112,12 +113,14 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                         if (!menuItem.isChecked) {
                             adapter.sort(buttonMap[menuItem.itemId]!!)
                             menuItem.isChecked = true
-                            prefs.edit()
-                                .putString(
-                                    "S" + FileOpUtils.getAdapterType(adapter).toString(),
-                                    buttonMap[menuItem.itemId].toString()
-                                )
-                                .apply()
+                            if (!isSubFragment) {
+                                prefs.edit()
+                                    .putString(
+                                        "S" + FileOpUtils.getAdapterType(adapter).toString(),
+                                        buttonMap[menuItem.itemId].toString()
+                                    )
+                                    .apply()
+                            }
                         }
                         true
                     }
@@ -126,12 +129,14 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                         if (!menuItem.isChecked) {
                             adapter.layoutType = layoutMap[menuItem.itemId]!!
                             menuItem.isChecked = true
-                            prefs.edit()
-                                .putString(
-                                    "L" + FileOpUtils.getAdapterType(adapter).toString(),
-                                    layoutMap[menuItem.itemId].toString()
-                                )
-                                .apply()
+                            if (!isSubFragment) {
+                                prefs.edit()
+                                    .putString(
+                                        "L" + FileOpUtils.getAdapterType(adapter).toString(),
+                                        layoutMap[menuItem.itemId].toString()
+                                    )
+                                    .apply()
+                            }
                         }
                         true
                     }
