@@ -53,6 +53,7 @@ import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 import java.util.Collections
 
+@Suppress("LeakingThis")
 abstract class BaseAdapter<T>(
     val context: Context,
     protected var liveData: MutableLiveData<MutableList<T>>?,
@@ -82,7 +83,11 @@ abstract class BaseAdapter<T>(
         PreferenceManager.getDefaultSharedPreferences(context)
 
     private var prefSortType: Sorter.Type = Sorter.Type.valueOf(
-        prefs.getString(FileOpUtils.getAdapterType(this).toString(), Sorter.Type.None.toString())!!
+        prefs.getString("S" + FileOpUtils.getAdapterType(this).toString(), Sorter.Type.None.toString())!!
+    )
+
+    private var prefLayoutType: LayoutType = LayoutType.valueOf(
+        prefs.getString("L" + FileOpUtils.getAdapterType(this).toString(), LayoutType.NONE.toString())!!
     )
 
     var layoutType: LayoutType? = null
@@ -123,7 +128,11 @@ abstract class BaseAdapter<T>(
                 initialSortType
 
         liveData?.value?.let { updateList(it, now = true, canDiff = false) }
-        layoutType = defaultLayoutType
+        layoutType =
+            if (prefLayoutType != LayoutType.NONE && prefLayoutType != defaultLayoutType)
+                prefLayoutType
+            else
+                defaultLayoutType
     }
 
     protected open val defaultCover: Int = R.drawable.ic_default_cover
@@ -135,7 +144,6 @@ abstract class BaseAdapter<T>(
         val title: TextView = view.findViewById(R.id.title)
         val subTitle: TextView = view.findViewById(R.id.artist)
         val indicator: TextView = view.findViewById(R.id.indicator)
-        val frame: View = view.findViewById(R.id.frame)
         val moreButton: MaterialButton = view.findViewById(R.id.more)
     }
 
@@ -257,6 +265,7 @@ abstract class BaseAdapter<T>(
             LayoutType.GRID -> R.layout.adapter_grid_card
             LayoutType.COMPACT_LIST -> R.layout.adapter_list_card
             LayoutType.LIST, null -> R.layout.adapter_list_card_larger
+            else -> throw IllegalArgumentException()
         }
     }
 
@@ -343,7 +352,7 @@ abstract class BaseAdapter<T>(
     }
 
     enum class LayoutType {
-        LIST, COMPACT_LIST, GRID
+        NONE, LIST, COMPACT_LIST, GRID
     }
 
     open class StoreItemHelper<T : MediaStoreUtils.Item>(

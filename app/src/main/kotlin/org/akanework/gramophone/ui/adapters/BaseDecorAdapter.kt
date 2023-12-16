@@ -114,7 +114,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                             menuItem.isChecked = true
                             prefs.edit()
                                 .putString(
-                                    FileOpUtils.getAdapterType(adapter).toString(),
+                                    "S" + FileOpUtils.getAdapterType(adapter).toString(),
                                     buttonMap[menuItem.itemId].toString()
                                 )
                                 .apply()
@@ -126,6 +126,12 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                         if (!menuItem.isChecked) {
                             adapter.layoutType = layoutMap[menuItem.itemId]!!
                             menuItem.isChecked = true
+                            prefs.edit()
+                                .putString(
+                                    "L" + FileOpUtils.getAdapterType(adapter).toString(),
+                                    layoutMap[menuItem.itemId].toString()
+                                )
+                                .apply()
                         }
                         true
                     }
