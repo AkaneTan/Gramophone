@@ -814,13 +814,6 @@ class PlayerBottomSheet private constructor(
                     -1
                 )
 
-            val colorSurfaceContainerHighest =
-                MaterialColors.getColor(
-                    context,
-                    com.google.android.material.R.attr.colorSurfaceContainerHighest,
-                    -1
-                )
-
             val selectorBackground =
                 AppCompatResources.getColorStateList(
                     context,
@@ -901,6 +894,8 @@ class PlayerBottomSheet private constructor(
                         ColorStateList.valueOf(progressColor)
                     bottomSheetFullControllerButton.backgroundTintList =
                         ColorStateList.valueOf(progressColor)
+                    bottomSheetFullSlider.trackInactiveTintList =
+                        ColorStateList.valueOf(progressColor)
                 }
                 duration = BACKGROUND_COLOR_TRANSITION_SEC
             }
@@ -946,9 +941,6 @@ class PlayerBottomSheet private constructor(
                     ),
                     colorPrimary
                 )
-
-                bottomSheetFullSlider.trackInactiveTintList =
-                    ColorStateList.valueOf(colorSurfaceContainerHighest)
 
                 bottomSheetTimerButton.iconTint =
                     ColorStateList.valueOf(colorOnSurface)
@@ -1053,8 +1045,8 @@ class PlayerBottomSheet private constructor(
 
                 val colorSurfaceContainerHighest =
                     MaterialColors.getColor(
-                        wrappedContext!!,
-                        com.google.android.material.R.attr.colorSurfaceContainerHighest,
+                        context,
+                        android.R.attr.textColorTertiary,
                         -1
                     )
 
@@ -1144,6 +1136,8 @@ class PlayerBottomSheet private constructor(
                             ColorStateList.valueOf(progressColor)
                         bottomSheetFullControllerButton.backgroundTintList =
                             ColorStateList.valueOf(progressColor)
+                        bottomSheetFullSlider.trackInactiveTintList =
+                            ColorStateList.valueOf(progressColor)
                     }
                     duration = BACKGROUND_COLOR_TRANSITION_SEC
                 }
@@ -1189,9 +1183,6 @@ class PlayerBottomSheet private constructor(
                         ),
                         colorPrimary
                     )
-
-                    bottomSheetFullSlider.trackInactiveTintList =
-                        ColorStateList.valueOf(colorSurfaceContainerHighest)
 
                     bottomSheetTimerButton.iconTint =
                         ColorStateList.valueOf(colorOnSurface)
