@@ -32,6 +32,7 @@
             android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
             app:collapsedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextColor="?attr/colorOnSurface"
+            app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/home_menu_settings">
 
