@@ -103,6 +103,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
+    implementation("com.github.xiaowine:Lyric-Getter-Api:6.0.0")
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
 }
