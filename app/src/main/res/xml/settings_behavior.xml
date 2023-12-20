@@ -26,6 +26,12 @@
         android:summary="@string/settings_mediastore_filter_summary"
         android:title="@string/settings_mediastore_filter"
         app:showSeekBarValue="true" />
+    <Preference
+        android:icon="@drawable/ic_filter_none"
+        android:key="blacklist"
+        android:layout="@layout/basic_preference"
+        android:summary="@string/settings_blacklist_folder_summary"
+        android:title="@string/settings_blacklist_folder" />
     <SwitchPreferenceCompat
         android:defaultValue="false"
         android:icon="@drawable/ic_autorenew"

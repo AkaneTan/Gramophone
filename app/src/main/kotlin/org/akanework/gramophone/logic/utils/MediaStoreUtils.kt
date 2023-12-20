@@ -174,7 +174,8 @@ object MediaStoreUtils {
     private fun handleShallowMediaItem(
         mediaItem: MediaItem,
         path: String,
-        shallowFolder: FileNode
+        shallowFolder: FileNode,
+        folderArray: MutableList<String>
     ) {
         val lastFolderName = path.substringBeforeLast("/").substringAfterLast("/")
         val existingFolder = shallowFolder.folderList.find { it.folderName == lastFolderName }
@@ -182,8 +183,27 @@ object MediaStoreUtils {
             val newFolder = FileNode(folderName = lastFolderName, mutableListOf(), mutableListOf())
             newFolder.songList.add(mediaItem)
             shallowFolder.folderList.add(newFolder)
+            folderArray.add(
+                path.substringAfter('/').substringAfter('/').substringAfter('/').substringAfter('/')
+                    .substringBeforeLast('/')
+            )
         } else {
             existingFolder.songList.add(mediaItem)
+        }
+    }
+
+    private fun handleBlacklistFolder(
+        path: String,
+        shallowFolder: FileNode,
+        folderArray: MutableList<String>
+    ) {
+        val lastFolderName = path.substringBeforeLast("/").substringAfterLast("/")
+        val existingFolder = shallowFolder.folderList.find { it.folderName == lastFolderName }
+        if (existingFolder == null) {
+            folderArray.add(
+                path.substringAfter('/').substringAfter('/').substringAfter('/').substringAfter('/')
+                    .substringBeforeLast('/')
+            )
         }
     }
 
@@ -201,6 +221,7 @@ object MediaStoreUtils {
      * @return
      */
     private fun getAllSongs(context: Context): LibraryStoreClass {
+        val folderArray: MutableList<String> = mutableListOf()
         var selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
         for (i in formatCollection) {
             selection = "$selection or ${MediaStore.Audio.Media.MIME_TYPE} = '$i'"
@@ -343,7 +364,14 @@ object MediaStoreUtils {
                     trackNumber %= 1000
                 }
 
-                if (duration >= limitValue * 1000) {
+                if (duration >= limitValue * 1000 &&
+                    !prefs.getBoolean(
+                        "folderFilter_${
+                            path.substringAfter('/').substringAfter('/').substringAfter('/')
+                                .substringAfter('/').substringBeforeLast('/')
+                        }", false
+                    )
+                ) {
                     // Build our mediaItem.
                     songs.add(
                         MediaItem
@@ -397,8 +425,9 @@ object MediaStoreUtils {
                     genreMap.getOrPut(Pair(genreId, genre)) { mutableListOf() }.add(songs.last())
                     dateMap.getOrPut(year) { mutableListOf() }.add(songs.last())
                     handleMediaItem(songs.last(), path.toString(), root)
-                    handleShallowMediaItem(songs.last(), path.toString(), shallowRoot)
+                    handleShallowMediaItem(songs.last(), path.toString(), shallowRoot, folderArray)
                 }
+                handleBlacklistFolder(path, shallowRoot, folderArray)
             }
         }
         cursor?.close()
@@ -427,6 +456,10 @@ object MediaStoreUtils {
             // dates do not have unique IDs, but they arguably aren't needed either
             Date(index.toLong(), cat?.toString(), songs)
         }.toMutableList()
+
+        prefs.edit()
+            .putStringSet("folderArray", folderArray.toSet())
+            .apply()
 
         return LibraryStoreClass(
             songs,
@@ -530,7 +563,8 @@ object MediaStoreUtils {
                 )
             }
         } else {
-            playlists.first { it.title == "gramophone_favourite" }.title = context.getString(R.string.playlist_favourite)
+            playlists.first { it.title == "gramophone_favourite" }.title =
+                context.getString(R.string.playlist_favourite)
         }
 
         return playlists
@@ -596,6 +630,5 @@ object MediaStoreUtils {
             libraryViewModel.shallowFolderStructure.value = pairObject.shallowFolder
         }
     }
-
 
 }

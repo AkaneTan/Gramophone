@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.preference.Preference
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 
@@ -40,6 +41,19 @@ class BehaviorSettingsTopFragment : BasePreferenceFragment(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    }
+
+    override fun onPreferenceTreeClick(preference: Preference): Boolean {
+        if (preference.key == "blacklist") {
+            val supportFragmentManager = requireActivity().supportFragmentManager
+            supportFragmentManager
+                .beginTransaction()
+                .addToBackStack(System.currentTimeMillis().toString())
+                .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
+                .add(R.id.container, BlacklistSettingsFragment())
+                .commit()
+        }
+        return super.onPreferenceTreeClick(preference)
     }
 
     override fun onStart() {
