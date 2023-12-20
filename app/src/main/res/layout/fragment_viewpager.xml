@@ -37,7 +37,7 @@
             android:paddingBottom="12dp"
             app:tabBackground="@android:color/transparent"
             app:tabIndicator="@drawable/selected_chip_background"
-            app:tabIndicatorColor="?attr/colorTertiaryContainer"
+            app:tabIndicatorColor="?attr/colorSecondaryContainer"
             app:tabIndicatorFullWidth="true"
             app:tabIndicatorGravity="stretch"
             app:tabMinWidth="0dp"
@@ -45,7 +45,7 @@
             app:tabPaddingEnd="14dp"
             app:tabPaddingStart="14dp"
             app:tabRippleColor="@android:color/transparent"
-            app:tabSelectedTextColor="?attr/colorOnTertiaryContainer"
+            app:tabSelectedTextColor="?attr/colorOnSecondaryContainer"
             app:tabTextAppearance="@style/TabTextAppearance"
             app:tabTextColor="?attr/colorOnSurfaceVariant"
             tools:tabContentStart="28dp">
