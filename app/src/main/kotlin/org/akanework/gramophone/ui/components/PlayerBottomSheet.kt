@@ -890,8 +890,6 @@ class PlayerBottomSheet private constructor(
             secondaryContainerTransition.apply {
                 addUpdateListener { animation ->
                     val progressColor = animation.animatedValue as Int
-                    bottomSheetFullSeekBar.secondaryProgressTintList =
-                        ColorStateList.valueOf(progressColor)
                     bottomSheetFullControllerButton.backgroundTintList =
                         ColorStateList.valueOf(progressColor)
                     bottomSheetFullSlider.trackInactiveTintList =
@@ -1043,13 +1041,6 @@ class PlayerBottomSheet private constructor(
                         -1
                     )
 
-                val colorSurfaceContainerHighest =
-                    MaterialColors.getColor(
-                        context,
-                        android.R.attr.textColorTertiary,
-                        -1
-                    )
-
                 val selectorBackground =
                     AppCompatResources.getColorStateList(
                         wrappedContext!!,
@@ -1061,12 +1052,6 @@ class PlayerBottomSheet private constructor(
                         wrappedContext!!,
                         R.color.sl_fav_button
                     )
-
-                MaterialColors.getColor(
-                    wrappedContext!!,
-                    com.google.android.material.R.attr.colorTertiary,
-                    -1
-                )
 
                 val colorAccent =
                     MaterialColors.getColor(
@@ -1132,8 +1117,6 @@ class PlayerBottomSheet private constructor(
                 secondaryContainerTransition.apply {
                     addUpdateListener { animation ->
                         val progressColor = animation.animatedValue as Int
-                        bottomSheetFullSeekBar.secondaryProgressTintList =
-                            ColorStateList.valueOf(progressColor)
                         bottomSheetFullControllerButton.backgroundTintList =
                             ColorStateList.valueOf(progressColor)
                         bottomSheetFullSlider.trackInactiveTintList =
