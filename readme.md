@@ -1,8 +1,7 @@
 # Gramophone
 ![GitHub](https://img.shields.io/github/license/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=white)
 ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=white)
-[![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=white)](https://t.me/AkaneFoundation)
-[![Static Badge](https://img.shields.io/badge/Matrix-Content?style=flat-square&logo=matrix&logoColor=black&color=white)](https://matrix.to/#/#akanefoundation:matrix.org)
+[![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=white)](https://t.me/AkaneDev)
 
 A sane music player built with media3 and material design library that is following android's standard strictly.
 
@@ -28,7 +27,7 @@ A sane music player built with media3 and material design library that is follow
 
 
 ## Installation
-You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDevRel). Github release is outdated and will be updated when 1.0.2's final release is out.
+You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDist). Github release is outdated and will be updated when 1.0.2's final release is out.
 
 ## Building
 To build this app, you will need the latest beta version of android studio and a fast network. Simply clone it and build it.
@@ -42,7 +41,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 </a>
 
 ## Notice
-- For bug reporting: [Telegram](https://t.me/AkaneFoundation)
+- For bug reporting: [Telegram](https://t.me/AkaneDev)
 
 ## Friend
 [SongSync](https://github.com/lambada10/songsync)

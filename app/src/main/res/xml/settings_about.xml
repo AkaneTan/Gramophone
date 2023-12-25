@@ -59,7 +59,7 @@
             android:title="Telegram">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://t.me/AkaneDevRel" />
+                android:data="https://t.me/AkaneDist" />
         </Preference>
     </PreferenceCategory>
     <!-- For extra space below -->
