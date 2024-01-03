@@ -85,11 +85,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf(
+        freeCompilerArgs += listOf(
             "-Xno-param-assertions",
             "-Xno-call-assertions",
             "-Xno-receiver-assertions",
-            "-language-version=2.0",
         )
     }
 }
