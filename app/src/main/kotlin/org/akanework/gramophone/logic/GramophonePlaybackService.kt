@@ -20,7 +20,10 @@ package org.akanework.gramophone.logic
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.os.Handler
@@ -114,7 +117,15 @@ class GramophonePlaybackService : MediaLibraryService(),
             )
         }
 
+    private lateinit var headSetReceiver: HeadSetReceiver
+
     override fun onCreate() {
+        headSetReceiver = HeadSetReceiver()
+        registerReceiver(
+            headSetReceiver,
+            IntentFilter(Intent.ACTION_HEADSET_PLUG)
+        )
+
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         customCommands =
@@ -236,6 +247,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         mediaSession!!.release()
         mediaSession = null
         lyrics = null
+        unregisterReceiver(headSetReceiver)
         super.onDestroy()
     }
 
@@ -367,6 +379,15 @@ class GramophonePlaybackService : MediaLibraryService(),
     override fun onTaskRemoved(rootIntent: Intent?) {
         if (!mediaSession!!.player.playWhenReady) {
             stopSelf()
+        }
+    }
+
+    inner class HeadSetReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action.equals(Intent.ACTION_HEADSET_PLUG) &&
+                intent.getIntExtra("state", -1) == 0) {
+                mediaSession!!.player.pause()
+            }
         }
     }
 }
