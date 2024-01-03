@@ -34,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.getFile
+import org.akanework.gramophone.logic.getUri
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -218,7 +220,7 @@ class SongAdapter(
                         rootView.findViewById<TextView>(R.id.genre)!!.text = genre
                     }
                     rootView.findViewById<TextView>(R.id.path)!!.text =
-                        item.mediaMetadata.extras!!.getString("Path")
+                        item.getFile()?.path
                     rootView.findViewById<TextView>(R.id.mime)!!.text =
                         item.mediaMetadata.extras!!.getString("MimeType")
                     rootView.findViewById<TextView>(R.id.duration)!!.text =
