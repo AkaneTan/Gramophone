@@ -49,7 +49,11 @@ class AlbumAdapter(
 
     private val libraryViewModel: LibraryViewModel by mainActivity.viewModels()
 
-    constructor(mainActivity: MainActivity, albumList: List<MediaStoreUtils.Album>, isSubFragment: Boolean = false)
+    constructor(
+        mainActivity: MainActivity,
+        albumList: List<MediaStoreUtils.Album>,
+        isSubFragment: Boolean = false
+    )
             : this(mainActivity, null, false, isSubFragment = isSubFragment) {
         updateList(albumList, now = true, false)
     }

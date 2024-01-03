@@ -35,7 +35,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getFile
-import org.akanework.gramophone.logic.getUri
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -79,7 +78,15 @@ class SongAdapter(
         isTrackDiscNumAvailable: Boolean = false,
         isSubFragment: Boolean = false
     )
-            : this(mainActivity, null, canSort, helper, ownsView, isTrackDiscNumAvailable, isSubFragment = isSubFragment) {
+            : this(
+        mainActivity,
+        null,
+        canSort,
+        helper,
+        ownsView,
+        isTrackDiscNumAvailable,
+        isSubFragment = isSubFragment
+    ) {
         updateList(songList, now = true, false)
     }
 

@@ -84,11 +84,17 @@ abstract class BaseAdapter<T>(
         PreferenceManager.getDefaultSharedPreferences(context)
 
     private var prefSortType: Sorter.Type = Sorter.Type.valueOf(
-        prefs.getString("S" + FileOpUtils.getAdapterType(this).toString(), Sorter.Type.None.toString())!!
+        prefs.getString(
+            "S" + FileOpUtils.getAdapterType(this).toString(),
+            Sorter.Type.None.toString()
+        )!!
     )
 
     private var prefLayoutType: LayoutType = LayoutType.valueOf(
-        prefs.getString("L" + FileOpUtils.getAdapterType(this).toString(), LayoutType.NONE.toString())!!
+        prefs.getString(
+            "L" + FileOpUtils.getAdapterType(this).toString(),
+            LayoutType.NONE.toString()
+        )!!
     )
 
     var layoutType: LayoutType? = null

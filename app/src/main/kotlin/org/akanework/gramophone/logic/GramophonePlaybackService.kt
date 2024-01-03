@@ -48,8 +48,8 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LastPlayedManager
+import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 
@@ -334,7 +334,8 @@ class GramophonePlaybackService : MediaLibraryService(),
             for (j in 0 until i.length) {
                 val trackMetadata = i.getTrackFormat(j).metadata ?: continue
                 lyrics = extractAndParseLyrics(
-                    mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata) ?: continue
+                    mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata
+                ) ?: continue
             }
         }
         mediaSession!!.broadcastCustomCommand(

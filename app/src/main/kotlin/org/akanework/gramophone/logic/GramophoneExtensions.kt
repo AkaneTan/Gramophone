@@ -138,6 +138,7 @@ fun MediaController.getTimer(): Int =
         SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY),
         Bundle.EMPTY
     ).get().extras.getInt("duration")
+
 fun MediaController.hasTimer(): Boolean = getTimer() > 0
 fun MediaController.setTimer(value: Int) {
     sendCustomCommand(
@@ -155,7 +156,8 @@ fun MediaController.getLyrics(): Array<MediaStoreUtils.Lyric>? =
         @Suppress("UNCHECKED_CAST")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             it.getParcelableArray("lyrics", MediaStoreUtils.Lyric::class.java)
-        } else { @Suppress("deprecation")
+        } else {
+            @Suppress("deprecation")
             it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>
         }
     }

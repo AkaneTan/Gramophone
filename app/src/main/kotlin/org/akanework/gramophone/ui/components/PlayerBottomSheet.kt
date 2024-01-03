@@ -1335,6 +1335,7 @@ class PlayerBottomSheet private constructor(
                 GramophonePlaybackService.SERVICE_TIMER_CHANGED -> {
                     bottomSheetTimerButton.isChecked = controller.hasTimer()
                 }
+
                 SERVICE_GET_LYRICS -> {
                     bottomSheetFullLyricList.clear()
                     val parsedLyrics = instance.getLyrics()
