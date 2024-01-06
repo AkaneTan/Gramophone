@@ -27,7 +27,7 @@ A sane music player built with media3 and material design library that is follow
 
 
 ## Installation
-You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDist). Github release is outdated and will be updated when 1.0.2's final release is out.
+You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDistribution). Github release is outdated and will be updated when 1.0.2's final release is out.
 
 ## Building
 To build this app, you will need the latest beta version of android studio and a fast network. Simply clone it and build it.
