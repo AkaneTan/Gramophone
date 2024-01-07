@@ -162,6 +162,7 @@ class PlayerBottomSheet private constructor(
     private var colorPrimaryFinalColor: Int = -1
     private var colorSecondaryContainerFinalColor: Int = -1
     private var colorOnSecondaryContainerFinalColor: Int = -1
+    private var colorContrastFaintedFinalColor: Int = -1
 
     private var playlistNowPlaying: TextView? = null
     private var playlistNowPlayingCover: ImageView? = null
@@ -273,7 +274,7 @@ class PlayerBottomSheet private constructor(
         }
         if (prefs.getBoolean(
                 "bold_title",
-                false
+                true
             ) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
         ) {
             bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
@@ -840,6 +841,13 @@ class PlayerBottomSheet private constructor(
                 true
             )
 
+            val colorContrastFainted = ColorUtils.getColor(
+                colorSecondaryContainer,
+                ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
+                context,
+                false
+            )
+
             val surfaceTransition = ValueAnimator.ofArgb(
                 fullPlayerFinalColor,
                 backgroundProcessedColor
@@ -858,6 +866,11 @@ class PlayerBottomSheet private constructor(
             val onSecondaryContainerTransition = ValueAnimator.ofArgb(
                 colorOnSecondaryContainerFinalColor,
                 colorOnSecondaryContainer
+            )
+
+            val colorContrastFaintedTransition = ValueAnimator.ofArgb(
+                colorContrastFaintedFinalColor,
+                colorContrastFainted
             )
 
             surfaceTransition.apply {
@@ -907,11 +920,20 @@ class PlayerBottomSheet private constructor(
                 duration = BACKGROUND_COLOR_TRANSITION_SEC
             }
 
+            colorContrastFaintedTransition.apply {
+                addUpdateListener { animation ->
+                    val progressColor = animation.animatedValue as Int
+                    bottomSheetFullSlider.trackInactiveTintList =
+                        ColorStateList.valueOf(progressColor)
+                }
+            }
+
             withContext(Dispatchers.Main) {
                 surfaceTransition.start()
                 primaryTransition.start()
                 secondaryContainerTransition.start()
                 onSecondaryContainerTransition.start()
+                colorContrastFaintedTransition.start()
             }
 
             delay(FOREGROUND_COLOR_TRANSITION_SEC)
@@ -919,6 +941,7 @@ class PlayerBottomSheet private constructor(
             colorPrimaryFinalColor = colorPrimary
             colorSecondaryContainerFinalColor = colorSecondaryContainer
             colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer
+            colorContrastFaintedFinalColor = colorContrastFainted
 
             withContext(Dispatchers.Main) {
                 bottomSheetFullTitle.setTextColor(
@@ -931,12 +954,7 @@ class PlayerBottomSheet private constructor(
                     colorSurface
                 )
                 bottomSheetFullLyricAdapter.updateTextColor(
-                    ColorUtils.getColor(
-                        colorSecondaryContainerFinalColor,
-                        ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-                        context,
-                        false
-                    ),
+                    colorContrastFainted,
                     colorPrimary
                 )
 
@@ -1067,6 +1085,13 @@ class PlayerBottomSheet private constructor(
                     true
                 )
 
+                val colorContrastFainted = ColorUtils.getColor(
+                    colorSecondaryContainer,
+                    ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
+                    context,
+                    false
+                )
+
                 val surfaceTransition = ValueAnimator.ofArgb(
                     fullPlayerFinalColor,
                     backgroundProcessedColor
@@ -1085,6 +1110,11 @@ class PlayerBottomSheet private constructor(
                 val onSecondaryContainerTransition = ValueAnimator.ofArgb(
                     colorOnSecondaryContainerFinalColor,
                     colorOnSecondaryContainer
+                )
+
+                val colorContrastFaintedTransition = ValueAnimator.ofArgb(
+                    colorContrastFaintedFinalColor,
+                    colorContrastFainted
                 )
 
                 surfaceTransition.apply {
@@ -1119,8 +1149,6 @@ class PlayerBottomSheet private constructor(
                         val progressColor = animation.animatedValue as Int
                         bottomSheetFullControllerButton.backgroundTintList =
                             ColorStateList.valueOf(progressColor)
-                        bottomSheetFullSlider.trackInactiveTintList =
-                            ColorStateList.valueOf(progressColor)
                     }
                     duration = BACKGROUND_COLOR_TRANSITION_SEC
                 }
@@ -1134,11 +1162,20 @@ class PlayerBottomSheet private constructor(
                     duration = BACKGROUND_COLOR_TRANSITION_SEC
                 }
 
+                colorContrastFaintedTransition.apply {
+                    addUpdateListener { animation ->
+                        val progressColor = animation.animatedValue as Int
+                        bottomSheetFullSlider.trackInactiveTintList =
+                            ColorStateList.valueOf(progressColor)
+                    }
+                }
+
                 withContext(Dispatchers.Main) {
                     surfaceTransition.start()
                     primaryTransition.start()
                     secondaryContainerTransition.start()
                     onSecondaryContainerTransition.start()
+                    colorContrastFaintedTransition.start()
                 }
 
                 delay(FOREGROUND_COLOR_TRANSITION_SEC)
@@ -1146,6 +1183,7 @@ class PlayerBottomSheet private constructor(
                 colorPrimaryFinalColor = colorPrimary
                 colorSecondaryContainerFinalColor = colorSecondaryContainer
                 colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer
+                colorContrastFaintedFinalColor = colorContrastFainted
 
                 withContext(Dispatchers.Main) {
                     bottomSheetFullTitle.setTextColor(
@@ -1158,12 +1196,7 @@ class PlayerBottomSheet private constructor(
                         colorSurface
                     )
                     bottomSheetFullLyricAdapter.updateTextColor(
-                        ColorUtils.getColor(
-                            colorSecondaryContainerFinalColor,
-                            ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-                            context,
-                            false
-                        ),
+                        colorContrastFainted,
                         colorPrimary
                     )
 
@@ -1562,7 +1595,7 @@ class PlayerBottomSheet private constructor(
                 text = lyric.content
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                    activity.getPreferences().getBoolean("lyric_bold", true)
+                    activity.getPreferences().getBoolean("lyric_bold", false)
                 ) {
                     this.typeface = Typeface.create(null, 700, false)
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

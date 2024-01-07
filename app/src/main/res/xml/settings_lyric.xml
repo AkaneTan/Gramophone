@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreferenceCompat
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:icon="@drawable/ic_format_bold"
         android:key="lyric_bold"
         android:layout="@layout/icon_switch_preference"

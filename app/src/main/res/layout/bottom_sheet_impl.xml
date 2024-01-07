@@ -194,7 +194,7 @@
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
                     android:textFontWeight="500"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
@@ -202,12 +202,12 @@
                     android:id="@+id/full_song_artist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="3dp"
                     android:gravity="center"
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textFontWeight="500"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
 
