@@ -32,7 +32,7 @@ object ColorUtils {
         var lightingDark: Float = 0f
     ) {
         COLOR_BACKGROUND_TINTED(1.2f, 1.0f, 1.03f, 0.9f),
-        COLOR_BACKGROUND_ELEVATED(1.2f, 1.2f, 0.98f, 0.99f),
+        COLOR_BACKGROUND_ELEVATED(1.2f, 1.2f, 0.99f, 0.99f),
         COLOR_BACKGROUND(1.0f, 0.9f, 1.015f, 1.015f),
         TOOLBAR_ELEVATED(0.6f, 0.6f, 0.97f, 1.5f),
         COLOR_CONTRAST_FAINTED(0.7f, 0.8f, 0.97f, 0.5f)
