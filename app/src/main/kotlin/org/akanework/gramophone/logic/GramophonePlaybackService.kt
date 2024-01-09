@@ -386,7 +386,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action.equals(Intent.ACTION_HEADSET_PLUG) &&
                 intent.getIntExtra("state", -1) == 0) {
-                mediaSession!!.player.pause()
+                mediaSession?.player?.pause()
             }
         }
     }
