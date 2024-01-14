@@ -28,7 +28,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import androidx.core.net.toFile
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
@@ -52,7 +51,7 @@ fun MediaItem.getUri(): Uri? {
 }
 
 fun MediaItem.getFile(): File? {
-    return getUri()?.toFile()
+    return getUri()?.path?.let { File(it) }
 }
 
 fun Activity.closeKeyboard() {
