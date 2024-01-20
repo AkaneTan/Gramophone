@@ -220,34 +220,22 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			this,
 			com.google.android.material.R.attr.colorSecondaryContainer
 		)
-		if (prefs.getBoolean("default_progress_bar", false)) {
-			bottomSheetFullSlider.visibility = View.VISIBLE
-			bottomSheetFullSeekBar.visibility = View.GONE
-		} else {
-			bottomSheetFullSlider.visibility = View.GONE
-			bottomSheetFullSeekBar.visibility = View.VISIBLE
+		refreshSettings(null)
+		prefs.registerOnSharedPreferenceChangeListener { _, key ->
+			if (key == "color_accuracy" || key == "content_based_color") {
+				if (Build.VERSION.SDK_INT >= 26 &&
+					prefs.getBoolean("content_based_color", true)) {
+					addColorScheme()
+				} else {
+					removeColorScheme()
+				}
+			} else if (key == "lyric_center" || key == "lyric_bold") {
+				@Suppress("NotifyDataSetChanged")
+				bottomSheetFullLyricAdapter.notifyDataSetChanged()
+			} else {
+				refreshSettings(key)
+			}
 		}
-		if (prefs.getBoolean("centered_title", true)) {
-			bottomSheetFullTitle.gravity = Gravity.CENTER
-			bottomSheetFullSubtitle.gravity = Gravity.CENTER
-		} else {
-			bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
-			bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
-		}
-		if (prefs.getBoolean(
-				"bold_title",
-				true
-			) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-		) {
-			bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
-		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
-		}
-		bottomSheetFullCoverFrame.radius = prefs.getInt(
-			"album_round_corner",
-			context.resources.getInteger(R.integer.round_corner_radius)
-		).px.toFloat()
-
 
 		val seekBarProgressWavelength =
 			getContext().resources
@@ -434,24 +422,63 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}
 
 				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
-					bottomSheetFullLyricList.clear()
 					val parsedLyrics = instance.getLyrics()
-					if (parsedLyrics?.isEmpty() != false) {
-						bottomSheetFullLyricList.add(
-							MediaStoreUtils.Lyric(
-								0,
-								context.getString(R.string.no_lyric_found)
+					if (bottomSheetFullLyricList != parsedLyrics) {
+						bottomSheetFullLyricList.clear()
+						if (parsedLyrics?.isEmpty() != false) {
+							bottomSheetFullLyricList.add(
+								MediaStoreUtils.Lyric(
+									0,
+									context.getString(R.string.no_lyric_found)
+								)
 							)
-						)
-					} else {
-						bottomSheetFullLyricList.add(MediaStoreUtils.Lyric())
-						bottomSheetFullLyricList.addAll(parsedLyrics)
+						} else {
+							bottomSheetFullLyricList.addAll(parsedLyrics)
+						}
+						bottomSheetFullLyricAdapter.notifyDataSetChanged()
+						resetToDefaultLyricPosition()
 					}
-					bottomSheetFullLyricAdapter.notifyDataSetChanged()
-					resetToDefaultLyricPosition()
 				}
 			}
 			return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+		}
+	}
+
+	private fun refreshSettings(key: String?) {
+		if (key == null || key == "default_progress_bar") {
+			if (prefs.getBoolean("default_progress_bar", false)) {
+				bottomSheetFullSlider.visibility = View.VISIBLE
+				bottomSheetFullSeekBar.visibility = View.GONE
+			} else {
+				bottomSheetFullSlider.visibility = View.GONE
+				bottomSheetFullSeekBar.visibility = View.VISIBLE
+			}
+		}
+		if (key == null || key == "centered_title") {
+			if (prefs.getBoolean("centered_title", true)) {
+				bottomSheetFullTitle.gravity = Gravity.CENTER
+				bottomSheetFullSubtitle.gravity = Gravity.CENTER
+			} else {
+				bottomSheetFullTitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
+				bottomSheetFullSubtitle.gravity = Gravity.CENTER_HORIZONTAL or Gravity.START
+			}
+		}
+		if (key == null || key == "bold_title") {
+			if (prefs.getBoolean(
+					"bold_title",
+					true
+				) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+			) {
+				bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
+			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
+			}
+		}
+		if (key == null || key == "album_round_corner") {
+			bottomSheetFullCoverFrame.radius = prefs.getInt(
+				"album_round_corner",
+				context.resources.getInteger(R.integer.round_corner_radius)
+			).px.toFloat()
 		}
 	}
 

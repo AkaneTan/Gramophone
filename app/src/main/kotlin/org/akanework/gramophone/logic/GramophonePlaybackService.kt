@@ -79,7 +79,7 @@ class GramophonePlaybackService : MediaLibraryService(),
     }
 
     private var mediaSession: MediaLibrarySession? = null
-    private var lyrics: List<MediaStoreUtils.Lyric>? = null
+    private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
@@ -360,6 +360,8 @@ class GramophonePlaybackService : MediaLibraryService(),
                 lyrics = extractAndParseLyrics(
                     mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata
                 ) ?: continue
+                // add empty element at the beginning
+                lyrics?.add(0, MediaStoreUtils.Lyric())
             }
         }
         mediaSession!!.broadcastCustomCommand(

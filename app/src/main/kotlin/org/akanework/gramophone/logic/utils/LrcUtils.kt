@@ -13,7 +13,7 @@ import kotlin.math.pow
 
 object LrcUtils {
     @OptIn(UnstableApi::class)
-    fun extractAndParseLyrics(musicFile: File?, metadata: Metadata): List<MediaStoreUtils.Lyric>? {
+    fun extractAndParseLyrics(musicFile: File?, metadata: Metadata): MutableList<MediaStoreUtils.Lyric>? {
         return extractLyrics(musicFile, metadata)?.let { parseLrcString(it) }
     }
 
@@ -38,7 +38,7 @@ object LrcUtils {
         return lrcFile.readBytes().toString(Charset.defaultCharset())
     }
 
-    private fun parseLrcString(lrcContent: String): List<MediaStoreUtils.Lyric> {
+    private fun parseLrcString(lrcContent: String): MutableList<MediaStoreUtils.Lyric> {
         val linesRegex = "\\[(\\d{2}:\\d{2}\\.\\d+)](.*)".toRegex()
         val list = mutableListOf<MediaStoreUtils.Lyric>()
         //val measureTime = measureTimeMillis {
