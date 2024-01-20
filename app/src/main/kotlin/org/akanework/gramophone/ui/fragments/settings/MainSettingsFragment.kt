@@ -101,9 +101,9 @@ class MainSettingsFragment : BaseFragment(false) {
             bottomSheetFullSeekBar.visibility = View.VISIBLE
         }
         if (!isContentBasedColorEnabled) {
-            (activity as MainActivity).getPlayerSheet().removeColorScheme()
+            (activity as MainActivity).getPlayerSheet().fullPlayer.removeColorScheme()
         } else {
-            (activity as MainActivity).getPlayerSheet().addColorScheme()
+            (activity as MainActivity).getPlayerSheet().fullPlayer.addColorScheme()
         }
         if (isTitleCentered) {
             bottomSheetFullTitle.gravity = Gravity.CENTER

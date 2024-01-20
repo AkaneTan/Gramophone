@@ -77,7 +77,7 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:icon="@drawable/ic_pause"
+            app:icon="@drawable/play_anim"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="24dp"
@@ -108,7 +108,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Full Player -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <org.akanework.gramophone.ui.components.FullBottomSheet
         android:id="@+id/full_player"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -486,6 +486,6 @@
             android:visibility="gone"
             tools:listitem="@layout/lyrics" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </org.akanework.gramophone.ui.components.FullBottomSheet>
 
 </merge>

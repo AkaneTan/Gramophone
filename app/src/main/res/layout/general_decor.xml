@@ -34,7 +34,7 @@
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"
-        app:iconTint="?attr/colorTertiary"
+        app:iconTint="?attr/colorPrimary"
         tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton

@@ -272,6 +272,13 @@ class GramophonePlaybackService : MediaLibraryService(),
         availableSessionCommands.add(SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY))
+        handler.post {
+            session.sendCustomCommand(
+                controller,
+                SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+                Bundle.EMPTY
+            )
+        }
         return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
             .setAvailableSessionCommands(availableSessionCommands.build())
             .build()
