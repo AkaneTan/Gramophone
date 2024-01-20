@@ -245,8 +245,6 @@
                     android:value="0"
                     android:visibility="gone"
                     app:labelBehavior="gone"
-                    app:thumbElevation="0dp"
-                    app:thumbRadius="9dp"
                     tools:value="0.5"
                     tools:visibility="visible" />
 

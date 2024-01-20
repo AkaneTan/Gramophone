@@ -44,7 +44,6 @@ object LrcUtils {
         //val measureTime = measureTimeMillis {
         lrcContent.lines().forEach { line ->
             linesRegex.find(line)?.let { matchResult ->
-                Log.e("hi",matchResult.groupValues.toString())
                 val startTime = parseTime(matchResult.groupValues[1])
                 val lyricLine = matchResult.groupValues[2]
                 val insertIndex = list.binarySearch { it.timeStamp.compareTo(startTime) }
