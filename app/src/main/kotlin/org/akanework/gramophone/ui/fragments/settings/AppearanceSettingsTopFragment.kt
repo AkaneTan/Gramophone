@@ -18,27 +18,19 @@
 package org.akanework.gramophone.ui.fragments.settings
 
 import android.content.SharedPreferences
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
+import org.akanework.gramophone.ui.fragments.BaseSettingFragment
 
-class AppearanceSettingsTopFragment : BasePreferenceFragment(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+class AppearanceSettingsFragment : BaseSettingFragment(R.string.settings_category_appearance,
+    { AppearanceSettingsTopFragment() })
+
+class AppearanceSettingsTopFragment : BasePreferenceFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_appearance, rootKey)
-    }
-
-    override fun setDivider(divider: Drawable?) {
-        super.setDivider(ColorDrawable(Color.TRANSPARENT))
-    }
-
-    override fun setDividerHeight(height: Int) {
-        super.setDividerHeight(0)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -69,16 +61,6 @@ class AppearanceSettingsTopFragment : BasePreferenceFragment(),
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }

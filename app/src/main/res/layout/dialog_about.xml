@@ -22,7 +22,8 @@
             android:layout_height="36dp"
             android:layout_margin="8dp"
             android:src="@drawable/ic_gramophone"
-            app:tint="?attr/colorOnSecondaryContainer" />
+            app:tint="?attr/colorOnSecondaryContainer"
+            android:importantForAccessibility="no" />
 
     </com.google.android.material.card.MaterialCardView>
 

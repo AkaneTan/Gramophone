@@ -17,27 +17,18 @@
 
 package org.akanework.gramophone.ui.fragments.settings
 
-import android.content.SharedPreferences
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.preference.Preference
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
+import org.akanework.gramophone.ui.fragments.BaseSettingFragment
 
-class MainSettingsTopFragment : BasePreferenceFragment(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+class MainSettingsFragment : BaseSettingFragment(R.string.home_menu_settings,
+    { MainSettingsTopFragment() })
+
+class MainSettingsTopFragment : BasePreferenceFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_top, rootKey)
-    }
-
-    override fun setDivider(divider: Drawable?) {
-        super.setDivider(ColorDrawable(Color.TRANSPARENT))
-    }
-
-    override fun setDividerHeight(height: Int) {
-        super.setDividerHeight(0)
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
@@ -103,20 +94,6 @@ class MainSettingsTopFragment : BasePreferenceFragment(),
             }
         }
         return super.onPreferenceTreeClick(preference)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        // nothing here
     }
 
 }

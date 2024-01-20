@@ -19,13 +19,4 @@
         android:title="@string/settings_lyrics_center"
         android:widgetLayout="@layout/preference_material_switch" />
 
-    <!-- For extra space below -->
-    <Preference
-        android:enabled="false"
-        android:title="" />
-
-    <Preference
-        android:enabled="false"
-        android:title="" />
-
 </PreferenceScreen>

@@ -62,11 +62,4 @@
                 android:data="https://t.me/AkaneDist" />
         </Preference>
     </PreferenceCategory>
-    <!-- For extra space below -->
-    <Preference
-        android:enabled="false"
-        android:title="" />
-    <Preference
-        android:enabled="false"
-        android:title="" />
 </PreferenceScreen>

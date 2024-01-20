@@ -17,11 +17,7 @@
 
 package org.akanework.gramophone.ui.fragments.settings
 
-import android.content.SharedPreferences
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.widget.TextView
@@ -32,23 +28,18 @@ import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
+import org.akanework.gramophone.ui.fragments.BaseSettingFragment
 
-class AboutSettingsTopFragment : BasePreferenceFragment(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+class AboutSettingsFragment : BaseSettingFragment(R.string.settings_about_app,
+    { AboutSettingsTopFragment() })
+
+class AboutSettingsTopFragment : BasePreferenceFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_about, rootKey)
         val versionPrefs = findPreference<Preference>("app_version")
         val releaseType = findPreference<Preference>("package_type")
         versionPrefs!!.summary = BuildConfig.VERSION_NAME
         releaseType!!.summary = BuildConfig.RELEASE_TYPE
-    }
-
-    override fun setDivider(divider: Drawable?) {
-        super.setDivider(ColorDrawable(Color.TRANSPARENT))
-    }
-
-    override fun setDividerHeight(height: Int) {
-        super.setDividerHeight(0)
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
@@ -76,18 +67,4 @@ class AboutSettingsTopFragment : BasePreferenceFragment(),
         }
         return super.onPreferenceTreeClick(preference)
     }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-    }
-
-    override fun onStart() {
-        super.onStart()
-        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
-    }
-
 }

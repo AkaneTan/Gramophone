@@ -147,7 +147,7 @@ fun MediaController.setTimer(value: Int) {
     )
 }
 
-fun MediaController.getLyrics(): Array<MediaStoreUtils.Lyric>? =
+fun MediaController.getLyrics(): MutableList<MediaStoreUtils.Lyric>? =
     sendCustomCommand(
         SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
         Bundle.EMPTY
@@ -158,5 +158,5 @@ fun MediaController.getLyrics(): Array<MediaStoreUtils.Lyric>? =
         } else {
             @Suppress("deprecation")
             it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>?
-        }
+        }?.toMutableList()
     }

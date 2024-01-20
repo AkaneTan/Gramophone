@@ -133,9 +133,12 @@ class PlayerBottomSheet private constructor(
             view.onApplyWindowInsets(insets.toWindowInsets())
             doOnLayout {
                 val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                val notchInset = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
                 val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                previewPlayer.setPadding(0, 0, 0, navBarInset.bottom)
-                fullPlayer.setPadding(0, statusBarInset.top, 0, navBarInset.bottom)
+                previewPlayer.setPadding(notchInset.left, 0, notchInset.right,
+                    notchInset.bottom + navBarInset.bottom)
+                fullPlayer.setPadding(notchInset.left, statusBarInset.top,
+                    notchInset.right, notchInset.bottom + navBarInset.bottom)
                 previewPlayer.measure(
                     MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                     MeasureSpec.UNSPECIFIED

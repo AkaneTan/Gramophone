@@ -7,9 +7,7 @@
     <drawable name="settings_art">@drawable/ic_settings</drawable>
     <drawable name="dates_art">@drawable/ic_schedule</drawable>
     <drawable name="pause_anim">@drawable/ic_media_pause_anim</drawable>
-    <drawable name="next_art">@drawable/ic_skip_next_filled</drawable>
     <drawable name="play_anim">@drawable/ic_media_play_anim</drawable>
-    <drawable name="timer_art">@drawable/ic_timer</drawable>
     <drawable name="widgets_art">@drawable/ic_widgets</drawable>
     <drawable name="bug_art">@drawable/ic_sentiment_very_dissatisfied</drawable>
     <drawable name="daynight_art">@drawable/ic_light_mode</drawable>

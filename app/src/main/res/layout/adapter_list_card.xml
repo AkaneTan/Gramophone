@@ -35,8 +35,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
-            android:id="@+id/frame"
-            android:layout_width="0dp"
+	        android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"

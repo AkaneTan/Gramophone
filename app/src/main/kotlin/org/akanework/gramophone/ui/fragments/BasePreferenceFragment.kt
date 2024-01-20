@@ -17,6 +17,10 @@
 
 package org.akanework.gramophone.ui.fragments
 
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.preference.PreferenceFragmentCompat
@@ -30,7 +34,8 @@ import org.akanework.gramophone.logic.utils.ColorUtils
  *
  * @author AkaneTan
  */
-abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
+abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,6 +48,27 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
             true
         )
         view.setBackgroundColor(colorBackground)
+    }
+
+    override fun setDivider(divider: Drawable?) {
+        super.setDivider(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    override fun setDividerHeight(height: Int) {
+        super.setDividerHeight(0)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    }
+
+    override fun onStart() {
+        super.onStart()
+        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }

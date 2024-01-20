@@ -70,17 +70,13 @@ object CalculationUtils {
         return color and 0x00ffffff or (alpha shl 24)
     }
 
-    fun constrain(amount: Float, low: Float, high: Float): Float {
+    private fun constrain(amount: Float, low: Float, high: Float): Float {
         return if (amount < low) low else amount.coerceAtMost(high)
     }
 
 
     fun lerp(start: Float, stop: Float, amount: Float): Float {
         return start + (stop - start) * amount
-    }
-
-    fun lerp(start: Int, stop: Int, amount: Float): Float {
-        return lerp(start.toFloat(), stop.toFloat(), amount)
     }
 
     /**
@@ -94,7 +90,7 @@ object CalculationUtils {
     }
 
     /** Returns the single argument constrained between [0.0, 1.0].  */
-    fun saturate(value: Float): Float {
+    private fun saturate(value: Float): Float {
         return constrain(value, 0.0f, 1.0f)
     }
 

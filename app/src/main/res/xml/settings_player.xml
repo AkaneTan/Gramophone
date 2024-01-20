@@ -64,11 +64,4 @@
         android:layout="@layout/basic_preference"
         android:summary="@string/settings_lyrics_configuration_summary"
         android:title="@string/settings_lyrics_configuration" />
-    <!-- For extra space below -->
-    <Preference
-        android:enabled="false"
-        android:title="" />
-    <Preference
-        android:enabled="false"
-        android:title="" />
 </PreferenceScreen>

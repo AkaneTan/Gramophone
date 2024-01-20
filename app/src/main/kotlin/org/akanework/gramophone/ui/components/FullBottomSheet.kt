@@ -238,19 +238,19 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		val seekBarProgressWavelength =
-			getContext().resources
+			context.resources
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_wavelength)
 				.toFloat()
 		val seekBarProgressAmplitude =
-			getContext().resources
+			context.resources
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_amplitude)
 				.toFloat()
 		val seekBarProgressPhase =
-			getContext().resources
+			context.resources
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_phase)
 				.toFloat()
 		val seekBarProgressStrokeWidth =
-			getContext().resources
+			context.resources
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
 				.toFloat()
 
@@ -516,7 +516,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		controllerFuture = null
 	}
 
-	fun removeColorScheme(removeWrappedContext: Boolean = true) {
+	private fun removeColorScheme(removeWrappedContext: Boolean = true) {
 		if (removeWrappedContext) {
 			wrappedContext = null
 		}
@@ -734,7 +734,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 	@Suppress("DEPRECATION")
-	fun addColorScheme() {
+	private fun addColorScheme() {
 		val mediaItem = instance.currentMediaItem
 		currentJob?.cancel()
 		currentJob = CoroutineScope(Dispatchers.Default).launch {

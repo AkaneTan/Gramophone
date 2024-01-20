@@ -68,7 +68,7 @@ object ColorUtils {
     fun getColor(color: Int, colorType: ColorType, context: Context, isAmoled: Boolean): Int =
         manipulateHsl(color, colorType, context, isAmoled)
 
-    fun isDarkMode(context: Context): Boolean =
+    private fun isDarkMode(context: Context): Boolean =
         context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 

@@ -13,18 +13,11 @@
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/rootContainer"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/container"
+            android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/container"
-                android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
+            android:layout_height="match_parent" />
 
         <include layout="@layout/bottom_sheet" />
 

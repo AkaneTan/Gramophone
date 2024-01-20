@@ -60,13 +60,4 @@
         android:summary="@string/settings_about_gramophone"
         android:title="@string/settings_about_app" />
 
-    <!-- For extra space below -->
-    <Preference
-        android:enabled="false"
-        android:title="" />
-
-    <Preference
-        android:enabled="false"
-        android:title="" />
-
 </PreferenceScreen>

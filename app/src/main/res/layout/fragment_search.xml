@@ -4,13 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".ui.fragments.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
-        android:layout_height="64dp">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:contentScrim="?attr/colorSurface"
+        app:liftOnScrollColor="?attr/colorSurface"
+        app:statusBarScrim="?attr/colorSurface">
 
         <LinearLayout
             android:layout_width="match_parent"
