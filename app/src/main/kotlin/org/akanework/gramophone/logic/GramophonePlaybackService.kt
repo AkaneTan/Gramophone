@@ -222,6 +222,10 @@ class GramophonePlaybackService : MediaLibraryService(),
                         restoreInstance.mediaItems,
                         restoreInstance.startIndex, restoreInstance.startPositionMs
                     )
+                    // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
+                    handler.post {
+                        player.prepare()
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -344,6 +348,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         lyrics = null
         for (i in tracks.groups) {
             for (j in 0 until i.length) {
+                if (!i.isTrackSelected(j)) continue
                 val trackMetadata = i.getTrackFormat(j).metadata ?: continue
                 lyrics = extractAndParseLyrics(
                     mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata

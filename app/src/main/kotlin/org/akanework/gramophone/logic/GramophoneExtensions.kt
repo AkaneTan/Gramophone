@@ -157,6 +157,6 @@ fun MediaController.getLyrics(): Array<MediaStoreUtils.Lyric>? =
             it.getParcelableArray("lyrics", MediaStoreUtils.Lyric::class.java)
         } else {
             @Suppress("deprecation")
-            it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>
+            it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>?
         }
     }
