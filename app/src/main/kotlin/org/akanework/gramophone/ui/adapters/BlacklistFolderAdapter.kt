@@ -13,6 +13,8 @@ class BlacklistFolderAdapter(
     private val folderArray: MutableList<String>,
     private val prefs: SharedPreferences
 ) : RecyclerView.Adapter<BlacklistFolderAdapter.ViewHolder>() {
+    private val folderFilter = prefs.getStringSet("folderFilter", null)?.
+            toMutableSet() ?: mutableSetOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(
             LayoutInflater.from(parent.context)
@@ -31,18 +33,22 @@ class BlacklistFolderAdapter(
     override fun getItemCount(): Int = folderArray.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.checkBox.isChecked = prefs.getBoolean("folderFilter_${folderArray[position]}", false)
+        holder.checkBox.isChecked = folderFilter.contains(folderArray[position])
         holder.folderLocation.text = folderArray[position]
         holder.checkBox.setOnClickListener {
             prefs.edit()
-                .putBoolean("folderFilter_${folderArray[position]}", holder.checkBox.isChecked)
+                .putStringSet("folderFilter",
+                    folderFilter.also {
+                            if (holder.checkBox.isChecked)
+                                it.add(folderArray[position])
+                            else
+                                it.remove(folderArray[position])
+                        })
                 .apply()
         }
         holder.itemView.setOnClickListener {
             holder.checkBox.isChecked = !holder.checkBox.isChecked
-            prefs.edit()
-                .putBoolean("folderFilter_${folderArray[position]}", holder.checkBox.isChecked)
-                .apply()
+            holder.checkBox.callOnClick()
         }
     }
 }

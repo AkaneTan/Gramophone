@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+	<!-- MediaScannerActivity -->
+	<string name="scancard">Scan SD card</string>
+	<string name="numsongs"># of albums</string>
+	<string name="insertbutton">Insert %1d albums</string>
+</resources>

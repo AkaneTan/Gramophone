@@ -83,8 +83,9 @@ class PlayerBottomSheet private constructor(
     private val lifecycleOwner: LifecycleOwner
         get() = activity
     private val handler = Handler(Looper.getMainLooper())
-    private val instance: MediaController
-        get() = controllerFuture!!.get()
+    private val instance: MediaController?
+        get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
+            null else controllerFuture?.get()
     private var ready = false
         set(value) {
             field = value
@@ -101,9 +102,7 @@ class PlayerBottomSheet private constructor(
             if (field != value) {
                 field = value
                 standardBottomSheetBehavior?.state =
-                    if (controllerFuture?.isDone == true && controllerFuture?.isCancelled == false
-                        && controllerFuture!!.get().mediaItemCount != 0 && value
-                    ) {
+                    if ((instance?.mediaItemCount ?: 0) > 0 && value) {
                         if (standardBottomSheetBehavior?.state
                             != BottomSheetBehavior.STATE_EXPANDED
                         )
@@ -158,14 +157,14 @@ class PlayerBottomSheet private constructor(
             if (Build.VERSION.SDK_INT >= 23) {
                 it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
             }
-            instance.playOrPause()
+            instance?.playOrPause()
         }
 
         bottomSheetPreviewNextButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23) {
                 it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
             }
-            instance.seekToNextMediaItem()
+            instance?.seekToNextMediaItem()
         }
     }
 
@@ -308,13 +307,13 @@ class PlayerBottomSheet private constructor(
         onStop(lifecycleOwner)
     }
 
-    fun getPlayer(): MediaController = instance
+    fun getPlayer(): MediaController = instance!!
 
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
     ) {
-        if (instance.mediaItemCount != 0) {
+        if ((instance?.mediaItemCount ?: 0) > 0) {
             Glide
                 .with(context)
                 .load(mediaItem?.mediaMetadata?.artworkUri)
@@ -326,7 +325,7 @@ class PlayerBottomSheet private constructor(
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
         }
         var newState = standardBottomSheetBehavior!!.state
-        if (instance.mediaItemCount != 0 && visible) {
+        if ((instance?.mediaItemCount ?: 0) > 0 && visible) {
             if (newState != BottomSheetBehavior.STATE_EXPANDED) {
                 newState = BottomSheetBehavior.STATE_COLLAPSED
             }
@@ -342,11 +341,11 @@ class PlayerBottomSheet private constructor(
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        onPlaybackStateChanged(instance.playbackState)
+        onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
-        if (instance.isPlaying) {
+        if (instance?.isPlaying == true) {
             if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 1) {
                 bottomSheetPreviewControllerButton.icon =
                     AppCompatResources.getDrawable(context, R.drawable.play_anim)
@@ -374,14 +373,14 @@ class PlayerBottomSheet private constructor(
                 .buildAsync()
         controllerFuture!!.addListener(
             {
-                instance.addListener(this)
-                onPlaybackStateChanged(instance.playbackState)
+                instance?.addListener(this)
+                onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
                 onMediaItemTransition(
-                    instance.currentMediaItem,
+                    instance?.currentMediaItem,
                     Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
                 )
-                if (prefs.getBoolean("autoplay", false) && !instance.isPlaying) {
-                    instance.play()
+                if (prefs.getBoolean("autoplay", false) && instance?.isPlaying != true) {
+                    instance?.play()
                 }
                 handler.post {
                     ready = true
@@ -395,11 +394,10 @@ class PlayerBottomSheet private constructor(
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         fullPlayer.onStop()
-        if (controllerFuture?.isDone == true && controllerFuture?.isCancelled == false) {
-            instance.removeListener(this)
-            instance.release()
-        }
+        instance?.removeListener(this)
+        instance?.release()
         controllerFuture?.cancel(true)
+        controllerFuture = null
     }
 
 }

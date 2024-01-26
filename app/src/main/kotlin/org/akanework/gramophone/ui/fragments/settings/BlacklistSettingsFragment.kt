@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,8 +16,11 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.adapters.BlacklistFolderAdapter
 import org.akanework.gramophone.ui.fragments.BaseFragment
+import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class BlacklistSettingsFragment : BaseFragment() {
+
+    private val libraryViewModel: LibraryViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +56,7 @@ class BlacklistSettingsFragment : BaseFragment() {
         collapsingToolbar.setContentScrimColor(processColorElevated)
 
 
-        val folderArray = prefs.getStringSet("folderArray", setOf())!!.toMutableList()
+        val folderArray = libraryViewModel.allFolderSet.value?.toMutableList() ?: mutableListOf()
         folderArray.sort()
 
         topAppBar.setNavigationOnClickListener {

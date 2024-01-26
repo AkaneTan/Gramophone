@@ -214,14 +214,14 @@ abstract class BaseAdapter<T>(
     fun sort(selector: Sorter.Type) {
         sortType = selector
         CoroutineScope(Dispatchers.Default).launch {
-            val apply = sort()
+            val apply = sort(null, true, false)
             withContext(Dispatchers.Main) {
-                apply(false, true)
+                apply()
             }
         }
     }
 
-    private fun sort(srcList: List<T>? = null): (Boolean, Boolean) -> Unit {
+    private fun sort(srcList: List<T>? = null, canDiff: Boolean, now: Boolean): () -> Unit {
         // Sorting in the background using coroutines
         val newList = ArrayList(srcList ?: rawList)
         newList.sortWith { o1, o2 ->
@@ -229,9 +229,9 @@ abstract class BaseAdapter<T>(
             else if (!isPinned(o1) && isPinned(o2)) 1
             else comparator?.compare(o1, o2) ?: 0
         }
-        val apply = updateListSorted(newList)
-        return { now, canDiff ->
-            apply(now, canDiff)
+        val apply = updateListSorted(newList, canDiff, now)
+        return {
+            apply()
             if (srcList != null) {
                 rawList.clear()
                 rawList.addAll(srcList)
@@ -240,10 +240,10 @@ abstract class BaseAdapter<T>(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateListSorted(newList: MutableList<T>): (Boolean, Boolean) -> Unit {
-        return { now, canDiff ->
-            val diffResult = if (canDiff)
-                DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
+    private fun updateListSorted(newList: MutableList<T>, canDiff: Boolean, now: Boolean): () -> Unit {
+        val diffResult = if (canDiff)
+            DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
+        return {
             list.clear()
             list.addAll(newList)
             if (canDiff) diffResult!!.dispatchUpdatesTo(this) else notifyDataSetChanged()
@@ -252,12 +252,12 @@ abstract class BaseAdapter<T>(
     }
 
     fun updateList(newList: List<T>, now: Boolean, canDiff: Boolean) {
-        if (now || bgHandler == null) sort(newList)(true, canDiff)
+        if (now || bgHandler == null) sort(newList, canDiff, true)()
         else {
             bgHandler!!.post {
-                val apply = sort(newList)
+                val apply = sort(newList, canDiff, false)
                 handler.post {
-                    apply(false, canDiff)
+                    apply()
                 }
             }
         }

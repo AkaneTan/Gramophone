@@ -83,8 +83,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private val activity
 		get() = context as MainActivity
 	private var controllerFuture: ListenableFuture<MediaController>? = null
-	private val instance: MediaController
-		get() = controllerFuture!!.get()
+	private val instance: MediaController?
+		get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
+			null else controllerFuture?.get()
 	var minimize: () -> Unit = {}
 
 	private var wrappedContext: Context? = null
@@ -104,7 +105,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private val touchListener = object : SeekBar.OnSeekBarChangeListener, Slider.OnSliderTouchListener {
 		override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 			if (fromUser) {
-				val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+				val dest = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 				if (dest != null) {
 					bottomSheetFullPosition.text =
 						CalculationUtils.convertDurationToTimeStamp((progress.toLong()))
@@ -122,15 +123,15 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			// when the number is too big (like when toValue
 			// used the duration directly) we might encounter
 			// some performance problem.
-			val mediaId = instance.currentMediaItem?.mediaId
+			val mediaId = instance?.currentMediaItem?.mediaId
 			if (mediaId != null) {
 				if (seekBar != null) {
-					instance.seekTo((seekBar.progress.toLong()))
+					instance?.seekTo((seekBar.progress.toLong()))
 					updateLyric(seekBar.progress.toLong())
 				}
 			}
 			isUserTracking = false
-			progressDrawable.animate = instance.isPlaying || instance.playWhenReady
+			progressDrawable.animate = instance?.isPlaying == true || instance?.playWhenReady == true
 		}
 
 		override fun onStartTrackingTouch(slider: Slider) {
@@ -142,9 +143,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			// when the number is too big (like when toValue
 			// used the duration directly) we might encounter
 			// some performance problem.
-			val mediaId = instance.currentMediaItem?.mediaId
+			val mediaId = instance?.currentMediaItem?.mediaId
 			if (mediaId != null) {
-				instance.seekTo((slider.value.toLong()))
+				instance?.seekTo((slider.value.toLong()))
 				updateLyric(slider.value.toLong())
 			}
 			isUserTracking = false
@@ -278,17 +279,17 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val picker =
 				MaterialTimePicker
 					.Builder()
-					.setHour(instance.getTimer() / 3600 / 1000)
-					.setMinute((instance.getTimer() % (3600 * 1000)) / (60 * 1000))
+					.setHour((instance?.getTimer() ?: 0) / 3600 / 1000)
+					.setMinute(((instance?.getTimer() ?: 0) % (3600 * 1000)) / (60 * 1000))
 					.setTimeFormat(TimeFormat.CLOCK_24H)
 					.setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
 					.build()
 			picker.addOnPositiveButtonClickListener {
 				val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-				instance.setTimer(destinationTime)
+				instance?.setTimer(destinationTime)
 			}
 			picker.addOnDismissListener {
-				bottomSheetTimerButton.isChecked = instance.hasTimer()
+				bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
 			}
 			picker.show(activity.supportFragmentManager, "timer")
 		}
@@ -297,7 +298,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			if (Build.VERSION.SDK_INT >= 23) {
 				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 			}
-			instance.repeatMode = when (instance.repeatMode) {
+			instance?.repeatMode = when (instance?.repeatMode) {
 				Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
 				Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
 				Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
@@ -327,17 +328,17 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerview)!!
 			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
-			playlistNowPlaying!!.text = instance.currentMediaItem?.mediaMetadata?.title
+			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title
 			playlistNowPlayingCover = playlistBottomSheet.findViewById(R.id.now_playing_cover)
 			Glide
 				.with(playlistNowPlayingCover!!)
-				.load(instance.currentMediaItem?.mediaMetadata?.artworkUri)
+				.load(instance?.currentMediaItem?.mediaMetadata?.artworkUri)
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.placeholder(R.drawable.ic_default_cover)
 				.into(playlistNowPlayingCover!!)
 			recyclerView.layoutManager = LinearLayoutManager(context)
 			recyclerView.adapter = playlistAdapter
-			recyclerView.scrollToPosition(instance.currentMediaItemIndex)
+			recyclerView.scrollToPosition(instance?.currentMediaItemIndex ?: 0)
 			FastScrollerBuilder(recyclerView).useMd2Style().setTrackDrawable(
 				AppCompatResources.getDrawable(
 					context,
@@ -350,27 +351,27 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			if (Build.VERSION.SDK_INT >= 23) {
 				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 			}
-			instance.playOrPause()
+			instance?.playOrPause()
 		}
 		bottomSheetFullPreviousButton.setOnClickListener {
 			if (Build.VERSION.SDK_INT >= 23) {
 				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 			}
-			instance.seekToPreviousMediaItem()
+			instance?.seekToPreviousMediaItem()
 		}
 		bottomSheetFullNextButton.setOnClickListener {
 			if (Build.VERSION.SDK_INT >= 23) {
 				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 			}
-			instance.seekToNextMediaItem()
+			instance?.seekToNextMediaItem()
 		}
 		bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
-			instance.shuffleModeEnabled = isChecked
+			instance?.shuffleModeEnabled = isChecked
 		}
 
 		bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
 			if (isUser) {
-				val dest = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+				val dest = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 				if (dest != null) {
 					bottomSheetFullPosition.text =
 						CalculationUtils.convertDurationToTimeStamp((value).toLong())
@@ -422,7 +423,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}
 
 				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
-					val parsedLyrics = instance.getLyrics()
+					val parsedLyrics = instance?.getLyrics()
 					if (bottomSheetFullLyricList != parsedLyrics) {
 						bottomSheetFullLyricList.clear()
 						if (parsedLyrics?.isEmpty() != false) {
@@ -485,13 +486,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	fun onStart(cf: ListenableFuture<MediaController>) {
 		controllerFuture = cf
 		controllerFuture!!.addListener({
-			instance.addListener(this)
-			bottomSheetTimerButton.isChecked = instance.hasTimer()
-			onRepeatModeChanged(instance.repeatMode)
-			onShuffleModeEnabledChanged(instance.shuffleModeEnabled)
-			onPlaybackStateChanged(instance.playbackState)
+			instance?.addListener(this)
+			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
+			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
+			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)
+			onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
 			onMediaItemTransition(
-				instance.currentMediaItem,
+				instance?.currentMediaItem,
 				Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 			)
 			/*
@@ -510,9 +511,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	fun onStop() {
 		runnableRunning = false
-		if (controllerFuture?.isDone == true && controllerFuture?.isCancelled == false) {
-			instance.removeListener(this)
-		}
+		instance?.removeListener(this)
 		controllerFuture = null
 	}
 
@@ -735,10 +734,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	@Suppress("DEPRECATION")
 	private fun addColorScheme() {
-		val mediaItem = instance.currentMediaItem
+		val mediaItem = instance?.currentMediaItem
 		currentJob?.cancel()
 		currentJob = CoroutineScope(Dispatchers.Default).launch {
-
 			try {
 				val bitmap = MediaStore.Images.Media.getBitmap(
 					activity.contentResolver,
@@ -992,7 +990,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		mediaItem: MediaItem?,
 		reason: Int,
 	) {
-		if (instance.mediaItemCount != 0) {
+		if (instance?.mediaItemCount != 0) {
 			Glide
 				.with(context)
 				.load(mediaItem?.mediaMetadata?.artworkUri)
@@ -1068,14 +1066,14 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 			 */
 		}
-		val position = CalculationUtils.convertDurationToTimeStamp(instance.currentPosition)
-		val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+		val position = CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)
+		val duration = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 		if (duration != null && !isUserTracking) {
 			bottomSheetFullSeekBar.max = duration.toInt()
-			bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
+			bottomSheetFullSeekBar.progress = instance?.currentPosition?.toInt() ?: 0
 			bottomSheetFullSlider.valueTo = duration.toFloat()
 			bottomSheetFullSlider.value =
-				min(instance.currentPosition.toFloat(), bottomSheetFullSlider.valueTo)
+				min(instance?.currentPosition?.toFloat() ?: 0f, bottomSheetFullSlider.valueTo)
 			bottomSheetFullPosition.text = position
 		}
 		updateLyric(duration)
@@ -1108,11 +1106,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 	override fun onIsPlayingChanged(isPlaying: Boolean) {
-		onPlaybackStateChanged(instance.playbackState)
+		onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
 	}
 
 	override fun onPlaybackStateChanged(playbackState: Int) {
-		if (instance.isPlaying) {
+		if (instance?.isPlaying == true) {
 			if (bottomSheetFullControllerButton.getTag(R.id.play_next) as Int? != 1) {
 				bottomSheetFullControllerButton.icon =
 					AppCompatResources.getDrawable(
@@ -1152,20 +1150,18 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-		//android.util.Log.e("hi","$keyCode") TODO
-		if (controllerFuture?.isDone != true || controllerFuture?.isCancelled != false)
-			return super.onKeyDown(keyCode, event)
+		//android.util.Log.e("hi","$keyCode") TODO this method is no-op, but why?
 		return when (keyCode) {
 			KeyEvent.KEYCODE_SPACE -> {
-				instance.playOrPause(); true
+				instance?.playOrPause(); true
 			}
 
 			KeyEvent.KEYCODE_DPAD_LEFT -> {
-				instance.seekToPreviousMediaItem(); true
+				instance?.seekToPreviousMediaItem(); true
 			}
 
 			KeyEvent.KEYCODE_DPAD_RIGHT -> {
-				instance.seekToNextMediaItem(); true
+				instance?.seekToNextMediaItem(); true
 			}
 
 			else -> super.onKeyDown(keyCode, event)
@@ -1174,8 +1170,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	private fun dumpPlaylist(): MutableList<MediaItem> {
 		val items = mutableListOf<MediaItem>()
-		for (i in 0 until instance.mediaItemCount) {
-			items.add(instance.getMediaItemAt(i))
+		for (i in 0 until instance!!.mediaItemCount) {
+			items.add(instance!!.getMediaItemAt(i))
 		}
 		return items
 	}
@@ -1403,7 +1399,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val newIndex: Int
 
 			val filteredList = bottomSheetFullLyricList.filterIndexed { _, lyric ->
-				lyric.timeStamp <= instance.currentPosition
+				lyric.timeStamp <= (instance?.currentPosition ?: 0)
 			}
 
 			newIndex = if (filteredList.isNotEmpty()) {
@@ -1459,18 +1455,18 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		override fun run() {
 			if (!runnableRunning) return
 			val position =
-				CalculationUtils.convertDurationToTimeStamp(instance.currentPosition)
-			val duration = instance.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+				CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)
+			val duration = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
 			if (duration != null && !isUserTracking) {
 				bottomSheetFullSeekBar.max = duration.toInt()
-				bottomSheetFullSeekBar.progress = instance.currentPosition.toInt()
+				bottomSheetFullSeekBar.progress = instance?.currentPosition?.toInt() ?: 0
 				bottomSheetFullSlider.valueTo = duration.toFloat()
 				bottomSheetFullSlider.value =
-					min(instance.currentPosition.toFloat(), bottomSheetFullSlider.valueTo)
+					min(instance?.currentPosition?.toFloat() ?: 0f, bottomSheetFullSlider.valueTo)
 				bottomSheetFullPosition.text = position
 			}
 			updateLyric(duration)
-			if (instance.isPlaying) {
+			if (instance?.isPlaying == true) {
 				handler.postDelayed(this, SLIDER_UPDATE_INTERVAL)
 			} else {
 				runnableRunning = false

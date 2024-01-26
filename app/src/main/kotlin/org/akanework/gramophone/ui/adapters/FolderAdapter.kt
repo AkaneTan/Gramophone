@@ -30,6 +30,10 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -69,9 +73,9 @@ class FolderAdapter(
     }
 
     override fun onChanged(value: MediaStoreUtils.FileNode) {
-        root = value.folderList
-            .firstOrNull()?.folderList
-            ?.firstOrNull()?.folderList
+        root = value.folderList.values
+            .firstOrNull()?.folderList?.values
+            ?.firstOrNull()?.folderList?.values
             ?.firstOrNull()
         update(null)
     }
@@ -89,7 +93,7 @@ class FolderAdapter(
     private fun update(invertedDirection: Boolean?) {
         var item = root
         for (path in fileNodePath) {
-            item = item?.folderList?.find { it.folderName == path }
+            item = item?.folderList?.get(path)
         }
         if (item == null) {
             fileNodePath.clear()
@@ -97,7 +101,7 @@ class FolderAdapter(
         }
         val doUpdate = { canDiff: Boolean ->
             folderPopAdapter.enabled = fileNodePath.isNotEmpty()
-            folderAdapter.updateList(item?.folderList ?: listOf(), canDiff)
+            folderAdapter.updateList(item?.folderList?.values ?: listOf(), canDiff)
             songAdapter.updateList(item?.songList ?: listOf(), now = true, false)
         }
         recyclerView.let {
@@ -182,13 +186,18 @@ class FolderAdapter(
         override fun getItemCount(): Int = folderList.size
 
         @SuppressLint("NotifyDataSetChanged")
-        fun updateList(newList: List<MediaStoreUtils.FileNode>, canDiff: Boolean) {
+        fun updateList(newCollection: Collection<MediaStoreUtils.FileNode>, canDiff: Boolean) {
+            val newList = newCollection.toMutableList()
             if (canDiff) {
-                val diffResult = DiffUtil.calculateDiff(DiffCallback(folderList, newList))
-                folderList = newList.toMutableList()
-                diffResult.dispatchUpdatesTo(this)
+                CoroutineScope(Dispatchers.Default).launch {
+                    val diffResult = DiffUtil.calculateDiff(DiffCallback(folderList, newList))
+                    withContext(Dispatchers.Main) {
+                        folderList = newList
+                        diffResult.dispatchUpdatesTo(this@FolderListAdapter)
+                    }
+                }
             } else {
-                folderList = newList.toMutableList()
+                folderList = newList
                 notifyDataSetChanged()
             }
         }
