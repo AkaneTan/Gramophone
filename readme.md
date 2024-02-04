@@ -1,7 +1,7 @@
 # Gramophone
 ![GitHub](https://img.shields.io/github/license/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=white)
 ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=white)
-[![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=white)](https://t.me/AkaneRedirect)
+[![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=white)](https://t.me/AkaneDev)
 
 A sane music player built with media3 and material design library that is following android's standard strictly.
 
