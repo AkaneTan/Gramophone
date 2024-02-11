@@ -13,17 +13,18 @@
         android:layout_marginStart="10dp"
         android:padding="8dp"
         android:textColor="?attr/colorOnSurface"
-        android:textFontWeight="500"
+        android:textFontWeight="700"
+        android:fontFamily="sans-serif"
         android:textSize="15sp"
         tools:targetApi="p"
         tools:text="0 Song" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/play_all"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="50dp"
+        android:layout_marginEnd="92dp"
         android:background="@drawable/rp_buttons"
         android:insetLeft="0dp"
         android:insetTop="0dp"
@@ -33,14 +34,33 @@
         app:icon="@drawable/ic_play_arrow"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
-        app:iconSize="24dp"
+        app:iconSize="26dp"
         app:iconTint="?attr/colorPrimary"
         tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/shuffle_all"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="48dp"
+        android:background="@drawable/rp_buttons"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:visibility="gone"
+        app:icon="@drawable/ic_shuffle"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="22dp"
+        app:iconTint="?attr/colorSecondary"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/sort"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="2dp"
         android:background="@drawable/rp_buttons"
@@ -48,10 +68,10 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:icon="@drawable/ic_sort"
+        app:icon="@drawable/ic_filter_alt"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"
-        app:iconTint="?attr/colorPrimary" />
+        app:iconTint="?attr/colorOnSurface" />
 
 </FrameLayout>

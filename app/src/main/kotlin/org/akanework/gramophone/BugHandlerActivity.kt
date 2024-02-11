@@ -20,9 +20,13 @@ package org.akanework.gramophone
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * BugHandlerActivity:
@@ -35,12 +39,31 @@ class BugHandlerActivity : AppCompatActivity() {
 
         val bugText = findViewById<TextView>(R.id.error)
         val receivedText = intent.getStringExtra("exception_message")
+
+        val deviceBrand = Build.BRAND
+        val deviceModel = Build.MODEL
+        val sdkLevel = Build.VERSION.SDK_INT
+        val currentDateTime = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val formattedDateTime = formatter.format(currentDateTime)
+        val gramophoneVersion = BuildConfig.VERSION_NAME
+
+        val combinedTextBuilder = StringBuilder()
+        combinedTextBuilder
+            .append(getString(R.string.crash_gramophone_version)).append(':').append(' ').append(gramophoneVersion).append('\n').append('\n')
+            .append(getString(R.string.crash_phone_brand)).append(':').append("     ").append(deviceBrand).append('\n')
+            .append(getString(R.string.crash_phone_model)).append(':').append("     ").append(deviceModel).append('\n')
+            .append(getString(R.string.crash_sdk_level)).append(':').append(' ').append(sdkLevel).append('\n').append('\n')
+            .append(getString(R.string.crash_time)).append(':').append(' ').append(formattedDateTime).append('\n').append('\n')
+            .append("--------- beginning of crash").append('\n')
+            .append(receivedText)
+
         bugText.typeface = Typeface.MONOSPACE
-        bugText.text = receivedText
+        bugText.text = combinedTextBuilder.toString()
 
         // Make our life easier by copying the log to clipboard
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("error msg", receivedText)
+        val clip = ClipData.newPlainText("error msg", combinedTextBuilder.toString())
         clipboard.setPrimaryClip(clip)
 
     }

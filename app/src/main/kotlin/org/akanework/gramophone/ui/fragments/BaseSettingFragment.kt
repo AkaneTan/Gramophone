@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.color.MaterialColors
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.ColorUtils
 
 abstract class BaseSettingFragment(private val str: Int,
                                    private val fragmentCreator: () -> BasePreferenceFragment)
@@ -23,27 +21,7 @@ abstract class BaseSettingFragment(private val str: Int,
 
 		val collapsingToolbar =
 			rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
-		val processColor = ColorUtils.getColor(
-			MaterialColors.getColor(
-				topAppBar,
-				android.R.attr.colorBackground
-			),
-			ColorUtils.ColorType.COLOR_BACKGROUND,
-			requireContext(),
-			true
-		)
-		val processColorElevated = ColorUtils.getColor(
-			MaterialColors.getColor(
-				topAppBar,
-				android.R.attr.colorBackground
-			),
-			ColorUtils.ColorType.TOOLBAR_ELEVATED,
-			requireContext(),
-			true
-		)
 
-		collapsingToolbar.setBackgroundColor(processColor)
-		collapsingToolbar.setContentScrimColor(processColorElevated)
 		collapsingToolbar.title = getString(str)
 
 		topAppBar.setNavigationOnClickListener {

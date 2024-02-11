@@ -41,13 +41,7 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
         super.onViewCreated(view, savedInstanceState)
 
         // Overlap google's colors.
-        val colorBackground = ColorUtils.getColor(
-            MaterialColors.getColor(view, android.R.attr.colorBackground),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext(),
-            true
-        )
-        view.setBackgroundColor(colorBackground)
+        view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground))
     }
 
     override fun setDivider(divider: Drawable?) {

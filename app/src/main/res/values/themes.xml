@@ -27,11 +27,12 @@
     </style>
 
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="textAllCaps">true</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:textSize">13.5sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textFontWeight" tools:targetApi="p">700</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">

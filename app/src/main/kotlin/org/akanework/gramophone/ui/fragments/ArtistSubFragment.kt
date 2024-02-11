@@ -68,17 +68,6 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
         val position = requireArguments().getInt("Position")
         val itemType = requireArguments().getInt("Item")
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val processColor = ColorUtils.getColor(
-            MaterialColors.getColor(
-                topAppBar,
-                android.R.attr.colorBackground
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext(),
-            true
-        )
-        topAppBar.setBackgroundColor(processColor)
-        appBarLayout.setBackgroundColor(processColor)
 
         val item = libraryViewModel.let {
             if (itemType == R.id.album_artist)

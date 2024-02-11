@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tabContainerColor">@color/m3_sys_color_light_primary_container</color>
+    <color name="tabContentColor">@color/m3_sys_color_light_on_primary_container</color>
+</resources>

@@ -33,6 +33,7 @@
                     android:text="@string/dialog_title"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     tools:targetApi="p" />
 
@@ -59,6 +60,7 @@
                     android:text="@string/dialog_artist"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     tools:targetApi="p" />
 
@@ -85,6 +87,7 @@
                     android:text="@string/dialog_album"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     tools:targetApi="p" />
 
@@ -111,6 +114,7 @@
                     android:text="@string/dialog_album_artist"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     tools:targetApi="p" />
 
@@ -143,6 +147,7 @@
                         android:text="@string/dialog_track_number"
                         android:textColor="?attr/colorAccent"
                         android:textFontWeight="500"
+                        android:fontFamily="sans-serif"
                         android:textSize="14sp"
                         tools:targetApi="p" />
 
@@ -170,6 +175,7 @@
                         android:text="@string/dialog_disc_number"
                         android:textColor="?attr/colorAccent"
                         android:textFontWeight="500"
+                        android:fontFamily="sans-serif"
                         android:textSize="14sp"
                         tools:targetApi="p" />
 
@@ -204,6 +210,7 @@
                         android:text="@string/dialog_year"
                         android:textColor="?attr/colorAccent"
                         android:textFontWeight="500"
+                        android:fontFamily="sans-serif"
                         android:textSize="14sp"
                         tools:targetApi="p" />
 
@@ -231,6 +238,7 @@
                         android:text="@string/dialog_genre"
                         android:textColor="?attr/colorAccent"
                         android:textFontWeight="500"
+                        android:fontFamily="sans-serif"
                         android:textSize="14sp"
                         tools:targetApi="p" />
 
@@ -265,6 +273,7 @@
                         android:text="@string/dialog_mime"
                         android:textColor="?attr/colorAccent"
                         android:textFontWeight="500"
+                        android:fontFamily="sans-serif"
                         android:textSize="14sp"
                         tools:targetApi="p" />
 
@@ -292,6 +301,7 @@
                         android:text="@string/dialog_duration"
                         android:textColor="?attr/colorAccent"
                         android:textFontWeight="500"
+                        android:fontFamily="sans-serif"
                         android:textSize="14sp"
                         tools:targetApi="p" />
 
@@ -320,6 +330,7 @@
                     android:text="@string/dialog_path"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     tools:targetApi="p" />
 

@@ -333,6 +333,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			Glide
 				.with(playlistNowPlayingCover!!)
 				.load(instance?.currentMediaItem?.mediaMetadata?.artworkUri)
+				.centerCrop()
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.placeholder(R.drawable.ic_default_cover)
 				.into(playlistNowPlayingCover!!)
@@ -1002,6 +1003,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 							transition: Transition<in Drawable>?
 						) {
 							bottomSheetFullCover.setImageDrawable(resource)
+							bottomSheetFullCover.scaleType = ImageView.ScaleType.CENTER_CROP
 						}
 
 						override fun onLoadCleared(placeholder: Drawable?) {
@@ -1046,6 +1048,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				Glide
 					.with(context)
 					.load(mediaItem?.mediaMetadata?.artworkUri)
+					.centerCrop()
 					.transition(DrawableTransitionOptions.withCrossFade())
 					.placeholder(R.drawable.ic_default_cover)
 					.into(playlistNowPlayingCover!!)
@@ -1324,6 +1327,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			Glide
 				.with(holder.songCover.context)
 				.load(playlist[position].mediaMetadata.artworkUri)
+				.centerCrop()
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.placeholder(R.drawable.ic_default_cover)
 				.into(holder.songCover)

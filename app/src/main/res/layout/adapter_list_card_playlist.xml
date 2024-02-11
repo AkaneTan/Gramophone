@@ -50,6 +50,7 @@
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
+                android:fontFamily="sans-serif"
                 android:textSize="16sp"
                 tools:targetApi="p"
                 tools:text="Example Title" />
@@ -61,6 +62,7 @@
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
+                android:fontFamily="sans-serif"
                 android:textSize="16sp"
                 tools:targetApi="p"
                 tools:text="Example Artist" />
@@ -74,6 +76,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textFontWeight="500"
+            android:fontFamily="sans-serif"
             tools:targetApi="p"
             tools:text="3 | Disc 1" />
 

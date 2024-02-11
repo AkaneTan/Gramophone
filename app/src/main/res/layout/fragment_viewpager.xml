@@ -11,33 +11,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        app:contentScrim="?attr/colorSurfaceContainer"
-        app:liftOnScrollColor="?attr/colorSurfaceContainer"
-        app:statusBarScrim="?attr/colorSurfaceContainer">
+        app:contentScrim="?attr/colorSurface"
+        app:liftOnScrollColor="?attr/colorSurface"
+        app:statusBarScrim="?attr/colorSurface">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingtoolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorSurfaceContainer"
-            app:layout_scrollEffect="compress"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:menu="@menu/home_menu"
-            app:navigationIcon="@drawable/ic_menu"
-            app:title="@string/app_name"
-            app:titleCentered="true"
-            app:titleTextAppearance="@style/HeadlineTextAppearance"
-            tools:ignore="RtlSymmetry" />
+            android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+            app:collapsedTitleTextColor="?attr/colorOnSurface"
+            app:expandedTitleTextColor="?attr/colorOnSurface"
+            app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
+            app:contentScrim="?attr/colorSurface"
+            app:liftOnScrollColor="?attr/colorSurface"
+            app:statusBarScrim="?attr/colorSurface"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:title="@string/app_name">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="0dp"
+                app:layout_collapseMode="pin"
+                app:menu="@menu/home_menu" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="?attr/colorSurfaceContainer"
-            android:paddingBottom="12dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="8dp"
             app:tabBackground="@android:color/transparent"
             app:tabIndicator="@drawable/selected_chip_background"
-            app:tabIndicatorColor="?attr/colorSecondaryContainer"
+            app:tabIndicatorColor="?colorSecondaryContainer"
             app:tabIndicatorFullWidth="true"
             app:tabIndicatorGravity="stretch"
             app:tabMinWidth="0dp"
@@ -45,7 +55,7 @@
             app:tabPaddingEnd="14dp"
             app:tabPaddingStart="14dp"
             app:tabRippleColor="@android:color/transparent"
-            app:tabSelectedTextColor="?attr/colorOnSecondaryContainer"
+            app:tabSelectedTextColor="?colorOnSecondaryContainer"
             app:tabTextAppearance="@style/TabTextAppearance"
             app:tabTextColor="?attr/colorOnSurfaceVariant"
             tools:tabContentStart="28dp">

@@ -289,6 +289,7 @@ abstract class BaseAdapter<T>(
         Glide
             .with(holder.songCover.context)
             .load(coverOf(item))
+            .centerCrop()
             .transition(DrawableTransitionOptions.withCrossFade())
             .placeholder(defaultCover)
             .into(holder.songCover)

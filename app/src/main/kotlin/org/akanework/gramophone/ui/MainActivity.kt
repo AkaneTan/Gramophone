@@ -18,18 +18,12 @@
 package org.akanework.gramophone.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.WindowManager
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -40,30 +34,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.preference.PreferenceManager
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
-import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.tabs
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
-import org.akanework.gramophone.ui.fragments.SearchFragment
-import org.akanework.gramophone.ui.fragments.settings.MainSettingsFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
@@ -84,24 +68,11 @@ class MainActivity : AppCompatActivity() {
 
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
-    private val startActivity =
+    val startingActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
 
     private lateinit var prefs: SharedPreferences
-
-    /**
-     * navigateDrawer:
-     *   Used to navigate activity drawer in child fragments
-     *
-     * @param targetDrawer: Target drawer
-     */
-    fun navigateDrawer(targetDrawer: Int) {
-        drawerLayout.open()
-        navigationView.setCheckedItem(tabs[targetDrawer])
-    }
 
     /**
      * updateLibrary:
@@ -153,22 +124,7 @@ class MainActivity : AppCompatActivity() {
         // Set content Views.
         setContentView(R.layout.activity_main)
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
-        val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
-
-        // Initialize layouts.
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.navigation_view)
-
-        // Process our own color here.
-        val processColor = ColorUtils.getColor(
-            MaterialColors.getColor(
-                coordinatorLayout,
-                android.R.attr.colorBackground
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            this,
-            true
-        )
+        findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
 
         val colorSurfaceContainer = ColorUtils.getColor(
             MaterialColors.getColor(
@@ -180,15 +136,11 @@ class MainActivity : AppCompatActivity() {
             true
         )
 
-        // Override google's colors.
-        coordinatorLayout.setBackgroundColor(processColor)
-        drawerLayout.setBackgroundColor(processColor)
-        navigationView.setBackgroundColor(processColor)
-
         val previewPlayer = findViewById<ConstraintLayout>(R.id.preview_player)
         previewPlayer.setBackgroundColor(colorSurfaceContainer)
         previewPlayer.backgroundTintList =
             ColorStateList.valueOf(colorSurfaceContainer)
+
         getPlayerSheet().setBackgroundColor(colorSurfaceContainer)
         getPlayerSheet().backgroundTintList =
             ColorStateList.valueOf(colorSurfaceContainer)
@@ -197,16 +149,10 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(fragmentContainerView) { view, insets ->
             val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val notchInset = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            fragmentContainerView.setPadding(navBarInset.left + notchInset.left, 0,
-                navBarInset.right + notchInset.right, notchInset.bottom)
-            view.onApplyWindowInsets(insets.toWindowInsets())
-            return@setOnApplyWindowInsetsListener insets
-        }
-
-        // Also adjust drawer's insets.
-        ViewCompat.setOnApplyWindowInsetsListener(navigationView) { view, insets ->
-            val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            navigationView.setPadding(navBarInset.left, 0, 0, navBarInset.bottom)
+            fragmentContainerView.setPadding(
+                navBarInset.left + notchInset.left, 0,
+                navBarInset.right + notchInset.right, notchInset.bottom
+            )
             view.onApplyWindowInsets(insets.toWindowInsets())
             return@setOnApplyWindowInsetsListener insets
         }
@@ -250,119 +196,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Bind navigationView's behavior.
-        navigationView.setNavigationItemSelectedListener {
-            val viewPager2 = fragmentContainerView.findViewById<ViewPager2>(R.id.fragment_viewpager)
-            val playerLayout = getPlayerSheet()
-            when (it.itemId) {
-                in tabs -> {
-                    viewPager2.setCurrentItem(
-                        tabs.indices
-                            .find { entry -> tabs[entry] == it.itemId }!!, true
-                    )
-                    drawerLayout.close()
-                }
-
-                R.id.refresh -> {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        updateLibraryWithInCoroutine(libraryViewModel, applicationContext)
-
-                        // Show a snack bar when updating is completed.
-                        withContext(Dispatchers.Main) {
-
-                            val snackBar =
-                                Snackbar.make(
-                                    fragmentContainerView,
-                                    getString(
-                                        R.string.refreshed_songs,
-                                        libraryViewModel.mediaItemList.value!!.size,
-                                    ),
-                                    Snackbar.LENGTH_LONG,
-                                )
-                            snackBar.setAction(R.string.dismiss) {
-                                snackBar.dismiss()
-                            }
-
-                            /*
-                             * Let's override snack bar's color here so it would
-                             * adapt dark mode.
-                             */
-                            snackBar.setBackgroundTint(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorSurface,
-                                ),
-                            )
-                            snackBar.setActionTextColor(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorPrimary,
-                                ),
-                            )
-                            snackBar.setTextColor(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorOnSurface,
-                                ),
-                            )
-
-                            // Set an anchor for snack bar.
-                            if (playerLayout.visible && playerLayout.actuallyVisible)
-                                snackBar.anchorView = playerLayout
-                            snackBar.show()
-                        }
-                    }
-                    drawerLayout.close()
-                }
-
-                R.id.settings -> {
-                    startFragment(MainSettingsFragment())
-                }
-
-                R.id.search -> {
-                    startFragment(SearchFragment())
-                }
-
-                R.id.shuffle -> {
-                    // Call shuffle method.
-                    shuffle()
-                }
-
-                R.id.equalizer -> {
-                    // Start system EQ here.
-                    val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
-                        .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
-                    try {
-                        startActivity.launch(intent)
-                    } catch (e: Exception) {
-                        // Let's show a toast here if no system inbuilt EQ was found.
-                        Toast.makeText(
-                            applicationContext,
-                            R.string.equalizer_not_found,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-
-                R.id.about -> {
-                    // Display a card here.
-                    val drawable = GradientDrawable()
-                    drawable.color =
-                        ColorStateList.valueOf(processColor)
-                    drawable.cornerRadius = 64f
-                    val rootView = MaterialAlertDialogBuilder(this)
-                        .setBackground(drawable)
-                        .setView(R.layout.dialog_about)
-                        .show()
-                    val versionTextView = rootView.findViewById<TextView>(R.id.version)!!
-                    versionTextView.text =
-                        BuildConfig.VERSION_NAME
-                }
-
-                else -> throw IllegalStateException()
-            }
-            true
-        }
     }
 
     /**
@@ -448,10 +281,6 @@ class MainActivity : AppCompatActivity() {
             .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
             .add(R.id.container, frag)
             .commit()
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            drawerLayout.close()
-        }, 50)
     }
 
     /**

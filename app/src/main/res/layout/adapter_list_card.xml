@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="74dp"
+    android:layout_height="75dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
@@ -49,6 +49,7 @@
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
+                android:fontFamily="sans-serif"
                 android:textSize="16sp"
                 tools:targetApi="p"
                 tools:text="Example Title" />
@@ -60,6 +61,7 @@
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
+                android:fontFamily="sans-serif"
                 android:textSize="15sp"
                 tools:targetApi="p"
                 tools:text="Example Artist" />
@@ -73,6 +75,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textFontWeight="500"
+            android:fontFamily="sans-serif"
             tools:targetApi="p"
             tools:text="3 | Disc 1" />
 

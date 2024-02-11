@@ -59,7 +59,6 @@ class GeneralSubFragment : BaseFragment(true) {
         lateinit var itemList: List<MediaItem>
 
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
-        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
@@ -72,19 +71,6 @@ class GeneralSubFragment : BaseFragment(true) {
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
         var isTrackDiscNumAvailable = false
-
-        // Overlap google's color.
-        val processColor = ColorUtils.getColor(
-            MaterialColors.getColor(
-                topAppBar,
-                android.R.attr.colorBackground
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND,
-            requireContext(),
-            true
-        )
-        topAppBar.setBackgroundColor(processColor)
-        appBarLayout.setBackgroundColor(processColor)
 
         when (itemType) {
             R.id.album -> {

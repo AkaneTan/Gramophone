@@ -54,12 +54,19 @@
                 tools:text="Now playing" />
 
             <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="android:fontFamily=&quot;sans-serif&quot;" />
+
+            <TextView
                 android:id="@+id/now_playing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="500"
+                android:fontFamily="sans-serif"
                 android:textSize="16sp"
                 tools:targetApi="p"
                 tools:text="Artifact" />

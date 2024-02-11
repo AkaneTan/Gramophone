@@ -84,12 +84,6 @@
                 android:icon="@drawable/settings_art"
                 android:title="@string/home_menu_settings"
                 app:showAsAction="ifRoom" />
-            <item
-                android:id="@+id/about"
-                android:checkable="false"
-                android:icon="@drawable/ic_info"
-                android:title="@string/home_menu_about"
-                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>
