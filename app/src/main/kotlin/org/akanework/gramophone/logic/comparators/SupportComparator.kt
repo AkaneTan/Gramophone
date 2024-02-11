@@ -17,6 +17,8 @@
 
 package org.akanework.gramophone.logic.comparators
 
+import android.annotation.SuppressLint
+
 class SupportComparator<T, U>(
     private val cmp: Comparator<U>,
     private val invert: Boolean,
@@ -37,6 +39,7 @@ class SupportComparator<T, U>(
             return SupportComparator(cmp, true) { it }
         }
 
+        @SuppressLint("NewApi")
         fun <T> createAlphanumericComparator(
             inverted: Boolean = false,
             cnv: (T) -> CharSequence

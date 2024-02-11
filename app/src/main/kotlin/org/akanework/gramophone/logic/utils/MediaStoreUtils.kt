@@ -30,7 +30,9 @@ import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.preference.PreferenceManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
@@ -261,7 +263,7 @@ object MediaStoreUtils {
                 projection,
                 selection,
                 null,
-                null,
+                MediaStore.Audio.Media.TITLE + " COLLATE UNICODE ASC",
             )
 
         cursor?.use {
@@ -599,9 +601,9 @@ object MediaStoreUtils {
         return songs
     }
 
-    suspend fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context) {
+    fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context) {
         val pairObject = getAllSongs(context)
-        withContext(Dispatchers.Main) {
+        CoroutineScope(Dispatchers.Main).launch {
             libraryViewModel.mediaItemList.value = pairObject.songList
             libraryViewModel.albumItemList.value = pairObject.albumList
             libraryViewModel.artistItemList.value = pairObject.artistList

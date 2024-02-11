@@ -63,11 +63,12 @@ abstract class BaseAdapter<T>(
     private val pluralStr: Int,
     val ownsView: Boolean,
     defaultLayoutType: LayoutType,
-    private val isSubFragment: Boolean = false
+    private val isSubFragment: Boolean = false,
+    private val rawOrderExposed: Boolean = false
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>,
     PopupTextProvider {
 
-    private val sorter = Sorter(sortHelper, naturalOrderHelper)
+    private val sorter = Sorter(sortHelper, naturalOrderHelper, rawOrderExposed)
     private val decorAdapter by lazy { createDecorAdapter() }
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
     private val handler = Handler(Looper.getMainLooper())
@@ -118,7 +119,7 @@ abstract class BaseAdapter<T>(
             notifyDataSetChanged() // we change view type for all items
         }
     var sortType: Sorter.Type
-        get() = comparator?.type!!
+        get() = if (comparator == null && rawOrderExposed) Sorter.Type.NativeOrder else comparator?.type!!
         private set(value) {
             if (comparator?.type != value) {
                 comparator = sorter.getComparator(value)
@@ -129,11 +130,11 @@ abstract class BaseAdapter<T>(
 
     init {
         sortType =
-            if (prefSortType != Sorter.Type.None && prefSortType != initialSortType && !isSubFragment)
+            if (prefSortType != Sorter.Type.None && prefSortType != initialSortType
+                && sortTypes.contains(prefSortType) && !isSubFragment)
                 prefSortType
             else
                 initialSortType
-
         liveData?.value?.let { updateList(it, now = true, canDiff = false) }
         layoutType =
             if (prefLayoutType != LayoutType.NONE && prefLayoutType != defaultLayoutType && !isSubFragment)
@@ -224,10 +225,12 @@ abstract class BaseAdapter<T>(
     private fun sort(srcList: List<T>? = null, canDiff: Boolean, now: Boolean): () -> Unit {
         // Sorting in the background using coroutines
         val newList = ArrayList(srcList ?: rawList)
-        newList.sortWith { o1, o2 ->
-            if (isPinned(o1) && !isPinned(o2)) -1
-            else if (!isPinned(o1) && isPinned(o2)) 1
-            else comparator?.compare(o1, o2) ?: 0
+        if (sortType != Sorter.Type.NativeOrder) {
+            newList.sortWith { o1, o2 ->
+                if (isPinned(o1) && !isPinned(o2)) -1
+                else if (!isPinned(o1) && isPinned(o2)) 1
+                else comparator?.compare(o1, o2) ?: 0
+            }
         }
         val apply = updateListSorted(newList, canDiff, now)
         return {

@@ -64,7 +64,8 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
             popupMenu.inflate(R.menu.sort_menu)
             val buttonMap = mapOf(
                 Pair(R.id.natural, Sorter.Type.NaturalOrder),
-                Pair(R.id.name, Sorter.Type.ByTitleAscending),
+                Pair(R.id.name, if (adapter.sortTypes.contains(Sorter.Type.NativeOrder))
+                    Sorter.Type.NativeOrder else Sorter.Type.ByTitleAscending),
                 Pair(R.id.artist, Sorter.Type.ByArtistAscending),
                 Pair(R.id.album, Sorter.Type.ByAlbumTitleAscending),
                 Pair(R.id.size, Sorter.Type.BySizeDescending),

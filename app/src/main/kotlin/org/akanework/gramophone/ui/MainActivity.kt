@@ -245,7 +245,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-                updateLibrary()
+                //updateLibrary() TODO TODO TODO
+                updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
             }
         }
 

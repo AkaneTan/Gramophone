@@ -61,12 +61,14 @@ class SongAdapter(
     sortHelper = MediaItemHelper(),
     naturalOrderHelper = if (canSort) helper else null,
     initialSortType = if (canSort)
-        (if (helper != null) Sorter.Type.NaturalOrder else Sorter.Type.ByTitleAscending)
+        (if (helper != null) Sorter.Type.NaturalOrder else
+                (if (!isSubFragment) Sorter.Type.NativeOrder else Sorter.Type.ByTitleAscending))
     else Sorter.Type.None,
     pluralStr = R.plurals.songs,
     ownsView = ownsView,
     defaultLayoutType = LayoutType.COMPACT_LIST,
-    isSubFragment = isSubFragment
+    isSubFragment = isSubFragment,
+    rawOrderExposed = !isSubFragment
 ) {
 
     constructor(

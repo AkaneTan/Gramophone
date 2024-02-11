@@ -23,7 +23,8 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 
 class Sorter<T>(
     val sortingHelper: Helper<T>,
-    private val naturalOrderHelper: NaturalOrderHelper<T>?
+    private val naturalOrderHelper: NaturalOrderHelper<T>?,
+    private val rawOrderExposed: Boolean = false
 ) {
 
     abstract class Helper<T>(typesSupported: Set<Type>) {
@@ -77,20 +78,25 @@ class Sorter<T>(
         BySizeDescending, BySizeAscending,
         NaturalOrder, ByAddDateDescending, ByAddDateAscending,
         ByModifiedDateDescending, ByModifiedDateAscending,
-        None
+        None, NativeOrder /* do not use nativeorder for smth other than title */
     }
 
     fun getSupportedTypes(): Set<Type> {
-        return sortingHelper.typesSupported.let {
-            if (naturalOrderHelper != null)
-                it + Type.NaturalOrder
-            else it
+        return sortingHelper.typesSupported.let { types ->
+            (if (naturalOrderHelper != null)
+                types + Type.NaturalOrder
+            else types).let {
+                if (rawOrderExposed)
+                    it + Type.NativeOrder - Type.ByTitleAscending
+                else it
+            }
         }
     }
 
-    fun getComparator(type: Type): HintedComparator<T> {
+    fun getComparator(type: Type): HintedComparator<T>? {
         if (!getSupportedTypes().contains(type))
             throw IllegalArgumentException("Unsupported type ${type.name}")
+        if (type == Type.NativeOrder) return null
         return WrappingHintedComparator(type, when (type) {
             Type.ByTitleDescending -> {
                 SupportComparator.createAlphanumericComparator(true) {
@@ -183,13 +189,15 @@ class Sorter<T>(
             }
 
             Type.None -> SupportComparator.createDummyComparator()
+
+            else -> throw IllegalStateException("this code is unreachable")
         }
         )
     }
 
     fun getFastScrollHintFor(item: T, sortType: Type): String? {
         return when (sortType) {
-            Type.ByTitleDescending, Type.ByTitleAscending -> {
+            Type.ByTitleDescending, Type.ByTitleAscending, Type.NativeOrder -> {
                 (sortingHelper.getTitle(item) ?: "-").firstOrNull()?.toString()
             }
 
