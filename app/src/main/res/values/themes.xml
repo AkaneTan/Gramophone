@@ -1,8 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="DayNight.Base.Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:fontFamily">sans-serif</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
@@ -77,9 +76,6 @@
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">13.5sp</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textFontWeight" tools:targetApi="p">700</item>
         <item name="android:includeFontPadding">false</item>
     </style>
 
@@ -104,6 +100,10 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textFontWeight" tools:targetApi="p">700</item>
     </style>
+
+    <style name="DayNight.Theme.Gramophone" parent="DayNight.Base.Theme.Gramophone" />
+
+    <style name="Base.Theme.Gramophone" parent="DayNight.Theme.Gramophone" />
 
     <style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
 </resources>

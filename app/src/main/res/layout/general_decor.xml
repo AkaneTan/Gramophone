@@ -13,7 +13,7 @@
         android:layout_marginStart="10dp"
         android:padding="8dp"
         android:textColor="?attr/colorOnSurface"
-        android:textFontWeight="700"
+        android:textFontWeight="600"
         android:fontFamily="sans-serif"
         android:textSize="15sp"
         tools:targetApi="p"

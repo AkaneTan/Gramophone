@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.EnvUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
@@ -171,6 +172,42 @@ class ViewPagerFragment : BaseFragment(true) {
         firstParam.marginStart = resources.getDimension(R.dimen.tab_layout_content_padding).toInt()
         lastTab.layoutParams = lastParam
         firstTab.layoutParams = firstParam
+
+        if (!EnvUtils.isDarkMode(requireContext())) {
+            tabLayout.setSelectedTabIndicatorColor(
+                MaterialColors.getColor(
+                    tabLayout,
+                    com.google.android.material.R.attr.colorPrimaryContainer
+                )
+            )
+            tabLayout.setTabTextColors(
+                MaterialColors.getColor(
+                    tabLayout,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant
+                ),
+                MaterialColors.getColor(
+                    tabLayout,
+                    com.google.android.material.R.attr.colorOnPrimaryContainer
+                )
+            )
+        } else {
+            tabLayout.setSelectedTabIndicatorColor(
+                MaterialColors.getColor(
+                    tabLayout,
+                    com.google.android.material.R.attr.colorPrimary
+                )
+            )
+            tabLayout.setTabTextColors(
+                MaterialColors.getColor(
+                    tabLayout,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant
+                ),
+                MaterialColors.getColor(
+                    tabLayout,
+                    com.google.android.material.R.attr.colorOnPrimary
+                )
+            )
+        }
 
         return rootView
     }

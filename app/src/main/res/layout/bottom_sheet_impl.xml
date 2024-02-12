@@ -20,8 +20,9 @@
             style="?materialCardViewFilledStyle"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginVertical="8dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="22dp"
             app:cardCornerRadius="@dimen/list_round_corner_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +41,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="18dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/preview_control"
@@ -52,9 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorOnSurface"
-                android:textFontWeight="500"
-                android:textSize="14sp"
-                tools:targetApi="p"
+                android:textSize="17sp"
                 tools:text="Example title" />
 
             <org.akanework.gramophone.ui.components.MarqueeTextView
@@ -62,8 +61,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textFontWeight="500"
-                tools:targetApi="p"
                 tools:text="Example Artist" />
         </LinearLayout>
 
@@ -194,6 +191,7 @@
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurface"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="22sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
@@ -207,6 +205,7 @@
                     android:scrollbars="none"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textFontWeight="500"
+                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p"
                     tools:text="Artifiction" />
@@ -245,6 +244,10 @@
                     android:value="0"
                     android:visibility="gone"
                     app:labelBehavior="gone"
+                    app:thumbHeight="0dp"
+                    app:thumbWidth="0dp"
+                    app:thumbTrackGapSize="2dp"
+                    app:trackHeight="6dp"
                     tools:value="0.5"
                     tools:visibility="visible" />
 
@@ -269,6 +272,7 @@
                     android:text="@string/default_time"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="600"
+                    android:fontFamily="sans-serif"
                     tools:targetApi="p" />
 
                 <TextView
@@ -279,6 +283,7 @@
                     android:text="@string/default_time"
                     android:textColor="?attr/colorAccent"
                     android:textFontWeight="600"
+                    android:fontFamily="sans-serif"
                     tools:targetApi="p" />
 
             </FrameLayout>

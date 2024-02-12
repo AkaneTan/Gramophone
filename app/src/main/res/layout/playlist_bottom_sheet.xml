@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
+        android:paddingStart="22dp"
         android:paddingEnd="16dp">
 
         <com.google.android.material.card.MaterialCardView
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="18dp"
             android:orientation="vertical">
 
             <TextView
@@ -49,15 +49,9 @@
                 android:text="@string/now_playing"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="500"
-                android:textSize="16sp"
-                tools:targetApi="p"
+                android:fontFamily="sans-serif"
+                android:textSize="17sp"
                 tools:text="Now playing" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="android:fontFamily=&quot;sans-serif&quot;" />
 
             <TextView
                 android:id="@+id/now_playing"
@@ -67,7 +61,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="500"
                 android:fontFamily="sans-serif"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 tools:targetApi="p"
                 tools:text="Artifact" />
 
@@ -78,12 +72,17 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp" />
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginEnd="22dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
         android:scrollbars="none" />
 
 </LinearLayout>

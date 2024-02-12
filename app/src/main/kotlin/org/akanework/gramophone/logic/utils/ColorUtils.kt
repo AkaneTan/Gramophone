@@ -47,7 +47,7 @@ object ColorUtils {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
 
-        if (isDarkMode(context)) {
+        if (EnvUtils.isDarkMode(context)) {
             hsl[2] *= colorType.lightingDark
             hsl[2] = min(hsl[2], 1f)
             hsl[1] *= colorType.chromaDark
@@ -67,9 +67,4 @@ object ColorUtils {
 
     fun getColor(color: Int, colorType: ColorType, context: Context, isAmoled: Boolean): Int =
         manipulateHsl(color, colorType, context, isAmoled)
-
-    private fun isDarkMode(context: Context): Boolean =
-        context.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
 }

@@ -50,7 +50,7 @@
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
                 android:fontFamily="sans-serif"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 tools:targetApi="p"
                 tools:text="Example Title" />
 
@@ -62,7 +62,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
                 android:fontFamily="sans-serif"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 tools:targetApi="p"
                 tools:text="Example Artist" />
 
@@ -76,7 +76,7 @@
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textFontWeight="500"
             android:fontFamily="sans-serif"
-            android:textSize="15sp"
+            android:textSize="14sp"
             tools:targetApi="p"
             tools:text="1 | 3:30" />
 
