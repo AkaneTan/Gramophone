@@ -517,10 +517,10 @@ object MediaStoreUtils {
 
         cursor?.close()
 
-        if (playlists.none { it.title == "gramophone_favourite" }) {
+        if (playlists.none { it.title == ".gramophone_favourite" }) {
             val values = ContentValues()
             @Suppress("DEPRECATION")
-            values.put(MediaStore.Audio.Playlists.NAME, "gramophone_favourite")
+            values.put(MediaStore.Audio.Playlists.NAME, ".gramophone_favourite")
 
             @Suppress("DEPRECATION")
             values.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis())
@@ -548,7 +548,7 @@ object MediaStoreUtils {
                 )
             }
         } else {
-            playlists.first { it.title == "gramophone_favourite" }.title =
+            playlists.first { it.title == ".gramophone_favourite" }.title =
                 context.getString(R.string.playlist_favourite)
         }
 
