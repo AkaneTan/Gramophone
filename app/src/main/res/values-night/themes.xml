@@ -1,14 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <style name="Base.Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
-        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
-        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
-        <item name="popupMenuBackground">@drawable/popup_background</item>
-
-        <!-- Material theme -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
@@ -56,54 +48,4 @@
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
     </style>
-
-    <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:textColor">?attr/colorOnSurface</item>
-    </style>
-
-    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
-    </style>
-
-    <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
-        <item name="shapeAppearance">@style/BottomPlayerCornerShape</item>
-    </style>
-
-    <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textFontWeight" tools:targetApi="p">500</item>
-    </style>
-
-    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="textAllCaps">false</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">13.5sp</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textFontWeight" tools:targetApi="p">700</item>
-        <item name="android:includeFontPadding">false</item>
-    </style>
-
-    <style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
-        <item name="shapeAppearance">@style/BottomPlayerCornerShape</item>
-    </style>
-
-    <style name="BottomPlayerCornerShape">
-        <item name="cornerSize">0dp</item>
-    </style>
-
-    <style name="MediaPlayer.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
-        <item name="android:thumb">@drawable/media_seekbar_thumb</item>
-        <item name="android:thumbTint">?android:attr/textColorPrimary</item>
-        <item name="android:progressTint">?android:attr/textColorPrimary</item>
-        <item name="android:progressBackgroundTint">?android:attr/textColorTertiary</item>
-        <item name="android:clickable">true</item>
-        <item name="android:splitTrack">false</item>
-    </style>
-
-    <style name="SubHeaderAppearance">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textFontWeight" tools:targetApi="p">700</item>
-    </style>
-
-    <style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
 </resources>
