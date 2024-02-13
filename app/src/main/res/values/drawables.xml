@@ -8,9 +8,6 @@
     <drawable name="dates_art">@drawable/ic_schedule</drawable>
     <drawable name="pause_anim">@drawable/ic_media_pause_anim</drawable>
     <drawable name="play_anim">@drawable/ic_media_play_anim</drawable>
-    <drawable name="widgets_art">@drawable/ic_widgets</drawable>
-    <drawable name="bug_art">@drawable/ic_sentiment_very_dissatisfied</drawable>
-    <drawable name="daynight_art">@drawable/ic_light_mode</drawable>
     <drawable name="filter_art">@drawable/ic_filter_alt</drawable>
     <drawable name="folder_art">@drawable/ic_folder</drawable>
 

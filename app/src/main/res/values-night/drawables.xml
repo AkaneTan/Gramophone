@@ -17,6 +17,5 @@
     <drawable-v26 name="filter_art">@drawable-v26/ic_filter_alt_filled</drawable-v26>
     <drawable-v26 name="folder_art">@drawable-v26/ic_folder_filled</drawable-v26>
     -->
-    <drawable name="daynight_art">@drawable/ic_dark_mode</drawable>
 
 </resources>

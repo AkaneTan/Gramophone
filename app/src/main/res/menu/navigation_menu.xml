@@ -5,7 +5,6 @@
             <item
                 android:id="@+id/songs"
                 android:checkable="true"
-                android:icon="@drawable/ic_music_note"
                 android:title="@string/category_songs"
                 app:showAsAction="ifRoom" />
             <item
@@ -35,7 +34,6 @@
             <item
                 android:id="@+id/folders"
                 android:checkable="true"
-                android:icon="@drawable/ic_hard_drive"
                 android:title="@string/filesystem"
                 app:showAsAction="ifRoom" />
             <item
