@@ -18,7 +18,6 @@
 package org.akanework.gramophone.logic.utils
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.core.graphics.ColorUtils
 import kotlin.math.min
 

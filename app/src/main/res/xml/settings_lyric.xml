@@ -7,8 +7,7 @@
         android:key="lyric_bold"
         android:layout="@layout/icon_switch_preference"
         android:summary="@string/settings_lyrics_bold_summary"
-        android:title="@string/settings_lyrics_bold"
-        android:widgetLayout="@layout/preference_material_switch" />
+        android:title="@string/settings_lyrics_bold" />
 
     <SwitchPreferenceCompat
         android:defaultValue="false"
@@ -16,7 +15,6 @@
         android:key="lyric_center"
         android:layout="@layout/icon_switch_preference"
         android:summary="@string/settings_lyrics_center_summary"
-        android:title="@string/settings_lyrics_center"
-        android:widgetLayout="@layout/preference_material_switch" />
+        android:title="@string/settings_lyrics_center" />
 
 </PreferenceScreen>

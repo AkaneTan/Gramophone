@@ -50,6 +50,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
+import org.akanework.gramophone.ui.components.GridPaddingDecoration
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 import java.util.Collections
 
@@ -91,6 +92,8 @@ abstract class BaseAdapter<T>(
         )!!
     )
 
+    private var gridPaddingDecoration = GridPaddingDecoration(context)
+
     private var prefLayoutType: LayoutType = LayoutType.valueOf(
         prefs.getString(
             "L" + FileOpUtils.getAdapterType(this).toString(),
@@ -101,6 +104,9 @@ abstract class BaseAdapter<T>(
     var layoutType: LayoutType? = null
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
+            if (field == LayoutType.GRID && value != LayoutType.GRID) {
+                recyclerView?.removeItemDecoration(gridPaddingDecoration)
+            }
             field = value
             if (value != null && ownsView) {
                 layoutManager = if (value != LayoutType.GRID
@@ -114,7 +120,9 @@ abstract class BaseAdapter<T>(
                         == Configuration.ORIENTATION_PORTRAIT
                     ) 2 else 4
                 )
-                if (recyclerView != null) applyLayoutManager()
+                if (recyclerView != null) {
+                    applyLayoutManager()
+                }
             }
             notifyDataSetChanged() // we change view type for all items
         }
@@ -176,6 +184,9 @@ abstract class BaseAdapter<T>(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        if (layoutType == LayoutType.GRID) {
+            recyclerView.removeItemDecoration(gridPaddingDecoration)
+        }
         this.recyclerView = null
         if (ownsView) {
             recyclerView.layoutManager = null
@@ -193,6 +204,9 @@ abstract class BaseAdapter<T>(
                 .findFirstCompletelyVisibleItemPosition()
         } else 0
         recyclerView?.layoutManager = layoutManager
+        if (layoutType == LayoutType.GRID) {
+            recyclerView?.addItemDecoration(gridPaddingDecoration)
+        }
         recyclerView?.scrollToPosition(scrollPosition)
     }
 

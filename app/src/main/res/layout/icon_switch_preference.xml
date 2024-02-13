@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~     Copyright (C) 2024 Akane Foundation
   ~
   ~     Gramophone is free software: you can redistribute it and/or modify
@@ -15,56 +16,67 @@
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="20dp">
-
-    <ImageView
-        android:id="@android:id/icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="4dp"
-        android:importantForAccessibility="no"
-        app:tint="?attr/colorOnSurface"
-        tools:src="@drawable/settings_art">
-
-    </ImageView>
+    style="?materialCardViewFilledStyle"
+    app:cardBackgroundColor="@android:color/transparent">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="16dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:orientation="horizontal"
+        android:background="?selectableItemBackground">
 
-        <TextView
-            android:id="@android:id/title"
+        <ImageView
+            android:id="@android:id/icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center_vertical"
+            android:importantForAccessibility="no"
+            app:tint="?attr/colorOnSurface"
+            tools:src="@drawable/settings_art" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="19sp"
+                tools:text="Title" />
+
+            <TextView
+                android:id="@android:id/summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="15sp"
+                tools:text="Summary" />
+
+        </LinearLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchWidget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="20sp"
-            tools:text="Title" />
-
-        <TextView
-            android:id="@android:id/summary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            tools:text="Summary" />
+            android:layout_gravity="center_vertical" />
 
     </LinearLayout>
 
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchWidget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

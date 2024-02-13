@@ -24,6 +24,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
@@ -66,6 +67,8 @@ class ViewPagerFragment : BaseFragment(true) {
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
+
+        topAppBar.overflowIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_more_vert_alt)
 
         topAppBar.setOnMenuItemClickListener {
             when (it.itemId) {

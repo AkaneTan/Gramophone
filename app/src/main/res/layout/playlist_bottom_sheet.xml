@@ -14,8 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="22dp"
-        android:paddingEnd="16dp">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
 
         <com.google.android.material.card.MaterialCardView
             style="?materialCardViewFilledStyle"
@@ -81,8 +81,6 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="6dp"
-        android:paddingEnd="6dp"
         android:scrollbars="none" />
 
 </LinearLayout>

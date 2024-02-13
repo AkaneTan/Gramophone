@@ -7,5 +7,5 @@
     <dimen name="media_seekbar_progress_stroke_width">3.4dp</dimen>
     <dimen name="list_round_corner_size">6dp</dimen>
     <dimen name="grid_round_corner_size">10dp</dimen>
-    <dimen name="tab_layout_content_padding">20dp</dimen>
+    <dimen name="tab_layout_content_padding">24dp</dimen>
 </resources>

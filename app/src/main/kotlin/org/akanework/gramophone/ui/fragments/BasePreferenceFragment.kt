@@ -25,7 +25,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.color.MaterialColors
-import org.akanework.gramophone.logic.utils.ColorUtils
 
 /**
  * BasePreferenceFragment:

@@ -40,10 +40,10 @@ abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Enable material transitions.
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward= */ false)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
     }
 
     // https://github.com/material-components/material-components-android/issues/1984#issuecomment-1089710991

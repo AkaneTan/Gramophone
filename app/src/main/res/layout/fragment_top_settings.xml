@@ -34,15 +34,18 @@
             app:expandedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:title="@string/home_menu_settings">
+            app:title="@string/home_menu_settings"
+            app:expandedTitleMarginStart="24dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
+                android:paddingStart="6dp"
                 app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_arrow_back" />
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIconTint="?colorOnSurface" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -53,6 +56,7 @@
         android:name="org.akanework.gramophone.ui.fragments.settings.MainSettingsTopFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="12dp"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         />
 

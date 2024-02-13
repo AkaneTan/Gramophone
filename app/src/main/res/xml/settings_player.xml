@@ -17,51 +17,54 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <SwitchPreferenceCompat
-        android:defaultValue="true"
-        android:icon="@drawable/ic_text_fields"
-        android:key="bold_title"
-        android:layout="@layout/icon_switch_preference"
-        android:summary="@string/settings_title_bold_summary"
-        android:title="@string/settings_title_bold"
-        android:widgetLayout="@layout/preference_material_switch" />
-    <SwitchPreferenceCompat
-        android:defaultValue="true"
-        android:icon="@drawable/ic_format_align_center"
-        android:key="centered_title"
-        android:layout="@layout/icon_switch_preference"
-        android:summary="@string/settings_title_center_summary"
-        android:title="@string/settings_title_center"
-        android:widgetLayout="@layout/preference_material_switch" />
-    <SeekBarPreference
-        android:defaultValue="@integer/round_corner_radius"
-        android:icon="@drawable/ic_rounded_corner"
-        android:key="album_round_corner"
-        android:layout="@layout/icon_seekbar_preference"
-        android:max="28"
-        android:summary="@string/settings_album_round_corner_summary"
-        android:title="@string/settings_album_round_corner"
-        app:showSeekBarValue="true" />
-    <SwitchPreferenceCompat
-        android:defaultValue="true"
-        android:icon="@drawable/ic_colors"
-        android:key="content_based_color"
-        android:layout="@layout/icon_switch_preference"
-        android:summary="@string/settings_content_based_color_summary"
-        android:title="@string/settings_content_based_color"
-        android:widgetLayout="@layout/preference_material_switch" />
-    <SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:icon="@drawable/ic_draw_abstract"
-        android:key="default_progress_bar"
-        android:layout="@layout/icon_switch_preference"
-        android:summary="@string/settings_default_progress_bar_summary"
-        android:title="@string/settings_default_progress_bar"
-        android:widgetLayout="@layout/preference_material_switch" />
-    <Preference
-        android:icon="@drawable/ic_lyrics"
-        android:key="lyrics"
-        android:layout="@layout/basic_preference"
-        android:summary="@string/settings_lyrics_configuration_summary"
-        android:title="@string/settings_lyrics_configuration" />
+    <PreferenceCategory
+        android:title="@string/settings_category_full_player"
+        android:layout="@layout/preference_category_md">
+        <SeekBarPreference
+            android:defaultValue="@integer/round_corner_radius"
+            android:icon="@drawable/ic_rounded_corner"
+            android:key="album_round_corner"
+            android:layout="@layout/preference_seekbar"
+            android:max="28"
+            android:summary="@string/settings_album_round_corner_summary"
+            android:title="@string/settings_album_round_corner"
+            app:showSeekBarValue="true" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:icon="@drawable/ic_text_fields"
+            android:key="bold_title"
+            android:layout="@layout/icon_switch_preference"
+            android:summary="@string/settings_title_bold_summary"
+            android:title="@string/settings_title_bold" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:icon="@drawable/ic_format_align_center"
+            android:key="centered_title"
+            android:layout="@layout/icon_switch_preference"
+            android:summary="@string/settings_title_center_summary"
+            android:title="@string/settings_title_center" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:icon="@drawable/ic_colors"
+            android:key="content_based_color"
+            android:layout="@layout/icon_switch_preference"
+            android:summary="@string/settings_content_based_color_summary"
+            android:title="@string/settings_content_based_color" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_draw_abstract"
+            android:key="default_progress_bar"
+            android:layout="@layout/icon_switch_preference"
+            android:summary="@string/settings_default_progress_bar_summary"
+            android:title="@string/settings_default_progress_bar" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/settings_category_misc"
+        android:layout="@layout/preference_category_md">
+        <Preference
+            android:key="lyrics"
+            android:layout="@layout/basic_preference_iconless"
+            android:summary="@string/settings_lyrics_configuration_summary"
+            android:title="@string/settings_lyrics_configuration" />
+    </PreferenceCategory>
 </PreferenceScreen>

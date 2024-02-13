@@ -26,13 +26,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.color.MaterialColors
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.ColorUtils
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
@@ -60,6 +57,7 @@ class GeneralSubFragment : BaseFragment(true) {
 
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+        val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
 
         val bundle = requireArguments()
@@ -116,11 +114,7 @@ class GeneralSubFragment : BaseFragment(true) {
             R.id.playlist -> {
                 // Playlists
                 val item = libraryViewModel.playlistList.value!![position]
-                title = if (item is MediaStoreUtils.RecentlyAdded) {
-                    requireContext().getString(R.string.recently_added)
-                } else {
-                    item.title ?: requireContext().getString(R.string.unknown_playlist)
-                }
+                title = item.title ?: requireContext().getString(R.string.unknown_playlist)
                 itemList = item.songList
                 helper = Sorter.NaturalOrderHelper { itemList.indexOf(it) }
             }
@@ -129,7 +123,7 @@ class GeneralSubFragment : BaseFragment(true) {
         }
 
         // Show title text.
-        topAppBar.title = title
+        collapsingToolbarLayout.title = title
 
         val songAdapter =
             SongAdapter(

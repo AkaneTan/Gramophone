@@ -22,7 +22,7 @@
             android:layout_height="50dp"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="12dp"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="24dp"
             app:cardCornerRadius="@dimen/list_round_corner_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

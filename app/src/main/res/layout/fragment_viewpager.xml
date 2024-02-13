@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
             app:collapsedTitleTextColor="?attr/colorOnSurface"
+            app:collapsedTitleTextAppearance="?textAppearanceTitleLarge"
             app:expandedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:contentScrim="?attr/colorSurface"
@@ -28,7 +29,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:titleCollapseMode="scale"
             app:title="@string/app_name"
-            app:expandedTitleMarginStart="22dp">
+            app:expandedTitleMarginStart="24dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
@@ -36,6 +37,12 @@
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
                 app:layout_collapseMode="pin"
+                android:paddingEnd="8dp"
+                android:paddingStart="24dp"
+                app:contentInsetStartWithNavigation="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
+                app:titleMarginStart="0dp"
                 app:menu="@menu/home_menu" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -44,7 +51,7 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorSurface"
+            android:background="@android:color/transparent"
             android:layout_marginTop="8dp"
             android:paddingBottom="3dp"
             app:tabBackground="@android:color/transparent"
@@ -60,7 +67,7 @@
             app:tabSelectedTextColor="?colorOnSecondaryContainer"
             app:tabTextAppearance="@style/TabTextAppearance"
             app:tabTextColor="?attr/colorOnSurfaceVariant"
-            tools:tabContentStart="22dp">
+            tools:tabContentStart="24dp">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

@@ -33,6 +33,7 @@
             app:collapsedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
+            app:expandedTitleMarginStart="24dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/settings_blacklist">
 
@@ -41,8 +42,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
+                android:paddingStart="6dp"
                 app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_arrow_back" />
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIconTint="?colorOnSurface" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

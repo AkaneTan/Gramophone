@@ -1451,7 +1451,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 
 			override fun calculateTimeForDeceleration(dx: Int): Int {
-				return 300
+				return 500
 			}
 		}
 

@@ -1,55 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="75dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:paddingStart="16dp"
-    android:paddingEnd="4dp"
-    tools:ignore="UnusedAttribute,UseCompoundDrawables"
-    tools:targetApi="m">
-
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_vertical"
-        android:importantForAccessibility="no"
-        android:padding="12dp"
-        android:src="@drawable/folder_art"
-        app:tint="?attr/colorOnSurface" />
+    android:paddingStart="24dp"
+    android:paddingEnd="6dp"
+    tools:ignore="RtlSymmetry">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="16dp"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="48dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            style="?materialCardViewFilledStyle"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            app:cardCornerRadius="@dimen/list_round_corner_size"
+            app:cardBackgroundColor="@android:color/transparent">
+
+            <ImageView
+                android:id="@+id/cover"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_folder" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:singleLine="true"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="16sp"
-            tools:targetApi="p"
-            tools:text="Example Title" />
+            android:layout_marginStart="18dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:singleLine="true"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            tools:targetApi="p"
-            tools:text="Example Title" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="?attr/colorOnSurface"
+                android:textFontWeight="400"
+                android:fontFamily="sans-serif"
+                android:textSize="17sp"
+                tools:targetApi="p"
+                tools:text="Example Title" />
+
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textFontWeight="400"
+                android:fontFamily="sans-serif"
+                android:textSize="14sp"
+                tools:targetApi="p"
+                tools:text="Example Artist" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
