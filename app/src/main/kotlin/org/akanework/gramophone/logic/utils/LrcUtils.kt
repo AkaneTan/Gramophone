@@ -1,5 +1,6 @@
 package org.akanework.gramophone.logic.utils
 
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.Metadata
 import androidx.media3.common.util.ParsableByteArray
@@ -17,7 +18,7 @@ object LrcUtils {
     }
 
     @OptIn(UnstableApi::class)
-    fun extractLyrics(musicFile: File?, metadata: Metadata): String? {
+    private fun extractLyrics(musicFile: File?, metadata: Metadata): String? {
         val lrcFile = musicFile
             ?.let { File(musicFile.parentFile, musicFile.nameWithoutExtension + ".lrc") }
         if (lrcFile?.exists() == true) {
@@ -54,6 +55,9 @@ object LrcUtils {
             }
         }
         //}
+        if (list.isEmpty() && lrcContent.isNotEmpty()) {
+            list.add(MediaStoreUtils.Lyric(1, lrcContent, false))
+        }
         return list
     }
 
