@@ -3,6 +3,7 @@ package org.akanework.gramophone.ui.components
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Typeface
@@ -74,7 +75,8 @@ import java.io.FileNotFoundException
 import kotlin.math.min
 
 class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
-	ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), Player.Listener {
+	ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), Player.Listener,
+	SharedPreferences.OnSharedPreferenceChangeListener {
 	constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 		this(context, attrs, defStyleAttr, 0)
 	constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -222,21 +224,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			com.google.android.material.R.attr.colorSecondaryContainer
 		)
 		refreshSettings(null)
-		prefs.registerOnSharedPreferenceChangeListener { _, key ->
-			if (key == "color_accuracy" || key == "content_based_color") {
-				if (Build.VERSION.SDK_INT >= 26 &&
-					prefs.getBoolean("content_based_color", true)) {
-					addColorScheme()
-				} else {
-					removeColorScheme()
-				}
-			} else if (key == "lyric_center" || key == "lyric_bold") {
-				@Suppress("NotifyDataSetChanged")
-				bottomSheetFullLyricAdapter.notifyDataSetChanged()
-			} else {
-				refreshSettings(key)
-			}
-		}
+		prefs.registerOnSharedPreferenceChangeListener(this)
 
 		val seekBarProgressWavelength =
 			context.resources
@@ -443,6 +431,22 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}
 			}
 			return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+		}
+	}
+
+	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+		if (key == "color_accuracy" || key == "content_based_color") {
+			if (Build.VERSION.SDK_INT >= 26 &&
+				prefs.getBoolean("content_based_color", true)) {
+				addColorScheme()
+			} else {
+				removeColorScheme()
+			}
+		} else if (key == "lyric_center" || key == "lyric_bold") {
+			@Suppress("NotifyDataSetChanged")
+			bottomSheetFullLyricAdapter.notifyDataSetChanged()
+		} else {
+			refreshSettings(key)
 		}
 	}
 
