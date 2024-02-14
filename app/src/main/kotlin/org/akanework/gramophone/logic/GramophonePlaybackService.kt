@@ -123,7 +123,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         headSetReceiver = HeadSetReceiver()
         registerReceiver(
             headSetReceiver,
-            IntentFilter(Intent.ACTION_HEADSET_PLUG)
+            IntentFilter(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         )
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -398,8 +398,7 @@ class GramophonePlaybackService : MediaLibraryService(),
 
     inner class HeadSetReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action.equals(Intent.ACTION_HEADSET_PLUG) &&
-                intent.getIntExtra("state", -1) == 0) {
+            if (intent.action.equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
                 mediaSession?.player?.pause()
             }
         }
