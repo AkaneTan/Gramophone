@@ -442,11 +442,12 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			} else {
 				removeColorScheme()
 			}
-		} else if (key == "lyric_center" || key == "lyric_bold") {
-			@Suppress("NotifyDataSetChanged")
-			bottomSheetFullLyricAdapter.notifyDataSetChanged()
 		} else {
 			refreshSettings(key)
+			if (key == "lyric_center" || key == "lyric_bold") {
+				@Suppress("NotifyDataSetChanged")
+				bottomSheetFullLyricAdapter.notifyDataSetChanged()
+			}
 		}
 	}
 
