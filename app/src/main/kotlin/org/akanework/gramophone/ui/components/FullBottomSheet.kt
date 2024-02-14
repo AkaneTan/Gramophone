@@ -482,6 +482,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				context.resources.getInteger(R.integer.round_corner_radius)
 			).px.toFloat()
 		}
+		if (key == null || key == "lyric_center" || key == "lyric_bold") {
+			bottomSheetFullLyricAdapter.updateLyricStatus()
+		}
 	}
 
 	fun onStart(cf: ListenableFuture<MediaController>) {
@@ -1194,6 +1197,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 		var currentFocusPos = -1
 		private var currentTranslationPos = -1
+		private var isBoldEnabled = false
+		private var isLyricCentered = false
 
 		override fun onCreateViewHolder(
 			parent: ViewGroup,
@@ -1225,15 +1230,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				visibility = if (lyric.content.isNotEmpty()) View.VISIBLE else View.GONE
 				text = lyric.content
 
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-					activity.getPreferences().getBoolean("lyric_bold", false)
-				) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isBoldEnabled) {
 					this.typeface = Typeface.create(null, 700, false)
 				} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 					this.typeface = Typeface.create(null, 500, false)
 				}
 
-				if (activity.getPreferences().getBoolean("lyric_center", false)) {
+				if (isLyricCentered) {
 					this.gravity = Gravity.CENTER
 				} else {
 					this.gravity = Gravity.START
@@ -1251,6 +1254,18 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				val isFocus = position == currentFocusPos || position == currentTranslationPos
 				setTextColor(if (isFocus) highlightTextColor else defaultTextColor)
 			}
+		}
+
+		override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+			super.onAttachedToRecyclerView(recyclerView)
+			updateLyricStatus()
+		}
+
+		fun updateLyricStatus() {
+			isBoldEnabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+					activity.getPreferences().getBoolean("lyric_bold", false)
+
+			isLyricCentered = activity.getPreferences().getBoolean("lyric_center", false)
 		}
 
 		override fun getItemCount(): Int = lyricList.size
