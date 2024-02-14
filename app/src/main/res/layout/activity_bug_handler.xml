@@ -21,6 +21,7 @@
             app:expandedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:expandedTitleMarginStart="24dp"
             app:title="@string/gramophone_crashed">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -28,6 +29,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
+                android:paddingStart="24dp"
+                app:contentInsetStartWithNavigation="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
+                app:titleMarginStart="0dp"
                 app:layout_collapseMode="pin" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -45,8 +51,8 @@
             android:layout_height="match_parent"
             android:textColor="?attr/colorOnSurface"
             android:paddingTop="12dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             android:textSize="11sp" />
 
     </androidx.core.widget.NestedScrollView>
