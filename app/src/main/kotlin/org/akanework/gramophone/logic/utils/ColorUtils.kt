@@ -22,7 +22,6 @@ import androidx.core.graphics.ColorUtils
 import kotlin.math.min
 
 object ColorUtils {
-    var overrideGlobalAmoledColor = false
 
     enum class ColorType(
         var chroma: Float = 0f,
@@ -40,8 +39,7 @@ object ColorUtils {
     private fun manipulateHsl(
         color: Int,
         colorType: ColorType,
-        context: Context,
-        isAmoled: Boolean
+        context: Context
     ): Int {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(color, hsl)
@@ -51,9 +49,6 @@ object ColorUtils {
             hsl[2] = min(hsl[2], 1f)
             hsl[1] *= colorType.chromaDark
             hsl[1] = min(hsl[1], 1f)
-            if (overrideGlobalAmoledColor && isAmoled) {
-                hsl[2] = 0f
-            }
         } else {
             hsl[1] *= colorType.chroma
             hsl[1] = min(hsl[1], 1f)
@@ -64,6 +59,6 @@ object ColorUtils {
         return ColorUtils.HSLToColor(hsl)
     }
 
-    fun getColor(color: Int, colorType: ColorType, context: Context, isAmoled: Boolean): Int =
-        manipulateHsl(color, colorType, context, isAmoled)
+    fun getColor(color: Int, colorType: ColorType, context: Context): Int =
+        manipulateHsl(color, colorType, context)
 }

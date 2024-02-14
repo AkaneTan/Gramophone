@@ -582,15 +582,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val backgroundProcessedColor = ColorUtils.getColor(
 				colorSurface,
 				ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
-				context,
-				true
+				context
 			)
 
 			val colorContrastFainted = ColorUtils.getColor(
 				colorSecondaryContainer,
 				ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-				context,
-				false
+				context
 			)
 
 			val surfaceTransition = ValueAnimator.ofArgb(
@@ -825,15 +823,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				val backgroundProcessedColor = ColorUtils.getColor(
 					colorSurface,
 					ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
-					context,
-					true
+					context
 				)
 
 				val colorContrastFainted = ColorUtils.getColor(
 					colorSecondaryContainer,
 					ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-					context,
-					false
+					context
 				)
 
 				val surfaceTransition = ValueAnimator.ofArgb(

@@ -132,8 +132,7 @@ class MainActivity : AppCompatActivity() {
                 com.google.android.material.R.attr.colorSurfaceContainer
             ),
             ColorUtils.ColorType.COLOR_BACKGROUND_TINTED,
-            this,
-            true
+            this
         )
 
         val previewPlayer = findViewById<ConstraintLayout>(R.id.preview_player)

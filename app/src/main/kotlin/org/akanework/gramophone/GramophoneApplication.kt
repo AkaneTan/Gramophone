@@ -53,9 +53,6 @@ class GramophoneApplication : Application() {
             }
         }
 
-        // Decide whether to override amoled background color or not
-        ColorUtils.overrideGlobalAmoledColor = prefs.getBoolean("oled", false)
-
         // Apply dynamic colors.
         DynamicColors.applyToActivitiesIfAvailable(this)
 

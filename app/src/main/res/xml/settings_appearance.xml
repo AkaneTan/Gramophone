@@ -28,11 +28,5 @@
             android:layout="@layout/icon_dropdown_preference"
             android:title="@string/settings_app_theme"
             app:useSimpleSummaryProvider="true" />
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="oled"
-            android:layout="@layout/icon_switch_preference"
-            android:summary="@string/settings_oled_summary"
-            android:title="@string/settings_oled" />
     </PreferenceCategory>
 </PreferenceScreen>
