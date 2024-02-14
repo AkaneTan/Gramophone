@@ -111,17 +111,6 @@ class SongAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
-        super.onBindViewHolder(holder, position, payloads)
-        if (isTrackDiscNumAvailable) {
-            val targetText =
-                list[position].mediaMetadata.trackNumber.toString() +
-                        " | " + context.resources.getString(R.string.disc) + " " +
-                        list[position].mediaMetadata.discNumber
-            holder.indicator.text = targetText
-        }
-    }
-
     override fun onMenu(item: MediaItem, popupMenu: PopupMenu) {
         popupMenu.inflate(R.menu.more_menu)
 

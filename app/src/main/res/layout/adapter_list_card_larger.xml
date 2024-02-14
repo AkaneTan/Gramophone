@@ -69,18 +69,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textFontWeight="500"
-            android:fontFamily="sans-serif"
-            android:textSize="14sp"
-            tools:targetApi="p"
-            tools:text="1 | 3:30" />
-
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
