@@ -1218,10 +1218,10 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 					}
 					val instance = activity.getPlayer()
-					if (!instance.isPlaying) {
+					if (instance != null && !instance.isPlaying) {
 						instance.play()
 					}
-					instance.seekTo(lyric.timeStamp)
+					instance?.seekTo(lyric.timeStamp)
 				}
 			}
 
@@ -1339,14 +1339,14 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				val pos = holder.bindingAdapterPosition
 				playlist.removeAt(pos)
 				notifyItemRemoved(pos)
-				instance.removeMediaItem(pos)
+				instance?.removeMediaItem(pos)
 			}
 			holder.itemView.setOnClickListener {
 				if (Build.VERSION.SDK_INT >= 23) {
 					it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 				}
 				val instance = activity.getPlayer()
-				instance.seekToDefaultPosition(holder.absoluteAdapterPosition)
+				instance?.seekToDefaultPosition(holder.absoluteAdapterPosition)
 			}
 		}
 

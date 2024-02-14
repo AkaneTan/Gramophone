@@ -155,20 +155,22 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
             if (adapter is SongAdapter) {
                 val mediaController = adapter.getActivity().getPlayer()
                 val songList = adapter.getSongList()
-                mediaController.setMediaItems(songList, 0, C.TIME_UNSET)
-                mediaController.prepare()
-                mediaController.play()
+                mediaController?.apply {
+                    setMediaItems(songList, 0, C.TIME_UNSET)
+                    prepare()
+                    play()
+                }
             }
         }
         holder.shuffleAll.setOnClickListener {
             if (adapter is SongAdapter) {
                 val mediaController = adapter.getActivity().getPlayer()
                 val songList = adapter.getSongList()
-                mediaController.setMediaItems(songList, 0, C.TIME_UNSET)
-                mediaController.shuffleModeEnabled = true
-                mediaController.seekToDefaultPosition(Random.nextInt(0, adapter.getSongList().size))
-                mediaController.prepare()
-                mediaController.play()
+                mediaController?.setMediaItems(songList, 0, C.TIME_UNSET)
+                mediaController?.shuffleModeEnabled = true
+                mediaController?.seekToDefaultPosition(Random.nextInt(0, adapter.getSongList().size))
+                mediaController?.prepare()
+                mediaController?.play()
             }
         }
     }

@@ -104,9 +104,11 @@ class SongAdapter(
 
     override fun onClick(item: MediaItem) {
         val mediaController = mainActivity.getPlayer()
-        mediaController.setMediaItems(list, list.indexOf(item), C.TIME_UNSET)
-        mediaController.prepare()
-        mediaController.play()
+        mediaController?.apply {
+            setMediaItems(list, list.indexOf(item), C.TIME_UNSET)
+            prepare()
+            play()
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
@@ -127,7 +129,7 @@ class SongAdapter(
             when (it1.itemId) {
                 R.id.play_next -> {
                     val mediaController = mainActivity.getPlayer()
-                    mediaController.addMediaItem(
+                    mediaController?.addMediaItem(
                         mediaController.currentMediaItemIndex + 1,
                         item,
                     )

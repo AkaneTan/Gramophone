@@ -307,7 +307,7 @@ class PlayerBottomSheet private constructor(
         onStop(lifecycleOwner)
     }
 
-    fun getPlayer(): MediaController = instance!!
+    fun getPlayer(): MediaController? = instance
 
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,

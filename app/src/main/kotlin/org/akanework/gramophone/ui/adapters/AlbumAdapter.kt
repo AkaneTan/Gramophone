@@ -124,7 +124,7 @@ class AlbumAdapter(
             when (it1.itemId) {
                 R.id.play_next -> {
                     val mediaController = mainActivity.getPlayer()
-                    mediaController.addMediaItems(
+                    mediaController?.addMediaItems(
                         mediaController.currentMediaItemIndex + 1,
                         item.songList,
                     )
