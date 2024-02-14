@@ -25,5 +25,10 @@
             android:layout="@layout/icon_switch_preference"
             android:summary="@string/settings_color_accuracy_summary"
             android:title="@string/settings_color_accuracy" />
+        <Preference
+            android:layout="@layout/basic_preference_iconless"
+            android:key="crash"
+            android:title="@string/settings_crash_application"
+            android:summary="@string/settings_crash_application_summary" />
     </PreferenceCategory>
 </PreferenceScreen>
