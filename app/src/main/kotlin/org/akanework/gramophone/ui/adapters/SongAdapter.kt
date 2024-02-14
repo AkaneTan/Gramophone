@@ -17,28 +17,21 @@
 
 package org.akanework.gramophone.ui.adapters
 
-import android.content.res.ColorStateList
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.getFile
-import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
-import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
+import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
@@ -178,19 +171,7 @@ class SongAdapter(
                 }
 
                 R.id.details -> {
-                    val processColor = ColorUtils.getColor(
-                        MaterialColors.getColor(
-                            context,
-                            android.R.attr.colorBackground,
-                            -1
-                        ),
-                        ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
-                        context
-                    )
-                    val drawable = GradientDrawable()
-                    drawable.color =
-                        ColorStateList.valueOf(processColor)
-                    drawable.cornerRadius = 64f
+                    /*
                     val rootView = MaterialAlertDialogBuilder(mainActivity)
                         .setView(R.layout.dialog_info_song)
                         .setBackground(drawable)
@@ -224,6 +205,17 @@ class SongAdapter(
                         item.mediaMetadata.extras!!.getString("MimeType")
                     rootView.findViewById<TextView>(R.id.duration)!!.text =
                         convertDurationToTimeStamp(item.mediaMetadata.extras!!.getLong("Duration"))
+
+                     */
+                    val position = viewModel.mediaItemList.value?.indexOfFirst {
+                        it.mediaId == item.mediaId
+                    }
+                    val detailDialogFragment = DetailDialogFragment().apply {
+                        arguments = Bundle().apply {
+                            putInt("Position", position!!)
+                        }
+                    }
+                    mainActivity.startFragment(detailDialogFragment)
                     true
                 }
                 /*

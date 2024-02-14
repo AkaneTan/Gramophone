@@ -22,7 +22,8 @@
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:expandedTitleMarginStart="24dp"
-            app:title="@string/gramophone_crashed">
+            app:title="@string/gramophone_crashed"
+            app:titleCollapseMode="scale">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"

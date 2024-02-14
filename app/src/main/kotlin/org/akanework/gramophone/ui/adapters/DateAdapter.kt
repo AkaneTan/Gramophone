@@ -55,7 +55,7 @@ class DateAdapter(
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
-                        putInt("Item", R.id.year)
+                        putInt("Item", R.id.dates)
                     }
             },
         )

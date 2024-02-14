@@ -90,14 +90,14 @@ class GeneralSubFragment : BaseFragment(true) {
                 itemList = item.songList
             } TODO */
 
-            R.id.genre -> {
+            R.id.genres -> {
                 // Genres
                 val item = libraryViewModel.genreItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_genre)
                 itemList = item.songList
             }
 
-            R.id.year -> {
+            R.id.dates -> {
                 // Dates
                 val item = libraryViewModel.dateItemList.value!![position]
                 title = item.title ?: requireContext().getString(R.string.unknown_year)

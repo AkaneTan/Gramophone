@@ -55,7 +55,7 @@ class GenreAdapter(
                 arguments =
                     Bundle().apply {
                         putInt("Position", toRawPos(item))
-                        putInt("Item", R.id.genre)
+                        putInt("Item", R.id.genres)
                     }
             },
         )

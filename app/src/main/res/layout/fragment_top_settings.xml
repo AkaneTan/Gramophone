@@ -35,6 +35,7 @@
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/home_menu_settings"
+            app:titleCollapseMode="scale"
             app:expandedTitleMarginStart="24dp">
 
             <com.google.android.material.appbar.MaterialToolbar

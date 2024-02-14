@@ -35,7 +35,8 @@
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
             app:expandedTitleMarginStart="24dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:title="@string/settings_blacklist">
+            app:title="@string/settings_blacklist"
+            app:titleCollapseMode="scale">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
