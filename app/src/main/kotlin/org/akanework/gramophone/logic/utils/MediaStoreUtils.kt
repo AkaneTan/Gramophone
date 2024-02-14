@@ -538,7 +538,7 @@ object MediaStoreUtils {
             (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60),
             recentlyAddedMap
         ))
-        folders.addAll(prefs.getStringSet("folderFilter", null) ?: setOf())
+        folders.addAll(folderFilter)
         return LibraryStoreClass(
             songs,
             albumList,
