@@ -63,7 +63,8 @@ class SearchFragment : BaseFragment(false) {
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter =
-            SongAdapter(requireActivity() as MainActivity, listOf(), false, null, false)
+            SongAdapter(requireActivity() as MainActivity, listOf(),
+                false, null, false, allowDiffUtils = true)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)

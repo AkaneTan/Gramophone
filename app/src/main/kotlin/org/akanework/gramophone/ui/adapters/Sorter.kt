@@ -78,7 +78,8 @@ class Sorter<T>(
         BySizeDescending, BySizeAscending,
         NaturalOrder, ByAddDateDescending, ByAddDateAscending,
         ByModifiedDateDescending, ByModifiedDateAscending,
-        None, NativeOrder /* do not use nativeorder for smth other than title */
+        /* do not use nativeorder for smth other than title */
+        None, NativeOrder, NativeOrderDescending
     }
 
     fun getSupportedTypes(): Set<Type> {
@@ -87,7 +88,8 @@ class Sorter<T>(
                 types + Type.NaturalOrder
             else types).let {
                 if (rawOrderExposed)
-                    it + Type.NativeOrder - Type.ByTitleAscending
+                    it + Type.NativeOrder + Type.NativeOrderDescending -
+                            Type.ByTitleAscending - Type.ByTitleDescending
                 else it
             }
         }
@@ -96,7 +98,7 @@ class Sorter<T>(
     fun getComparator(type: Type): HintedComparator<T>? {
         if (!getSupportedTypes().contains(type))
             throw IllegalArgumentException("Unsupported type ${type.name}")
-        if (type == Type.NativeOrder) return null
+        if (type == Type.NativeOrder || type == Type.NativeOrderDescending) return null
         return WrappingHintedComparator(type, when (type) {
             Type.ByTitleDescending -> {
                 SupportComparator.createAlphanumericComparator(true) {
@@ -197,7 +199,7 @@ class Sorter<T>(
 
     fun getFastScrollHintFor(item: T, sortType: Type): String? {
         return when (sortType) {
-            Type.ByTitleDescending, Type.ByTitleAscending, Type.NativeOrder -> {
+            Type.ByTitleDescending, Type.ByTitleAscending, Type.NativeOrder, Type.NativeOrderDescending -> {
                 (sortingHelper.getTitle(item) ?: "-").firstOrNull()?.toString()
             }
 

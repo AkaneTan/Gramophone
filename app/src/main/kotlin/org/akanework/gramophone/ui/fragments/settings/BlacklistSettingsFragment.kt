@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +17,7 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class BlacklistSettingsFragment : BaseFragment() {
 
-    private val libraryViewModel: LibraryViewModel by viewModels()
+    private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,7 +28,6 @@ class BlacklistSettingsFragment : BaseFragment() {
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
-
         val folderArray = libraryViewModel.allFolderSet.value?.toMutableList() ?: mutableListOf()
         folderArray.sort()
 
@@ -36,9 +36,8 @@ class BlacklistSettingsFragment : BaseFragment() {
         }
 
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
-        val blacklistFolderAdapter = BlacklistFolderAdapter(folderArray, prefs)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = blacklistFolderAdapter
+        recyclerView.adapter = BlacklistFolderAdapter(folderArray, prefs)
 
         return rootView
     }

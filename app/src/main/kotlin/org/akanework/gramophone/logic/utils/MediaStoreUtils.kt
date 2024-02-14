@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.logic.utils
 
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -33,14 +32,13 @@ import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.time.ZoneId
+import java.util.PriorityQueue
 
 
 /**
@@ -110,13 +108,12 @@ object MediaStoreUtils {
         val isTranslation: Boolean = false
     ) : Parcelable
 
-    class RecentlyAdded(id: Long, songList: List<MediaItem>) : Playlist(
-        id, null, songList
-            .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }.toMutableList()
+    class RecentlyAdded(minAddDate: Long, songList: PriorityQueue<Pair<Long, MediaItem>>) : Playlist(
+        -1, null, mutableListOf()
     ) {
-        private val rawList: List<MediaItem> = super.songList
+        private val rawList: PriorityQueue<Pair<Long, MediaItem>> = songList
         private var filteredList: List<MediaItem>? = null
-        var minAddDate: Long = 0
+        var minAddDate: Long = minAddDate
             set(value) {
                 if (field != value) {
                     field = value
@@ -126,8 +123,13 @@ object MediaStoreUtils {
         override val songList: MutableList<MediaItem>
             get() {
                 if (filteredList == null) {
-                    filteredList = rawList.filter {
-                        (it.mediaMetadata.extras?.getLong("AddDate") ?: 0) >= minAddDate
+                    val queue = PriorityQueue(rawList)
+                    filteredList = mutableListOf<MediaItem>().also {
+                        while (!queue.isEmpty()) {
+                            val item = queue.poll()!!
+                            if (item.first < minAddDate) return@also
+                            it.add(item.second)
+                        }
                     }
                 }
                 return filteredList!!.toMutableList()
@@ -257,15 +259,64 @@ object MediaStoreUtils {
         val albumArtistMap = hashMapOf<String?, MutableList<MediaItem>>()
         val genreMap = hashMapOf<Long?, Genre>()
         val dateMap = hashMapOf<Int?, Date>()
-        val cursor =
-            context.contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                selection,
-                null,
-                MediaStore.Audio.Media.TITLE + " COLLATE UNICODE ASC",
-            )
-
+        val playlists = mutableListOf<Pair<Playlist, MutableList<Long>>>()
+        var foundFavourites = false
+        var foundPlaylistContent = false
+        context.contentResolver.query(@Suppress("DEPRECATION")
+            MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, arrayOf(
+                @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID,
+                @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
+            ), null, null, null)?.use {
+            while (it.moveToNext()) {
+                val playlistId = it.getLong(
+                    it.getColumnIndexOrThrow(
+                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID
+                    )
+                )
+                val playlistName = it.getString(
+                    it.getColumnIndexOrThrow(
+                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
+                    )
+                ).ifEmpty { null }.run {
+                    if (!foundFavourites && this == "gramophone_favourite") {
+                        foundFavourites = true
+                        context.getString(R.string.playlist_favourite)
+                    } else this
+                }
+                val content = mutableListOf<Long>()
+                context.contentResolver.query(
+                    @Suppress("DEPRECATION") MediaStore.Audio
+                        .Playlists.Members.getContentUri("external", playlistId), arrayOf(
+                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                    ), null, null, @Suppress("DEPRECATION")
+                    MediaStore.Audio.Playlists.Members.PLAY_ORDER + " ASC"
+                )?.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        foundPlaylistContent = true
+                        content.add(cursor.getLong(
+                            cursor.getColumnIndexOrThrow(
+                                @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID
+                            )
+                        ))
+                    }
+                }
+                val playlist = Playlist(playlistId, playlistName, mutableListOf())
+                playlists.add(Pair(playlist, content))
+            }
+        }
+        val idMap = if (foundPlaylistContent) hashMapOf<Long, MediaItem>() else null
+        val cursor = context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            null,
+            MediaStore.Audio.Media.TITLE + " COLLATE UNICODE ASC",
+        )
+        val recentlyAddedMap = PriorityQueue<Pair<Long, MediaItem>>(cursor?.count ?: 0,
+            Comparator { a, b ->
+                // reversed int order
+                return@Comparator if (a.first == b.first) 0 else (if (a.first > b.first) -1 else 1)
+            })
         cursor?.use {
             // Get columns from mediaStore.
             val idColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
@@ -409,6 +460,8 @@ object MediaStoreUtils {
                 songs.add(song)
 
                 // Build our metadata maps/lists.
+                idMap?.put(id, song)
+                recentlyAddedMap.add(Pair(addDate, song))
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())
                 }.songList.add(song)
@@ -444,102 +497,34 @@ object MediaStoreUtils {
         }.toMutableList()
         val genreList = genreMap.values.toMutableList()
         val dateList = dateMap.values.toMutableList()
-
-        return LibraryStoreClass(
-            songs,
-            albumList,
-            albumArtistList,
-            artistList,
-            genreList,
-            dateList,
-            getPlaylists(context, songs),
-            root,
-            shallowRoot,
-            folders
-        )
-    }
-
-    /**
-     * Retrieves a list of playlists with their associated songs.
-     */
-    private fun getPlaylists(
-        context: Context,
-        songList: MutableList<MediaItem>
-    ): MutableList<Playlist> {
-        val playlists = mutableListOf<Playlist>()
-        playlists.add(
-            RecentlyAdded(
-                -1,
-                songList.toMutableList()
-            )
-                .apply {
-                    // TODO setting?
-                    minAddDate = (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60)
-                })
-
-        // Define the content resolver
-        val contentResolver: ContentResolver = context.contentResolver
-
-        // Define the URI for playlists
-        val playlistUri: Uri =
-            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
-
-        // Define the projection (columns to retrieve)
-        val projection = arrayOf(
-            @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID,
-            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
-        )
-
-        // Query the playlists
-        val cursor = contentResolver.query(playlistUri, projection, null, null, null)
-
-        cursor?.use {
-            while (it.moveToNext()) {
-                val playlistId = it.getLong(
-                    it.getColumnIndexOrThrow(
-                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID
-                    )
-                )
-                val playlistName = it.getString(
-                    it.getColumnIndexOrThrow(
-                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
-                    )
-                ).ifEmpty { null }
-
-                // Retrieve the list of songs for each playlist
-                val songs = getSongsInPlaylist(contentResolver, playlistId, songList)
-
-                // Create a Playlist object and add it to the list
-                val playlist = Playlist(playlistId, playlistName, songs.toMutableList())
-                playlists.add(playlist)
+        val playlistsFinal = playlists.map {
+            it.first.also { playlist ->
+                playlist.songList.addAll(it.second.map { value -> idMap!![value]!! })
             }
-        }
-
-        cursor?.close()
-
-        if (playlists.none { it.title == "gramophone_favourite" }) {
+        }.toMutableList()
+        if (!foundFavourites) {
             val values = ContentValues()
-            @Suppress("DEPRECATION")
-            values.put(MediaStore.Audio.Playlists.NAME, "gramophone_favourite")
-
-            @Suppress("DEPRECATION")
-            values.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis())
-
+            values.put(
+                @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME,
+                "gramophone_favourite"
+            )
+            values.put(
+                @Suppress("DEPRECATION") MediaStore.Audio.Playlists.DATE_ADDED,
+                System.currentTimeMillis()
+            )
             values.put(
                 @Suppress("DEPRECATION")
                 MediaStore.Audio.Playlists.DATE_MODIFIED,
                 System.currentTimeMillis()
             )
-
-
-            val resolver: ContentResolver = contentResolver
-
-            @Suppress("DEPRECATION")
             val favPlaylistUri =
-                resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values)
+                context.contentResolver.insert(
+                    @Suppress("DEPRECATION") MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                    values
+                )
             if (favPlaylistUri != null) {
                 val playlistId = favPlaylistUri.lastPathSegment!!.toLong()
-                playlists.add(
+                playlistsFinal.add(
                     Playlist(
                         playlistId,
                         context.getString(R.string.playlist_favourite),
@@ -547,58 +532,25 @@ object MediaStoreUtils {
                     )
                 )
             }
-        } else {
-            playlists.first { it.title == "gramophone_favourite" }.title =
-                context.getString(R.string.playlist_favourite)
         }
-
-        return playlists
-    }
-
-    /**
-     * Retrieves the list of songs in a playlist.
-     */
-    private fun getSongsInPlaylist(
-        contentResolver: ContentResolver,
-        playlistId: Long,
-        songList: MutableList<MediaItem>
-    ): List<MediaItem> {
-        val songs = mutableListOf<MediaItem>()
-
-        // Define the URI for playlist members (songs in the playlist)
-        val uri = @Suppress("DEPRECATION") MediaStore.Audio
-            .Playlists.Members.getContentUri("external", playlistId)
-
-        // Define the projection (columns to retrieve)
-        val projection = arrayOf(
-            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID,
+        playlistsFinal.add(RecentlyAdded(
+            // TODO setting?
+            (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60),
+            recentlyAddedMap
+        ))
+        folders.addAll(prefs.getStringSet("folderFilter", null) ?: setOf())
+        return LibraryStoreClass(
+            songs,
+            albumList,
+            albumArtistList,
+            artistList,
+            genreList,
+            dateList,
+            playlistsFinal,
+            root,
+            shallowRoot,
+            folders
         )
-
-        // Query the songs in the playlist
-        val cursor = contentResolver.query(
-            uri, projection, null, null,
-            @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.PLAY_ORDER + " ASC"
-        )
-
-        cursor?.use {
-            while (it.moveToNext()) {
-                val audioId = it.getLong(
-                    it.getColumnIndexOrThrow(
-                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID
-                    )
-                )
-                // Create a MediaItem and add it to the list
-                val song = songList.find { it1 ->
-                    it1.mediaId.toLong() == audioId
-                }
-                if (song != null) {
-                    songs.add(song)
-                }
-            }
-        }
-
-        cursor?.close()
-        return songs
     }
 
     fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context) {

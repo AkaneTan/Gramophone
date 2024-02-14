@@ -46,7 +46,8 @@ class SongAdapter(
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
     ownsView: Boolean,
     private val isTrackDiscNumAvailable: Boolean = false,
-    isSubFragment: Boolean = false
+    isSubFragment: Boolean = false,
+    allowDiffUtils: Boolean = false
 ) : BaseAdapter<MediaItem>
     (
     mainActivity,
@@ -61,7 +62,8 @@ class SongAdapter(
     ownsView = ownsView,
     defaultLayoutType = LayoutType.COMPACT_LIST,
     isSubFragment = isSubFragment,
-    rawOrderExposed = !isSubFragment
+    rawOrderExposed = !isSubFragment,
+    allowDiffUtils = allowDiffUtils
 ) {
 
     constructor(
@@ -71,7 +73,8 @@ class SongAdapter(
         helper: Sorter.NaturalOrderHelper<MediaItem>?,
         ownsView: Boolean,
         isTrackDiscNumAvailable: Boolean = false,
-        isSubFragment: Boolean = false
+        isSubFragment: Boolean = false,
+        allowDiffUtils: Boolean = false
     )
             : this(
         mainActivity,
@@ -80,7 +83,8 @@ class SongAdapter(
         helper,
         ownsView,
         isTrackDiscNumAvailable,
-        isSubFragment = isSubFragment
+        isSubFragment = isSubFragment,
+        allowDiffUtils = allowDiffUtils
     ) {
         updateList(songList, now = true, false)
     }

@@ -65,7 +65,8 @@ abstract class BaseAdapter<T>(
     val ownsView: Boolean,
     defaultLayoutType: LayoutType,
     private val isSubFragment: Boolean = false,
-    private val rawOrderExposed: Boolean = false
+    private val rawOrderExposed: Boolean = false,
+    private val allowDiffUtils: Boolean = false
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>,
     PopupTextProvider {
 
@@ -126,9 +127,13 @@ abstract class BaseAdapter<T>(
             }
             notifyDataSetChanged() // we change view type for all items
         }
+    private var reverseRaw = false
     var sortType: Sorter.Type
-        get() = if (comparator == null && rawOrderExposed) Sorter.Type.NativeOrder else comparator?.type!!
+        get() = if (comparator == null && rawOrderExposed)
+                (if (reverseRaw) Sorter.Type.NativeOrderDescending else Sorter.Type.NativeOrder)
+        else comparator?.type!!
         private set(value) {
+            reverseRaw = value == Sorter.Type.NativeOrderDescending
             if (comparator?.type != value) {
                 comparator = sorter.getComparator(value)
             }
@@ -238,7 +243,9 @@ abstract class BaseAdapter<T>(
     private fun sort(srcList: List<T>? = null, canDiff: Boolean, now: Boolean): () -> Unit {
         // Sorting in the background using coroutines
         val newList = ArrayList(srcList ?: rawList)
-        if (sortType != Sorter.Type.NativeOrder) {
+        if (sortType == Sorter.Type.NativeOrderDescending) {
+            newList.reverse()
+        } else if (sortType != Sorter.Type.NativeOrder) {
             newList.sortWith { o1, o2 ->
                 if (isPinned(o1) && !isPinned(o2)) -1
                 else if (!isPinned(o1) && isPinned(o2)) 1
@@ -257,12 +264,12 @@ abstract class BaseAdapter<T>(
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateListSorted(newList: MutableList<T>, canDiff: Boolean, now: Boolean): () -> Unit {
-        val diffResult = if (canDiff)
+        val diffResult = if (list.size != 0 && newList.size != 0 && allowDiffUtils && canDiff)
             DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
         return {
             list.clear()
             list.addAll(newList)
-            if (canDiff) diffResult!!.dispatchUpdatesTo(this) else notifyDataSetChanged()
+            if (diffResult != null) diffResult.dispatchUpdatesTo(this) else notifyDataSetChanged()
             if (!now) decorAdapter.updateSongCounter()
         }
     }
