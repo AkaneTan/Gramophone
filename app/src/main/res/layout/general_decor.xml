@@ -9,7 +9,7 @@
         android:id="@+id/song_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="start|center_vertical"
         android:layout_marginStart="24dp"
         android:textColor="?attr/colorOnSurface"
         android:textFontWeight="600"

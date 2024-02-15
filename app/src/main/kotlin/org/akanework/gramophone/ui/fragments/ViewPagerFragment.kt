@@ -18,6 +18,7 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -80,7 +81,7 @@ class ViewPagerFragment : BaseFragment(true) {
                         .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
                     try {
                         (requireActivity() as MainActivity).startingActivity.launch(intent)
-                    } catch (e: Exception) {
+                    } catch (e: ActivityNotFoundException) {
                         // Let's show a toast here if no system inbuilt EQ was found.
                         Toast.makeText(
                             requireContext(),
