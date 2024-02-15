@@ -25,6 +25,10 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
@@ -76,6 +80,9 @@ class MainActivity : AppCompatActivity() {
         }
 
     private lateinit var prefs: SharedPreferences
+    lateinit var intentSender: ActivityResultLauncher<IntentSenderRequest>
+        private set
+    var intentSenderAction: (() -> Boolean)? = null
 
     /**
      * updateLibrary:
@@ -93,7 +100,17 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                if (intentSenderAction != null) {
+                    intentSenderAction!!()
+                } else {
+                    Toast.makeText(this, getString(
+                        R.string.delete_in_progress), Toast.LENGTH_LONG).show()
+                }
+            }
+            intentSenderAction = null
+        }
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         // This is required for fragment navigate animation.

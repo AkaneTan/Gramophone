@@ -17,9 +17,13 @@
 
 package org.akanework.gramophone.ui.adapters
 
+import android.content.IntentSender
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
@@ -29,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
@@ -222,6 +227,43 @@ class SongAdapter(
                     mainActivity.startFragment(detailDialogFragment)
                     true
                 }
+
+                R.id.delete -> {
+                    val doDelete: (() -> (() -> Pair<IntentSender?, () -> Boolean>)) -> Unit = { r ->
+                        val res = r()()
+                        if (res.first == null) {
+                            res.second()
+                        } else {
+                            if (mainActivity.intentSenderAction == null) {
+                                mainActivity.intentSenderAction = res.second
+                                mainActivity.intentSender.launch(
+                                    IntentSenderRequest.Builder(res.first!!).build()
+                                )
+                            } else {
+                                Toast.makeText(
+                                    context, context.getString(
+                                        R.string.delete_in_progress
+                                    ), Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
+                    val res = MediaStoreUtils.deleteSong(context, item)
+                    if (res.first) {
+                        AlertDialog.Builder(context)
+                            .setTitle(R.string.delete)
+                            .setMessage(item.mediaMetadata.title)
+                            .setPositiveButton(R.string.yes) { _, _ ->
+                                doDelete(res.second)
+                            }
+                            .setNegativeButton(R.string.no) { _, _ -> }
+                            .show()
+                    } else {
+                        doDelete(res.second)
+                    }
+                    true
+                }
+
                 /*
 				R.id.share -> {
 					val builder = ShareCompat.IntentBuilder(mainActivity)
