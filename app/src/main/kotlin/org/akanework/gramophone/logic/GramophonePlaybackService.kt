@@ -17,6 +17,7 @@
 
 package org.akanework.gramophone.logic
 
+import android.app.NotificationManager
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
@@ -24,10 +25,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioManager
 import android.media.audiofx.AudioEffect
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -43,6 +47,7 @@ import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
+import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
@@ -62,7 +67,7 @@ import org.akanework.gramophone.ui.MainActivity
  * It's using exoplayer2 as its player backend.
  */
 @androidx.annotation.OptIn(UnstableApi::class)
-class GramophonePlaybackService : MediaLibraryService(),
+class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Listener,
     MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
 
     companion object {
@@ -78,6 +83,7 @@ class GramophonePlaybackService : MediaLibraryService(),
         const val SERVICE_TIMER_CHANGED = "changed_timer"
     }
 
+    private var willDie = false
     private var mediaSession: MediaLibrarySession? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
     private lateinit var customCommands: List<CommandButton>
@@ -117,15 +123,16 @@ class GramophonePlaybackService : MediaLibraryService(),
             )
         }
 
-    private lateinit var headSetReceiver: HeadSetReceiver
+    private val headSetReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+                mediaSession?.player?.pause()
+            }
+        }
+    }
 
     override fun onCreate() {
-        headSetReceiver = HeadSetReceiver()
-        registerReceiver(
-            headSetReceiver,
-            IntentFilter(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        )
-
+        super.onCreate()
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         customCommands =
@@ -191,6 +198,7 @@ class GramophonePlaybackService : MediaLibraryService(),
                     .build(), true
             )
             .build()
+        setListener(this)
         sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
             putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
@@ -214,26 +222,55 @@ class GramophonePlaybackService : MediaLibraryService(),
                 )
                 .build()
         lastPlayedManager = LastPlayedManager(this, mediaSession!!)
+        // this allowSavingState flag is to prevent A14 bug (explained below)
+        // overriding last played with null because it is saved before it is restored
+        lastPlayedManager.allowSavingState = false
         handler.post {
-            try {
-                val restoreInstance = lastPlayedManager.restore()
-                if (restoreInstance != null) {
-                    player.setMediaItems(
-                        restoreInstance.mediaItems,
-                        restoreInstance.startIndex, restoreInstance.startPositionMs
-                    )
-                    // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
-                    handler.post {
-                        player.prepare()
-                    }
+            if (willDie) {
+                if (Build.VERSION.SDK_INT != Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    throw NullPointerException("this code path should never be reachable")
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                // Android 14 bug.
+                // https://github.com/androidx/media/issues/805
+                // In Android 13:
+                // 1. Service starts
+                // 2. UI thread moves on to this call
+                // 3. Some time later, user swipes away app (while music paused)
+                // 4. onTaskRemoved() calls stopSelf()
+                // 5. onDestroy() called, happy ending
+                // In Android 14:
+                // 1. Service starts
+                // 2. UI thread moves on to this call
+                // 3. Some time later, user swipes away app (while music paused)
+                // 4. App process killed, notification abandoned
+                // 5. App process restarted
+                // 6. instantly, onTaskRemoved() calls stopSelf()
+                // 7. This is called (and because we are after onTaskRemoved, willDie is true)
+                // 8. onDestroy() called
+                // To workaround this, we cancel notification here and let service die peacefully
+                val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
+                return@post
+            }
+            lastPlayedManager.allowSavingState = true
+            val restoreInstance = lastPlayedManager.restore()
+            if (restoreInstance != null) {
+                mediaSession!!.player.setMediaItems(
+                    restoreInstance.mediaItems,
+                    restoreInstance.startIndex, restoreInstance.startPositionMs
+                )
+                // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
+                handler.post {
+                    player.prepare()
+                }
             }
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
         mediaSession!!.player.addListener(this)
-        super.onCreate()
+        registerReceiver(
+            headSetReceiver,
+            IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        )
     }
 
     override fun onDestroy() {
@@ -247,8 +284,9 @@ class GramophonePlaybackService : MediaLibraryService(),
                 (mediaSession!!.player as ExoPlayer).audioSessionId
             )
         })
-        mediaSession!!.player.release()
+        mediaSession!!.player.stop()
         mediaSession!!.release()
+        mediaSession!!.player.release()
         mediaSession = null
         lyrics = null
         unregisterReceiver(headSetReceiver)
@@ -391,16 +429,14 @@ class GramophonePlaybackService : MediaLibraryService(),
 
     // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (!mediaSession!!.player.playWhenReady) {
+        if (!mediaSession!!.player.playWhenReady || mediaSession!!.player.mediaItemCount == 0) {
+            willDie = true // a14 bug workaround
             stopSelf()
         }
     }
 
-    inner class HeadSetReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action.equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-                mediaSession?.player?.pause()
-            }
-        }
+    override fun onForegroundServiceStartNotAllowedException() {
+        Log.w("Gramophone", "Failed to resume playback :/")
+        stopSelf()
     }
 }
