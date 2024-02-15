@@ -79,9 +79,13 @@ fun Drawable.startAnimation() {
 fun TextView.setTextAnimation(
     text: CharSequence?,
     duration: Long = 300,
-    completion: (() -> Unit)? = null
+    completion: (() -> Unit)? = null,
+    skipAnimation: Boolean = false
 ) {
-    if (this.text != text) {
+    if (skipAnimation) {
+        this.text = text
+        completion?.let { it() }
+    } else if (this.text != text) {
         fadOutAnimation(duration) {
             this.text = text
             fadInAnimation(duration) {
@@ -90,6 +94,8 @@ fun TextView.setTextAnimation(
                 }
             }
         }
+    } else {
+        completion?.let { it() }
     }
 }
 

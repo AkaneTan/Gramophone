@@ -117,11 +117,10 @@ class PlayerBottomSheet private constructor(
         get() = standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_HIDDEN
 
     init {
-        inflate(context, R.layout.bottom_sheet_impl, this)
+        inflate(context, R.layout.bottom_sheet, this)
         id = R.id.player_layout
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
-        fullPlayer.init()
         bottomSheetPreviewTitle = findViewById(R.id.preview_song_name)
         bottomSheetPreviewSubtitle = findViewById(R.id.preview_artist_name)
         bottomSheetPreviewCover = findViewById(R.id.preview_album_cover)
@@ -222,11 +221,10 @@ class PlayerBottomSheet private constructor(
 
     override fun onViewAdded(child: View?) {
         super.onViewAdded(child)
-        post {
+        doOnLayout { // wait for CoordinatorLayout to finish to allow getting behaviour
             standardBottomSheetBehavior = MyBottomSheetBehavior.from(this)
             fullPlayer.minimize = {
                 standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED }
-            standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
             bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
                     if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
@@ -286,14 +284,14 @@ class PlayerBottomSheet private constructor(
              */
             activity.onBackPressedDispatcher.addCallback(activity, bottomSheetBackCallback!!)
             standardBottomSheetBehavior!!.addBottomSheetCallback(bottomSheetCallback)
+            // this is required after onRestoreSavedInstanceState() in BottomSheetBehaviour
+            bottomSheetCallback.onStateChanged(this, standardBottomSheetBehavior!!.state)
             lifecycleOwner.lifecycle.addObserver(this)
-            doOnLayout {
-                previewPlayer.measure(
-                    MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-                    MeasureSpec.UNSPECIFIED
-                )
-                standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
-            }
+            previewPlayer.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.UNSPECIFIED
+            )
+            standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
         }
     }
 

@@ -46,7 +46,10 @@ class PlaylistAdapter(
     override val defaultCover = R.drawable.ic_default_cover_playlist
 
     override fun virtualTitleOf(item: MediaStoreUtils.Playlist): String {
-        return context.getString(R.string.unknown_playlist)
+        return context.getString(
+            if (item is MediaStoreUtils.RecentlyAdded)
+                R.string.recently_added else R.string.unknown_playlist
+        )
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {

@@ -175,6 +175,7 @@ abstract class BaseAdapter<T>(
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
         if (ownsView) {
+            recyclerView.setHasFixedSize(true)
             if (recyclerView.layoutManager != layoutManager) {
                 applyLayoutManager()
             }

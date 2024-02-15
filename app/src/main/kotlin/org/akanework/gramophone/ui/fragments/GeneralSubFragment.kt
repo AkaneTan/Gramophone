@@ -30,6 +30,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
@@ -114,7 +115,11 @@ class GeneralSubFragment : BaseFragment(true) {
             R.id.playlist -> {
                 // Playlists
                 val item = libraryViewModel.playlistList.value!![position]
-                title = item.title ?: requireContext().getString(R.string.unknown_playlist)
+                title = if (item is MediaStoreUtils.RecentlyAdded) {
+                    requireContext().getString(R.string.recently_added)
+                } else {
+                    item.title ?: requireContext().getString(R.string.unknown_playlist)
+                }
                 itemList = item.songList
                 helper = Sorter.NaturalOrderHelper { itemList.indexOf(it) }
             }

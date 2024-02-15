@@ -40,12 +40,13 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.PriorityQueue
 
-
 /**
  * [MediaStoreUtils] contains all the methods for reading
  * from mediaStore.
  */
 object MediaStoreUtils {
+
+    private const val DEBUG_MISSING_SONG = false
 
     interface Item {
         val id: Long?
@@ -312,7 +313,7 @@ object MediaStoreUtils {
             null,
             MediaStore.Audio.Media.TITLE + " COLLATE UNICODE ASC",
         )
-        val recentlyAddedMap = PriorityQueue<Pair<Long, MediaItem>>(cursor?.count ?: 0,
+        val recentlyAddedMap = PriorityQueue<Pair<Long, MediaItem>>(cursor?.count ?: 2,
             Comparator { a, b ->
                 // reversed int order
                 return@Comparator if (a.first == b.first) 0 else (if (a.first > b.first) -1 else 1)
@@ -499,7 +500,12 @@ object MediaStoreUtils {
         val dateList = dateMap.values.toMutableList()
         val playlistsFinal = playlists.map {
             it.first.also { playlist ->
-                playlist.songList.addAll(it.second.map { value -> idMap!![value]!! })
+                playlist.songList.addAll(it.second.map { value -> idMap!![value]
+                    ?: if (DEBUG_MISSING_SONG) throw NullPointerException(
+                        "didn't find song for id $value (playlist ${playlist.title}) in map" +
+                                " with ${idMap.size} entries")
+                    else dummyMediaItem(value, /* song that does not exist? */"didn't find" +
+                            "song for id $value in map with ${idMap.size} entries") })
             }
         }.toMutableList()
         if (!foundFavourites) {
@@ -567,6 +573,19 @@ object MediaStoreUtils {
             libraryViewModel.shallowFolderStructure.value = pairObject.shallowFolder
             libraryViewModel.allFolderSet.value = pairObject.folders
         }
+    }
+
+    private fun dummyMediaItem(id: Long, title: String): MediaItem {
+        return MediaItem.Builder()
+            .setMediaId(id.toString())
+            .setMediaMetadata(
+                MediaMetadata
+                    .Builder()
+                    .setIsBrowsable(false)
+                    .setIsPlayable(true)
+                    .setTitle(title)
+                    .build()
+            ).build()
     }
 
 }
