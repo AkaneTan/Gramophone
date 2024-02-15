@@ -325,7 +325,8 @@ object MediaStoreUtils {
             null,
             MediaStore.Audio.Media.TITLE + " COLLATE UNICODE ASC",
         )
-        val recentlyAddedMap = PriorityQueue<Pair<Long, MediaItem>>(cursor?.count ?: 2,
+        val recentlyAddedMap = PriorityQueue<Pair<Long, MediaItem>>(
+            (cursor?.count ?: 0).coerceAtLeast(2),
             Comparator { a, b ->
                 // reversed int order
                 return@Comparator if (a.first == b.first) 0 else (if (a.first > b.first) -1 else 1)
