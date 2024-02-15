@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".GramophoneApplication"
+        android:name=".logic.GramophoneApplication"
         android:allowBackup="true"
         android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -33,7 +33,7 @@
         android:theme="@style/Theme.Gramophone"
         tools:targetApi="upside_down_cake">
         <activity
-            android:name=".BugHandlerActivity"
+            android:name=".logic.ui.BugHandlerActivity"
             android:exported="false" />
 
         <service

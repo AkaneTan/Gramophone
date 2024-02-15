@@ -33,7 +33,7 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.ui.LibraryViewModel
 
 
 /**

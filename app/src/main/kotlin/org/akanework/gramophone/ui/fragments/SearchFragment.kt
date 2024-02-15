@@ -40,7 +40,7 @@ import org.akanework.gramophone.logic.closeKeyboard
 import org.akanework.gramophone.logic.showSoftKeyboard
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * SearchFragment:

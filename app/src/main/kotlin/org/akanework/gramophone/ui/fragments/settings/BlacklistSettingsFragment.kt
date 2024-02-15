@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +12,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.adapters.BlacklistFolderAdapter
 import org.akanework.gramophone.ui.fragments.BaseFragment
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.ui.LibraryViewModel
 
 class BlacklistSettingsFragment : BaseFragment() {
 

@@ -27,7 +27,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.ui.LibraryViewModel
 
 class AlbumAdapter(
     private val mainActivity: MainActivity,

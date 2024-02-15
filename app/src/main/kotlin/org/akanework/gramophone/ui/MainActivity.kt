@@ -52,7 +52,6 @@ import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 import kotlin.random.Random
 
 /**

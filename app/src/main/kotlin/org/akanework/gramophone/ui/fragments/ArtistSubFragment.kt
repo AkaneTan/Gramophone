@@ -37,7 +37,7 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.components.GridPaddingDecoration
-import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
+import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * ArtistSubFragment:

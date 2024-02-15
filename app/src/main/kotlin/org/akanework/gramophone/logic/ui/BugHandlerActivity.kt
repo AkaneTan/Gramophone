@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.akanework.gramophone
+package org.akanework.gramophone.logic.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -24,6 +24,8 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import org.akanework.gramophone.BuildConfig
+import org.akanework.gramophone.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

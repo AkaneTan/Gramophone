@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.akanework.gramophone.ui.viewmodels
+package org.akanework.gramophone.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
