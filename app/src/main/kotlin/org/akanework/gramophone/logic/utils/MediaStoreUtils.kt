@@ -169,8 +169,11 @@ object MediaStoreUtils {
     )
 
     private fun handleMediaFolder(path: String, rootNode: FileNode): FileNode {
+        val newPath = if (path.endsWith('/')) path.substring(1, path.length - 1)
+        else path.substring(1)
+        val splitPath = newPath.split('/')
         var node: FileNode = rootNode
-        for (fld in path.substring(1).split('/')) {
+        for (fld in splitPath.subList(0, splitPath.size - 1)) {
             var newNode = node.folderList[fld]
             if (newNode == null) {
                 newNode = FileNode(folderName = fld, hashMapOf(), mutableListOf())
@@ -187,8 +190,9 @@ object MediaStoreUtils {
         shallowFolder: FileNode,
         folderArray: MutableList<String>
     ) {
-        val splitPath = path.split('/')
-        if (splitPath.size < 2) throw IllegalArgumentException("splitPath.size < 2: $path")
+        val newPath = if (path.endsWith('/')) path.substring(0, path.length - 1) else path
+        val splitPath = newPath.split('/')
+        if (splitPath.size < 2) throw IllegalArgumentException("splitPath.size < 2: $newPath")
         val lastFolderName = splitPath[splitPath.size - 2]
         var folder = shallowFolder.folderList[lastFolderName]
         if (folder == null) {
@@ -196,7 +200,7 @@ object MediaStoreUtils {
             shallowFolder.folderList[folder.folderName] = folder
             // hack to cut off /
             folderArray.add(
-                path.substring(0, splitPath[splitPath.size - 1].length + 1)
+                newPath.substring(0, splitPath[splitPath.size - 1].length + 1)
             )
         }
         folder.songList.add(mediaItem)
