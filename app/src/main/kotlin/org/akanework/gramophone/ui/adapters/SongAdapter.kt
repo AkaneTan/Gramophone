@@ -228,7 +228,7 @@ class SongAdapter(
                     true
                 }
 
-                R.id.delete -> {
+                /*R.id.delete -> {
                     val doDelete: (() -> (() -> Pair<IntentSender?, () -> Boolean>)) -> Unit = { r ->
                         val res = r()()
                         if (res.first == null) {
@@ -262,7 +262,7 @@ class SongAdapter(
                         doDelete(res.second)
                     }
                     true
-                }
+                }*/
 
                 /*
 				R.id.share -> {
