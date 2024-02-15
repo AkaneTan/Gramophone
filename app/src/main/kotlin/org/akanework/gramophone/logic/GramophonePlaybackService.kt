@@ -83,7 +83,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         const val SERVICE_TIMER_CHANGED = "changed_timer"
     }
 
-    private var willDie = false
     private var mediaSession: MediaLibrarySession? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
     private lateinit var customCommands: List<CommandButton>
@@ -226,33 +225,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         // overriding last played with null because it is saved before it is restored
         lastPlayedManager.allowSavingState = false
         handler.post {
-            if (willDie) {
-                if (Build.VERSION.SDK_INT != Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    throw NullPointerException("this code path should never be reachable")
-                }
-                // Android 14 bug.
-                // https://github.com/androidx/media/issues/805
-                // In Android 13:
-                // 1. Service starts
-                // 2. UI thread moves on to this call
-                // 3. Some time later, user swipes away app (while music paused)
-                // 4. onTaskRemoved() calls stopSelf()
-                // 5. onDestroy() called, happy ending
-                // In Android 14:
-                // 1. Service starts
-                // 2. UI thread moves on to this call
-                // 3. Some time later, user swipes away app (while music paused)
-                // 4. App process killed, notification abandoned
-                // 5. App process restarted
-                // 6. instantly, onTaskRemoved() calls stopSelf()
-                // 7. This is called (and because we are after onTaskRemoved, willDie is true)
-                // 8. onDestroy() called
-                // To workaround this, we cancel notification here and let service die peacefully
-                val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
-                return@post
-            }
-            lastPlayedManager.allowSavingState = true
             val restoreInstance = lastPlayedManager.restore()
             if (restoreInstance != null) {
                 mediaSession!!.player.setMediaItems(
@@ -264,6 +236,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     player.prepare()
                 }
             }
+            lastPlayedManager.allowSavingState = true
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
         mediaSession!!.player.addListener(this)
@@ -430,7 +403,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
     override fun onTaskRemoved(rootIntent: Intent?) {
         if (!mediaSession!!.player.playWhenReady || mediaSession!!.player.mediaItemCount == 0) {
-            willDie = true // a14 bug workaround
             stopSelf()
         }
     }

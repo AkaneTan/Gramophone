@@ -33,7 +33,7 @@ import java.nio.charset.StandardCharsets
 @androidx.annotation.OptIn(UnstableApi::class)
 class LastPlayedManager(context: Context, private val mediaSession: MediaSession) {
 
-    public var allowSavingState = true
+    var allowSavingState = true
     private val prefs = context.getSharedPreferences("LastPlayedManager", 0)
 
     private fun dumpPlaylist(): MediaItemsWithStartPosition {

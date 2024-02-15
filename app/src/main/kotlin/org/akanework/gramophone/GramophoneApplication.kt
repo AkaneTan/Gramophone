@@ -18,11 +18,15 @@
 package org.akanework.gramophone
 
 import android.app.Application
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
-import org.akanework.gramophone.logic.utils.ColorUtils
 import kotlin.system.exitProcess
 
 /**
@@ -33,8 +37,15 @@ import kotlin.system.exitProcess
  * @author AkaneTan, nift4
  */
 class GramophoneApplication : Application() {
+    @OptIn(UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
+
+        // https://github.com/androidx/media/issues/805
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
+        }
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 

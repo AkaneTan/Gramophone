@@ -18,6 +18,7 @@
 package org.akanework.gramophone.ui
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -26,6 +27,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -38,6 +40,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope
@@ -280,6 +284,17 @@ class MainActivity : AppCompatActivity() {
             .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
             .add(R.id.container, frag)
             .commit()
+    }
+
+    @OptIn(UnstableApi::class)
+    override fun onDestroy() {
+        // https://github.com/androidx/media/issues/805
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+            && (getPlayer()?.playWhenReady != true || getPlayer()?.mediaItemCount == 0)) {
+            val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
+        }
+        super.onDestroy()
     }
 
     /**
