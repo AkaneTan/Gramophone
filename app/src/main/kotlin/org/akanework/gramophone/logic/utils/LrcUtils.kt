@@ -39,21 +39,22 @@ object LrcUtils {
     }
 
     private fun parseLrcString(lrcContent: String): MutableList<MediaStoreUtils.Lyric> {
-        val linesRegex = "\\[(\\d{2}:\\d{2}\\.\\d+)](.*)".toRegex()
+        val timeMarksRegex = "\\[(\\d{2}:\\d{2}\\.\\d+)]".toRegex()
         val list = mutableListOf<MediaStoreUtils.Lyric>()
         //val measureTime = measureTimeMillis {
         lrcContent.lines().forEach { line ->
-            linesRegex.find(line)?.let { matchResult ->
-                val startTime = parseTime(matchResult.groupValues[1])
-                val lyricLine = matchResult.groupValues[2]
-                val insertIndex = list.binarySearch { it.timeStamp.compareTo(startTime) }
-                if (insertIndex < 0) {
-                    list.add(MediaStoreUtils.Lyric(startTime, lyricLine, false))
-                } else {
-                    list.add(insertIndex + 1, MediaStoreUtils.Lyric(startTime, lyricLine, true))
+            timeMarksRegex.findAll(line).let { sequence ->
+                if (sequence.count() == 0) {
+                    return@let
+                }
+
+                val lyricLine = line.substring(sequence.last().range.last + 1)
+                sequence.forEach { match ->
+                    list.add(MediaStoreUtils.Lyric(parseTime(match.groupValues[1]), lyricLine, false))
                 }
             }
         }
+        list.sortBy { it.timeStamp }
         //}
         if (list.isEmpty() && lrcContent.isNotEmpty()) {
             list.add(MediaStoreUtils.Lyric(1, lrcContent, false))
