@@ -3,6 +3,8 @@
 ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/AkaneTan/Gramophone?style=flat-square&logoColor=white&labelColor=black&color=white)
 [![Static Badge](https://img.shields.io/badge/Telegram-Content?style=flat-square&logo=telegram&logoColor=black&color=white)](https://t.me/AkaneDev)
 
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/fdroid/index/apk/org.akanework.gramophone)
+
 A sane music player built with media3 and material design library that is following android's standard strictly.
 
 ## Features
@@ -27,7 +29,9 @@ A sane music player built with media3 and material design library that is follow
 
 
 ## Installation
-You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDistribution). Github release is outdated and will be updated when 1.0.2's final release is out.
+You can download the latest stable version of the app from [GitHub releases](https://github.com/AkaneTan/Gramophone/releases/latest), or from [IzzyOnDroid](https://apt.izzysoft.de/fdroid/index/apk/org.akanework.gramophone).
+
+Beta versions and sneak peeks are available in the [telegram channel](https://t.me/AkaneDistribution) or [chat](https://t.me/AkaneDev).
 
 ## Building
 To build this app, you will need the latest beta version of [android studio](https://developer.android.com/studio) and a fast network.
