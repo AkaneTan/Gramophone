@@ -91,6 +91,15 @@ android {
             "-Xno-receiver-assertions",
         )
     }
+
+    // https://gitlab.com/IzzyOnDroid/repo/-/issues/491
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs.
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles.
+        includeInBundle = false
+    }
+
 }
 
 dependencies {
