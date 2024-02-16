@@ -30,7 +30,24 @@ A sane music player built with media3 and material design library that is follow
 You can download the latest version of the app from the [telegram channel](https://t.me/AkaneDistribution). Github release is outdated and will be updated when 1.0.2's final release is out.
 
 ## Building
-To build this app, you will need the latest beta version of android studio and a fast network. Simply clone it and build it.
+To build this app, you will need the latest beta version of [android studio](https://developer.android.com/studio) and a fast network.
+
+### Set up package type
+Gramophone has a package type that indicates the source of the application package. Package type string is extracted from an external file named `package.properties`.
+
+Simply navigate to the root folder of the repository. Then you should create a file with the name 'package.properties'.
+
+```bash
+$ touch package.properties
+```
+
+In it type:
+
+```bash
+releaseType="SelfBuilt"
+```
+
+After this launch android studio, import your own signature. You should be able to build gramophone now.
 
 ## License
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/AkaneTan/Gramophone/blob/beta/LICENSE) file for details.
