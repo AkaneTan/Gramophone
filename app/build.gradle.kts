@@ -106,7 +106,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.transition:transition-ktx:1.5.0-alpha06")
-    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha09")
+    implementation("androidx.fragment:fragment-ktx:1.7.0-alpha10")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
@@ -117,9 +117,10 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.google.android.material:material:1.12.0-alpha03")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
+    ksp("com.github.bumptech.glide:ksp:4.15.1")
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
     debugImplementation("net.jthink:jaudiotagger:3.0.1")
-    ksp("com.github.bumptech.glide:ksp:4.15.1")
+    testImplementation("junit:junit:4.13.2")
 }
 
 fun readProperties(propertiesFile: File) = Properties().apply {

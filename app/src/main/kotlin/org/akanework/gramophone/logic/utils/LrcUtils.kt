@@ -2,6 +2,7 @@ package org.akanework.gramophone.logic.utils
 
 import android.util.Log
 import androidx.annotation.OptIn
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.Metadata
 import androidx.media3.common.util.ParsableByteArray
 import androidx.media3.common.util.UnstableApi
@@ -14,7 +15,13 @@ import kotlin.math.pow
 object LrcUtils {
     @OptIn(UnstableApi::class)
     fun extractAndParseLyrics(musicFile: File?, metadata: Metadata): MutableList<MediaStoreUtils.Lyric>? {
-        return extractLyrics(musicFile, metadata)?.let { parseLrcString(it) }
+        return extractLyrics(musicFile, metadata)?.let {
+            try {
+                parseLrcString(it)
+            } catch (e: Exception) {
+                Log.e("LrcUtils", Log.getStackTraceString(e))
+                null
+            } }
     }
 
     @OptIn(UnstableApi::class)
@@ -38,9 +45,26 @@ object LrcUtils {
         return lrcFile.readBytes().toString(Charset.defaultCharset())
     }
 
-    private fun parseLrcString(lrcContent: String): MutableList<MediaStoreUtils.Lyric> {
-        val timeMarksRegex = "\\[(\\d{2}:\\d{2}\\.\\d+)]".toRegex()
+    /*
+     * Formats we have to consider in this method are:
+     *  - Simple LRC files (ref Wikipedia) ex: [00:11.22] hello i am lyric
+     *  - "compressed LRC" with >1 tag for repeating line ex: [00:11.22][00:15.33] hello i am lyric
+     *  - Invalid LRC with all-zero tags [00:00.00] hello i am lyric
+     *  - Lyrics that aren't synced and have no tags at all
+     *  - Translations, type 1 (ex: pasting first japanese and then english lrc file into one file)
+     *  - Translations, type 2 (ex: translated line directly under previous non-translated line)
+     *  - The timestamps can variate in the following ways: [00:11] [00:11:22] [00:11.22] [00:11.222] [00:11:222]
+     * In the future, we also want to support:
+     *  - Extended LRC (ref Wikipedia) ex: [00:11.22] <00:11.22> hello <00:12.85> i am <00:13.23> lyric
+     *  - Wakaloke gender extension (ref Wikipedia)
+     *  - [offset:] tag in header (ref Wikipedia)
+     * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
+     */
+    @VisibleForTesting
+    fun parseLrcString(lrcContent: String): MutableList<MediaStoreUtils.Lyric> {
+        val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()
         val list = mutableListOf<MediaStoreUtils.Lyric>()
+        var foundNonNull = false
         //val measureTime = measureTimeMillis {
         lrcContent.lines().forEach { line ->
             timeMarksRegex.findAll(line).let { sequence ->
@@ -50,7 +74,13 @@ object LrcUtils {
 
                 val lyricLine = line.substring(sequence.last().range.last + 1)
                 sequence.forEach { match ->
-                    list.add(MediaStoreUtils.Lyric(parseTime(match.groupValues[1]), lyricLine, false))
+                    val ts = parseTime(match.groupValues.subList(1, match.groupValues.size).joinToString())
+                    val insertIndex = list.binarySearch { it.timeStamp.compareTo(ts) }
+                    if (insertIndex < 0) {
+                        list.add(MediaStoreUtils.Lyric(ts, lyricLine, false))
+                    } else {
+                        list.add(insertIndex + 1, MediaStoreUtils.Lyric(ts, lyricLine, true))
+                    }
                 }
             }
         }
@@ -63,7 +93,7 @@ object LrcUtils {
     }
 
     private fun parseTime(timeString: String): Long {
-        val timeRegex = "(\\d{2}):(\\d{2})\\.(\\d+)".toRegex()
+        val timeRegex = "(\\d{2}):(\\d{2})[.:](\\d+)".toRegex()
         val matchResult = timeRegex.find(timeString)
 
         val minutes = matchResult?.groupValues?.get(1)?.toLongOrNull() ?: 0
