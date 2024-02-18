@@ -47,7 +47,7 @@ android {
             "RELEASE_TYPE",
             "\"$releaseType\""
         )
-        setProperty("archivesBaseName", "Gramophone-$versionName$versionNameSuffix")
+        setProperty("archivesBaseName", "Gramophone-$versionName${versionNameSuffix ?: ""}")
     }
 
     signingConfigs {
