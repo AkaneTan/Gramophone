@@ -87,12 +87,12 @@ object LrcUtils {
                 }
                 val lyricLine = line.substring(sequence.last().range.last + 1)
                 sequence.forEach { match ->
-                    val ts = parseTime(match.groupValues.subList(1, match.groupValues.size).joinToString())
+                    val ts = parseTime(match.groupValues.subList(1, match.groupValues.size).joinToString(""))
                     if (!foundNonNull && ts > 0) {
                         foundNonNull = true
                         lyricsText = null
                     }
-                    lyricsText?.append(lyricLine)
+                    lyricsText?.append(lyricLine + "\n")
                     val insertIndex = list.binarySearch { it.timeStamp.compareTo(ts) }
                     if (insertIndex < 0) {
                         list.add(MediaStoreUtils.Lyric(ts, lyricLine, false))
