@@ -32,8 +32,8 @@ android {
         // me.zhanghai.android.fastscroll requires 21 and its not worth the effort to change that
         minSdk = 21 // Android 5.0
         targetSdk = 34 // Android 14.0
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 6
+        versionName = "1.0.4.1"
         if (releaseType != "Release") {
             versionNameSuffix = myVersionName
         }
