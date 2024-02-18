@@ -10,42 +10,44 @@ plugins {
 }
 
 android {
-
-    fun String.runCommand(
-        workingDir: File = File("."),
-        timeoutAmount: Long = 60,
-        timeoutUnit: TimeUnit = TimeUnit.SECONDS
-    ): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
-        .directory(workingDir)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
-        .start()
-        .apply { waitFor(timeoutAmount, timeoutUnit) }
-        .run {
-            inputStream.bufferedReader().readText().trim()
-        }
+    val releaseType = readProperties(file("../package.properties")).getProperty("releaseType")
+    val myVersionName = "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
+    if (releaseType.contains("\"")) {
+        throw IllegalArgumentException("releaseType must not contain \"")
+    }
 
     namespace = "org.akanework.gramophone"
     compileSdk = 34
-    android.buildFeatures.buildConfig = true
 
     androidResources {
         generateLocaleConfig = true
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "org.akanework.gramophone"
-        minSdk = 21
-        targetSdk = 34
-        versionCode = 4
-        versionName =
-            "1.0.3" + "." + "git rev-parse --short=6 HEAD".runCommand(workingDir = rootDir)
+        // me.zhanghai.android.fastscroll requires 21 and its not worth the effort to change that
+        minSdk = 21 // Android 5.0
+        targetSdk = 34 // Android 14.0
+        versionCode = 5
+        versionName = "1.0.4"
+        if (releaseType != "Release") {
+            versionNameSuffix = myVersionName
+        }
+        buildConfigField(
+            "String",
+            "MY_VERSION_NAME",
+            "\"$versionName$myVersionName\""
+        )
         buildConfigField(
             "String",
             "RELEASE_TYPE",
-            readProperties(file("../package.properties")).getProperty("releaseType")
+            "\"$releaseType\""
         )
-        setProperty("archivesBaseName", "Gramophone-$versionName")
+        setProperty("archivesBaseName", "Gramophone-$versionName$versionNameSuffix")
     }
 
     signingConfigs {
@@ -107,7 +109,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.transition:transition-ktx:1.5.0-alpha06")
     implementation("androidx.fragment:fragment-ktx:1.7.0-alpha10")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0") // <-- for predictive back
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
     implementation("androidx.media3:media3-exoplayer:1.2.1")
@@ -119,10 +121,24 @@ dependencies {
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
-    debugImplementation("net.jthink:jaudiotagger:3.0.1")
+    debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
 }
 
+
+fun String.runCommand(
+    workingDir: File = File("."),
+    timeoutAmount: Long = 60,
+    timeoutUnit: TimeUnit = TimeUnit.SECONDS
+): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
+    .directory(workingDir)
+    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+    .redirectError(ProcessBuilder.Redirect.PIPE)
+    .start()
+    .apply { waitFor(timeoutAmount, timeoutUnit) }
+    .run {
+        inputStream.bufferedReader().readText().trim()
+    }
 fun readProperties(propertiesFile: File) = Properties().apply {
     propertiesFile.inputStream().use { fis ->
         load(fis)

@@ -1237,7 +1237,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 					}
 					val instance = activity.getPlayer()
-					if (instance != null && !instance.isPlaying) {
+					if (instance?.isPlaying == false) {
 						instance.play()
 					}
 					instance?.seekTo(lyric.timeStamp)

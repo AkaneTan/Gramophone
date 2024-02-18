@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.logic
 
-import android.app.NotificationManager
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.getActivity
@@ -27,7 +26,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -58,6 +56,7 @@ import com.google.common.util.concurrent.SettableFuture
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
+import org.akanework.gramophone.logic.utils.LrcUtils.loadAndParseLyricsFile
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 
@@ -363,16 +362,18 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        lyrics = null
-        for (i in tracks.groups) {
-            for (j in 0 until i.length) {
-                if (!i.isTrackSelected(j)) continue
-                val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                lyrics = extractAndParseLyrics(
-                    mediaSession?.player?.currentMediaItem?.getFile(), trackMetadata
-                ) ?: continue
-                // add empty element at the beginning
-                lyrics?.add(0, MediaStoreUtils.Lyric())
+        lyrics = loadAndParseLyricsFile(mediaSession?.player?.currentMediaItem?.getFile())
+        if (lyrics == null) {
+            loop@for (i in tracks.groups) {
+                for (j in 0 until i.length) {
+                    if (!i.isTrackSelected(j)) continue
+                    // note: wav files can have null metadata
+                    val trackMetadata = i.getTrackFormat(j).metadata ?: continue
+                    lyrics = extractAndParseLyrics(trackMetadata) ?: continue
+                    // add empty element at the beginning
+                    lyrics!!.add(0, MediaStoreUtils.Lyric())
+                    break@loop
+                }
             }
         }
         mediaSession!!.broadcastCustomCommand(

@@ -13,24 +13,37 @@ import java.nio.charset.Charset
 import kotlin.math.pow
 
 object LrcUtils {
+
+    private const val TAG = "LrcUtils"
+
     @OptIn(UnstableApi::class)
-    fun extractAndParseLyrics(musicFile: File?, metadata: Metadata): MutableList<MediaStoreUtils.Lyric>? {
-        return extractLyrics(musicFile, metadata)?.let {
+    fun extractAndParseLyrics(metadata: Metadata): MutableList<MediaStoreUtils.Lyric>? {
+        return extractLyrics(metadata)?.let {
             try {
                 parseLrcString(it)
             } catch (e: Exception) {
-                Log.e("LrcUtils", Log.getStackTraceString(e))
+                Log.e(TAG, Log.getStackTraceString(e))
                 null
             } }
     }
 
     @OptIn(UnstableApi::class)
-    private fun extractLyrics(musicFile: File?, metadata: Metadata): String? {
-        val lrcFile = musicFile
-            ?.let { File(musicFile.parentFile, musicFile.nameWithoutExtension + ".lrc") }
+    fun loadAndParseLyricsFile(musicFile: File?): MutableList<MediaStoreUtils.Lyric>? {
+        val lrcFile = musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".lrc") }
         if (lrcFile?.exists() == true) {
-            return extractLrcFile(lrcFile)
+            return loadLrcFile(lrcFile).let {
+                try {
+                    parseLrcString(it)
+                } catch (e: Exception) {
+                    Log.e(TAG, Log.getStackTraceString(e))
+                    null
+                } }
         }
+        return null
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun extractLyrics(metadata: Metadata): String? {
         for (i in 0..<metadata.length()) {
             val meta = metadata.get(i)
             if (meta is VorbisComment && meta.key == "LYRICS") // ogg / flac
@@ -41,7 +54,7 @@ object LrcUtils {
         return null
     }
 
-    private fun extractLrcFile(lrcFile: File): String {
+    private fun loadLrcFile(lrcFile: File): String {
         return lrcFile.readBytes().toString(Charset.defaultCharset())
     }
 
@@ -65,16 +78,21 @@ object LrcUtils {
         val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()
         val list = mutableListOf<MediaStoreUtils.Lyric>()
         var foundNonNull = false
+        var lyricsText: StringBuilder? = StringBuilder()
         //val measureTime = measureTimeMillis {
         lrcContent.lines().forEach { line ->
             timeMarksRegex.findAll(line).let { sequence ->
                 if (sequence.count() == 0) {
                     return@let
                 }
-
                 val lyricLine = line.substring(sequence.last().range.last + 1)
                 sequence.forEach { match ->
                     val ts = parseTime(match.groupValues.subList(1, match.groupValues.size).joinToString())
+                    if (!foundNonNull && ts > 0) {
+                        foundNonNull = true
+                        lyricsText = null
+                    }
+                    lyricsText?.append(lyricLine)
                     val insertIndex = list.binarySearch { it.timeStamp.compareTo(ts) }
                     if (insertIndex < 0) {
                         list.add(MediaStoreUtils.Lyric(ts, lyricLine, false))
@@ -88,6 +106,9 @@ object LrcUtils {
         //}
         if (list.isEmpty() && lrcContent.isNotEmpty()) {
             list.add(MediaStoreUtils.Lyric(1, lrcContent, false))
+        } else if (!foundNonNull) {
+            list.clear()
+            list.add(MediaStoreUtils.Lyric(1, lyricsText!!.toString(), false))
         }
         return list
     }
