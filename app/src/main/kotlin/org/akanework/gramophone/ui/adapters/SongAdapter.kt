@@ -50,9 +50,9 @@ class SongAdapter(
     canSort: Boolean,
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
     ownsView: Boolean,
-    private val isTrackDiscNumAvailable: Boolean = false,
     isSubFragment: Boolean = false,
-    allowDiffUtils: Boolean = false
+    allowDiffUtils: Boolean = false,
+    rawOrderExposed: Boolean = !isSubFragment
 ) : BaseAdapter<MediaItem>
     (
     mainActivity,
@@ -61,13 +61,14 @@ class SongAdapter(
     naturalOrderHelper = if (canSort) helper else null,
     initialSortType = if (canSort)
         (if (helper != null) Sorter.Type.NaturalOrder else
-                (if (!isSubFragment) Sorter.Type.NativeOrder else Sorter.Type.ByTitleAscending))
+                (if (rawOrderExposed) Sorter.Type.NativeOrder else Sorter.Type.ByTitleAscending))
     else Sorter.Type.None,
+    canSort = canSort,
     pluralStr = R.plurals.songs,
     ownsView = ownsView,
     defaultLayoutType = LayoutType.COMPACT_LIST,
     isSubFragment = isSubFragment,
-    rawOrderExposed = !isSubFragment,
+    rawOrderExposed = rawOrderExposed,
     allowDiffUtils = allowDiffUtils
 ) {
 
@@ -77,19 +78,18 @@ class SongAdapter(
         canSort: Boolean,
         helper: Sorter.NaturalOrderHelper<MediaItem>?,
         ownsView: Boolean,
-        isTrackDiscNumAvailable: Boolean = false,
         isSubFragment: Boolean = false,
-        allowDiffUtils: Boolean = false
-    )
-            : this(
+        allowDiffUtils: Boolean = false,
+        rawOrderExposed: Boolean = !isSubFragment
+    ) : this(
         mainActivity,
         null,
         canSort,
         helper,
         ownsView,
-        isTrackDiscNumAvailable,
-        isSubFragment = isSubFragment,
-        allowDiffUtils = allowDiffUtils
+        isSubFragment,
+        allowDiffUtils,
+        rawOrderExposed
     ) {
         updateList(songList, now = true, false)
     }
@@ -107,7 +107,8 @@ class SongAdapter(
     override fun onClick(item: MediaItem) {
         val mediaController = mainActivity.getPlayer()
         mediaController?.apply {
-            setMediaItems(list, list.indexOf(item), C.TIME_UNSET)
+            val songList = getSongList()
+            setMediaItems(songList, songList.indexOf(item), C.TIME_UNSET)
             prepare()
             play()
         }
@@ -131,22 +132,15 @@ class SongAdapter(
                     CoroutineScope(Dispatchers.Default).launch {
                         val positionAlbum =
                             viewModel.albumItemList.value?.indexOfFirst {
-                                val isMatching =
-                                    (it.title == item.mediaMetadata.albumTitle) &&
-                                            (it.songList.contains(item))
-                                isMatching
+                                (it.title == item.mediaMetadata.albumTitle) &&
+                                        (it.songList.contains(item))
                             }
                         if (positionAlbum != null) {
                             withContext(Dispatchers.Main) {
-                                mainActivity.startFragment(
-                                    GeneralSubFragment().apply {
-                                        arguments =
-                                            Bundle().apply {
-                                                putInt("Position", positionAlbum)
-                                                putInt("Item", R.id.album)
-                                            }
-                                    },
-                                )
+                                mainActivity.startFragment(GeneralSubFragment()) {
+                                    putInt("Position", positionAlbum)
+                                    putInt("Item", R.id.album)
+                                }
                             }
                         }
                     }
@@ -164,15 +158,10 @@ class SongAdapter(
                             }
                         if (positionArtist != null) {
                             withContext(Dispatchers.Main) {
-                                mainActivity.startFragment(
-                                    ArtistSubFragment().apply {
-                                        arguments =
-                                            Bundle().apply {
-                                                putInt("Position", positionArtist)
-                                                putInt("Item", R.id.artist)
-                                            }
-                                    },
-                                )
+                                mainActivity.startFragment(ArtistSubFragment()) {
+                                    putInt("Position", positionArtist)
+                                    putInt("Item", R.id.artist)
+                                }
                             }
                         }
                     }
@@ -219,12 +208,9 @@ class SongAdapter(
                     val position = viewModel.mediaItemList.value?.indexOfFirst {
                         it.mediaId == item.mediaId
                     }
-                    val detailDialogFragment = DetailDialogFragment().apply {
-                        arguments = Bundle().apply {
-                            putInt("Position", position!!)
-                        }
+                    mainActivity.startFragment(DetailDialogFragment()) {
+                        putInt("Position", position!!)
                     }
-                    mainActivity.startFragment(detailDialogFragment)
                     true
                 }
 

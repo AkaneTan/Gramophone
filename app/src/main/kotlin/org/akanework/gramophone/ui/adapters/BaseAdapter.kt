@@ -41,10 +41,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Semaphore
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.FileOpUtils
@@ -66,7 +63,8 @@ abstract class BaseAdapter<T>(
     defaultLayoutType: LayoutType,
     private val isSubFragment: Boolean = false,
     private val rawOrderExposed: Boolean = false,
-    private val allowDiffUtils: Boolean = false
+    private val allowDiffUtils: Boolean = false,
+    private val canSort: Boolean = true
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>,
     PopupTextProvider {
 
@@ -80,6 +78,7 @@ abstract class BaseAdapter<T>(
     protected val list = ArrayList<T>(liveData?.value?.size ?: 0)
     private var comparator: Sorter.HintedComparator<T>? = null
     private var layoutManager: RecyclerView.LayoutManager? = null
+    private var listLock = Semaphore(1)
     protected var recyclerView: RecyclerView? = null
         private set
 
@@ -139,7 +138,7 @@ abstract class BaseAdapter<T>(
             }
         }
     val sortTypes: Set<Sorter.Type>
-        get() = sorter.getSupportedTypes()
+        get() = if (canSort) sorter.getSupportedTypes() else setOf(Sorter.Type.None)
 
     init {
         sortType =
@@ -233,17 +232,40 @@ abstract class BaseAdapter<T>(
 
     fun sort(selector: Sorter.Type) {
         sortType = selector
-        CoroutineScope(Dispatchers.Default).launch {
-            val apply = sort(null, true, false)
-            withContext(Dispatchers.Main) {
-                apply()
+        updateList(null, now = false, canDiff = true)
+    }
+
+    private fun sort(srcList: List<T>? = null, canDiff: Boolean, now: Boolean): () -> () -> Unit {
+        // Ensure rawList is only accessed on UI thread
+        // and ensure calls to this method go in order
+        // to prevent funny IndexOutOfBoundsException crashes
+        val newList = ArrayList(srcList ?: rawList)
+        if (!listLock.tryAcquire()) {
+            throw IllegalStateException("listLock already held, add now = true to the caller")
+        }
+        return {
+            val apply = try {
+                sortInner(newList, canDiff, now)
+            } catch (e: Exception) {
+                listLock.release()
+                throw e
+            }
+            {
+                try {
+                    if (srcList != null) {
+                        rawList.clear()
+                        rawList.addAll(srcList)
+                    }
+                    apply()
+                } finally {
+                    listLock.release()
+                }
             }
         }
     }
 
-    private fun sort(srcList: List<T>? = null, canDiff: Boolean, now: Boolean): () -> Unit {
+    private fun sortInner(newList: ArrayList<T>, canDiff: Boolean, now: Boolean): () -> Unit {
         // Sorting in the background using coroutines
-        val newList = ArrayList(srcList ?: rawList)
         if (sortType == Sorter.Type.NativeOrderDescending) {
             newList.reverse()
         } else if (sortType != Sorter.Type.NativeOrder) {
@@ -253,19 +275,12 @@ abstract class BaseAdapter<T>(
                 else comparator?.compare(o1, o2) ?: 0
             }
         }
-        val apply = updateListSorted(newList, canDiff, now)
-        return {
-            apply()
-            if (srcList != null) {
-                rawList.clear()
-                rawList.addAll(srcList)
-            }
-        }
+        return updateListSorted(newList, canDiff, now)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateListSorted(newList: MutableList<T>, canDiff: Boolean, now: Boolean): () -> Unit {
-        val diffResult = if (list.size != 0 && newList.size != 0 && allowDiffUtils && canDiff)
+        val diffResult = if (((list.isNotEmpty() && newList.size != 0) || allowDiffUtils) && canDiff)
             DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
         return {
             list.clear()
@@ -275,11 +290,12 @@ abstract class BaseAdapter<T>(
         }
     }
 
-    fun updateList(newList: List<T>, now: Boolean, canDiff: Boolean) {
-        if (now || bgHandler == null) sort(newList, canDiff, true)()
+    fun updateList(newList: List<T>? = null, now: Boolean, canDiff: Boolean) {
+        val doSort = sort(newList, canDiff, now)
+        if (now || bgHandler == null) doSort()()
         else {
             bgHandler!!.post {
-                val apply = sort(newList, canDiff, false)
+                val apply = doSort()
                 handler.post {
                     apply()
                 }
@@ -300,7 +316,7 @@ abstract class BaseAdapter<T>(
         }
     }
 
-    final override fun onBindViewHolder(
+    override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
@@ -326,13 +342,13 @@ abstract class BaseAdapter<T>(
         return sorter.sortingHelper.getId(item)
     }
 
-    fun titleOf(item: T): String? {
+    private fun titleOf(item: T): String? {
         return if (sorter.sortingHelper.canGetTitle())
             sorter.sortingHelper.getTitle(item) else "null"
     }
 
     protected abstract fun virtualTitleOf(item: T): String
-    fun subTitleOf(item: T): String {
+    private fun subTitleOf(item: T): String {
         return if (sorter.sortingHelper.canGetArtist())
             sorter.sortingHelper.getArtist(item) ?: context.getString(R.string.unknown_artist)
         else if (sorter.sortingHelper.canGetSize()) {
@@ -343,7 +359,7 @@ abstract class BaseAdapter<T>(
         } else "null"
     }
 
-    fun coverOf(item: T): Uri? {
+    private fun coverOf(item: T): Uri? {
         return sorter.sortingHelper.getCover(item)
     }
 
@@ -354,8 +370,8 @@ abstract class BaseAdapter<T>(
     }
 
     private inner class SongDiffCallback(
-        private val oldList: MutableList<T>,
-        private val newList: MutableList<T>,
+        private val oldList: List<T>,
+        private val newList: List<T>
     ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
 
@@ -378,7 +394,10 @@ abstract class BaseAdapter<T>(
 
     final override fun getPopupText(view: View, position: Int): CharSequence {
         // position here refers to pos in ConcatAdapter(!)
-        return (if (position != 0)
+        // 1 == decorAdapter.itemCount
+        // if this crashes with IndexOutOfBoundsException, list access isn't guarded enough?
+        // lib only ever gets popup text for what RecyclerView believes to be the first view
+        return (if (position >= 1)
             sorter.getFastScrollHintFor(list[position - 1], sortType)
         else null) ?: "-"
     }

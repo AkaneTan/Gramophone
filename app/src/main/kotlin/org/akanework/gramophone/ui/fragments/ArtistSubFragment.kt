@@ -82,12 +82,17 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
             item.songList, true, null, false,
             isSubFragment = true
         )
-        recyclerView.layoutManager = GridLayoutManager(context, 2).apply {
+        recyclerView.layoutManager = GridLayoutManager(context,
+            if (requireContext().resources.configuration.orientation
+            == Configuration.ORIENTATION_PORTRAIT) 2 else 4).apply {
             spanSizeLookup = object : SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    return if (position > 0 && position <= albumAdapter.itemCount) 1 else
-                        if (requireContext().resources.configuration.orientation
-                            == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+                    // BaseDecorAdapter always is full width
+                    return if (position == 0 || position == albumAdapter.concatAdapter.itemCount)
+                            (if (requireContext().resources.configuration.orientation
+                                == Configuration.ORIENTATION_PORTRAIT) 2 else 4)
+                    // One album takes 1 span, one song takes 2 spans
+                    else if (position > 0 && position < albumAdapter.concatAdapter.itemCount) 1 else 2
                 }
             }
         }
@@ -116,10 +121,10 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     }
 
     override fun getPopupText(view: View, position: Int): CharSequence {
-        return if (position < albumAdapter.itemCount) {
+        return if (position < albumAdapter.concatAdapter.itemCount) {
             albumAdapter.getPopupText(view, position)
         } else {
-            songAdapter.getPopupText(view, position - albumAdapter.itemCount)
+            songAdapter.getPopupText(view, position - albumAdapter.concatAdapter.itemCount)
         }
     }
 

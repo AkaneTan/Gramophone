@@ -50,15 +50,10 @@ class GenreAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Genre) {
-        mainActivity.startFragment(
-            GeneralSubFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putInt("Position", toRawPos(item))
-                        putInt("Item", R.id.genres)
-                    }
-            },
-        )
+        mainActivity.startFragment(GeneralSubFragment()) {
+            putInt("Position", toRawPos(item))
+            putInt("Item", R.id.genres)
+        }
     }
 
     override fun onMenu(item: MediaStoreUtils.Genre, popupMenu: PopupMenu) {

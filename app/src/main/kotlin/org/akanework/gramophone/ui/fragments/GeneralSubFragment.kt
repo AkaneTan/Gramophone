@@ -69,8 +69,6 @@ class GeneralSubFragment : BaseFragment(true) {
 
         var helper: Sorter.NaturalOrderHelper<MediaItem>? = null
 
-        var isTrackDiscNumAvailable = false
-
         when (itemType) {
             R.id.album -> {
                 val item = libraryViewModel.albumItemList.value!![position]
@@ -82,7 +80,6 @@ class GeneralSubFragment : BaseFragment(true) {
                             it.mediaMetadata.discNumber?.times(1000) ?: 0
                         ) ?: 0
                     }
-                isTrackDiscNumAvailable = true
             }
 
             /*R.id.artist -> {
@@ -137,7 +134,6 @@ class GeneralSubFragment : BaseFragment(true) {
                 true,
                 helper,
                 true,
-                isTrackDiscNumAvailable,
                 true
             )
 

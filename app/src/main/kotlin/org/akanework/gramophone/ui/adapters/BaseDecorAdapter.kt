@@ -26,6 +26,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.C
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -56,9 +58,9 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
     final override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val count = adapter.itemCount
         holder.playAll.visibility =
-            if (adapter is SongAdapter && adapter.sortType != Sorter.Type.None) View.VISIBLE else View.GONE
+            if (adapter is SongAdapter) View.VISIBLE else View.GONE
         holder.shuffleAll.visibility =
-            if (adapter is SongAdapter && adapter.sortType != Sorter.Type.None) View.VISIBLE else View.GONE
+            if (adapter is SongAdapter) View.VISIBLE else View.GONE
         holder.counter.text = context.resources.getQuantityString(pluralStr, count, count)
         holder.sortButton.visibility =
             if (adapter.sortType != Sorter.Type.None || adapter.ownsView) View.VISIBLE else View.GONE
@@ -157,6 +159,8 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                 val songList = adapter.getSongList()
                 mediaController?.apply {
                     setMediaItems(songList, 0, C.TIME_UNSET)
+                    shuffleModeEnabled = false
+                    repeatMode = REPEAT_MODE_OFF
                     prepare()
                     play()
                 }
@@ -166,11 +170,14 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
             if (adapter is SongAdapter) {
                 val mediaController = adapter.getActivity().getPlayer()
                 val songList = adapter.getSongList()
-                mediaController?.setMediaItems(songList, 0, C.TIME_UNSET)
-                mediaController?.shuffleModeEnabled = true
-                mediaController?.seekToDefaultPosition(Random.nextInt(0, adapter.getSongList().size))
-                mediaController?.prepare()
-                mediaController?.play()
+                mediaController?.apply {
+                    setMediaItems(songList, 0, C.TIME_UNSET)
+                    shuffleModeEnabled = true
+                    repeatMode = REPEAT_MODE_ALL
+                    seekToDefaultPosition(Random.nextInt(0, adapter.getSongList().size))
+                    prepare()
+                    play()
+                }
             }
         }
     }

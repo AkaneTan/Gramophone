@@ -18,6 +18,8 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +52,7 @@ import org.akanework.gramophone.ui.LibraryViewModel
  * @author AkaneTan
  */
 class SearchFragment : BaseFragment(false) {
+    private val handler = Handler(Looper.getMainLooper())
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private val filteredList: MutableList<MediaItem> = mutableListOf()
 
@@ -64,7 +67,8 @@ class SearchFragment : BaseFragment(false) {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(),
-                false, null, false, allowDiffUtils = true)
+                true, null, false, isSubFragment = true,
+                allowDiffUtils = true, rawOrderExposed = true)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -83,11 +87,13 @@ class SearchFragment : BaseFragment(false) {
             build()
         }
 
-        editText.addTextChangedListener { text ->
-            // TODO sort results by match quality?
-            if (text.isNullOrBlank()) {
-                songAdapter.updateList(listOf(), now = false, true)
+        editText.addTextChangedListener { rawText ->
+            // TODO sort results by match quality? (using NaturalOrderHelper)
+            if (rawText.isNullOrBlank()) {
+                songAdapter.updateList(listOf(), now = true, true)
             } else {
+                // make sure the user doesn't edit away our text while we are filtering
+                val text = rawText.toString()
                 // Launch a coroutine for searching in the library.
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     // Clear the list from the last search.
@@ -105,8 +111,8 @@ class SearchFragment : BaseFragment(false) {
                             it
                         )
                     }
-                    withContext(Dispatchers.Main) {
-                        songAdapter.updateList(filteredList, now = false, true)
+                    handler.post {
+                        songAdapter.updateList(filteredList, now = true, true)
                     }
                 }
             }

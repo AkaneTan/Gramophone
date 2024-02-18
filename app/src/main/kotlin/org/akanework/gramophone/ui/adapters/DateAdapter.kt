@@ -50,15 +50,10 @@ class DateAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Date) {
-        mainActivity.startFragment(
-            GeneralSubFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putInt("Position", toRawPos(item))
-                        putInt("Item", R.id.dates)
-                    }
-            },
-        )
+        mainActivity.startFragment(GeneralSubFragment()) {
+            putInt("Position", toRawPos(item))
+            putInt("Item", R.id.dates)
+        }
     }
 
     override fun onMenu(item: MediaStoreUtils.Date, popupMenu: PopupMenu) {

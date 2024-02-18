@@ -24,6 +24,7 @@
         android:clipToPadding="false"
         android:elevation="1dp"
         android:focusable="true"
+        android:background="?attr/colorSurfaceContainer"
         app:behavior_hideable="true"
         app:layout_behavior="org.akanework.gramophone.logic.ui.MyBottomSheetBehavior"
         app:paddingBottomSystemWindowInsets="false"

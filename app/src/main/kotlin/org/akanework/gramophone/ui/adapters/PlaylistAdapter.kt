@@ -53,15 +53,10 @@ class PlaylistAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Playlist) {
-        mainActivity.startFragment(
-            GeneralSubFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putInt("Position", toRawPos(item))
-                        putInt("Item", R.id.playlist)
-                    }
-            },
-        )
+        mainActivity.startFragment(GeneralSubFragment()) {
+            putInt("Position", toRawPos(item))
+            putInt("Item", R.id.playlist)
+        }
     }
 
     override fun onMenu(item: MediaStoreUtils.Playlist, popupMenu: PopupMenu) {

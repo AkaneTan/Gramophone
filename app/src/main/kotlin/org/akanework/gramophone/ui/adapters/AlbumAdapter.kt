@@ -63,58 +63,27 @@ class AlbumAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        super.onBindViewHolder(holder, position, payloads)
         if (layoutType == LayoutType.GRID) {
             val item = list[position]
-            holder.title.text = titleOf(item) ?: virtualTitleOf(item)
-            holder.subTitle.text = subTitleOf(item)
-            Glide
-                .with(holder.songCover.context)
-                .load(coverOf(item))
-                .centerCrop()
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .placeholder(defaultCover)
-                .into(holder.songCover)
-            holder.itemView.setOnClickListener { onClick(item) }
             holder.itemView.setOnLongClickListener {
                 val popupMenu = PopupMenu(it.context, it)
                 onMenu(item, popupMenu)
                 popupMenu.show()
                 true
             }
-        } else {
-            val item = list[position]
-            holder.title.text = titleOf(item) ?: virtualTitleOf(item)
-            holder.subTitle.text = subTitleOf(item)
-            Glide
-                .with(holder.songCover.context)
-                .load(coverOf(item))
-                .centerCrop()
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .placeholder(defaultCover)
-                .into(holder.songCover)
-            holder.itemView.setOnClickListener { onClick(item) }
-            holder.moreButton.setOnClickListener {
-                val popupMenu = PopupMenu(it.context, it)
-                onMenu(item, popupMenu)
-                popupMenu.show()
-            }
         }
     }
 
     override fun onClick(item: MediaStoreUtils.Album) {
-        mainActivity.startFragment(
-            GeneralSubFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putInt("Position", item.let {
-                            if (ownsView) toRawPos(it) else {
-                                libraryViewModel.albumItemList.value!!.indexOf(it)
-                            }
-                        })
-                        putInt("Item", R.id.album)
-                    }
-            },
-        )
+        mainActivity.startFragment(GeneralSubFragment()) {
+            putInt("Position", item.let {
+                if (ownsView) toRawPos(it) else {
+                    libraryViewModel.albumItemList.value!!.indexOf(it)
+                }
+            })
+            putInt("Item", R.id.album)
+        }
     }
 
     override fun onMenu(item: MediaStoreUtils.Album, popupMenu: PopupMenu) {

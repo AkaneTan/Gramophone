@@ -21,20 +21,16 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -47,12 +43,10 @@ import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
-import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
@@ -76,8 +70,7 @@ class MainActivity : AppCompatActivity() {
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
     val startingActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     private lateinit var prefs: SharedPreferences
     lateinit var intentSender: ActivityResultLauncher<IntentSenderRequest>
@@ -144,25 +137,6 @@ class MainActivity : AppCompatActivity() {
         // Set content Views.
         setContentView(R.layout.activity_main)
         val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
-        findViewById<CoordinatorLayout>(R.id.coordinatorLayout)
-
-        val colorSurfaceContainer = ColorUtils.getColor(
-            MaterialColors.getColor(
-                fragmentContainerView,
-                com.google.android.material.R.attr.colorSurfaceContainer
-            ),
-            ColorUtils.ColorType.COLOR_BACKGROUND_TINTED,
-            this
-        )
-
-        val previewPlayer = findViewById<ConstraintLayout>(R.id.preview_player)
-        previewPlayer.setBackgroundColor(colorSurfaceContainer)
-        previewPlayer.backgroundTintList =
-            ColorStateList.valueOf(colorSurfaceContainer)
-
-        getPlayerSheet().setBackgroundColor(colorSurfaceContainer)
-        getPlayerSheet().backgroundTintList =
-            ColorStateList.valueOf(colorSurfaceContainer)
 
         // Adjust insets so that bottom sheet can look more normal.
         ViewCompat.setOnApplyWindowInsetsListener(fragmentContainerView) { view, insets ->
@@ -293,12 +267,12 @@ class MainActivity : AppCompatActivity() {
      *
      * @param frag: Target fragment.
      */
-    fun startFragment(frag: Fragment) {
+    fun startFragment(frag: Fragment, args: (Bundle.() -> Unit)? = null) {
         supportFragmentManager
             .beginTransaction()
             .addToBackStack(System.currentTimeMillis().toString())
             .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
-            .add(R.id.container, frag)
+            .add(R.id.container, frag.apply { args?.let { arguments = Bundle().apply(it) } })
             .commit()
     }
 

@@ -60,21 +60,16 @@ class ArtistAdapter(
     }
 
     override fun onClick(item: MediaStoreUtils.Artist) {
-        mainActivity.startFragment(
-            ArtistSubFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putInt("Position", toRawPos(item))
-                        putInt(
-                            "Item",
-                            if (isAlbumArtist)
-                                R.id.album_artist
-                            else
-                                R.id.artist
-                        )
-                    }
-            },
-        )
+        mainActivity.startFragment(ArtistSubFragment()) {
+            putInt("Position", toRawPos(item))
+            putInt(
+                "Item",
+                if (isAlbumArtist)
+                    R.id.album_artist
+                else
+                    R.id.artist
+            )
+        }
     }
 
     override fun onMenu(item: MediaStoreUtils.Artist, popupMenu: PopupMenu) {
