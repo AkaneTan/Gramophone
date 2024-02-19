@@ -63,7 +63,7 @@ android {
 
     buildTypes {
         release {
-            if (releaseType == "Release") {
+            if (releaseType != "Profile") {
                 isMinifyEnabled = true
                 isShrinkResources = true
                 proguardFiles(
