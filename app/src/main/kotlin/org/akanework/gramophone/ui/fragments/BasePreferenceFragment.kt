@@ -23,6 +23,9 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.color.MaterialColors
 
@@ -38,8 +41,6 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Overlap google's colors.
         view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground))
     }
 

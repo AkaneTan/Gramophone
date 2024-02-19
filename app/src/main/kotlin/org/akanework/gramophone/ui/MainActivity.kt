@@ -117,10 +117,8 @@ class MainActivity : AppCompatActivity() {
             window.attributes = params
         }
 
-        // Set edge-to-edge contents. (Android L edge-to-edge is not supported by Gramophone.)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
+        // Set edge-to-edge contents.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentLifecycleCallbacks() {
@@ -136,14 +134,14 @@ class MainActivity : AppCompatActivity() {
 
         // Set content Views.
         setContentView(R.layout.activity_main)
-        val fragmentContainerView: FragmentContainerView = findViewById(R.id.container)
+        val fragmentContainerView = findViewById<FragmentContainerView>(R.id.container)
 
         // Adjust insets so that bottom sheet can look more normal.
         ViewCompat.setOnApplyWindowInsetsListener(fragmentContainerView) { view, insets ->
             val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val notchInset = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            fragmentContainerView.setPadding(
-                navBarInset.left + notchInset.left, 0,
+            view.setPadding(
+                navBarInset.left + notchInset.left, navBarInset.top,
                 navBarInset.right + notchInset.right, notchInset.bottom
             )
             view.onApplyWindowInsets(insets.toWindowInsets())

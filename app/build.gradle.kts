@@ -63,12 +63,17 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
+            if (releaseType == "Release") {
+                isMinifyEnabled = true
+                isShrinkResources = true
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro",
+                )
+            } else {
+                isMinifyEnabled = false
+                isProfileable = true
+            }
             if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
@@ -105,7 +110,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.0-alpha05")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.transition:transition-ktx:1.5.0-alpha06")
     implementation("androidx.fragment:fragment-ktx:1.7.0-alpha10")
@@ -116,11 +121,11 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-midi:1.2.1")
     implementation("androidx.media3:media3-session:1.2.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.google.android.material:material:1.12.0-alpha03")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
-    ksp("com.github.bumptech.glide:ksp:4.15.1")
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+    ksp("com.github.bumptech.glide:ksp:4.16.0")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
     debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
 }
