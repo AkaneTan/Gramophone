@@ -26,7 +26,6 @@
             android:key="mediastore_filter"
             android:layout="@layout/preference_seekbar"
             android:max="120"
-            android:summary="@string/settings_mediastore_filter_summary"
             android:title="@string/settings_mediastore_filter"
             app:showSeekBarValue="true" />
         <Preference
