@@ -114,7 +114,7 @@ object MediaStoreUtils {
     data class Lyric(
         val timeStamp: Long = 0,
         val content: String = "",
-        val isTranslation: Boolean = false
+        var isTranslation: Boolean = false
     ) : Parcelable
 
     class RecentlyAdded(minAddDate: Long, songList: PriorityQueue<Pair<Long, MediaItem>>) : Playlist(
