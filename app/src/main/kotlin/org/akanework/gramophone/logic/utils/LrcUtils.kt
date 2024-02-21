@@ -80,6 +80,7 @@ object LrcUtils {
         var foundNonNull = false
         var lyricsText: StringBuilder? = StringBuilder()
         //val measureTime = measureTimeMillis {
+        // Add all lines found on LRC (probably will be unordered because of "compression" or translation type)
         lrcContent.lines().forEach { line ->
             timeMarksRegex.findAll(line).let { sequence ->
                 if (sequence.count() == 0) {
@@ -93,16 +94,17 @@ object LrcUtils {
                         lyricsText = null
                     }
                     lyricsText?.append(lyricLine + "\n")
-                    val insertIndex = list.binarySearch { it.timeStamp.compareTo(ts) }
-                    if (insertIndex < 0) {
-                        list.add(MediaStoreUtils.Lyric(ts, lyricLine, false))
-                    } else {
-                        list.add(insertIndex + 1, MediaStoreUtils.Lyric(ts, lyricLine, true))
-                    }
+                    list.add(MediaStoreUtils.Lyric(ts, lyricLine))
                 }
             }
         }
+        // Sort and mark as translations all found duplicated timestamps (usually one)
         list.sortBy { it.timeStamp }
+        var previousTs = -1L
+        list.forEach {
+            it.isTranslation = (it.timeStamp == previousTs)
+            previousTs = it.timeStamp
+        }
         //}
         if (list.isEmpty() && lrcContent.isNotEmpty()) {
             list.add(MediaStoreUtils.Lyric(1, lrcContent, false))
