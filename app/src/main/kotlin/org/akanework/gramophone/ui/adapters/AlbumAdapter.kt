@@ -17,6 +17,7 @@
 
 package org.akanework.gramophone.ui.adapters
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
@@ -122,6 +123,10 @@ class AlbumAdapter(
     ) {
         override fun getArtist(item: MediaStoreUtils.Album): String? {
             return item.artist
+        }
+
+        override fun getCover(item: MediaStoreUtils.Album): Uri? {
+            return item.cover ?: super.getCover(item)
         }
     }
 }

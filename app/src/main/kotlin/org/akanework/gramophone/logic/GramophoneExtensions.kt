@@ -54,6 +54,17 @@ fun MediaItem.getFile(): File? {
     return getUri()?.path?.let { File(it) }
 }
 
+// uses reified for performant inlining only
+inline fun <reified K, reified V> HashMap<K, V>.putIfAbsentSupport(key: K, value: V) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        putIfAbsent(key, value)
+    } else {
+        // meh...
+        if (!containsKey(key))
+            this[key] = value
+    }
+}
+
 fun Activity.closeKeyboard() {
     if (currentFocus != null) {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -130,13 +141,13 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
         }
 }
 
-val Int.dp: Int get() = (this.toFloat().dp).toInt()
+inline val Int.dp: Int get() = (this.toFloat().dp).toInt()
 
-val Int.px: Int get() = (this.toFloat().px).toInt()
+inline val Int.px: Int get() = (this.toFloat().px).toInt()
 
-val Float.dp: Float get() = this / getSystem().displayMetrics.density
+inline val Float.dp: Float get() = this / getSystem().displayMetrics.density
 
-val Float.px: Float get() = this * getSystem().displayMetrics.density
+inline val Float.px: Float get() = this * getSystem().displayMetrics.density
 
 fun MediaController.getTimer(): Int =
     sendCustomCommand(

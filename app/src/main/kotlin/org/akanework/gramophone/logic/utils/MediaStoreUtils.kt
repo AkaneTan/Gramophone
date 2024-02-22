@@ -41,6 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.putIfAbsentSupport
 import org.akanework.gramophone.ui.LibraryViewModel
 import java.io.File
 import java.time.Instant
@@ -70,7 +71,8 @@ object MediaStoreUtils {
         override val title: String?,
         val artist: String?,
         val albumYear: Int?,
-        override val songList: MutableList<MediaItem>,
+        var cover: Uri?,
+        override val songList: MutableList<MediaItem>
     ) : Item
 
     /**
@@ -149,7 +151,7 @@ object MediaStoreUtils {
      * [LibraryStoreClass] collects above metadata classes
      * together for more convenient reading/writing.
      */
-    data class LibraryStoreClass(
+    class LibraryStoreClass(
         val songList: MutableList<MediaItem>,
         val albumList: MutableList<Album>,
         val albumArtistList: MutableList<Artist>,
@@ -162,11 +164,22 @@ object MediaStoreUtils {
         val folders: Set<String>
     )
 
-    data class FileNode(
-        val folderName: String,
-        val folderList: HashMap<String, FileNode>,
-        val songList: MutableList<MediaItem>,
-    )
+    class FileNode(
+        val folderName: String
+    ) {
+        val folderList = hashMapOf<String, FileNode>()
+        val songList = mutableListOf<MediaItem>()
+        var albumId: Long? = null
+            private set
+        fun addSong(item: MediaItem, id: Long) {
+            if (albumId != null && id != albumId) {
+                albumId = null
+            } else if (albumId == null && songList.isEmpty()) {
+                albumId = id
+            }
+            songList.add(item)
+        }
+    }
 
     private fun handleMediaFolder(path: String, rootNode: FileNode): FileNode {
         val newPath = if (path.endsWith('/')) path.substring(1, path.length - 1)
@@ -176,7 +189,7 @@ object MediaStoreUtils {
         for (fld in splitPath.subList(0, splitPath.size - 1)) {
             var newNode = node.folderList[fld]
             if (newNode == null) {
-                newNode = FileNode(folderName = fld, hashMapOf(), mutableListOf())
+                newNode = FileNode(fld)
                 node.folderList[newNode.folderName] = newNode
             }
             node = newNode
@@ -186,6 +199,7 @@ object MediaStoreUtils {
 
     private fun handleShallowMediaItem(
         mediaItem: MediaItem,
+        albumId: Long,
         path: String,
         shallowFolder: FileNode,
         folderArray: MutableList<String>
@@ -196,22 +210,15 @@ object MediaStoreUtils {
         val lastFolderName = splitPath[splitPath.size - 2]
         var folder = shallowFolder.folderList[lastFolderName]
         if (folder == null) {
-            folder = FileNode(folderName = lastFolderName, hashMapOf(), mutableListOf())
+            folder = FileNode(lastFolderName)
             shallowFolder.folderList[folder.folderName] = folder
             // hack to cut off /
             folderArray.add(
                 newPath.substring(0, splitPath[splitPath.size - 1].length + 1)
             )
         }
-        folder.songList.add(mediaItem)
+        folder.addSong(mediaItem, albumId)
     }
-
-    private val formatCollection = mutableListOf(
-        "audio/x-wav",
-        "audio/ogg",
-        "audio/aac",
-        "audio/midi"
-    )
 
     /**
      * [getAllSongs] gets all of your songs from your local disk.
@@ -220,11 +227,13 @@ object MediaStoreUtils {
      * @return
      */
     private fun getAllSongs(context: Context): LibraryStoreClass {
-        val folderArray: MutableList<String> = mutableListOf()
-        var selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
-        for (i in formatCollection) {
-            selection = "$selection or ${MediaStore.Audio.Media.MIME_TYPE} = '$i'"
-        }
+        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0" +
+                listOf(
+                    "audio/x-wav",
+                    "audio/ogg",
+                    "audio/aac",
+                    "audio/midi"
+                ).joinToString("") { " or ${MediaStore.Audio.Media.MIME_TYPE} = '$it'" }
         val projection =
             arrayListOf(
                 MediaStore.Audio.Media._ID,
@@ -259,12 +268,19 @@ object MediaStoreUtils {
             "mediastore_filter",
             context.resources.getInteger(R.integer.filter_default_sec)
         )
+        val haveImgPerm = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+            prefs.getBoolean("album_covers", false)
+            else context.checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) ==
+                PackageManager.PERMISSION_GRANTED
+        val coverUri = Uri.parse("content://media/external/audio/albumart")
         val folderFilter = prefs.getStringSet("folderFilter", setOf()) ?: setOf()
-        val folders = hashSetOf<String>()
-        val root = FileNode(folderName = "storage", hashMapOf(), mutableListOf())
-        val shallowRoot = FileNode(folderName = "shallow", hashMapOf(), mutableListOf())
 
         // Initialize list and maps.
+        val coverCache = if (haveImgPerm) hashMapOf<Long, Pair<File, FileNode>>() else null
+        val folders = hashSetOf<String>()
+        val folderArray = mutableListOf<String>()
+        val root = FileNode("storage")
+        val shallowRoot = FileNode("shallow")
         val songs = mutableListOf<MediaItem>()
         val albumMap = hashMapOf<Long?, Album>()
         val artistMap = hashMapOf<Long?, Artist>()
@@ -304,13 +320,12 @@ object MediaStoreUtils {
                     ), null, null, @Suppress("DEPRECATION")
                     MediaStore.Audio.Playlists.Members.PLAY_ORDER + " ASC"
                 )?.use { cursor ->
+                    val column = cursor.getColumnIndexOrThrow(
+                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID
+                    )
                     while (cursor.moveToNext()) {
                         foundPlaylistContent = true
-                        content.add(cursor.getLong(
-                            cursor.getColumnIndexOrThrow(
-                                @Suppress("DEPRECATION") MediaStore.Audio.Playlists.Members.AUDIO_ID
-                            )
-                        ))
+                        content.add(cursor.getLong(column))
                     }
                 }
                 val playlist = Playlist(playlistId, playlistName, mutableListOf())
@@ -326,9 +341,10 @@ object MediaStoreUtils {
             MediaStore.Audio.Media.TITLE + " COLLATE UNICODE ASC",
         )
         val recentlyAddedMap = PriorityQueue<Pair<Long, MediaItem>>(
-            (cursor?.count ?: 0).coerceAtLeast(2),
+            // PriorityQueue throws if initialCapacity < 1
+            (cursor?.count ?: 1).coerceAtLeast(1),
             Comparator { a, b ->
-                // reversed int order
+                // reversed int order to sort from most recent to least recent
                 return@Comparator if (a.first == b.first) 0 else (if (a.first > b.first) -1 else 1)
             })
         cursor?.use {
@@ -366,25 +382,21 @@ object MediaStoreUtils {
             val addDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
             val modifiedDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
 
-            // Base URI for artwork
-            val artworkUri = Uri.parse("content://media/external/audio/albumart")
-
             while (it.moveToNext()) {
                 val duration = it.getLong(durationColumn)
-                // If duration does not path our filter value, instantly proceed with next song
+                // If duration does not match our filter value, instantly proceed with next song
                 if (duration < limitValue * 1000) continue
                 // If folder is blacklisted, don't even bother loading other information
                 val path = it.getString(pathColumn)
-                val fldPath = path.substringBeforeLast('/')
+                val pathFile = File(path)
+                val fldPath = pathFile.parentFile!!.absolutePath
                 if (folderFilter.contains(fldPath)) continue
                 val id = it.getLong(idColumn)
                 val title = it.getString(titleColumn)
                 val artist = it.getString(artistColumn)
                     .let { v -> if (v == "<unknown>") null else v }
                 val album = it.getStringOrNull(albumColumn)
-                val albumArtist =
-                    it.getString(albumArtistColumn)
-                        ?: null
+                val albumArtist = it.getString(albumArtistColumn) ?: null
                 val year = it.getInt(yearColumn).let { v -> if (v == 0) null else v }
                 val albumId = it.getLong(albumIdColumn)
                 val artistId = it.getLong(artistIdColumn)
@@ -417,13 +429,12 @@ object MediaStoreUtils {
                 } else null
 
                 // Since we're using glide, we can get album cover with a uri.
-                val imgUri =
-                    ContentUris.withAppendedId(
-                        artworkUri,
-                        albumId,
-                    )
+                val imgUri = ContentUris.appendId(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.buildUpon(), id)
+                    .appendPath("albumart").build()
+
                 // Process track numbers that have disc number added on.
-                // e.g. 1001 - Disc 01, Track 01.
+                // e.g. 1001 - Disc 01, Track 01
                 if (trackNumber >= 1000) {
                     discNumber = trackNumber / 1000
                     trackNumber %= 1000
@@ -432,7 +443,7 @@ object MediaStoreUtils {
                 // Build our mediaItem.
                 val song = MediaItem
                     .Builder()
-                    .setUri(Uri.fromFile(File(path)))
+                    .setUri(Uri.fromFile(pathFile))
                     .setMediaId(id.toString())
                     .setMimeType(mimeType)
                     .setMediaMetadata(
@@ -479,21 +490,19 @@ object MediaStoreUtils {
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())
                 }.songList.add(song)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    artistCacheMap.putIfAbsent(artist, artistId)
-                } else {
-                    // meh...
-                    if (!artistCacheMap.containsKey(artist))
-                        artistCacheMap[artist] = artistId
-                }
+                artistCacheMap.putIfAbsentSupport(artist, artistId)
                 albumMap.getOrPut(albumId) {
-                    Album(albumId, album, albumArtist ?: artist, year, mutableListOf())
+                    // in haveImgPerm case, cover uri is created later using coverCache
+                    val cover = if (haveImgPerm) null else ContentUris.withAppendedId(coverUri, albumId)
+                    Album(albumId, album, albumArtist ?: artist, year, cover, mutableListOf())
                 }.songList.add(song)
                 albumArtistMap.getOrPut(albumArtist) { mutableListOf() }.add(song)
                 genreMap.getOrPut(genreId) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
-                dateMap.getOrPut(year) {Date(year?.toLong() ?: 0, year?.toString(), mutableListOf()) }.songList.add(song)
-                handleMediaFolder(path.toString(), root).songList.add(song)
-                handleShallowMediaItem(song, path.toString(), shallowRoot, folderArray)
+                dateMap.getOrPut(year) { Date(year?.toLong() ?: 0, year?.toString(), mutableListOf()) }.songList.add(song)
+                val fn = handleMediaFolder(path, root)
+                fn.addSong(song, albumId)
+                coverCache?.putIfAbsentSupport(albumId, Pair(pathFile.parentFile!!, fn))
+                handleShallowMediaItem(song, albumId, path, shallowRoot, folderArray)
                 folders.add(fldPath)
             }
         }
@@ -502,6 +511,28 @@ object MediaStoreUtils {
         val albumList = albumMap.values.toMutableList()
         albumList.forEach {
             artistMap[artistCacheMap[it.artist]]?.albumList?.add(it)
+            // coverCache == null if !haveImgPerm
+            coverCache?.get(it.id)?.let { p ->
+                // if this is false, folder contains >1 albums
+                if (p.second.albumId == it.id) {
+                    val files = p.first.listFiles() ?: return@let
+                    var bestScore = 0
+                    var bestFile: File? = null
+                    for (file in files) {
+                        if (!(file.name.endsWith(".jpg") || file.name.endsWith(".png")))
+                            continue
+                        var score = 1
+                        if (file.nameWithoutExtension == "albumart") score = 4
+                        else if (file.nameWithoutExtension == "cover") score = 3
+                        else if (file.nameWithoutExtension.contains("cover")) score = 2
+                        if (bestScore < score) {
+                            bestScore = score
+                            bestFile = file
+                        }
+                    }
+                    it.cover = Uri.fromFile(bestFile)
+                }
+            }
         }
         val artistList = artistMap.values.toMutableList()
         val albumArtistList = albumArtistMap.entries.map { (cat, songs) ->

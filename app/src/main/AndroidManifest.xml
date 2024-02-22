@@ -2,21 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Read music files (Android 13 and later) (includes .lrc and thumbnails) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"
+        android:minSdkVersion="33" />
+    <!-- Read cover files, this is never requested by UI but exists for users who want it -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
+        android:minSdkVersion="33"
+        tools:ignore="SelectedPhotoAccess" />
+    <!-- Read music files, .lrc files and cover files (Android 12 and earlier) -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+    <!-- Required for editing playlists via MediaStore and deleting songs (Android 10 and earlier) -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29"
-        tools:ignore="ScopedStorage" /> <!-- only for playlists via MediaStore -->
+        tools:ignore="ScopedStorage" />
+    <!-- Run music playback service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        android:minSdkVersion="34" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Remove ExoPlayer permission as we don't network playback for now -->
     <uses-permission
         android:name="android.permission.ACCESS_NETWORK_STATE"
-        tools:node="remove" /> <!-- we don't network playback -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+        tools:node="remove" />
 
     <application
         android:name=".logic.GramophoneApplication"

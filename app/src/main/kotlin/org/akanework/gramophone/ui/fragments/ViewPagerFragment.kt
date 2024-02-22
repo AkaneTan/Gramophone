@@ -140,6 +140,8 @@ class ViewPagerFragment : BaseFragment(true) {
                             // Set an anchor for snack bar.
                             if (playerLayout.visible && playerLayout.actuallyVisible)
                                 snackBar.anchorView = playerLayout
+                            else
+                                snackBar.anchorView = viewPager2
                             snackBar.show()
                         }
                     }

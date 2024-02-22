@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.util.Properties
 
 plugins {
@@ -130,20 +131,13 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
-
 fun String.runCommand(
-    workingDir: File = File("."),
-    timeoutAmount: Long = 60,
-    timeoutUnit: TimeUnit = TimeUnit.SECONDS
-): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
-    .directory(workingDir)
-    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-    .redirectError(ProcessBuilder.Redirect.PIPE)
-    .start()
-    .apply { waitFor(timeoutAmount, timeoutUnit) }
-    .run {
-        inputStream.bufferedReader().readText().trim()
-    }
+    workingDir: File = File(".")
+): String = providers.exec {
+    setWorkingDir(workingDir)
+    commandLine(split(' '))
+}.standardOutput.asText.get().removeSuffixIfPresent("\n")
+
 fun readProperties(propertiesFile: File) = Properties().apply {
     propertiesFile.inputStream().use { fis ->
         load(fis)

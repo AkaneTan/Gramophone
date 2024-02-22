@@ -32,8 +32,8 @@
             android:icon="@drawable/ic_filter_none"
             android:key="blacklist"
             android:layout="@layout/basic_preference_iconless"
-            android:summary="@string/settings_blacklist_folder_summary"
-            android:title="@string/settings_blacklist_folder" />
+            android:title="@string/settings_blacklist_folder"
+            android:summary="@string/settings_blacklist_folder_summary" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_category_misc"
@@ -45,5 +45,11 @@
             android:layout="@layout/icon_switch_preference"
             android:title="@string/settings_play_on_launch"
             android:summary="@string/settings_play_on_launch_summary" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="album_covers"
+            android:layout="@layout/icon_switch_preference"
+            android:title="@string/album_covers_compat"
+            android:summary="@string/album_covers_compat_desc" />
     </PreferenceCategory>
 </PreferenceScreen>
