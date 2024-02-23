@@ -5,7 +5,7 @@
         android:defaultValue="false"
         android:icon="@drawable/ic_format_bold"
         android:key="lyric_bold"
-        android:layout="@layout/icon_switch_preference"
+        android:layout="@layout/switch_preference"
         android:summary="@string/settings_lyrics_bold_summary"
         android:title="@string/settings_lyrics_bold" />
 
@@ -13,7 +13,7 @@
         android:defaultValue="false"
         android:icon="@drawable/ic_align_center"
         android:key="lyric_center"
-        android:layout="@layout/icon_switch_preference"
+        android:layout="@layout/switch_preference"
         android:summary="@string/settings_lyrics_center_summary"
         android:title="@string/settings_lyrics_center" />
 

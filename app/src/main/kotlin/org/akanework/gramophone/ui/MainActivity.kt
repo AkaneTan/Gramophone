@@ -134,19 +134,6 @@ class MainActivity : AppCompatActivity() {
 
         // Set content Views.
         setContentView(R.layout.activity_main)
-        val fragmentContainerView = findViewById<FragmentContainerView>(R.id.container)
-
-        // Adjust insets so that bottom sheet can look more normal.
-        ViewCompat.setOnApplyWindowInsetsListener(fragmentContainerView) { view, insets ->
-            val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val notchInset = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            view.setPadding(
-                navBarInset.left + notchInset.left, navBarInset.top,
-                navBarInset.right + notchInset.right, notchInset.bottom
-            )
-            view.onApplyWindowInsets(insets.toWindowInsets())
-            return@setOnApplyWindowInsetsListener insets
-        }
 
         // Check all permissions.
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU

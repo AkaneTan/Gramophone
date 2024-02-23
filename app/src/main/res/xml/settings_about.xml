@@ -15,49 +15,63 @@
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
-        android:title="@string/settings_category_basic_info"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_basic_info">
+
         <Preference
             android:key="app_name"
             android:layout="@layout/basic_preference_iconless"
             android:summary="@string/app_name"
             android:title="@string/settings_app_name" />
+
         <Preference
             android:key="app_version"
             android:layout="@layout/basic_preference_iconless"
             android:summary="@string/unknown_version"
             android:title="@string/settings_version" />
+
         <Preference
             android:key="package_type"
             android:layout="@layout/basic_preference_iconless"
             android:summary="@string/unknown_version"
             android:title="@string/settings_package_type" />
+
         <Preference
             android:layout="@layout/basic_preference_iconless"
             android:summary="@string/settings_contributors_detail"
             android:title="@string/settings_contributors" />
+
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="@string/settings_category_links"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_links">
+
         <Preference
             android:layout="@layout/basic_preference_iconless"
             android:summary="https://github.com/AkaneTan/Gramophone"
             android:title="@string/settings_repository">
+
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/AkaneTan/Gramophone" />
+
         </Preference>
+
         <Preference
             android:layout="@layout/basic_preference_iconless"
             android:summary="@string/check_for_updates"
             android:title="Telegram">
+
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://t.me/AkaneDistribution" />
+
         </Preference>
+
     </PreferenceCategory>
+
 </PreferenceScreen>

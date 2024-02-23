@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:fitsSystemWindows="false"
     tools:context=".ui.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
@@ -19,12 +18,12 @@
         style="@style/BottomPlayerSheetStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/colorSurfaceContainer"
         android:clickable="true"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:elevation="1dp"
         android:focusable="true"
-        android:background="?attr/colorSurfaceContainer"
         app:behavior_hideable="true"
         app:layout_behavior="org.akanework.gramophone.logic.ui.MyBottomSheetBehavior"
         app:paddingBottomSystemWindowInsets="false"

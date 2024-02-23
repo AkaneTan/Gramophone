@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~     Copyright (C) 2024 Akane Foundation
   ~
   ~     Gramophone is free software: you can redistribute it and/or modify
@@ -16,13 +15,12 @@
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?materialCardViewFilledStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="?materialCardViewFilledStyle"
     app:cardBackgroundColor="@android:color/transparent">
 
     <ImageView
@@ -33,34 +31,36 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:importantForAccessibility="no"
         app:tint="?attr/colorOnSurface"
         tools:src="@drawable/settings_art" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_marginStart="48dp"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="8dp">
+
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:layout_weight="1"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="19sp"
-                tools:text="Title"/>
+                tools:text="Title" />
+
             <TextView
                 android:id="@+id/seekbar_value"
                 android:layout_width="wrap_content"
@@ -76,14 +76,15 @@
                 android:textSize="16sp"
                 android:visibility="visible"
                 tools:text="50" />
+
         </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="8dp"
             android:progress="50"
             android:thumbTint="?colorAccent" />

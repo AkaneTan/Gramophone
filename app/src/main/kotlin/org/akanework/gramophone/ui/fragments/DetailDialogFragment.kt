@@ -6,11 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getFile
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
@@ -26,11 +31,26 @@ class DetailDialogFragment : BaseFragment(false) {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.dialog_info_song, container, false)
-        ViewCompat.setOnApplyWindowInsetsListener(rootView.findViewById(R.id.scrollView)) { v, insets ->
-            val padding = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(padding.left, 0, padding.right, padding.bottom)
+        val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appBarLayout)
+        val nestedScrollView = rootView.findViewById<NestedScrollView>(R.id.scrollView)
+
+        // https://github.com/material-components/material-components-android/issues/1310
+        ViewCompat.setOnApplyWindowInsetsListener(collapsingToolbarLayout, null)
+
+        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, inset.top, inset.right, 0)
             return@setOnApplyWindowInsetsListener insets
         }
+        ViewCompat.setOnApplyWindowInsetsListener(nestedScrollView) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, 0, inset.right, inset.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
+
         val mediaMetadata = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")].mediaMetadata
         val albumCoverImageView = rootView.findViewById<ImageView>(R.id.album_cover)
         val titleTextView = rootView.findViewById<TextView>(R.id.title)

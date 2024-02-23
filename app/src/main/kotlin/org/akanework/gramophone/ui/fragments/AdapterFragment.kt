@@ -58,7 +58,7 @@ class AdapterFragment : BaseFragment(null) {
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
-        recyclerView = rootView.findViewById(R.id.recyclerview)
+        recyclerView = rootView.findViewById(R.id.recyclerView)
         adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
         recyclerView.adapter = adapter.concatAdapter
 

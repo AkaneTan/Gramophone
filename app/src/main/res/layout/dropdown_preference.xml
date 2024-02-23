@@ -25,50 +25,39 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingStart="24dp"
         android:paddingTop="20dp"
         android:paddingEnd="24dp"
         android:paddingBottom="20dp">
 
-        <ImageView
-            android:id="@android:id/icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:importantForAccessibility="no"
-            app:tint="?attr/colorOnSurface"
-            tools:src="@drawable/settings_art" />
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@android:id/title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="24dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="19sp"
+            tools:text="Title" />
 
-            <TextView
-                android:id="@android:id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="19sp"
-                tools:text="Title" />
-
-            <TextView
-                android:id="@android:id/summary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="15sp"
-                tools:text="Summary" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@android:id/summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="15sp"
+            tools:text="Summary" />
 
     </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="76dp"
+        android:visibility="invisible" />
 
 </com.google.android.material.card.MaterialCardView>

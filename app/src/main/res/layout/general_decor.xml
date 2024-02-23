@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
         android:layout_marginStart="24dp"
+        android:fontFamily="sans-serif"
         android:textColor="?attr/colorOnSurface"
         android:textFontWeight="600"
-        android:fontFamily="sans-serif"
         android:textSize="15sp"
         tools:targetApi="p"
         tools:text="0 Song" />
@@ -22,8 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="end|center_vertical"
-        android:gravity="center_vertical"
-        android:layout_marginEnd="9dp">
+        android:layout_marginEnd="9dp"
+        android:gravity="center_vertical">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/play_all"

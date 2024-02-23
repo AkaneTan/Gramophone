@@ -314,7 +314,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 			val playlistBottomSheet = BottomSheetDialog(context)
 			playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
-			val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerview)!!
+			val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerView)!!
 			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title

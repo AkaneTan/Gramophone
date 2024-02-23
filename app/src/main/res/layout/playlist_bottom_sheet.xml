@@ -45,11 +45,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:singleLine="true"
                 android:text="@string/now_playing"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="500"
-                android:fontFamily="sans-serif"
                 android:textSize="17sp"
                 tools:text="Now playing" />
 
@@ -57,10 +57,10 @@
                 android:id="@+id/now_playing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="500"
-                android:fontFamily="sans-serif"
                 android:textSize="15sp"
                 tools:targetApi="p"
                 tools:text="Artifact" />
@@ -72,13 +72,13 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginStart="22dp"
-        android:layout_marginEnd="22dp" />
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="16dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none" />

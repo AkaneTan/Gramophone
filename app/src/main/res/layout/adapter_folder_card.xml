@@ -22,16 +22,16 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
-            app:cardCornerRadius="@dimen/list_round_corner_size"
-            app:cardBackgroundColor="@android:color/transparent">
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="@dimen/list_round_corner_size">
 
             <ImageView
                 android:id="@+id/cover"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:padding="10dp"
                 android:layout_gravity="center_vertical"
                 android:importantForAccessibility="no"
+                android:padding="10dp"
                 android:src="@drawable/ic_folder" />
 
         </com.google.android.material.card.MaterialCardView>
@@ -48,10 +48,10 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
-                android:fontFamily="sans-serif"
                 android:textSize="17sp"
                 tools:targetApi="p"
                 tools:text="Example Title" />
@@ -60,10 +60,10 @@
                 android:id="@+id/subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
-                android:fontFamily="sans-serif"
                 android:textSize="14sp"
                 tools:targetApi="p"
                 tools:text="Example Artist" />

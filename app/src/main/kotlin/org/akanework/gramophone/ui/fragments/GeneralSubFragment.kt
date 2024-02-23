@@ -22,10 +22,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -57,9 +62,26 @@ class GeneralSubFragment : BaseFragment(true) {
         lateinit var itemList: List<MediaItem>
 
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
-        val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
-        val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val materialToolbar = rootView.findViewById<MaterialToolbar>(R.id.materialToolbar)
+        val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appBarLayout)
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
+
+        // https://github.com/material-components/material-components-android/issues/1310
+        ViewCompat.setOnApplyWindowInsetsListener(collapsingToolbarLayout, null)
+
+        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, inset.top, inset.right, 0)
+            return@setOnApplyWindowInsetsListener insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, 0, inset.right, inset.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
 
         val bundle = requireArguments()
         val itemType = bundle.getInt("Item")
@@ -152,7 +174,7 @@ class GeneralSubFragment : BaseFragment(true) {
             build()
         }
 
-        topAppBar.setNavigationOnClickListener {
+        materialToolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 

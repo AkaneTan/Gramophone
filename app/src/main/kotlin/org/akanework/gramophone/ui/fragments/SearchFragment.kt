@@ -25,24 +25,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.closeKeyboard
 import org.akanework.gramophone.logic.showSoftKeyboard
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * SearchFragment:
@@ -64,12 +68,26 @@ class SearchFragment : BaseFragment(false) {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(),
                 true, null, false, isSubFragment = true,
                 allowDiffUtils = true, rawOrderExposed = true)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appBarLayout)
+
+        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, inset.top, inset.right, 0)
+            return@setOnApplyWindowInsetsListener insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, 0, inset.right, inset.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter

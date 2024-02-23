@@ -16,30 +16,38 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
-        android:title="@string/preference_category_quality"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/preference_category_quality">
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="floatoutput"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/switch_preference"
             android:summary="@string/settings_float_output_summary"
             android:title="@string/settings_float_output" />
+
         <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="ps_hardware_acc"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/switch_preference"
             android:summary="@string/settings_hardware_acceleration_summary"
             android:title="@string/settings_hardware_acceleration" />
+
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="@string/settings_category_misc"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_misc">
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="skip_silence"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/switch_preference"
             android:summary="@string/settings_skip_silence_summary"
             android:title="@string/settings_skip_silence" />
+
     </PreferenceCategory>
+
 </PreferenceScreen>

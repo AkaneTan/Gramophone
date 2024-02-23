@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="24dp"
-    android:paddingTop="12dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:paddingTop="12dp">
 
     <TextView
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?colorPrimary"
         android:fontFamily="sans-serif"
+        android:textColor="?colorPrimary"
         android:textFontWeight="600"
-        tools:text="Links"
-        tools:targetApi="p" />
+        tools:targetApi="p"
+        tools:text="Links" />
 
 </FrameLayout>

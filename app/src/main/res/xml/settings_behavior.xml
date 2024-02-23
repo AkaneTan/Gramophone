@@ -17,9 +17,11 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <PreferenceCategory
-        android:title="@string/settings_category_filters"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_filters">
+
         <SeekBarPreference
             android:defaultValue="@integer/filter_default_sec"
             android:icon="@drawable/filter_art"
@@ -28,28 +30,35 @@
             android:max="120"
             android:title="@string/settings_mediastore_filter"
             app:showSeekBarValue="true" />
+
         <Preference
             android:icon="@drawable/ic_filter_none"
             android:key="blacklist"
             android:layout="@layout/basic_preference_iconless"
-            android:title="@string/settings_blacklist_folder"
-            android:summary="@string/settings_blacklist_folder_summary" />
+            android:summary="@string/settings_blacklist_folder_summary"
+            android:title="@string/settings_blacklist_folder" />
+
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="@string/settings_category_misc"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_misc">
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:icon="@drawable/ic_autorenew"
             android:key="autoplay"
-            android:layout="@layout/icon_switch_preference"
-            android:title="@string/settings_play_on_launch"
-            android:summary="@string/settings_play_on_launch_summary" />
+            android:layout="@layout/switch_preference"
+            android:summary="@string/settings_play_on_launch_summary"
+            android:title="@string/settings_play_on_launch" />
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="album_covers"
-            android:layout="@layout/icon_switch_preference"
-            android:title="@string/album_covers_compat"
-            android:summary="@string/album_covers_compat_desc" />
+            android:layout="@layout/switch_preference"
+            android:summary="@string/album_covers_compat_desc"
+            android:title="@string/album_covers_compat" />
+
     </PreferenceCategory>
+
 </PreferenceScreen>

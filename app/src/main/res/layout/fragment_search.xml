@@ -7,17 +7,16 @@
     tools:context=".ui.fragments.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbarlayout"
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         app:contentScrim="?attr/colorSurface"
         app:liftOnScrollColor="?attr/colorSurface"
         app:statusBarScrim="?attr/colorSurface">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="?actionBarSize">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/return_button"
@@ -44,6 +43,7 @@
                 android:textSize="20sp" />
 
         </LinearLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include

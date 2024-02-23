@@ -4,49 +4,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".logic.ui.BugHandlerActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsingtoolbar"
+            android:id="@+id/collapsingToolbar"
             style="?attr/collapsingToolbarLayoutLargeStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
             app:collapsedTitleTextColor="?attr/colorOnSurface"
-            app:expandedTitleTextColor="?attr/colorOnSurface"
-            app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:expandedTitleMarginStart="24dp"
+            app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
+            app:expandedTitleTextColor="?attr/colorOnSurface"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/details"
             app:titleCollapseMode="scale">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
+                android:id="@+id/materialToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
                 android:paddingStart="6dp"
-                app:contentInsetStartWithNavigation="0dp"
                 app:contentInsetLeft="0dp"
                 app:contentInsetStart="0dp"
-                app:titleMarginStart="0dp"
+                app:contentInsetStartWithNavigation="0dp"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="@drawable/ic_arrow_back"
-                app:navigationIconTint="?colorOnSurface" />
+                app:navigationIconTint="?colorOnSurface"
+                app:titleMarginStart="0dp" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView"
+        android:clipToPadding="false"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
@@ -57,13 +57,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="sans-serif"
                 android:text="@string/album_cover"
                 android:textColor="?colorPrimary"
-                android:fontFamily="sans-serif"
                 android:textFontWeight="600"
-                android:textSize="16sp"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="24dp" />
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/album_cover"
@@ -89,27 +89,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_title"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_title"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -118,35 +118,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/unknown_title"
-                    android:textColor="?colorOnSurface"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:text="@string/unknown_title"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_artist"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_artist"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -155,35 +155,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/unknown_artist"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:text="@string/unknown_artist"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_album"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_album"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -192,35 +192,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/unknown_album"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:text="@string/unknown_album"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_album_artist"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_album_artist"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -229,35 +229,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/unknown_artist"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:text="@string/unknown_artist"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_disc_number"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_disc_number"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -266,35 +266,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
-                    tools:text="0"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p"
+                    tools:text="0" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_track_number"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_track_number"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -303,35 +303,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
-                    tools:text="0"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p"
+                    tools:text="0" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_genre"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_genre"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -340,35 +340,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/unknown_genre"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:text="@string/unknown_genre"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_year"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_year"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -377,15 +377,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/unknown_year"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:text="@string/unknown_year"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
@@ -393,27 +393,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="18dp"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_duration"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_duration"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -422,34 +422,34 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textColor="?colorOnSurface"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_mime"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_mime"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -458,34 +458,34 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_path"
                     android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/dialog_path"
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
-                    android:fontFamily="sans-serif"
                     android:textSize="17sp"
                     tools:targetApi="p" />
 
@@ -494,49 +494,48 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp"
-                    android:textFontWeight="500"
-                    android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="?colorOnSurface"
+                    android:textFontWeight="500"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp"
+                    tools:targetApi="p" />
 
             </LinearLayout>
-<!--
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginTop="18dp"/>
+            <!--
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="24dp"
+                            android:layout_marginEnd="24dp"
+                            android:layout_marginTop="18dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dialog_lyrics"
-                android:textColor="?colorPrimary"
-                android:fontFamily="sans-serif"
-                android:textFontWeight="600"
-                android:textSize="16sp"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="24dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dialog_lyrics"
+                            android:textColor="?colorPrimary"
+                            android:fontFamily="sans-serif"
+                            android:textFontWeight="600"
+                            android:textSize="16sp"
+                            android:layout_marginTop="28dp"
+                            android:layout_marginStart="24dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="100dp"
-                android:enabled="false"
-                android:text="@string/dialog_edit_metadata"
-                app:icon="@drawable/ic_edit" />
--->
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="24dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="100dp"
+                            android:enabled="false"
+                            android:text="@string/dialog_edit_metadata"
+                            app:icon="@drawable/ic_edit" />
+            -->
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

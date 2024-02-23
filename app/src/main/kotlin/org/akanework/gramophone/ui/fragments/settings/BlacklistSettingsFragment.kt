@@ -24,17 +24,17 @@ class BlacklistSettingsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_blacklist_settings, container, false)
-        val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+        val materialToolbar = rootView.findViewById<MaterialToolbar>(R.id.materialToolbar)
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         val folderArray = libraryViewModel.allFolderSet.value?.toMutableList() ?: mutableListOf()
         folderArray.sort()
 
-        topAppBar.setNavigationOnClickListener {
+        materialToolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = BlacklistFolderAdapter(folderArray, prefs)
 

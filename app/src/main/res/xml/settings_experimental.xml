@@ -16,19 +16,24 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
-        android:title="@string/settings_category_misc"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_misc">
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="color_accuracy"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/switch_preference"
             android:summary="@string/settings_color_accuracy_summary"
             android:title="@string/settings_color_accuracy" />
+
         <Preference
-            android:layout="@layout/basic_preference_iconless"
             android:key="crash"
-            android:title="@string/settings_crash_application"
-            android:summary="@string/settings_crash_application_summary" />
+            android:layout="@layout/basic_preference_iconless"
+            android:summary="@string/settings_crash_application_summary"
+            android:title="@string/settings_crash_application" />
+
     </PreferenceCategory>
+
 </PreferenceScreen>

@@ -24,6 +24,14 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import java.text.SimpleDateFormat
@@ -37,6 +45,11 @@ import java.util.Locale
 class BugHandlerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set edge-to-edge contents.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Set content Views.
         setContentView(R.layout.activity_bug_handler)
 
         val bugText = findViewById<TextView>(R.id.error)
@@ -62,6 +75,26 @@ class BugHandlerActivity : AppCompatActivity() {
 
         bugText.typeface = Typeface.MONOSPACE
         bugText.text = combinedTextBuilder.toString()
+
+        val appBarLayout = findViewById<AppBarLayout>(R.id.appBarLayout)
+        val collapsingToolbar = findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar)
+        val nestedScrollView = findViewById<NestedScrollView>(R.id.nestedScrollView)
+
+        // https://github.com/material-components/material-components-android/issues/1310
+        ViewCompat.setOnApplyWindowInsetsListener(collapsingToolbar, null)
+
+        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, inset.top, inset.right, 0)
+            return@setOnApplyWindowInsetsListener insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(nestedScrollView) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, 0, inset.right, inset.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
 
         // Make our life easier by copying the log to clipboard
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager

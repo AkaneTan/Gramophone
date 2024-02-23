@@ -36,7 +36,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
-	        android:layout_width="0dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
@@ -47,10 +47,10 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurface"
                 android:textFontWeight="400"
-                android:fontFamily="sans-serif"
                 android:textSize="17sp"
                 tools:targetApi="p"
                 tools:text="Example Title" />
@@ -59,10 +59,10 @@
                 android:id="@+id/artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textFontWeight="400"
-                android:fontFamily="sans-serif"
                 android:textSize="15sp"
                 tools:targetApi="p"
                 tools:text="Example Artist" />

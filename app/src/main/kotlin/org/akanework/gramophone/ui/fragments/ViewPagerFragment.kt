@@ -26,9 +26,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
@@ -66,12 +72,30 @@ class ViewPagerFragment : BaseFragment(true) {
 
         val rootView = inflater.inflate(R.layout.fragment_viewpager, container, false)
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
-        val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appBarLayout)
+        val collapsingToolbar = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar)
+        val materialToolbar = rootView.findViewById<MaterialToolbar>(R.id.materialToolbar)
         val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
 
-        topAppBar.overflowIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_more_vert_alt)
+        // https://github.com/material-components/material-components-android/issues/1310
+        ViewCompat.setOnApplyWindowInsetsListener(collapsingToolbar, null)
 
-        topAppBar.setOnMenuItemClickListener {
+        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, inset.top, inset.right, 0)
+            return@setOnApplyWindowInsetsListener insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(viewPager2) { v, insets ->
+            val inset = Insets.max(insets.getInsets(WindowInsetsCompat.Type.systemBars()),
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()))
+            v.updatePadding(inset.left, 0, inset.right, 0)
+            return@setOnApplyWindowInsetsListener insets
+        }
+
+        materialToolbar.overflowIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_more_vert_alt)
+
+        materialToolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.search -> {
                     (requireActivity() as MainActivity).startFragment(SearchFragment())
