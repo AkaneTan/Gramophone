@@ -153,7 +153,7 @@ public class MediaScannerActivity extends Activity {
 		}
 	}
 
-	Handler mInsertHandler = new Handler() {
+	Handler mInsertHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
 			if (mNumToInsert-- > 0) {

@@ -39,7 +39,9 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -999,8 +1001,6 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			Glide
 				.with(context)
 				.load(mediaItem?.mediaMetadata?.artworkUri)
-				.transition(DrawableTransitionOptions.withCrossFade())
-				.placeholder(R.drawable.ic_default_cover)
 				.addListener(object : RequestListener<Drawable> {
 					override fun onLoadFailed(
 						e: GlideException?,
@@ -1009,7 +1009,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						isFirstResource: Boolean
 					): Boolean {
 						removeColorScheme()
-						return false
+						target.onLoadFailed(AppCompatResources.getDrawable(context, R.drawable.ic_default_cover))
+						return true
 					}
 
 					override fun onResourceReady(
@@ -1028,7 +1029,22 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						return false
 					}
 				})
-				.into(bottomSheetFullCover)
+				.into(object : CustomTarget<Drawable>() {
+					override fun onResourceReady(
+						resource: Drawable,
+						transition: Transition<in Drawable>?
+					) {
+						bottomSheetFullCover.setImageDrawable(resource)
+					}
+
+					override fun onLoadFailed(errorDrawable: Drawable?) {
+						bottomSheetFullCover.setImageDrawable(errorDrawable)
+					}
+
+					override fun onLoadCleared(placeholder: Drawable?) {
+						// empty
+					}
+				})
 			bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title, skipAnimation = firstTime)
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime

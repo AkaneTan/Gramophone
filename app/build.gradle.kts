@@ -108,12 +108,9 @@ android {
 
     // https://gitlab.com/IzzyOnDroid/repo/-/issues/491
     dependenciesInfo {
-        // Disables dependency metadata when building APKs.
         includeInApk = false
-        // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
-
 }
 
 dependencies {
@@ -130,7 +127,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-midi:1.2.1")
     implementation("androidx.media3:media3-session:1.2.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.github.bumptech.glide:glide:5.0.0-rc01")
     implementation("com.google.android.material:material:1.12.0-alpha03")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
     ksp("com.github.bumptech.glide:ksp:4.16.0")

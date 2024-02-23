@@ -5,3 +5,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.21-1.0.+" apply false
     id("org.jetbrains.kotlin.plugin.parcelize") version "1.9.21" apply false
 }
+
+tasks.withType(JavaCompile::class.java) {
+    options.compilerArgs.add("-Xlint:all")
+}
