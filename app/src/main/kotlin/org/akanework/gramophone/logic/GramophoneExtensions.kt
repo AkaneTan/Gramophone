@@ -25,6 +25,8 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -177,3 +179,12 @@ fun MediaController.getLyrics(): MutableList<MediaStoreUtils.Lyric>? =
             it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>?
         }?.toMutableList()
     }
+
+// https://twitter.com/Piwai/status/1529510076196630528
+fun Handler.postAtFrontOfQueueAsync(callback: Runnable) {
+    sendMessageAtFrontOfQueue(Message.obtain(this, callback).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            isAsynchronous = true
+        }
+    })
+}

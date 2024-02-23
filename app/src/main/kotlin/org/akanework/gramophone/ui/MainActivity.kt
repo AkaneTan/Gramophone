@@ -23,6 +23,9 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.Choreographer
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -49,6 +52,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.postAtFrontOfQueueAsync
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
@@ -74,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     val startingActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
+    private val handler = Handler(Looper.getMainLooper())
     private lateinit var prefs: SharedPreferences
     lateinit var intentSender: ActivityResultLauncher<IntentSenderRequest>
         private set
@@ -193,6 +198,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    // https://twitter.com/Piwai/status/1529510076196630528
+    override fun reportFullyDrawn() {
+        Choreographer.getInstance().postFrameCallback {
+            handler.postAtFrontOfQueueAsync {
+                super.reportFullyDrawn()
+            }
+        }
     }
 
     /**
