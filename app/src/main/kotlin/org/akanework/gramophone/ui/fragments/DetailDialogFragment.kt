@@ -45,7 +45,7 @@ class DetailDialogFragment : BaseFragment(false) {
         val mimeTypeTextView = rootView.findViewById<TextView>(R.id.mime)
         val pathTextView = rootView.findViewById<TextView>(R.id.path)
         Glide
-            .with(requireContext())
+            .with(this)
             .load(mediaMetadata.artworkUri)
             .transition(DrawableTransitionOptions.withCrossFade())
             .placeholder(R.drawable.ic_default_cover)

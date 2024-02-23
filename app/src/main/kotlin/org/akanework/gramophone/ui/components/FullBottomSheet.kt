@@ -7,10 +7,11 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
@@ -34,9 +35,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -72,7 +75,6 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
-import java.io.FileNotFoundException
 import kotlin.math.min
 
 class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
@@ -320,9 +322,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title
 			playlistNowPlayingCover = playlistBottomSheet.findViewById(R.id.now_playing_cover)
 			Glide
-				.with(playlistNowPlayingCover!!)
+				.with(context)
 				.load(instance?.currentMediaItem?.mediaMetadata?.artworkUri)
-				.centerCrop()
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.placeholder(R.drawable.ic_default_cover)
 				.into(playlistNowPlayingCover!!)
@@ -335,6 +336,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 					R.drawable.ic_transparent
 				)!!
 			).build()
+			playlistBottomSheet.setOnDismissListener {
+				Glide.with(context.applicationContext).clear(playlistNowPlayingCover!!)
+				playlistNowPlayingCover = null
+				playlistNowPlaying = null
+			}
 			playlistBottomSheet.show()
 		}
 		bottomSheetFullControllerButton.setOnClickListener {
@@ -752,258 +758,239 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
-	@Suppress("DEPRECATION")
 	private fun addColorScheme() {
-		val mediaItem = instance?.currentMediaItem
 		currentJob?.cancel()
 		currentJob = CoroutineScope(Dispatchers.Default).launch {
-			try {
-				val bitmap = MediaStore.Images.Media.getBitmap(
-					activity.contentResolver,
-					mediaItem?.mediaMetadata?.artworkUri
-				)
-				val originalBitmap: Bitmap = bitmap
-				val targetWidth =
-					if (prefs.getBoolean("color_accuracy", false))
-						bitmap.width / 4
-					else
-						bitmap.width / 16
-				val targetHeight =
-					if (prefs.getBoolean("color_accuracy", false))
-						bitmap.height / 4
-					else
-						bitmap.width / 16
-				val scaledBitmap =
-					Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true)
+			var drawable = bottomSheetFullCover.drawable
+			if (drawable is TransitionDrawable) drawable = drawable.getDrawable(1)
+			val bitmap = if (drawable is BitmapDrawable) drawable.bitmap else {
+				removeColorScheme()
+				return@launch
+			}
+			val colorAccuracy = prefs.getBoolean("color_accuracy", false)
+			val targetWidth = if (colorAccuracy) bitmap.width / 4 else bitmap.width / 16
+			val targetHeight = if (colorAccuracy) bitmap.height / 4 else bitmap.width / 16
+			val scaledBitmap =
+				Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
 
-				wrappedContext = DynamicColors.wrapContextIfAvailable(
-					context,
-					DynamicColorsOptions.Builder()
-						.setContentBasedSource(scaledBitmap)
-						.build()
-				)
+			wrappedContext = DynamicColors.wrapContextIfAvailable(
+				context,
+				DynamicColorsOptions.Builder()
+					.setContentBasedSource(scaledBitmap)
+					.build()
+			)
 
-				val colorSurface = MaterialColors.getColor(
+			val colorSurface = MaterialColors.getColor(
+				wrappedContext!!,
+				com.google.android.material.R.attr.colorSurface,
+				-1
+			)
+
+			val colorOnSurface = MaterialColors.getColor(
+				wrappedContext!!,
+				com.google.android.material.R.attr.colorOnSurface,
+				-1
+			)
+
+			val colorOnSurfaceVariant = MaterialColors.getColor(
+				wrappedContext!!,
+				com.google.android.material.R.attr.colorOnSurfaceVariant,
+				-1
+			)
+
+			val colorPrimary =
+				MaterialColors.getColor(
 					wrappedContext!!,
-					com.google.android.material.R.attr.colorSurface,
+					com.google.android.material.R.attr.colorPrimary,
 					-1
 				)
 
-				val colorOnSurface = MaterialColors.getColor(
+			val colorSecondaryContainer =
+				MaterialColors.getColor(
 					wrappedContext!!,
-					com.google.android.material.R.attr.colorOnSurface,
+					com.google.android.material.R.attr.colorSecondaryContainer,
 					-1
 				)
 
-				val colorOnSurfaceVariant = MaterialColors.getColor(
+			val colorOnSecondaryContainer =
+				MaterialColors.getColor(
 					wrappedContext!!,
-					com.google.android.material.R.attr.colorOnSurfaceVariant,
+					com.google.android.material.R.attr.colorOnSecondaryContainer,
 					-1
 				)
 
-				val colorPrimary =
-					MaterialColors.getColor(
-						wrappedContext!!,
-						com.google.android.material.R.attr.colorPrimary,
-						-1
-					)
-
-				val colorSecondaryContainer =
-					MaterialColors.getColor(
-						wrappedContext!!,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						-1
-					)
-
-				val colorOnSecondaryContainer =
-					MaterialColors.getColor(
-						wrappedContext!!,
-						com.google.android.material.R.attr.colorOnSecondaryContainer,
-						-1
-					)
-
-				val selectorBackground =
-					AppCompatResources.getColorStateList(
-						wrappedContext!!,
-						R.color.sl_check_button
-					)
-
-				val selectorFavBackground =
-					AppCompatResources.getColorStateList(
-						wrappedContext!!,
-						R.color.sl_fav_button
-					)
-
-				val colorAccent =
-					MaterialColors.getColor(
-						wrappedContext!!,
-						com.google.android.material.R.attr.colorAccent,
-						-1
-					)
-
-				val backgroundProcessedColor = ColorUtils.getColor(
-					colorSurface,
-					ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
-					context
+			val selectorBackground =
+				AppCompatResources.getColorStateList(
+					wrappedContext!!,
+					R.color.sl_check_button
 				)
 
-				val colorContrastFainted = ColorUtils.getColor(
-					colorSecondaryContainer,
-					ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
-					context
+			val selectorFavBackground =
+				AppCompatResources.getColorStateList(
+					wrappedContext!!,
+					R.color.sl_fav_button
 				)
 
-				val surfaceTransition = ValueAnimator.ofArgb(
-					fullPlayerFinalColor,
-					backgroundProcessedColor
+			val colorAccent =
+				MaterialColors.getColor(
+					wrappedContext!!,
+					com.google.android.material.R.attr.colorAccent,
+					-1
 				)
 
-				val primaryTransition = ValueAnimator.ofArgb(
-					colorPrimaryFinalColor,
+			val backgroundProcessedColor = ColorUtils.getColor(
+				colorSurface,
+				ColorUtils.ColorType.COLOR_BACKGROUND_ELEVATED,
+				context
+			)
+
+			val colorContrastFainted = ColorUtils.getColor(
+				colorSecondaryContainer,
+				ColorUtils.ColorType.COLOR_CONTRAST_FAINTED,
+				context
+			)
+
+			val surfaceTransition = ValueAnimator.ofArgb(
+				fullPlayerFinalColor,
+				backgroundProcessedColor
+			)
+
+			val primaryTransition = ValueAnimator.ofArgb(
+				colorPrimaryFinalColor,
+				colorPrimary
+			)
+
+			val secondaryContainerTransition = ValueAnimator.ofArgb(
+				colorSecondaryContainerFinalColor,
+				colorSecondaryContainer
+			)
+
+			val onSecondaryContainerTransition = ValueAnimator.ofArgb(
+				colorOnSecondaryContainerFinalColor,
+				colorOnSecondaryContainer
+			)
+
+			val colorContrastFaintedTransition = ValueAnimator.ofArgb(
+				colorContrastFaintedFinalColor,
+				colorContrastFainted
+			)
+
+			surfaceTransition.apply {
+				addUpdateListener { animation ->
+					setBackgroundColor(
+						animation.animatedValue as Int
+					)
+					bottomSheetFullLyricRecyclerView.setBackgroundColor(
+						animation.animatedValue as Int
+					)
+				}
+				duration = BACKGROUND_COLOR_TRANSITION_SEC
+			}
+
+			primaryTransition.apply {
+				addUpdateListener { animation ->
+					val progressColor = animation.animatedValue as Int
+					bottomSheetFullSlider.thumbTintList =
+						ColorStateList.valueOf(progressColor)
+					bottomSheetFullSlider.trackActiveTintList =
+						ColorStateList.valueOf(progressColor)
+					bottomSheetFullSeekBar.progressTintList =
+						ColorStateList.valueOf(progressColor)
+					bottomSheetFullSeekBar.thumbTintList =
+						ColorStateList.valueOf(progressColor)
+				}
+				duration = BACKGROUND_COLOR_TRANSITION_SEC
+			}
+
+			secondaryContainerTransition.apply {
+				addUpdateListener { animation ->
+					val progressColor = animation.animatedValue as Int
+					bottomSheetFullControllerButton.backgroundTintList =
+						ColorStateList.valueOf(progressColor)
+				}
+				duration = BACKGROUND_COLOR_TRANSITION_SEC
+			}
+
+			onSecondaryContainerTransition.apply {
+				addUpdateListener { animation ->
+					val progressColor = animation.animatedValue as Int
+					bottomSheetFullControllerButton.iconTint =
+						ColorStateList.valueOf(progressColor)
+				}
+				duration = BACKGROUND_COLOR_TRANSITION_SEC
+			}
+
+			colorContrastFaintedTransition.apply {
+				addUpdateListener { animation ->
+					val progressColor = animation.animatedValue as Int
+					bottomSheetFullSlider.trackInactiveTintList =
+						ColorStateList.valueOf(progressColor)
+				}
+			}
+
+			withContext(Dispatchers.Main) {
+				surfaceTransition.start()
+				primaryTransition.start()
+				secondaryContainerTransition.start()
+				onSecondaryContainerTransition.start()
+				colorContrastFaintedTransition.start()
+			}
+
+			delay(FOREGROUND_COLOR_TRANSITION_SEC)
+			fullPlayerFinalColor = backgroundProcessedColor
+			colorPrimaryFinalColor = colorPrimary
+			colorSecondaryContainerFinalColor = colorSecondaryContainer
+			colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer
+			colorContrastFaintedFinalColor = colorContrastFainted
+
+			withContext(Dispatchers.Main) {
+				bottomSheetFullTitle.setTextColor(
+					colorOnSurface
+				)
+				bottomSheetFullSubtitle.setTextColor(
+					colorOnSurfaceVariant
+				)
+				bottomSheetFullCoverFrame.setCardBackgroundColor(
+					colorSurface
+				)
+				bottomSheetFullLyricAdapter.updateTextColor(
+					colorContrastFainted,
 					colorPrimary
 				)
 
-				val secondaryContainerTransition = ValueAnimator.ofArgb(
-					colorSecondaryContainerFinalColor,
-					colorSecondaryContainer
+				bottomSheetTimerButton.iconTint =
+					ColorStateList.valueOf(colorOnSurface)
+				bottomSheetPlaylistButton.iconTint =
+					ColorStateList.valueOf(colorOnSurface)
+				bottomSheetShuffleButton.iconTint =
+					selectorBackground
+				bottomSheetLoopButton.iconTint =
+					selectorBackground
+				bottomSheetLyricButton.iconTint =
+					ColorStateList.valueOf(colorOnSurface)
+				bottomSheetFavoriteButton.iconTint =
+					selectorFavBackground
+
+				bottomSheetFullNextButton.iconTint =
+					ColorStateList.valueOf(colorOnSurface)
+				bottomSheetFullPreviousButton.iconTint =
+					ColorStateList.valueOf(colorOnSurface)
+				bottomSheetFullSlideUpButton.iconTint =
+					ColorStateList.valueOf(colorOnSurface)
+
+				bottomSheetFullPosition.setTextColor(
+					colorAccent
 				)
-
-				val onSecondaryContainerTransition = ValueAnimator.ofArgb(
-					colorOnSecondaryContainerFinalColor,
-					colorOnSecondaryContainer
+				bottomSheetFullDuration.setTextColor(
+					colorAccent
 				)
-
-				val colorContrastFaintedTransition = ValueAnimator.ofArgb(
-					colorContrastFaintedFinalColor,
-					colorContrastFainted
-				)
-
-				surfaceTransition.apply {
-					addUpdateListener { animation ->
-						setBackgroundColor(
-							animation.animatedValue as Int
-						)
-						bottomSheetFullLyricRecyclerView.setBackgroundColor(
-							animation.animatedValue as Int
-						)
-					}
-					duration = BACKGROUND_COLOR_TRANSITION_SEC
-				}
-
-				primaryTransition.apply {
-					addUpdateListener { animation ->
-						val progressColor = animation.animatedValue as Int
-						bottomSheetFullSlider.thumbTintList =
-							ColorStateList.valueOf(progressColor)
-						bottomSheetFullSlider.trackActiveTintList =
-							ColorStateList.valueOf(progressColor)
-						bottomSheetFullSeekBar.progressTintList =
-							ColorStateList.valueOf(progressColor)
-						bottomSheetFullSeekBar.thumbTintList =
-							ColorStateList.valueOf(progressColor)
-					}
-					duration = BACKGROUND_COLOR_TRANSITION_SEC
-				}
-
-				secondaryContainerTransition.apply {
-					addUpdateListener { animation ->
-						val progressColor = animation.animatedValue as Int
-						bottomSheetFullControllerButton.backgroundTintList =
-							ColorStateList.valueOf(progressColor)
-					}
-					duration = BACKGROUND_COLOR_TRANSITION_SEC
-				}
-
-				onSecondaryContainerTransition.apply {
-					addUpdateListener { animation ->
-						val progressColor = animation.animatedValue as Int
-						bottomSheetFullControllerButton.iconTint =
-							ColorStateList.valueOf(progressColor)
-					}
-					duration = BACKGROUND_COLOR_TRANSITION_SEC
-				}
-
-				colorContrastFaintedTransition.apply {
-					addUpdateListener { animation ->
-						val progressColor = animation.animatedValue as Int
-						bottomSheetFullSlider.trackInactiveTintList =
-							ColorStateList.valueOf(progressColor)
-					}
-				}
-
-				withContext(Dispatchers.Main) {
-					surfaceTransition.start()
-					primaryTransition.start()
-					secondaryContainerTransition.start()
-					onSecondaryContainerTransition.start()
-					colorContrastFaintedTransition.start()
-				}
-
-				delay(FOREGROUND_COLOR_TRANSITION_SEC)
-				fullPlayerFinalColor = backgroundProcessedColor
-				colorPrimaryFinalColor = colorPrimary
-				colorSecondaryContainerFinalColor = colorSecondaryContainer
-				colorOnSecondaryContainerFinalColor = colorOnSecondaryContainer
-				colorContrastFaintedFinalColor = colorContrastFainted
-
-				withContext(Dispatchers.Main) {
-					bottomSheetFullTitle.setTextColor(
-						colorOnSurface
-					)
-					bottomSheetFullSubtitle.setTextColor(
-						colorOnSurfaceVariant
-					)
-					bottomSheetFullCoverFrame.setCardBackgroundColor(
-						colorSurface
-					)
-					bottomSheetFullLyricAdapter.updateTextColor(
-						colorContrastFainted,
-						colorPrimary
-					)
-
-					bottomSheetTimerButton.iconTint =
-						ColorStateList.valueOf(colorOnSurface)
-					bottomSheetPlaylistButton.iconTint =
-						ColorStateList.valueOf(colorOnSurface)
-					bottomSheetShuffleButton.iconTint =
-						selectorBackground
-					bottomSheetLoopButton.iconTint =
-						selectorBackground
-					bottomSheetLyricButton.iconTint =
-						ColorStateList.valueOf(colorOnSurface)
-					bottomSheetFavoriteButton.iconTint =
-						selectorFavBackground
-
-					bottomSheetFullNextButton.iconTint =
-						ColorStateList.valueOf(colorOnSurface)
-					bottomSheetFullPreviousButton.iconTint =
-						ColorStateList.valueOf(colorOnSurface)
-					bottomSheetFullSlideUpButton.iconTint =
-						ColorStateList.valueOf(colorOnSurface)
-
-					bottomSheetFullPosition.setTextColor(
-						colorAccent
-					)
-					bottomSheetFullDuration.setTextColor(
-						colorAccent
-					)
-				}
-			} catch (e: Exception) {
-				if (e is FileNotFoundException) {
-					removeColorScheme(false)
-					withContext(Dispatchers.Main) {
-						bottomSheetFullCover.setImageDrawable(
-							AppCompatResources.getDrawable(context, R.drawable.ic_default_cover)
-						)
-					}
-				}
 			}
+
 		}
 	}
 
 
 	@SuppressLint("NotifyDataSetChanged")
-	@Suppress("DEPRECATION")
 	override fun onMediaItemTransition(
 		mediaItem: MediaItem?,
 		reason: Int
@@ -1013,46 +1000,35 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				.with(context)
 				.load(mediaItem?.mediaMetadata?.artworkUri)
 				.transition(DrawableTransitionOptions.withCrossFade())
-				.into(
-					object : CustomTarget<Drawable>() {
-						override fun onResourceReady(
-							resource: Drawable,
-							transition: Transition<in Drawable>?
-						) {
-							bottomSheetFullCover.setImageDrawable(resource)
-							bottomSheetFullCover.scaleType = ImageView.ScaleType.CENTER_CROP
-						}
-
-						override fun onLoadCleared(placeholder: Drawable?) {
-							// this is called when imageView is cleared on lifecycle call or for
-							// some other reason.
-							// if you are referencing the bitmap somewhere else too other than this imageView
-							// clear it here as you can no longer have the bitmap
-						}
+				.placeholder(R.drawable.ic_default_cover)
+				.addListener(object : RequestListener<Drawable> {
+					override fun onLoadFailed(
+						e: GlideException?,
+						model: Any?,
+						target: Target<Drawable>,
+						isFirstResource: Boolean
+					): Boolean {
+						removeColorScheme()
+						return false
 					}
-				)
-			if (!prefs.getBoolean("content_based_color", true)) {
-				// TODO this is hacky, clean it up
-				CoroutineScope(Dispatchers.IO).launch {
-					try {
-						MediaStore.Images.Media.getBitmap(
-							activity.contentResolver,
-							mediaItem?.mediaMetadata?.artworkUri
-						)
-					} catch (e: Exception) {
-						if (e is FileNotFoundException) {
-							withContext(Dispatchers.Main) {
-								bottomSheetFullCover.setImageDrawable(
-									AppCompatResources.getDrawable(
-										context,
-										R.drawable.ic_default_cover
-									)
-								)
+
+					override fun onResourceReady(
+						resource: Drawable,
+						model: Any,
+						target: Target<Drawable>?,
+						dataSource: DataSource,
+						isFirstResource: Boolean
+					): Boolean {
+						if (Build.VERSION.SDK_INT >= 26 &&
+							prefs.getBoolean("content_based_color", true)) {
+							handler.post {
+								addColorScheme()
 							}
 						}
+						return false
 					}
-				}
-			}
+				})
+				.into(bottomSheetFullCover)
 			bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title, skipAnimation = firstTime)
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime
@@ -1065,14 +1041,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				Glide
 					.with(context)
 					.load(mediaItem?.mediaMetadata?.artworkUri)
-					.centerCrop()
 					.transition(DrawableTransitionOptions.withCrossFade())
 					.placeholder(R.drawable.ic_default_cover)
 					.into(playlistNowPlayingCover!!)
-			}
-
-			if (Build.VERSION.SDK_INT >= 26 && prefs.getBoolean("content_based_color", true)) {
-				addColorScheme()
 			}
 
 			/*
@@ -1085,6 +1056,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 
 			 */
+		} else {
+			Glide.with(context.applicationContext).clear(bottomSheetFullCover)
 		}
 		val position = CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)
 		val duration = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
@@ -1356,7 +1329,6 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			Glide
 				.with(holder.songCover.context)
 				.load(playlist[position].mediaMetadata.artworkUri)
-				.centerCrop()
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.placeholder(R.drawable.ic_default_cover)
 				.into(holder.songCover)
@@ -1377,6 +1349,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				val instance = activity.getPlayer()
 				instance?.seekToDefaultPosition(holder.absoluteAdapterPosition)
 			}
+		}
+
+		override fun onViewRecycled(holder: ViewHolder) {
+			super.onViewRecycled(holder)
+			Glide.with(activity.applicationContext).clear(holder.songCover)
 		}
 
 		override fun getItemCount(): Int = playlist.size

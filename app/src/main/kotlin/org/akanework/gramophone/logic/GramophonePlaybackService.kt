@@ -24,22 +24,27 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
+import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaLibraryService
@@ -49,6 +54,9 @@ import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -209,7 +217,51 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         mediaSession =
             MediaLibrarySession
                 .Builder(this, player, this)
-                .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader(/* context= */ this)))
+                .setBitmapLoader(object : BitmapLoader {
+                    // Glide-based bitmap loader to reuse Glide's caching and to make sure we use
+                    // the same cover art as the rest of the app, ie MediaStore's cover
+
+                    override fun decodeBitmap(data: ByteArray)
+                    = throw UnsupportedOperationException("decodeBitmap() not supported")
+
+                    override fun loadBitmap(
+                        uri: Uri,
+                        options: BitmapFactory.Options?,
+                    ): ListenableFuture<Bitmap> {
+                        if (options != null) {
+                            throw UnsupportedOperationException("options != null not supported")
+                        }
+                        return CallbackToFutureAdapter.getFuture { completer ->
+                            Glide
+                                .with(this@GramophonePlaybackService)
+                                .asBitmap()
+                                .load(uri)
+                                .dontTransform()
+                                .dontAnimate()
+                                .into(object : CustomTarget<Bitmap>() {
+                                    override fun onResourceReady(
+                                        resource: Bitmap,
+                                        transition: Transition<in Bitmap>?
+                                    ) {
+                                        completer.set(resource)
+                                    }
+
+                                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                                        completer.setException(RuntimeException("onLoadFailed() called"))
+                                    }
+
+                                    override fun onLoadCleared(placeholder: Drawable?) {
+                                        completer.setCancelled()
+                                    }
+                                })
+                            "Glide load for $uri"
+                        }
+                    }
+
+                    override fun loadBitmapFromMetadata(metadata: MediaMetadata): ListenableFuture<Bitmap>? {
+                        return metadata.artworkUri?.let { loadBitmap(it) }
+                    }
+                })
                 .setSessionActivity(
                     getActivity(
                         this,
@@ -224,15 +276,16 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         // overriding last played with null because it is saved before it is restored
         lastPlayedManager.allowSavingState = false
         handler.post {
+            if (mediaSession == null) return@post
             val restoreInstance = lastPlayedManager.restore()
             if (restoreInstance != null) {
-                mediaSession!!.player.setMediaItems(
+                mediaSession?.player?.setMediaItems(
                     restoreInstance.mediaItems,
                     restoreInstance.startIndex, restoreInstance.startPositionMs
                 )
                 // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
                 handler.post {
-                    player.prepare()
+                    mediaSession?.player?.prepare()
                 }
             }
             lastPlayedManager.allowSavingState = true

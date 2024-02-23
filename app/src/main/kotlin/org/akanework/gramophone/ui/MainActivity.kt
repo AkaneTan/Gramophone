@@ -44,6 +44,7 @@ import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -285,6 +286,9 @@ class MainActivity : AppCompatActivity() {
             nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
         }
         super.onDestroy()
+        // we don't ever want covers to be the cause of service being killed by too high mem usage
+        // (this is placed after super.onDestroy() to make sure all ImageViews are dead)
+        Glide.get(applicationContext).clearMemory()
     }
 
     /**

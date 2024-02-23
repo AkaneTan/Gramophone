@@ -28,6 +28,12 @@ android {
         buildConfig = true
     }
 
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
     defaultConfig {
         applicationId = "org.akanework.gramophone"
         // me.zhanghai.android.fastscroll requires 21 and its not worth the effort to change that
@@ -113,10 +119,11 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.13.0-alpha05")
     implementation("androidx.activity:activity-ktx:1.8.2")
-    implementation("androidx.transition:transition-ktx:1.5.0-alpha06")
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
+    implementation("androidx.transition:transition-ktx:1.5.0-alpha06") // <-- for predictive back
     implementation("androidx.fragment:fragment-ktx:1.7.0-alpha10")
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0") // <-- for predictive back
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
     implementation("androidx.media3:media3-exoplayer:1.2.1")

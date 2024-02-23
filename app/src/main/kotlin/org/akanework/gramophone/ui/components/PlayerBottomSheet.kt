@@ -321,6 +321,8 @@ class PlayerBottomSheet private constructor(
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
             bottomSheetPreviewSubtitle.text =
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
+        } else {
+            Glide.with(context.applicationContext).clear(bottomSheetPreviewCover)
         }
         var newState = standardBottomSheetBehavior!!.state
         if ((instance?.mediaItemCount ?: 0) > 0 && visible) {

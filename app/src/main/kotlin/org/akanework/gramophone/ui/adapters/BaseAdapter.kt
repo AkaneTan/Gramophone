@@ -326,7 +326,6 @@ abstract class BaseAdapter<T>(
         Glide
             .with(holder.songCover.context)
             .load(coverOf(item))
-            .centerCrop()
             .transition(DrawableTransitionOptions.withCrossFade())
             .placeholder(defaultCover)
             .into(holder.songCover)
@@ -336,6 +335,11 @@ abstract class BaseAdapter<T>(
             onMenu(item, popupMenu)
             popupMenu.show()
         }
+    }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        Glide.with(context.applicationContext).clear(holder.songCover)
     }
 
     private fun toId(item: T): String {

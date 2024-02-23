@@ -21,11 +21,12 @@ import android.content.Context
 import android.util.Log
 import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.module.AppGlideModule
+import com.bumptech.glide.request.RequestOptions
 
 /**
- * This is a [GlideModule].
- * This shouldn't be touched at any time.
+ * This is a [GlideModule], mainly used to control caching to be appropriate for Gramophone
  */
 @GlideModule
 class GramophoneGlideModule : AppGlideModule() {
@@ -34,5 +35,7 @@ class GramophoneGlideModule : AppGlideModule() {
         builder: GlideBuilder,
     ) {
         builder.setLogLevel(Log.ERROR)
+        builder.setDefaultRequestOptions(
+            RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE).centerCrop())
     }
 }
