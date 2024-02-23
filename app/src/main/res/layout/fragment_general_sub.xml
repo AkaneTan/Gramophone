@@ -19,6 +19,7 @@
             app:collapsedTitleTextAppearance="?textAppearanceTitleLarge"
             app:expandedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
+            app:maxLines="2"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:titleCollapseMode="scale"
             app:expandedTitleMarginStart="24dp">

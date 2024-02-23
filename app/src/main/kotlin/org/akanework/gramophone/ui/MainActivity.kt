@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateLibrary() {
         CoroutineScope(Dispatchers.Default).launch {
             updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
+            reportFullyDrawn()
         }
     }
 
@@ -182,11 +183,13 @@ class MainActivity : AppCompatActivity() {
                     ),
                 PERMISSION_READ_MEDIA_AUDIO,
             )
+            reportFullyDrawn()
         } else {
             // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
                 //updateLibrary() TODO TODO TODO
                 updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
+                reportFullyDrawn()
             }
         }
 
