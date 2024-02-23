@@ -106,4 +106,10 @@
     <style name="Base.Theme.Gramophone" parent="DayNight.Theme.Gramophone" />
 
     <style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
+
+    <style name="Splash.Gramophone" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/Theme.Gramophone</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+    </style>
 </resources>
