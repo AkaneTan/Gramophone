@@ -36,7 +36,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -48,6 +47,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.enableEdgeToEdgeProperly
 import org.akanework.gramophone.logic.postAtFrontOfQueueAsync
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
@@ -96,9 +96,9 @@ class MainActivity : AppCompatActivity() {
      */
     @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
-        // TODO TODO TODO enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         installSplashScreen()
+        enableEdgeToEdgeProperly()
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             if (it.resultCode == RESULT_OK) {
                 if (intentSenderAction != null) {
@@ -111,9 +111,6 @@ class MainActivity : AppCompatActivity() {
             intentSenderAction = null
         }
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-
-        // Set edge-to-edge contents.
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentLifecycleCallbacks() {
@@ -175,11 +172,16 @@ class MainActivity : AppCompatActivity() {
 
     // https://twitter.com/Piwai/status/1529510076196630528
     override fun reportFullyDrawn() {
-        Choreographer.getInstance().postFrameCallback {
-            handler.postAtFrontOfQueueAsync {
-                super.reportFullyDrawn()
+        val r = {
+            Choreographer.getInstance().postFrameCallback {
+                handler.postAtFrontOfQueueAsync {
+                    super.reportFullyDrawn()
+                }
             }
         }
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            r()
+        } else handler.post(r)
     }
 
     /**

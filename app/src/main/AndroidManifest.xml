@@ -61,7 +61,7 @@
 
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/Splash.Gramophone"
+            android:theme="@style/Theme.Splash"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>

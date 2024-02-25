@@ -1,7 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="DayNight.Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@android:color/black</item>
+    <style name="Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
@@ -109,11 +108,7 @@
         <item name="android:textFontWeight" tools:targetApi="p">700</item>
     </style>
 
-    <style name="Base.Theme.Gramophone" parent="DayNight.Theme.Gramophone" />
-
-    <style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
-
-    <style name="Splash.Gramophone" parent="Theme.SplashScreen">
+    <style name="Theme.Splash" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/Theme.Gramophone</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>

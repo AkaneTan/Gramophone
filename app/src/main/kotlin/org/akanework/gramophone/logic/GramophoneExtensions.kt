@@ -19,7 +19,9 @@ package org.akanework.gramophone.logic
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources.getSystem
+import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -30,6 +32,9 @@ import android.os.Message
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
@@ -229,5 +234,16 @@ fun View.enableEdgeToEdgePaddingListener() {
             v.setPadding(cutoutAndBars.left, 0, cutoutAndBars.right, cutoutAndBars.bottom)
             return@setOnApplyWindowInsetsListener insets
         }
+    }
+}
+
+// enableEdgeToEdge() without enforcing contrast, magic based on androidx EdgeToEdge.kt
+fun ComponentActivity.enableEdgeToEdgeProperly() {
+    val darkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+    if ((resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+        Configuration.UI_MODE_NIGHT_YES) {
+        enableEdgeToEdge(navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
+    } else {
+        enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, darkScrim))
     }
 }
