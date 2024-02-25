@@ -53,7 +53,7 @@ abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
         view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground))
     }
 
-    final override fun onHiddenChanged(hidden: Boolean) {
+    override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (hidden) return
         // see registerFragmentLifecycleCallbacks in MainActivity

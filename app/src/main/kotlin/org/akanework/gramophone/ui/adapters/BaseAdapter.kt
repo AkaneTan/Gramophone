@@ -275,18 +275,20 @@ abstract class BaseAdapter<T>(
                 else comparator?.compare(o1, o2) ?: 0
             }
         }
-        return updateListSorted(newList, canDiff, now)
+        return updateListSorted(newList, canDiff)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateListSorted(newList: MutableList<T>, canDiff: Boolean, now: Boolean): () -> Unit {
+    private fun updateListSorted(newList: MutableList<T>, canDiff: Boolean): () -> Unit {
         val diffResult = if (((list.isNotEmpty() && newList.size != 0) || allowDiffUtils) && canDiff)
             DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
+        val oldCount = list.size
+        val newCount = newList.size
         return {
             list.clear()
             list.addAll(newList)
             if (diffResult != null) diffResult.dispatchUpdatesTo(this) else notifyDataSetChanged()
-            if (!now) decorAdapter.updateSongCounter()
+            if (oldCount != newCount) decorAdapter.updateSongCounter()
         }
     }
 

@@ -18,7 +18,6 @@
 package org.akanework.gramophone.logic
 
 import android.app.Activity
-import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.getSystem
 import android.graphics.Color
@@ -30,13 +29,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.children
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
@@ -77,17 +76,16 @@ inline fun <reified K, reified V> HashMap<K, V>.putIfAbsentSupport(key: K, value
     }
 }
 
-fun Activity.closeKeyboard() {
-    if (currentFocus != null) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+fun Activity.closeKeyboard(view: View) {
+    if (ViewCompat.getRootWindowInsets(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
+        WindowInsetsControllerCompat(window, view).hide(WindowInsetsCompat.Type.ime())
     }
 }
 
-fun View.showSoftKeyboard() {
-    if (requestFocus()) {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+fun Activity.showKeyboard(view: View) {
+    view.requestFocus()
+    if (ViewCompat.getRootWindowInsets(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == false) {
+        WindowInsetsControllerCompat(window, view).show(WindowInsetsCompat.Type.ime())
     }
 }
 

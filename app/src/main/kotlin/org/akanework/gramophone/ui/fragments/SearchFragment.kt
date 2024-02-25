@@ -40,7 +40,7 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.closeKeyboard
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
-import org.akanework.gramophone.logic.showSoftKeyboard
+import org.akanework.gramophone.logic.showKeyboard
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
@@ -56,6 +56,7 @@ class SearchFragment : BaseFragment(false) {
     private val handler = Handler(Looper.getMainLooper())
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private val filteredList: MutableList<MediaItem> = mutableListOf()
+    private lateinit var editText: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +66,7 @@ class SearchFragment : BaseFragment(false) {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
-        val editText = rootView.findViewById<EditText>(R.id.edit_text)
+        editText = rootView.findViewById(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(),
@@ -130,14 +131,24 @@ class SearchFragment : BaseFragment(false) {
 
     override fun onPause() {
         super.onPause()
-        requireActivity().closeKeyboard()
+        if (!isHidden) {
+            requireActivity().closeKeyboard(editText)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        val editText = requireView().findViewById<EditText>(R.id.edit_text)
-        requireView().post {
-            editText.showSoftKeyboard()
+        if (!isHidden) {
+            requireActivity().showKeyboard(editText)
+        }
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            requireActivity().closeKeyboard(editText)
+        } else {
+            requireActivity().showKeyboard(editText)
         }
     }
 

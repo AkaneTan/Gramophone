@@ -38,6 +38,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
@@ -239,15 +240,15 @@ class MainActivity : AppCompatActivity() {
      *   Called by child fragment / drawer. It calls
      * controller's shuffle method.
      */
-    fun shuffle() {
-        libraryViewModel.mediaItemList.value?.takeIf { it.isNotEmpty() }?.let { it1 ->
-            val controller = getPlayer()
-            controller?.setMediaItems(it1)
-            controller?.shuffleModeEnabled = true
-            controller?.seekToDefaultPosition(Random.nextInt(0, it1.size))
+    fun shuffle(list: List<MediaItem>? = libraryViewModel.mediaItemList.value) {
+        val controller = getPlayer()
+        controller?.shuffleModeEnabled = true
+        list?.takeIf { it.isNotEmpty() }?.also {
+            controller?.setMediaItems(it)
+            controller?.seekToDefaultPosition(Random.nextInt(0, it.size))
             controller?.prepare()
             controller?.play()
-        }
+        } ?: controller?.setMediaItems(listOf())
     }
 
     /**

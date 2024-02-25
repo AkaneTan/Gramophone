@@ -26,14 +26,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.C
-import androidx.media3.common.Player.REPEAT_MODE_ALL
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.FileOpUtils
-import kotlin.random.Random
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
@@ -158,26 +156,19 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                 val mediaController = adapter.getActivity().getPlayer()
                 val songList = adapter.getSongList()
                 mediaController?.apply {
-                    setMediaItems(songList, 0, C.TIME_UNSET)
                     shuffleModeEnabled = false
                     repeatMode = REPEAT_MODE_OFF
-                    prepare()
-                    play()
+                    setMediaItems(songList, 0, C.TIME_UNSET)
+                    if (songList.size > 0) {
+                        prepare()
+                        play()
+                    }
                 }
             }
         }
         holder.shuffleAll.setOnClickListener {
             if (adapter is SongAdapter) {
-                val mediaController = adapter.getActivity().getPlayer()
-                val songList = adapter.getSongList()
-                mediaController?.apply {
-                    setMediaItems(songList, 0, C.TIME_UNSET)
-                    shuffleModeEnabled = true
-                    repeatMode = REPEAT_MODE_ALL
-                    seekToDefaultPosition(Random.nextInt(0, adapter.getSongList().size))
-                    prepare()
-                    play()
-                }
+                adapter.getActivity().shuffle(adapter.getSongList())
             }
         }
     }
