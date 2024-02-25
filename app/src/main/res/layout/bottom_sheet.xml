@@ -112,6 +112,7 @@
         android:layout_height="match_parent"
         android:alpha="0"
         android:visibility="gone"
+        android:fitsSystemWindows="true"
         android:clipToPadding="false"
         android:clipChildren="false"/>
 

@@ -26,15 +26,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
-import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * GeneralSubFragment:
@@ -60,6 +62,7 @@ class GeneralSubFragment : BaseFragment(true) {
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
 
         val bundle = requireArguments()
         val itemType = bundle.getInt("Item")
@@ -137,6 +140,7 @@ class GeneralSubFragment : BaseFragment(true) {
                 true
             )
 
+        recyclerView.enableEdgeToEdgePaddingListener()
         recyclerView.adapter = songAdapter.concatAdapter
 
         // Build FastScroller.

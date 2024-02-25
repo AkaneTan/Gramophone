@@ -31,6 +31,7 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -61,7 +62,7 @@ import org.akanework.gramophone.ui.MainActivity
 class PlayerBottomSheet private constructor(
     context: Context, attributeSet: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
 ) : FrameLayout(context, attributeSet, defStyleAttr, defStyleRes),
-    Player.Listener, DefaultLifecycleObserver {
+    Player.Listener, DefaultLifecycleObserver, OnApplyWindowInsetsListener {
     constructor(context: Context, attributeSet: AttributeSet?)
             : this(context, attributeSet, 0, 0)
 
@@ -126,25 +127,7 @@ class PlayerBottomSheet private constructor(
         bottomSheetPreviewCover = findViewById(R.id.preview_album_cover)
         bottomSheetPreviewControllerButton = findViewById(R.id.preview_control)
         bottomSheetPreviewNextButton = findViewById(R.id.preview_next)
-
-        ViewCompat.setOnApplyWindowInsetsListener(previewPlayer) { view, insets ->
-            view.onApplyWindowInsets(insets.toWindowInsets())
-            doOnLayout {
-                val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                val notchInset = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-                val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                previewPlayer.setPadding(notchInset.left, 0, notchInset.right,
-                    notchInset.bottom + navBarInset.bottom)
-                fullPlayer.setPadding(notchInset.left, statusBarInset.top,
-                    notchInset.right, notchInset.bottom + navBarInset.bottom)
-                previewPlayer.measure(
-                    MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-                    MeasureSpec.UNSPECIFIED
-                )
-                standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
-            }
-            return@setOnApplyWindowInsetsListener insets
-        }
+        ViewCompat.setOnApplyWindowInsetsListener(this, this)
 
         setOnClickListener {
             if (standardBottomSheetBehavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -219,8 +202,8 @@ class PlayerBottomSheet private constructor(
         }
     }
 
-    override fun onViewAdded(child: View?) {
-        super.onViewAdded(child)
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         doOnLayout { // wait for CoordinatorLayout to finish to allow getting behaviour
             standardBottomSheetBehavior = MyBottomSheetBehavior.from(this)
             fullPlayer.minimize = {
@@ -295,14 +278,37 @@ class PlayerBottomSheet private constructor(
         }
     }
 
-    override fun onViewRemoved(child: View?) {
-        super.onViewRemoved(child)
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
         fullPlayer.minimize = {}
         lifecycleOwner.lifecycle.removeObserver(this)
         standardBottomSheetBehavior!!.removeBottomSheetCallback(bottomSheetCallback)
         bottomSheetBackCallback!!.remove()
         standardBottomSheetBehavior = null
         onStop(lifecycleOwner)
+    }
+
+    override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+        val myInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+                or WindowInsetsCompat.Type.displayCutout())
+        doOnLayout {
+            // We here have to set up inset padding manually as the bottom sheet won't know what
+            // View is behind the status bar, paddingTopSystemWindowInsets just allows it to go
+            // behind it, which differs from the other padding*SystemWindowInsets. We can't use the
+            // other padding*SystemWindowInsets to apply systemBars() because previewPlayer and
+            // fullPlayer should extend into system bars and display cutout. fullPlayer uses
+            // fitsSystemWindows so there's no need to worry about it, but previewPlayer can't
+            // because it doesn't want top padding from status bar. We have to do it manually, duh.
+
+            previewPlayer.setPadding(myInsets.left, 0, myInsets.right, myInsets.bottom)
+            // Now make sure BottomSheetBehaviour has the correct View height set
+            previewPlayer.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.UNSPECIFIED
+            )
+            standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+        }
+        return insets
     }
 
     fun getPlayer(): MediaController? = instance
@@ -333,10 +339,12 @@ class PlayerBottomSheet private constructor(
             newState = BottomSheetBehavior.STATE_HIDDEN
         }
         handler.post {
+            // if we are destroyed after onMediaItemTransition but before this runs,
+            // standardBottomSheetBehavior will be null
             if (!waitedForContainer) {
                 waitedForContainer = true
-                standardBottomSheetBehavior!!.setStateWithoutAnimation(newState)
-            } else standardBottomSheetBehavior!!.state = newState
+                standardBottomSheetBehavior?.setStateWithoutAnimation(newState)
+            } else standardBottomSheetBehavior?.state = newState
         }
     }
 

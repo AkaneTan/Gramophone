@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.ArtistAdapter
@@ -37,7 +39,6 @@ import org.akanework.gramophone.ui.adapters.FolderAdapter
 import org.akanework.gramophone.ui.adapters.GenreAdapter
 import org.akanework.gramophone.ui.adapters.PlaylistAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * AdapterFragment:
@@ -59,6 +60,7 @@ class AdapterFragment : BaseFragment(null) {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         recyclerView = rootView.findViewById(R.id.recyclerview)
+        recyclerView.enableEdgeToEdgePaddingListener()
         adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
         recyclerView.adapter = adapter.concatAdapter
 

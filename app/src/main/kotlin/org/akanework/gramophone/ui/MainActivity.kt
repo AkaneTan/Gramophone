@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Choreographer
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
@@ -37,11 +36,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.media3.common.util.UnstableApi
@@ -100,6 +96,7 @@ class MainActivity : AppCompatActivity() {
      */
     @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
+        // TODO TODO TODO enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         installSplashScreen()
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
@@ -114,17 +111,6 @@ class MainActivity : AppCompatActivity() {
             intentSenderAction = null
         }
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-
-        // This is required for fragment navigate animation.
-        ActivityCompat.postponeEnterTransition(this)
-
-        // Set cutout modes if target system is newer than pie.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val params = window.attributes
-            params.layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-            window.attributes = params
-        }
 
         // Set edge-to-edge contents.
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -143,19 +129,6 @@ class MainActivity : AppCompatActivity() {
 
         // Set content Views.
         setContentView(R.layout.activity_main)
-        val fragmentContainerView = findViewById<FragmentContainerView>(R.id.container)
-
-        // Adjust insets so that bottom sheet can look more normal.
-        ViewCompat.setOnApplyWindowInsetsListener(fragmentContainerView) { view, insets ->
-            val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val notchInset = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            view.setPadding(
-                navBarInset.left + notchInset.left, navBarInset.top,
-                navBarInset.right + notchInset.right, notchInset.bottom
-            )
-            view.onApplyWindowInsets(insets.toWindowInsets())
-            return@setOnApplyWindowInsetsListener insets
-        }
 
         // Check all permissions.
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
@@ -255,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     updateLibrary()
                 } else {
-                    // TODO:  Show a prompt here
+                    // TODO: Show a prompt here
                 }
             }
         }

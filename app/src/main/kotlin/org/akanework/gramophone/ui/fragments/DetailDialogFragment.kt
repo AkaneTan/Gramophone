@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.appbar.AppBarLayout
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.getFile
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.ui.LibraryViewModel
@@ -26,11 +26,8 @@ class DetailDialogFragment : BaseFragment(false) {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.dialog_info_song, container, false)
-        ViewCompat.setOnApplyWindowInsetsListener(rootView.findViewById(R.id.scrollView)) { v, insets ->
-            val padding = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(padding.left, 0, padding.right, padding.bottom)
-            return@setOnApplyWindowInsetsListener insets
-        }
+        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
+        rootView.findViewById<View>(R.id.scrollView).enableEdgeToEdgePaddingListener()
         val mediaMetadata = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")].mediaMetadata
         val albumCoverImageView = rootView.findViewById<ImageView>(R.id.album_cover)
         val titleTextView = rootView.findViewById<TextView>(R.id.title)

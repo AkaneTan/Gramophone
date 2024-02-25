@@ -23,11 +23,10 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 
 /**
  * BasePreferenceFragment:
@@ -44,12 +43,7 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
         view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground))
         val rf = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
         rf.clipToPadding = false
-        ViewCompat.setOnApplyWindowInsetsListener(rf) { v, insets ->
-            val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            v.setPadding(0, 0, 0, navBarInset.bottom)
-            v.onApplyWindowInsets(insets.toWindowInsets())
-            return@setOnApplyWindowInsetsListener insets
-        }
+        rf.enableEdgeToEdgePaddingListener()
     }
 
     override fun setDivider(divider: Drawable?) {

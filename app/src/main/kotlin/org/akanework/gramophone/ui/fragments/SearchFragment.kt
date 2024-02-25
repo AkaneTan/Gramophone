@@ -31,18 +31,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.closeKeyboard
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.showSoftKeyboard
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
-import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * SearchFragment:
@@ -63,6 +64,7 @@ class SearchFragment : BaseFragment(false) {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
+        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
         val editText = rootView.findViewById<EditText>(R.id.edit_text)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
         val songAdapter =
@@ -71,6 +73,7 @@ class SearchFragment : BaseFragment(false) {
                 allowDiffUtils = true, rawOrderExposed = true)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
+        recyclerView.enableEdgeToEdgePaddingListener()
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter
 

@@ -30,10 +30,15 @@ import android.os.Message
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_QUERY_TIMER
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
@@ -187,4 +192,42 @@ fun Handler.postAtFrontOfQueueAsync(callback: Runnable) {
             isAsynchronous = true
         }
     })
+}
+
+fun View.enableEdgeToEdgePaddingListener() {
+    if (this is AppBarLayout) {
+        // AppBarLayout fitsSystemWindows does not handle left/right for a good reason, it has
+        // to be applied to children to look good; we rewrite fitsSystemWindows in a way mostly specific
+        // to Gramophone to support shortEdges displayCutout
+        if (fitsSystemWindows) throw IllegalArgumentException("must have fitsSystemWindows disabled")
+        val collapsingToolbarLayout = children.find { it is CollapsingToolbarLayout } as CollapsingToolbarLayout?
+        val expandedTitleMarginStart = collapsingToolbarLayout?.expandedTitleMarginStart
+        val expandedTitleMarginEnd = collapsingToolbarLayout?.expandedTitleMarginEnd
+        ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+            val cutoutAndBars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            (v as AppBarLayout).children.forEach {
+                if (it is CollapsingToolbarLayout) {
+                    it.expandedTitleMarginStart = expandedTitleMarginStart!! + if (it.layoutDirection
+                        == View.LAYOUT_DIRECTION_LTR) cutoutAndBars.left else cutoutAndBars.right
+                    it.expandedTitleMarginEnd = expandedTitleMarginEnd!! + if (it.layoutDirection
+                        == View.LAYOUT_DIRECTION_RTL) cutoutAndBars.left else cutoutAndBars.right
+                }
+                it.setPadding(cutoutAndBars.left, 0, cutoutAndBars.right, 0)
+            }
+            v.setPadding(0, cutoutAndBars.top, 0, 0)
+            return@setOnApplyWindowInsetsListener insets
+        }
+    } else {
+        ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+            val cutoutAndBars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(cutoutAndBars.left, 0, cutoutAndBars.right, cutoutAndBars.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
+    }
 }

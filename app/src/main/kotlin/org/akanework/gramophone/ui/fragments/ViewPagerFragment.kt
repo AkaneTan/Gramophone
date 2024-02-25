@@ -29,6 +29,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
@@ -39,12 +40,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.utils.EnvUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
 import org.akanework.gramophone.ui.fragments.settings.MainSettingsFragment
-import org.akanework.gramophone.ui.LibraryViewModel
 
 /**
  * ViewPagerFragment:
@@ -63,12 +65,12 @@ class ViewPagerFragment : BaseFragment(true) {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-
         val rootView = inflater.inflate(R.layout.fragment_viewpager, container, false)
         val tabLayout = rootView.findViewById<TabLayout>(R.id.tab_layout)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
 
+        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
         topAppBar.overflowIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_more_vert_alt)
 
         topAppBar.setOnMenuItemClickListener {
