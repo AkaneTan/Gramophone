@@ -206,6 +206,10 @@ fun View.enableEdgeToEdgePaddingListener() {
         // to Gramophone to support shortEdges displayCutout
         if (fitsSystemWindows) throw IllegalArgumentException("must have fitsSystemWindows disabled")
         val collapsingToolbarLayout = children.find { it is CollapsingToolbarLayout } as CollapsingToolbarLayout?
+        collapsingToolbarLayout?.let {
+            // The CollapsingToolbarLayout mustn't consume insets, we handle padding here anyway
+            ViewCompat.setOnApplyWindowInsetsListener(it) { _, insets -> insets }
+        }
         val expandedTitleMarginStart = collapsingToolbarLayout?.expandedTitleMarginStart
         val expandedTitleMarginEnd = collapsingToolbarLayout?.expandedTitleMarginEnd
         ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->

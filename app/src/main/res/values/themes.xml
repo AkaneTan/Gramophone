@@ -3,7 +3,6 @@
     <style name="Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>

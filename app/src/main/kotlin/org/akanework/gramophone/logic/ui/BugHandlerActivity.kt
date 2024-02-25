@@ -23,6 +23,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
@@ -67,6 +68,9 @@ class BugHandlerActivity : AppCompatActivity() {
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("error msg", combinedTextBuilder.toString())
         clipboard.setPrimaryClip(clip)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            Toast.makeText(this, R.string.crash_clipboard, Toast.LENGTH_LONG).show()
+        }
 
     }
 }

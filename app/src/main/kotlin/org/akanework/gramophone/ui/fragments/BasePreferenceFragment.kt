@@ -41,9 +41,8 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground))
-        val rf = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
-        rf.clipToPadding = false
-        rf.enableEdgeToEdgePaddingListener()
+        view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
+            .enableEdgeToEdgePaddingListener()
     }
 
     override fun setDivider(divider: Drawable?) {
