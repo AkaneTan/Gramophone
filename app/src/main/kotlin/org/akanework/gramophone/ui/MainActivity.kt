@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.ui
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -94,7 +93,6 @@ class MainActivity : AppCompatActivity() {
     /**
      * onCreate - core of MainActivity.
      */
-    @SuppressLint("StringFormatMatches", "StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()

@@ -3,6 +3,7 @@
     <style name="Theme.Gramophone" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
@@ -108,9 +109,26 @@
         <item name="android:textFontWeight" tools:targetApi="p">700</item>
     </style>
 
-    <style name="Theme.Splash" parent="Theme.SplashScreen">
+    <style name="Base.Night.Theme.Splash" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/Theme.Gramophone</item>
+    </style>
+    <style name="Base.Day.Theme.Splash" parent="Base.Night.Theme.Splash">
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <style name="PreV31Day.Theme.Splash" parent="Base.Day.Theme.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
     </style>
+    <style name="PreV31Night.Theme.Splash" parent="Base.Night.Theme.Splash">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_gramophone_white</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+    </style>
+
+    <style name="Day.Theme.Splash" parent="PreV31Day.Theme.Splash" />
+    <style name="Night.Theme.Splash" parent="PreV31Night.Theme.Splash" />
+
+    <style name="Theme.Splash" parent="Day.Theme.Splash" />
+
 </resources>
