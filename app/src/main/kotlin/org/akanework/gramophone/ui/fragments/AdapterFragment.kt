@@ -21,14 +21,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
@@ -51,7 +50,7 @@ class AdapterFragment : BaseFragment(null) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
     private lateinit var adapter: BaseInterface<*>
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: MyRecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,18 +62,7 @@ class AdapterFragment : BaseFragment(null) {
         recyclerView.enableEdgeToEdgePaddingListener()
         adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
         recyclerView.adapter = adapter.concatAdapter
-
-        FastScrollerBuilder(recyclerView).apply {
-            setPopupTextProvider(adapter)
-            useMd2Style()
-            setTrackDrawable(
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_transparent
-                )!!
-            )
-            build()
-        }
+        recyclerView.fastScroll(adapter)
         return rootView
     }
 
@@ -101,7 +89,7 @@ class AdapterFragment : BaseFragment(null) {
     }
 
     abstract class BaseInterface<T : RecyclerView.ViewHolder>
-        : RecyclerView.Adapter<T>(), PopupTextProvider {
+        : MyRecyclerView.Adapter<T>(), PopupTextProvider {
         abstract val concatAdapter: ConcatAdapter
     }
 }

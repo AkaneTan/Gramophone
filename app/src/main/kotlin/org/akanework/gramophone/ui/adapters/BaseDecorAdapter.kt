@@ -26,10 +26,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.C
 import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.gramophoneApplication
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import kotlin.random.Random
 
@@ -37,18 +39,20 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
     private val pluralStr: Int,
     private val isSubFragment: Boolean = false
-) : RecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
+) : MyRecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
 
     protected val context: Context = adapter.context
-
+    private var recyclerView: MyRecyclerView? = null
     private var prefs = context.gramophoneApplication.prefs
+    var jumpUpPos: Int? = null
+    var jumpDownPos: Int? = null
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.general_decor, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 
@@ -178,6 +182,57 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                 } ?: controller?.setMediaItems(listOf())
             }
         }
+        holder.scroll.setOnClickListener {
+            recyclerView?.awakenScrollBarsPublic()
+        }
+        holder.jumpUp.visibility = if (jumpUpPos != null) View.VISIBLE else View.GONE
+        holder.jumpUp.setOnClickListener {
+            scrollToViewPosition(jumpUpPos!!)
+        }
+        holder.jumpDown.visibility = if (jumpDownPos != null) View.VISIBLE else View.GONE
+        holder.jumpDown.setOnClickListener {
+            scrollToViewPosition(jumpDownPos!!)
+        }
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: MyRecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.recyclerView = null
+    }
+
+    private fun scrollToViewPosition(pos: Int) {
+        val smoothScroller = object : LinearSmoothScroller(context) {
+            override fun calculateDtToFit(
+                viewStart: Int,
+                viewEnd: Int,
+                boxStart: Int,
+                boxEnd: Int,
+                snapPreference: Int
+            ): Int {
+                return (super.calculateDtToFit(
+                    viewStart,
+                    viewEnd,
+                    boxStart,
+                    boxEnd,
+                    snapPreference
+                ))// + context.resources.displayMetrics.heightPixels / 3).coerceAtMost(viewEnd)
+            }
+
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+
+            /*override fun calculateTimeForDeceleration(dx: Int): Int {
+                return 500
+            }*/
+        }
+        smoothScroller.targetPosition = pos
+        recyclerView?.startSmoothScrollCompat(smoothScroller)
     }
 
     protected open fun onSortButtonPressed(popupMenu: PopupMenu) {}
@@ -191,6 +246,9 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
         val sortButton: MaterialButton = view.findViewById(R.id.sort)
         val playAll: MaterialButton = view.findViewById(R.id.play_all)
         val shuffleAll: MaterialButton = view.findViewById(R.id.shuffle_all)
+        val scroll: MaterialButton = view.findViewById(R.id.scroll)
+        val jumpUp: MaterialButton = view.findViewById(R.id.jumpUp)
+        val jumpDown: MaterialButton = view.findViewById(R.id.jumpDown)
         val counter: TextView = view.findViewById(R.id.song_counter)
     }
 

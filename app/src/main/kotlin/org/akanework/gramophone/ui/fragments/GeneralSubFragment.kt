@@ -21,17 +21,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
@@ -61,7 +59,7 @@ class GeneralSubFragment : BaseFragment(true) {
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = rootView.findViewById<MyRecyclerView>(R.id.recyclerview)
         rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
 
         val bundle = requireArguments()
@@ -144,17 +142,7 @@ class GeneralSubFragment : BaseFragment(true) {
         recyclerView.adapter = songAdapter.concatAdapter
 
         // Build FastScroller.
-        FastScrollerBuilder(recyclerView).apply {
-            useMd2Style()
-            setPopupTextProvider(songAdapter)
-            setTrackDrawable(
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_transparent
-                )!!
-            )
-            build()
-        }
+        recyclerView.fastScroll(songAdapter)
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

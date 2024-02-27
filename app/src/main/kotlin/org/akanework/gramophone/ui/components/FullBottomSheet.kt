@@ -59,10 +59,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
-import org.akanework.gramophone.logic.dp
+import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.getBooleanStrict
 import org.akanework.gramophone.logic.getIntStrict
@@ -71,10 +70,10 @@ import org.akanework.gramophone.logic.getTimer
 import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
-import org.akanework.gramophone.logic.px
 import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -319,7 +318,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 			val playlistBottomSheet = BottomSheetDialog(context)
 			playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
-			val recyclerView = playlistBottomSheet.findViewById<RecyclerView>(R.id.recyclerview)!!
+			val recyclerView = playlistBottomSheet.findViewById<MyRecyclerView>(R.id.recyclerview)!!
 			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title
@@ -333,12 +332,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			recyclerView.layoutManager = LinearLayoutManager(context)
 			recyclerView.adapter = playlistAdapter
 			recyclerView.scrollToPosition(instance?.currentMediaItemIndex ?: 0)
-			FastScrollerBuilder(recyclerView).useMd2Style().setTrackDrawable(
-				AppCompatResources.getDrawable(
-					context,
-					R.drawable.ic_transparent
-				)!!
-			).build()
+			recyclerView.fastScroll(null)
 			playlistBottomSheet.setOnDismissListener {
 				Glide.with(context.applicationContext).clear(playlistNowPlayingCover!!)
 				playlistNowPlayingCover = null
@@ -493,7 +487,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			bottomSheetFullCoverFrame.radius = prefs.getIntStrict(
 				"album_round_corner",
 				context.resources.getInteger(R.integer.round_corner_radius)
-			).px.toFloat()
+			).dpToPx(context).toFloat()
 		}
 		if (key == null || key == "lyric_center" || key == "lyric_bold") {
 			bottomSheetFullLyricAdapter.updateLyricStatus()
@@ -1186,7 +1180,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	private inner class LyricAdapter(
 		private val lyricList: MutableList<MediaStoreUtils.Lyric>
-	) : RecyclerView.Adapter<LyricAdapter.ViewHolder>() {
+	) : MyRecyclerView.Adapter<LyricAdapter.ViewHolder>() {
 
 		private var defaultTextColor = MaterialColors.getColor(
 			activity,
@@ -1248,20 +1242,20 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}
 
 				val textSize = if (lyric.isTranslation) 20f else 28f
-				val paddingTop = if (lyric.isTranslation) 2.px else 18.px
-				val paddingBottom = if (position + 1 < lyricList.size &&
+				val paddingTop = (if (lyric.isTranslation) 2 else 18).dpToPx(context)
+				val paddingBottom = (if (position + 1 < lyricList.size &&
 					lyricList[position + 1].isTranslation
-				) 2.px else 18.px
+				) 2 else 18).dpToPx(context)
 
 				this.textSize = textSize
-				setPadding(10.px, paddingTop, 10.px, paddingBottom)
+				setPadding(10.dpToPx(context), paddingTop, 10.dpToPx(context), paddingBottom)
 
 				val isFocus = position == currentFocusPos || position == currentTranslationPos
 				setTextColor(if (isFocus) highlightTextColor else defaultTextColor)
 			}
 		}
 
-		override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+		override fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {
 			super.onAttachedToRecyclerView(recyclerView)
 			updateLyricStatus()
 		}
@@ -1320,7 +1314,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private class PlaylistCardAdapter(
 		private val playlist: MutableList<MediaItem>,
 		private val activity: MainActivity
-	) : RecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
+	) : MyRecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
 
 		override fun onCreateViewHolder(
 			parent: ViewGroup,
@@ -1456,13 +1450,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				boxEnd: Int,
 				snapPreference: Int
 			): Int {
-				return super.calculateDtToFit(
+				return (super.calculateDtToFit(
 					viewStart,
 					viewEnd,
 					boxStart,
 					boxEnd,
 					snapPreference
-				) + (context.resources.displayMetrics.heightPixels / 3).dp
+				) + context.resources.displayMetrics.heightPixels / 3).coerceAtMost(viewEnd)
 			}
 
 			override fun getVerticalSnapPreference(): Int {

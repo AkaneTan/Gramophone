@@ -44,6 +44,7 @@ import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getStringStrict
 import org.akanework.gramophone.logic.gramophoneApplication
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
@@ -69,7 +70,7 @@ abstract class BaseAdapter<T>(
     PopupTextProvider {
 
     private val sorter = Sorter(sortHelper, naturalOrderHelper, rawOrderExposed)
-    private val decorAdapter by lazy { createDecorAdapter() }
+    val decorAdapter by lazy { createDecorAdapter() }
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
     private val handler = Handler(Looper.getMainLooper())
     private var bgHandlerThread: HandlerThread? = null
@@ -79,7 +80,7 @@ abstract class BaseAdapter<T>(
     private var comparator: Sorter.HintedComparator<T>? = null
     private var layoutManager: RecyclerView.LayoutManager? = null
     private var listLock = Semaphore(1)
-    protected var recyclerView: RecyclerView? = null
+    protected var recyclerView: MyRecyclerView? = null
         private set
 
     private var prefs = context.gramophoneApplication.prefs
@@ -169,7 +170,7 @@ abstract class BaseAdapter<T>(
         return Collections.unmodifiableList(list)
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    override fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
         if (ownsView) {
@@ -185,7 +186,7 @@ abstract class BaseAdapter<T>(
         }
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+    override fun onDetachedFromRecyclerView(recyclerView: MyRecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         if (layoutType == LayoutType.GRID) {
             recyclerView.removeItemDecoration(gridPaddingDecoration)

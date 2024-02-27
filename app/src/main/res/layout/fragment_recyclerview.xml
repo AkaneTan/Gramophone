@@ -6,7 +6,7 @@
     android:clipToPadding="false"
     tools:ignore="MergeRootFrame">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <org.akanework.gramophone.logic.ui.MyRecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

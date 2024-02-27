@@ -377,7 +377,7 @@
 			app:iconTint="?attr/colorOnSurface" />
 	</LinearLayout>
 
-	<androidx.recyclerview.widget.RecyclerView
+	<org.akanework.gramophone.logic.ui.MyRecyclerView
 		android:id="@+id/lyric_frame"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"

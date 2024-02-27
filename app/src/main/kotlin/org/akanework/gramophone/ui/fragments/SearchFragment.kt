@@ -24,23 +24,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.closeKeyboard
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.showKeyboard
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
@@ -67,7 +65,7 @@ class SearchFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
         rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
         editText = rootView.findViewById(R.id.edit_text)
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = rootView.findViewById<MyRecyclerView>(R.id.recyclerview)
         val songAdapter =
             SongAdapter(requireActivity() as MainActivity, listOf(),
                 true, null, false, isSubFragment = true,
@@ -79,17 +77,7 @@ class SearchFragment : BaseFragment(false) {
         recyclerView.adapter = songAdapter.concatAdapter
 
         // Build FastScroller.
-        FastScrollerBuilder(recyclerView).apply {
-            setPopupTextProvider(songAdapter)
-            useMd2Style()
-            setTrackDrawable(
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_transparent
-                )!!
-            )
-            build()
-        }
+        recyclerView.fastScroll(songAdapter)
 
         editText.addTextChangedListener { rawText ->
             // TODO sort results by match quality? (using NaturalOrderHelper)

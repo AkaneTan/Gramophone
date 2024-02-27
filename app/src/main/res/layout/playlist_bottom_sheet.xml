@@ -77,7 +77,7 @@
         android:layout_marginStart="22dp"
         android:layout_marginEnd="22dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <org.akanework.gramophone.logic.ui.MyRecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

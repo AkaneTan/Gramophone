@@ -21,7 +21,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.content.res.Resources.getSystem
 import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -160,13 +159,9 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
         }
 }
 
-inline val Int.dp: Int get() = (this.toFloat().dp).toInt()
-
-inline val Int.px: Int get() = (this.toFloat().px).toInt()
-
-inline val Float.dp: Float get() = this / getSystem().displayMetrics.density
-
-inline val Float.px: Float get() = this * getSystem().displayMetrics.density
+@Suppress("NOTHING_TO_INLINE")
+inline fun Int.dpToPx(context: Context): Int =
+    (this.toFloat() * context.resources.displayMetrics.density).toInt()
 
 fun MediaController.getTimer(): Int =
     sendCustomCommand(
@@ -237,13 +232,18 @@ fun View.enableEdgeToEdgePaddingListener() {
             return@setOnApplyWindowInsetsListener insets
         }
     } else {
+        val pl = paddingLeft
+        val pt = paddingTop
+        val pr = paddingRight
+        val pb = paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
             val cutoutAndBars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
                         or WindowInsetsCompat.Type.displayCutout()
                         or WindowInsetsCompat.Type.ime()
             )
-            v.setPadding(cutoutAndBars.left, 0, cutoutAndBars.right, cutoutAndBars.bottom)
+            v.setPadding(pl + cutoutAndBars.left, pt, pr + cutoutAndBars.right,
+                pb + cutoutAndBars.bottom)
             return@setOnApplyWindowInsetsListener insets
         }
     }

@@ -11,8 +11,8 @@
     android:gravity="center_horizontal"
     android:paddingTop="8dp"
     android:paddingBottom="16dp"
-    tools:ignore="UnusedAttribute"
-    tools:targetApi="m">
+    tools:targetApi="m"
+    tools:ignore="UnusedAttribute">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cover_frame"
@@ -46,8 +46,7 @@
         app:layout_constraintStart_toStartOf="@id/cover_frame"
         app:layout_constraintEnd_toStartOf="@id/more"
         android:orientation="vertical"
-        tools:ignore="RtlSymmetry"
-        tools:layout_editor_absoluteY="8dp">
+        tools:ignore="RtlSymmetry">
 
         <TextView
             android:id="@+id/title"

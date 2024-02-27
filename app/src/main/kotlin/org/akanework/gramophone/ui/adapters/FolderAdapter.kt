@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.AdapterFragment
@@ -59,14 +60,14 @@ class FolderAdapter(
         liveData.value?.let { onChanged(it) }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    override fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
         liveData.observeForever(this)
         recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+    override fun onDetachedFromRecyclerView(recyclerView: MyRecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         liveData.removeObserver(this)
         recyclerView.layoutManager = null
@@ -251,7 +252,7 @@ class FolderAdapter(
     }
 
     private abstract class FolderCardAdapter(protected val folderFragment: FolderAdapter) :
-        RecyclerView.Adapter<FolderCardAdapter.ViewHolder>() {
+        MyRecyclerView.Adapter<FolderCardAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(
                 LayoutInflater

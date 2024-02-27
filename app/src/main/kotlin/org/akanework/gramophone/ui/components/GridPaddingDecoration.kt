@@ -6,11 +6,11 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
-import org.akanework.gramophone.logic.px
+import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.ui.adapters.BaseAdapter
 
 class GridPaddingDecoration(context: Context) : RecyclerView.ItemDecoration() {
-    private var mPadding = 10.px
+    private var mPadding = 10.dpToPx(context)
     private val columnSize = if (context.resources.configuration.orientation
         == Configuration.ORIENTATION_PORTRAIT) 2 else 4
 

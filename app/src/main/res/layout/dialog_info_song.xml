@@ -60,10 +60,11 @@
                 android:text="@string/album_cover"
                 android:textColor="?colorPrimary"
                 android:fontFamily="sans-serif"
-                android:textFontWeight="600"
-                android:textSize="16sp"
+                android:textFontWeight="500"
+                android:textSize="17sp"
                 android:layout_marginTop="24dp"
-                android:layout_marginStart="24dp" />
+                android:layout_marginStart="24dp"
+                tools:targetApi="p" />
 
             <ImageView
                 android:id="@+id/album_cover"
@@ -72,7 +73,8 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_default_cover" />
+                android:src="@drawable/ic_default_cover"
+                android:importantForAccessibility="no" />
 
             <com.google.android.material.button.MaterialButton
                 android:layout_width="wrap_content"
