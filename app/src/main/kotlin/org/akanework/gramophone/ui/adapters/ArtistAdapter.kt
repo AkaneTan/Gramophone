@@ -17,12 +17,12 @@
 
 package org.akanework.gramophone.ui.adapters
 
-import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
-import androidx.preference.PreferenceManager
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
@@ -50,8 +50,8 @@ class ArtistAdapter(
         return context.getString(R.string.unknown_artist)
     }
 
-    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    var isAlbumArtist = prefs.getBoolean("isDisplayingAlbumArtist", false)
+    private val prefs = context.gramophoneApplication.prefs
+    var isAlbumArtist = prefs.getBooleanStrict("isDisplayingAlbumArtist", false)
         private set
     override val defaultCover = R.drawable.ic_default_cover_artist
 

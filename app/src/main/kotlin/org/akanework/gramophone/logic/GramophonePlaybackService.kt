@@ -53,7 +53,6 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -61,6 +60,10 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
@@ -95,6 +98,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
+    private val lyricsLock = Semaphore(1)
 
     private fun getRepeatCommand() =
         when (mediaSession?.player!!.repeatMode) {
@@ -139,7 +143,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
     override fun onCreate() {
         super.onCreate()
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val prefs = gramophoneApplication.prefs
 
         customCommands =
             listOf(
@@ -184,18 +188,15 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         val player = ExoPlayer.Builder(
             this,
             DefaultRenderersFactory(this)
-                .setEnableAudioFloatOutput(prefs.getBoolean("floatoutput", false))
+                .setEnableAudioFloatOutput(
+                    prefs.getBooleanStrict("floatoutput", false))
                 .setEnableDecoderFallback(true)
-                .setEnableAudioTrackPlaybackParams(
-                    prefs.getBoolean(
-                        "ps_hardware_acc",
-                        true
-                    )
-                ) // hardware/system-accelerated playback speed
+                .setEnableAudioTrackPlaybackParams( // hardware/system-accelerated playback speed
+                    prefs.getBooleanStrict("ps_hardware_acc", true))
                 .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
         )
             .setWakeMode(C.WAKE_MODE_LOCAL)
-            .setSkipSilenceEnabled(prefs.getBoolean("skip_silence", false))
+            .setSkipSilenceEnabled(prefs.getBooleanStrict("skip_silence", false))
             .setAudioAttributes(
                 AudioAttributes
                     .Builder()
@@ -277,18 +278,21 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         lastPlayedManager.allowSavingState = false
         handler.post {
             if (mediaSession == null) return@post
-            val restoreInstance = lastPlayedManager.restore()
-            if (restoreInstance != null) {
-                mediaSession?.player?.setMediaItems(
-                    restoreInstance.mediaItems,
-                    restoreInstance.startIndex, restoreInstance.startPositionMs
-                )
-                // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
-                handler.post {
-                    mediaSession?.player?.prepare()
+            lastPlayedManager.restore {
+                val mediaItemsWithStartPosition = it()
+                if (mediaItemsWithStartPosition != null) {
+                    mediaSession?.player?.setMediaItems(
+                        mediaItemsWithStartPosition.mediaItems,
+                        mediaItemsWithStartPosition.startIndex,
+                        mediaItemsWithStartPosition.startPositionMs
+                    )
+                    // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
+                    handler.post {
+                        mediaSession?.player?.prepare()
+                    }
                 }
+                lastPlayedManager.allowSavingState = true
             }
-            lastPlayedManager.allowSavingState = true
         }
         onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
         mediaSession!!.player.addListener(this)
@@ -408,31 +412,35 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         controller: MediaSession.ControllerInfo
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
-        handler.post {
-            settable.set(lastPlayedManager.restore())
-        }
+        lastPlayedManager.restore { settable.set(it()) }
         return settable
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        lyrics = loadAndParseLyricsFile(mediaSession?.player?.currentMediaItem?.getFile())
-        if (lyrics == null) {
-            loop@for (i in tracks.groups) {
-                for (j in 0 until i.length) {
-                    if (!i.isTrackSelected(j)) continue
-                    // note: wav files can have null metadata
-                    val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                    lyrics = extractAndParseLyrics(trackMetadata) ?: continue
-                    // add empty element at the beginning
-                    lyrics!!.add(0, MediaStoreUtils.Lyric())
-                    break@loop
+        val mediaItem = mediaSession?.player?.currentMediaItem
+        lyricsLock.runInBg {
+            var lrc = loadAndParseLyricsFile(mediaItem?.getFile())
+            if (lrc == null) {
+                loop@ for (i in tracks.groups) {
+                    for (j in 0 until i.length) {
+                        if (!i.isTrackSelected(j)) continue
+                        // note: wav files can have null metadata
+                        val trackMetadata = i.getTrackFormat(j).metadata ?: continue
+                        lrc = extractAndParseLyrics(trackMetadata) ?: continue
+                        // add empty element at the beginning
+                        lrc.add(0, MediaStoreUtils.Lyric())
+                        break@loop
+                    }
                 }
             }
+            CoroutineScope(Dispatchers.Main).launch {
+                lyrics = lrc
+                mediaSession!!.broadcastCustomCommand(
+                    SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+                    Bundle.EMPTY
+                )
+            }.join()
         }
-        mediaSession!!.broadcastCustomCommand(
-            SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
-            Bundle.EMPTY
-        )
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {

@@ -35,14 +35,9 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.utils.EnvUtils
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
@@ -93,59 +88,51 @@ class ViewPagerFragment : BaseFragment(true) {
                     }
                 }
                 R.id.refresh -> {
-                    val playerLayout = (requireActivity() as MainActivity).getPlayerSheet()
-                    CoroutineScope(Dispatchers.Default).launch {
-                        MediaStoreUtils.updateLibraryWithInCoroutine(
-                            libraryViewModel,
-                            requireContext()
+                    val activity = requireActivity() as MainActivity
+                    val playerLayout = activity.playerBottomSheet
+                    activity.updateLibrary {
+                        val snackBar =
+                            Snackbar.make(
+                                requireView(),
+                                getString(
+                                    R.string.refreshed_songs,
+                                    libraryViewModel.mediaItemList.value!!.size,
+                                ),
+                                Snackbar.LENGTH_LONG,
+                            )
+                        snackBar.setAction(R.string.dismiss) {
+                            snackBar.dismiss()
+                        }
+
+                        /*
+                         * Let's override snack bar's color here so it would
+                         * adapt dark mode.
+                         */
+                        snackBar.setBackgroundTint(
+                            MaterialColors.getColor(
+                                snackBar.view,
+                                com.google.android.material.R.attr.colorSurface,
+                            ),
+                        )
+                        snackBar.setActionTextColor(
+                            MaterialColors.getColor(
+                                snackBar.view,
+                                com.google.android.material.R.attr.colorPrimary,
+                            ),
+                        )
+                        snackBar.setTextColor(
+                            MaterialColors.getColor(
+                                snackBar.view,
+                                com.google.android.material.R.attr.colorOnSurface,
+                            ),
                         )
 
-                        // Show a snack bar when updating is completed.
-                        withContext(Dispatchers.Main) {
-
-                            val snackBar =
-                                Snackbar.make(
-                                    requireView(),
-                                    getString(
-                                        R.string.refreshed_songs,
-                                        libraryViewModel.mediaItemList.value!!.size,
-                                    ),
-                                    Snackbar.LENGTH_LONG,
-                                )
-                            snackBar.setAction(R.string.dismiss) {
-                                snackBar.dismiss()
-                            }
-
-                            /*
-                             * Let's override snack bar's color here so it would
-                             * adapt dark mode.
-                             */
-                            snackBar.setBackgroundTint(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorSurface,
-                                ),
-                            )
-                            snackBar.setActionTextColor(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorPrimary,
-                                ),
-                            )
-                            snackBar.setTextColor(
-                                MaterialColors.getColor(
-                                    snackBar.view,
-                                    com.google.android.material.R.attr.colorOnSurface,
-                                ),
-                            )
-
-                            // Set an anchor for snack bar.
-                            if (playerLayout.visible && playerLayout.actuallyVisible)
-                                snackBar.anchorView = playerLayout
-                            else
-                                snackBar.anchorView = viewPager2
-                            snackBar.show()
-                        }
+                        // Set an anchor for snack bar.
+                        if (playerLayout.visible && playerLayout.actuallyVisible)
+                            snackBar.anchorView = playerLayout
+                        else
+                            snackBar.anchorView = viewPager2
+                        snackBar.show()
                     }
                 }
                 R.id.settings -> {

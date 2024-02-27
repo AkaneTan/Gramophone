@@ -22,8 +22,10 @@ import android.content.ClipboardManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
@@ -36,12 +38,20 @@ import java.util.Locale
  *   An activity makes crash reporting easier.
  */
 class BugHandlerActivity : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "BugHandlerActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_bug_handler)
 
         val bugText = findViewById<TextView>(R.id.error)
-        val receivedText = intent.getStringExtra("exception_message")
+        val exceptionMessage = intent.getStringExtra("exception_message")
+        val threadName = intent.getStringExtra("thread")
+        Log.e(TAG, "Error on thread $threadName:\n $exceptionMessage")
 
         val deviceBrand = Build.BRAND
         val deviceModel = Build.MODEL
@@ -56,10 +66,11 @@ class BugHandlerActivity : AppCompatActivity() {
             .append(getString(R.string.crash_gramophone_version)).append(':').append(' ').append(gramophoneVersion).append('\n').append('\n')
             .append(getString(R.string.crash_phone_brand)).append(':').append("     ").append(deviceBrand).append('\n')
             .append(getString(R.string.crash_phone_model)).append(':').append("     ").append(deviceModel).append('\n')
-            .append(getString(R.string.crash_sdk_level)).append(':').append(' ').append(sdkLevel).append('\n').append('\n')
-            .append(getString(R.string.crash_time)).append(':').append(' ').append(formattedDateTime).append('\n').append('\n')
+            .append(getString(R.string.crash_sdk_level)).append(':').append(' ').append(sdkLevel).append('\n')
+            .append(getString(R.string.crash_thread)).append(':').append("    ").append(threadName).append('\n').append('\n').append('\n')
+            .append(getString(R.string.crash_time)).append(':').append(' ').append(formattedDateTime).append('\n')
             .append("--------- beginning of crash").append('\n')
-            .append(receivedText)
+            .append(exceptionMessage)
 
         bugText.typeface = Typeface.MONOSPACE
         bugText.text = combinedTextBuilder.toString()

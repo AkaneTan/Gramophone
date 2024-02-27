@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="recyclerview_bottom_padding">120dp</dimen>
     <dimen name="media_seekbar_progress_wavelength">27dp</dimen>
     <dimen name="media_seekbar_progress_amplitude">2.7dp</dimen>
     <dimen name="media_seekbar_progress_phase">8dp</dimen>

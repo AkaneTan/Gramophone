@@ -30,7 +30,6 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -65,8 +64,11 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.dp
 import org.akanework.gramophone.logic.fadInAnimation
+import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.getIntStrict
 import org.akanework.gramophone.logic.getLyrics
 import org.akanework.gramophone.logic.getTimer
+import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.px
@@ -93,7 +95,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private val instance: MediaController?
 		get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
 			null else controllerFuture?.get()
-	var minimize: () -> Unit = {}
+	var minimize: (() -> Unit)? = null
 
 	private var wrappedContext: Context? = null
 	private var currentJob: Job? = null
@@ -101,7 +103,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private var runnableRunning = false
 	private var firstTime = false
 
-	private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+	private val prefs = context.gramophoneApplication.prefs
 
 	companion object {
 		const val SLIDER_UPDATE_INTERVAL: Long = 100
@@ -179,8 +181,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private val bottomSheetFullCoverFrame: MaterialCardView
 	val bottomSheetFullLyricRecyclerView: RecyclerView
 	private val bottomSheetFullLyricList: MutableList<MediaStoreUtils.Lyric> = mutableListOf()
-	private val bottomSheetFullLyricAdapter: LyricAdapter =
-		LyricAdapter(bottomSheetFullLyricList, activity)
+	private val bottomSheetFullLyricAdapter: LyricAdapter = LyricAdapter(bottomSheetFullLyricList)
 	private val bottomSheetFullLyricLinearLayoutManager = LinearLayoutManager(context)
 	private val progressDrawable: SquigglyProgress
 	private var fullPlayerFinalColor: Int = -1
@@ -384,7 +385,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			if (Build.VERSION.SDK_INT >= 23) {
 				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
 			}
-			minimize()
+			minimize?.invoke()
 		}
 
 		bottomSheetLyricButton.setOnClickListener {
@@ -446,7 +447,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 		if (key == "color_accuracy" || key == "content_based_color") {
 			if (Build.VERSION.SDK_INT >= 26 &&
-				prefs.getBoolean("content_based_color", true)) {
+				prefs.getBooleanStrict("content_based_color", true)) {
 				addColorScheme()
 			} else {
 				removeColorScheme()
@@ -462,7 +463,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	private fun refreshSettings(key: String?) {
 		if (key == null || key == "default_progress_bar") {
-			if (prefs.getBoolean("default_progress_bar", false)) {
+			if (prefs.getBooleanStrict("default_progress_bar", false)) {
 				bottomSheetFullSlider.visibility = View.VISIBLE
 				bottomSheetFullSeekBar.visibility = View.GONE
 			} else {
@@ -471,7 +472,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 		}
 		if (key == null || key == "centered_title") {
-			if (prefs.getBoolean("centered_title", true)) {
+			if (prefs.getBooleanStrict("centered_title", true)) {
 				bottomSheetFullTitle.gravity = Gravity.CENTER
 				bottomSheetFullSubtitle.gravity = Gravity.CENTER
 			} else {
@@ -480,10 +481,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 		}
 		if (key == null || key == "bold_title") {
-			if (prefs.getBoolean(
-					"bold_title",
-					true
-				) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+			if (prefs.getBooleanStrict("bold_title", true) &&
+				Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 			) {
 				bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
 			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -491,7 +490,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 		}
 		if (key == null || key == "album_round_corner") {
-			bottomSheetFullCoverFrame.radius = prefs.getInt(
+			bottomSheetFullCoverFrame.radius = prefs.getIntStrict(
 				"album_round_corner",
 				context.resources.getInteger(R.integer.round_corner_radius)
 			).px.toFloat()
@@ -1021,7 +1020,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						isFirstResource: Boolean
 					): Boolean {
 						if (Build.VERSION.SDK_INT >= 26 &&
-							prefs.getBoolean("content_based_color", true)) {
+							prefs.getBooleanStrict("content_based_color", true)) {
 							handler.post {
 								addColorScheme()
 							}
@@ -1185,9 +1184,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		return items
 	}
 
-	private class LyricAdapter(
-		private val lyricList: MutableList<MediaStoreUtils.Lyric>,
-		private val activity: MainActivity,
+	private inner class LyricAdapter(
+		private val lyricList: MutableList<MediaStoreUtils.Lyric>
 	) : RecyclerView.Adapter<LyricAdapter.ViewHolder>() {
 
 		private var defaultTextColor = MaterialColors.getColor(
@@ -1270,9 +1268,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 		fun updateLyricStatus() {
 			isBoldEnabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-					activity.getPreferences().getBoolean("lyric_bold", false)
-
-			isLyricCentered = activity.getPreferences().getBoolean("lyric_center", false)
+					prefs.getBooleanStrict("lyric_bold", false)
+			isLyricCentered = prefs.getBooleanStrict("lyric_center", false)
 		}
 
 		override fun getItemCount(): Int = lyricList.size

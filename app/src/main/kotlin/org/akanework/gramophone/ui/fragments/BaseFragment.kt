@@ -58,7 +58,7 @@ abstract class BaseFragment(val wantsPlayer: Boolean? = null) : Fragment() {
         if (hidden) return
         // see registerFragmentLifecycleCallbacks in MainActivity
         if (wantsPlayer != null) {
-            (requireActivity() as MainActivity).getPlayerSheet().visible = wantsPlayer
+            (requireActivity() as MainActivity).playerBottomSheet.visible = wantsPlayer
         }
     }
 }

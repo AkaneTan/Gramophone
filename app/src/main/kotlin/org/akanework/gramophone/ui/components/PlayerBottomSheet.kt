@@ -31,17 +31,18 @@ import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.Insets
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
+import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -53,6 +54,8 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
+import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
@@ -80,7 +83,7 @@ class PlayerBottomSheet private constructor(
 
     private val activity
         get() = context as MainActivity
-    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+    private val prefs = context.gramophoneApplication.prefs
     private val lifecycleOwner: LifecycleOwner
         get() = activity
     private val handler = Handler(Looper.getMainLooper())
@@ -119,7 +122,6 @@ class PlayerBottomSheet private constructor(
 
     init {
         inflate(context, R.layout.bottom_sheet, this)
-        id = R.id.player_layout
         previewPlayer = findViewById(R.id.preview_player)
         fullPlayer = findViewById(R.id.full_player)
         bottomSheetPreviewTitle = findViewById(R.id.preview_song_name)
@@ -185,6 +187,7 @@ class PlayerBottomSheet private constructor(
                     bottomSheetBackCallback!!.isEnabled = false
                 }
             }
+            dispatchBottomSheetInsets()
         }
 
         override fun onSlide(
@@ -270,17 +273,14 @@ class PlayerBottomSheet private constructor(
             // this is required after onRestoreSavedInstanceState() in BottomSheetBehaviour
             bottomSheetCallback.onStateChanged(this, standardBottomSheetBehavior!!.state)
             lifecycleOwner.lifecycle.addObserver(this)
-            previewPlayer.measure(
-                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-                MeasureSpec.UNSPECIFIED
-            )
-            standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+            updatePeekHeight()
+            dispatchBottomSheetInsets()
         }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        fullPlayer.minimize = {}
+        fullPlayer.minimize = null
         lifecycleOwner.lifecycle.removeObserver(this)
         standardBottomSheetBehavior!!.removeBottomSheetCallback(bottomSheetCallback)
         bottomSheetBackCallback!!.remove()
@@ -291,24 +291,53 @@ class PlayerBottomSheet private constructor(
     override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
         val myInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()
                 or WindowInsetsCompat.Type.displayCutout())
-        doOnLayout {
-            // We here have to set up inset padding manually as the bottom sheet won't know what
-            // View is behind the status bar, paddingTopSystemWindowInsets just allows it to go
-            // behind it, which differs from the other padding*SystemWindowInsets. We can't use the
-            // other padding*SystemWindowInsets to apply systemBars() because previewPlayer and
-            // fullPlayer should extend into system bars and display cutout. fullPlayer uses
-            // fitsSystemWindows so there's no need to worry about it, but previewPlayer can't
-            // because it doesn't want top padding from status bar. We have to do it manually, duh.
-
-            previewPlayer.setPadding(myInsets.left, 0, myInsets.right, myInsets.bottom)
-            // Now make sure BottomSheetBehaviour has the correct View height set
-            previewPlayer.measure(
-                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-                MeasureSpec.UNSPECIFIED
-            )
-            standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+        // We here have to set up inset padding manually as the bottom sheet won't know what
+        // View is behind the status bar, paddingTopSystemWindowInsets just allows it to go
+        // behind it, which differs from the other padding*SystemWindowInsets. We can't use the
+        // other padding*SystemWindowInsets to apply systemBars() because previewPlayer and
+        // fullPlayer should extend into system bars and display cutout. fullPlayer uses
+        // fitsSystemWindows so there's no need to worry about it, but previewPlayer can't
+        // because it doesn't want top padding from status bar. We have to do it manually, duh.
+        previewPlayer.setPadding(myInsets.left, 0, myInsets.right, myInsets.bottom)
+        // Now make sure BottomSheetBehaviour has the correct View height set.
+        if (isLaidOut && !isLayoutRequested) {
+            updatePeekHeight()
+        } else {
+            doOnNextLayout {
+                updatePeekHeight()
+                dispatchBottomSheetInsets()
+            }
         }
         return insets
+    }
+
+    private fun updatePeekHeight() {
+        previewPlayer.measure(
+            MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+            MeasureSpec.UNSPECIFIED
+        )
+        standardBottomSheetBehavior?.setPeekHeight(previewPlayer.measuredHeight, false)
+    }
+
+    fun generateBottomSheetInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
+        val resolvedMeasuredHeight = if (actuallyVisible) previewPlayer.measuredHeight else 0
+        var navBar1 = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        var navBar2 = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())
+        val bottomSheetInsets = Insets.of(0, 0, 0, resolvedMeasuredHeight)
+        navBar1 = Insets.max(navBar1, bottomSheetInsets)
+        navBar2 = Insets.max(navBar2, bottomSheetInsets)
+        return WindowInsetsCompat.Builder(insets)
+            .setInsets(WindowInsetsCompat.Type.navigationBars(), navBar1)
+            .setInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars(), navBar2)
+            .build()
+    }
+
+    private fun dispatchBottomSheetInsets() {
+        // This dispatches the last known insets again to force regeneration of
+        // FragmentContainerView's insets which will in turn call generateBottomSheetInsets().
+        ViewCompat.getRootWindowInsets(activity.window.decorView)?.let {
+            ViewCompat.dispatchApplyWindowInsets(activity.window.decorView, it)
+        }
     }
 
     fun getPlayer(): MediaController? = instance
@@ -387,7 +416,7 @@ class PlayerBottomSheet private constructor(
                     instance?.currentMediaItem,
                     Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
                 )
-                if (prefs.getBoolean("autoplay", false) && instance?.isPlaying != true) {
+                if (prefs.getBooleanStrict("autoplay", false) && instance?.isPlaying != true) {
                     instance?.play()
                 }
                 handler.post {

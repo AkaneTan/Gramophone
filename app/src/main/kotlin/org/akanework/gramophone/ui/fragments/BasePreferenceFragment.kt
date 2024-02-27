@@ -27,6 +27,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.useSharedPrefs
 
 /**
  * BasePreferenceFragment:
@@ -43,6 +44,10 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
         view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground))
         view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
             .enableEdgeToEdgePaddingListener()
+    }
+
+    override fun setPreferencesFromResource(preferencesResId: Int, key: String?) {
+        useSharedPrefs { super.setPreferencesFromResource(preferencesResId, key) }
     }
 
     override fun setDivider(divider: Drawable?) {

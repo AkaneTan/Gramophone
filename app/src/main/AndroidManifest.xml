@@ -42,6 +42,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Gramophone"
+        android:windowSoftInputMode="adjustResize"
         tools:targetApi="upside_down_cake">
         <activity
             android:name=".logic.ui.BugHandlerActivity"

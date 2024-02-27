@@ -19,7 +19,6 @@ package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Handler
@@ -33,7 +32,6 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +42,8 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.sync.Semaphore
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.getStringStrict
+import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
@@ -82,11 +82,10 @@ abstract class BaseAdapter<T>(
     protected var recyclerView: RecyclerView? = null
         private set
 
-    private var prefs: SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
+    private var prefs = context.gramophoneApplication.prefs
 
     private var prefSortType: Sorter.Type = Sorter.Type.valueOf(
-        prefs.getString(
+        prefs.getStringStrict(
             "S" + FileOpUtils.getAdapterType(this).toString(),
             Sorter.Type.None.toString()
         )!!
@@ -95,7 +94,7 @@ abstract class BaseAdapter<T>(
     private var gridPaddingDecoration = GridPaddingDecoration(context)
 
     private var prefLayoutType: LayoutType = LayoutType.valueOf(
-        prefs.getString(
+        prefs.getStringStrict(
             "L" + FileOpUtils.getAdapterType(this).toString(),
             LayoutType.NONE.toString()
         )!!
@@ -235,7 +234,7 @@ abstract class BaseAdapter<T>(
         updateList(null, now = false, canDiff = true)
     }
 
-    private fun sort(srcList: List<T>? = null, canDiff: Boolean, now: Boolean): () -> () -> Unit {
+    private fun sort(srcList: List<T>? = null, canDiff: Boolean): () -> () -> Unit {
         // Ensure rawList is only accessed on UI thread
         // and ensure calls to this method go in order
         // to prevent funny IndexOutOfBoundsException crashes
@@ -244,56 +243,47 @@ abstract class BaseAdapter<T>(
             throw IllegalStateException("listLock already held, add now = true to the caller")
         }
         return {
-            val apply = try {
-                sortInner(newList, canDiff, now)
+            try {
+                if (sortType == Sorter.Type.NativeOrderDescending) {
+                    newList.reverse()
+                } else if (sortType != Sorter.Type.NativeOrder) {
+                    newList.sortWith { o1, o2 ->
+                        if (isPinned(o1) && !isPinned(o2)) -1
+                        else if (!isPinned(o1) && isPinned(o2)) 1
+                        else comparator?.compare(o1, o2) ?: 0
+                    }
+                }
+                val diff = if (((list.size != 0 && newList.size != 0) || allowDiffUtils) && canDiff)
+                    DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
+                val oldCount = list.size
+                val newCount = newList.size
+                {
+                    try {
+                        if (srcList != null) {
+                            rawList.clear()
+                            rawList.addAll(srcList)
+                        }
+                        list.clear()
+                        list.addAll(newList)
+                        @SuppressLint("NotifyDataSetChanged")
+                        if (diff != null)
+                            diff.dispatchUpdatesTo(this)
+                        else
+                            notifyDataSetChanged()
+                        if (oldCount != newCount) decorAdapter.updateSongCounter()
+                    } finally {
+                        listLock.release()
+                    }
+                }
             } catch (e: Exception) {
                 listLock.release()
                 throw e
             }
-            {
-                try {
-                    if (srcList != null) {
-                        rawList.clear()
-                        rawList.addAll(srcList)
-                    }
-                    apply()
-                } finally {
-                    listLock.release()
-                }
-            }
-        }
-    }
-
-    private fun sortInner(newList: ArrayList<T>, canDiff: Boolean, now: Boolean): () -> Unit {
-        // Sorting in the background using coroutines
-        if (sortType == Sorter.Type.NativeOrderDescending) {
-            newList.reverse()
-        } else if (sortType != Sorter.Type.NativeOrder) {
-            newList.sortWith { o1, o2 ->
-                if (isPinned(o1) && !isPinned(o2)) -1
-                else if (!isPinned(o1) && isPinned(o2)) 1
-                else comparator?.compare(o1, o2) ?: 0
-            }
-        }
-        return updateListSorted(newList, canDiff)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun updateListSorted(newList: MutableList<T>, canDiff: Boolean): () -> Unit {
-        val diffResult = if (((list.isNotEmpty() && newList.size != 0) || allowDiffUtils) && canDiff)
-            DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
-        val oldCount = list.size
-        val newCount = newList.size
-        return {
-            list.clear()
-            list.addAll(newList)
-            if (diffResult != null) diffResult.dispatchUpdatesTo(this) else notifyDataSetChanged()
-            if (oldCount != newCount) decorAdapter.updateSongCounter()
         }
     }
 
     fun updateList(newList: List<T>? = null, now: Boolean, canDiff: Boolean) {
-        val doSort = sort(newList, canDiff, now)
+        val doSort = sort(newList, canDiff)
         if (now || bgHandler == null) doSort()()
         else {
             bgHandler!!.post {

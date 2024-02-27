@@ -18,6 +18,8 @@
 package org.akanework.gramophone.logic
 
 import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.content.res.Resources.getSystem
 import android.graphics.Color
@@ -27,7 +29,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
+import android.os.StrictMode
 import android.view.View
 import android.widget.TextView
 import androidx.activity.ComponentActivity
@@ -43,6 +47,11 @@ import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_QUERY_TIMER
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
@@ -232,6 +241,7 @@ fun View.enableEdgeToEdgePaddingListener() {
             val cutoutAndBars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
                         or WindowInsetsCompat.Type.displayCutout()
+                        or WindowInsetsCompat.Type.ime()
             )
             v.setPadding(cutoutAndBars.left, 0, cutoutAndBars.right, cutoutAndBars.bottom)
             return@setOnApplyWindowInsetsListener insets
@@ -248,4 +258,58 @@ fun ComponentActivity.enableEdgeToEdgeProperly() {
     } else {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, darkScrim))
     }
+}
+
+val Context.gramophoneApplication
+    get() = applicationContext as GramophoneApplication
+
+inline fun Semaphore.runInBg(crossinline runnable: suspend () -> Unit) {
+    CoroutineScope(Dispatchers.Default).launch {
+        acquire()
+        try {
+            runnable()
+        } finally {
+            release()
+        }
+    }
+}
+
+// the whole point of this function is to do literally nothing at all (but without impacting
+// performance) in release builds and ignore StrictMode violations in debug builds
+inline fun <reified T> useSharedPrefs(doIt: () -> T): T {
+    return if (BuildConfig.DEBUG) {
+        if (Looper.getMainLooper() != Looper.myLooper()) throw IllegalStateException()
+        val policy = StrictMode.allowThreadDiskReads()
+        try {
+            StrictMode.allowThreadDiskWrites()
+            doIt()
+        } finally {
+            StrictMode.setThreadPolicy(policy)
+        }
+    } else doIt()
+}
+
+inline fun <reified T> SharedPreferences.use(doIt: SharedPreferences.() -> T): T {
+    return useSharedPrefs { doIt() }
+}
+
+// use below functions if accessing from UI thread only
+@Suppress("NOTHING_TO_INLINE")
+inline fun SharedPreferences.getStringStrict(key: String, defValue: String?): String? {
+    return use { getString(key, defValue) }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun SharedPreferences.getIntStrict(key: String, defValue: Int): Int {
+    return use { getInt(key, defValue) }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun SharedPreferences.getBooleanStrict(key: String, defValue: Boolean): Boolean {
+    return use { getBoolean(key, defValue) }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun SharedPreferences.getStringSetStrict(key: String, defValue: Set<String>?): Set<String>? {
+    return use { getStringSet(key, defValue) }
 }

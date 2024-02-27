@@ -35,12 +35,12 @@ import android.widget.Toast
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.putIfAbsentSupport
 import org.akanework.gramophone.ui.LibraryViewModel
 import java.io.File
@@ -263,7 +263,7 @@ object MediaStoreUtils {
                     add(MediaStore.Audio.Media.AUTHOR)
                 }
             }.toTypedArray()
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val prefs = context.gramophoneApplication.prefs
         val limitValue = prefs.getInt(
             "mediastore_filter",
             context.resources.getInteger(R.integer.filter_default_sec)
@@ -603,7 +603,7 @@ object MediaStoreUtils {
         )
     }
 
-    fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context) {
+    fun updateLibraryWithInCoroutine(libraryViewModel: LibraryViewModel, context: Context, then: (() -> Unit)?) {
         val pairObject = getAllSongs(context)
         CoroutineScope(Dispatchers.Main).launch {
             libraryViewModel.mediaItemList.value = pairObject.songList
@@ -616,6 +616,7 @@ object MediaStoreUtils {
             libraryViewModel.folderStructure.value = pairObject.folderStructure
             libraryViewModel.shallowFolderStructure.value = pairObject.shallowFolder
             libraryViewModel.allFolderSet.value = pairObject.folders
+            then?.let { it() }
         }
     }
 

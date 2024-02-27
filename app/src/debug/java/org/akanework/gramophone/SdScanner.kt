@@ -5,9 +5,9 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.util.Consumer
 import java.io.File
 import java.io.IOException
-import androidx.core.util.Consumer
 
 
 /**
@@ -210,7 +210,7 @@ class SdScanner(private val context: Context) {
 			val scanner = SdScanner(context)
 			if (listener != null) {
 				scanner.progress.addListener { t ->
-					if (t?.step == SimpleProgress.Step.DONE) {
+					if (t.step == SimpleProgress.Step.DONE) {
 						// remove listener again to avoid leaking memory
 						scanner.cleanup()
 					}

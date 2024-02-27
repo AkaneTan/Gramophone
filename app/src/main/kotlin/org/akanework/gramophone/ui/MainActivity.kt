@@ -18,7 +18,6 @@
 package org.akanework.gramophone.ui
 
 import android.app.NotificationManager
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -35,13 +34,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +51,6 @@ import org.akanework.gramophone.logic.postAtFrontOfQueueAsync
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
-import kotlin.random.Random
 
 /**
  * MainActivity:
@@ -75,7 +73,9 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     private val handler = Handler(Looper.getMainLooper())
-    private lateinit var prefs: SharedPreferences
+    private var ready = false
+    lateinit var playerBottomSheet: PlayerBottomSheet
+        private set
     lateinit var intentSender: ActivityResultLauncher<IntentSenderRequest>
         private set
     var intentSenderAction: (() -> Boolean)? = null
@@ -84,10 +84,9 @@ class MainActivity : AppCompatActivity() {
      * updateLibrary:
      *   Calls [updateLibraryWithInCoroutine] in MediaStoreUtils and updates library.
      */
-    private fun updateLibrary() {
+    fun updateLibrary(then: (() -> Unit)? = null) {
         CoroutineScope(Dispatchers.Default).launch {
-            updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
-            reportFullyDrawn()
+            updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity, then)
         }
     }
 
@@ -96,7 +95,7 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition { ready }
         enableEdgeToEdgeProperly()
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             if (it.resultCode == RESULT_OK) {
@@ -109,7 +108,6 @@ class MainActivity : AppCompatActivity() {
             }
             intentSenderAction = null
         }
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentLifecycleCallbacks() {
@@ -118,13 +116,19 @@ class MainActivity : AppCompatActivity() {
                 // this won't be called in case we show()/hide() so
                 // we handle that case in BaseFragment
                 if (f is BaseFragment && f.wantsPlayer != null) {
-                    getPlayerSheet().visible = f.wantsPlayer
+                    playerBottomSheet.visible = f.wantsPlayer
                 }
             }
         }, false)
 
         // Set content Views.
         setContentView(R.layout.activity_main)
+        playerBottomSheet = findViewById(R.id.player_layout)
+        val container = findViewById<FragmentContainerView>(R.id.container)
+        // Modifies FragmentContainerView's insets to account for bottom sheet size.
+        ViewCompat.setOnApplyWindowInsetsListener(container) { _, insets ->
+            playerBottomSheet.generateBottomSheetInsets(insets)
+        }
 
         // Check all permissions.
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
@@ -161,9 +165,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-                //updateLibrary() TODO TODO TODO
-                updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity)
-                reportFullyDrawn()
+                updateLibrary { reportFullyDrawn() }
             }
         }
 
@@ -171,16 +173,13 @@ class MainActivity : AppCompatActivity() {
 
     // https://twitter.com/Piwai/status/1529510076196630528
     override fun reportFullyDrawn() {
-        val r = {
-            Choreographer.getInstance().postFrameCallback {
-                handler.postAtFrontOfQueueAsync {
-                    super.reportFullyDrawn()
-                }
+        if (ready) throw IllegalStateException()
+        ready = true
+        Choreographer.getInstance().postFrameCallback {
+            handler.postAtFrontOfQueueAsync {
+                super.reportFullyDrawn()
             }
         }
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            r()
-        } else handler.post(r)
     }
 
     /**
@@ -236,22 +235,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * shuffle:
-     *   Called by child fragment / drawer. It calls
-     * controller's shuffle method.
-     */
-    fun shuffle(list: List<MediaItem>? = libraryViewModel.mediaItemList.value) {
-        val controller = getPlayer()
-        controller?.shuffleModeEnabled = true
-        list?.takeIf { it.isNotEmpty() }?.also {
-            controller?.setMediaItems(it)
-            controller?.seekToDefaultPosition(Random.nextInt(0, it.size))
-            controller?.prepare()
-            controller?.play()
-        } ?: controller?.setMediaItems(listOf())
-    }
-
-    /**
      * startFragment:
      *   Used by child fragments / drawer to start
      * a fragment inside MainActivity's fragment
@@ -283,23 +266,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * getPlayerSheet:
-     *   Used by child fragment to get player sheet's
-     *  view. Notice this would always return a non-null
-     *  object since player layout is fixed in main
-     *  activity's layout.
-     */
-    fun getPlayerSheet(): PlayerBottomSheet = findViewById(R.id.player_layout)
-
-    /**
      * getPlayer:
      *   Returns a media controller.
      */
-    fun getPlayer() = getPlayerSheet().getPlayer()
-
-    /**
-     * getPreferences:
-     *   Returns a SharedPreference.
-     */
-    fun getPreferences() = prefs
+    fun getPlayer() = playerBottomSheet.getPlayer()
 }

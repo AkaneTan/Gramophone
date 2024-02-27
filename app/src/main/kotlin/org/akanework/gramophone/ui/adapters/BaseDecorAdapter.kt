@@ -18,7 +18,6 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -27,11 +26,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.C
 import androidx.media3.common.Player.REPEAT_MODE_OFF
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.utils.FileOpUtils
+import kotlin.random.Random
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
@@ -41,8 +41,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 
     protected val context: Context = adapter.context
 
-    private var prefs: SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
+    private var prefs = context.gramophoneApplication.prefs
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -168,7 +167,15 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
         }
         holder.shuffleAll.setOnClickListener {
             if (adapter is SongAdapter) {
-                adapter.getActivity().shuffle(adapter.getSongList())
+                val list = adapter.getSongList()
+                val controller = adapter.getActivity().getPlayer()
+                controller?.shuffleModeEnabled = true
+                list.takeIf { it.isNotEmpty() }?.also {
+                    controller?.setMediaItems(it)
+                    controller?.seekToDefaultPosition(Random.nextInt(0, it.size))
+                    controller?.prepare()
+                    controller?.play()
+                } ?: controller?.setMediaItems(listOf())
             }
         }
     }

@@ -8,12 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.getStringSetStrict
 
 class BlacklistFolderAdapter(
     private val folderArray: MutableList<String>,
     private val prefs: SharedPreferences
 ) : RecyclerView.Adapter<BlacklistFolderAdapter.ViewHolder>() {
-    private val folderFilter = prefs.getStringSet("folderFilter", null)?.
+    private val folderFilter = prefs.getStringSetStrict("folderFilter", null)?.
             toMutableSet() ?: mutableSetOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(
