@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             FragmentLifecycleCallbacks() {
             override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
                 super.onFragmentStarted(fm, f)
+                if (fm.fragments.lastOrNull() != f) return
                 // this won't be called in case we show()/hide() so
                 // we handle that case in BaseFragment
                 if (f is BaseFragment && f.wantsPlayer != null) {
