@@ -47,6 +47,11 @@
             android:summary="@string/settings_play_on_launch_summary" />
         <SwitchPreferenceCompat
             android:defaultValue="false"
+            android:key="trim_lyrics"
+            android:layout="@layout/icon_switch_preference"
+            android:title="@string/settings_trim_lyrics" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
             android:key="album_covers"
             android:layout="@layout/icon_switch_preference"
             android:title="@string/album_covers_compat"

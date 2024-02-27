@@ -530,7 +530,7 @@ object MediaStoreUtils {
                             bestFile = file
                         }
                     }
-                    it.cover = Uri.fromFile(bestFile)
+                    bestFile?.let { f -> it.cover = Uri.fromFile(f) }
                 }
             }
         }

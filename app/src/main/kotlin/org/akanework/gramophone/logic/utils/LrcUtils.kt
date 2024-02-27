@@ -17,10 +17,10 @@ object LrcUtils {
     private const val TAG = "LrcUtils"
 
     @OptIn(UnstableApi::class)
-    fun extractAndParseLyrics(metadata: Metadata): MutableList<MediaStoreUtils.Lyric>? {
+    fun extractAndParseLyrics(metadata: Metadata, trim: Boolean): MutableList<MediaStoreUtils.Lyric>? {
         return extractLyrics(metadata)?.let {
             try {
-                parseLrcString(it)
+                parseLrcString(it, trim)
             } catch (e: Exception) {
                 Log.e(TAG, Log.getStackTraceString(e))
                 null
@@ -28,12 +28,12 @@ object LrcUtils {
     }
 
     @OptIn(UnstableApi::class)
-    fun loadAndParseLyricsFile(musicFile: File?): MutableList<MediaStoreUtils.Lyric>? {
+    fun loadAndParseLyricsFile(musicFile: File?, trim: Boolean): MutableList<MediaStoreUtils.Lyric>? {
         val lrcFile = musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".lrc") }
         if (lrcFile?.exists() == true) {
             return loadLrcFile(lrcFile).let {
                 try {
-                    parseLrcString(it)
+                    parseLrcString(it, trim)
                 } catch (e: Exception) {
                     Log.e(TAG, Log.getStackTraceString(e))
                     null
@@ -74,7 +74,7 @@ object LrcUtils {
      * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
      */
     @VisibleForTesting
-    fun parseLrcString(lrcContent: String): MutableList<MediaStoreUtils.Lyric> {
+    fun parseLrcString(lrcContent: String, trim: Boolean): MutableList<MediaStoreUtils.Lyric> {
         val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()
         val list = mutableListOf<MediaStoreUtils.Lyric>()
         var foundNonNull = false
@@ -87,6 +87,7 @@ object LrcUtils {
                     return@let
                 }
                 val lyricLine = line.substring(sequence.last().range.last + 1)
+                    .let { if (trim) it.trim() else it }
                 sequence.forEach { match ->
                     val ts = parseTime(match.groupValues.subList(1, match.groupValues.size).joinToString(""))
                     if (!foundNonNull && ts > 0) {

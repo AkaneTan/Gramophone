@@ -24,6 +24,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
@@ -99,6 +100,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
     private val lyricsLock = Semaphore(1)
+    private lateinit var prefs: SharedPreferences
 
     private fun getRepeatCommand() =
         when (mediaSession?.player!!.repeatMode) {
@@ -143,7 +145,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
     override fun onCreate() {
         super.onCreate()
-        val prefs = gramophoneApplication.prefs
+        prefs = gramophoneApplication.prefs
 
         customCommands =
             listOf(
@@ -419,14 +421,15 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onTracksChanged(tracks: Tracks) {
         val mediaItem = mediaSession?.player?.currentMediaItem
         lyricsLock.runInBg {
-            var lrc = loadAndParseLyricsFile(mediaItem?.getFile())
+            val trim = prefs.getBoolean("trim_lyrics", false)
+            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim)
             if (lrc == null) {
                 loop@ for (i in tracks.groups) {
                     for (j in 0 until i.length) {
                         if (!i.isTrackSelected(j)) continue
                         // note: wav files can have null metadata
                         val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                        lrc = extractAndParseLyrics(trackMetadata) ?: continue
+                        lrc = extractAndParseLyrics(trackMetadata, trim) ?: continue
                         // add empty element at the beginning
                         lrc.add(0, MediaStoreUtils.Lyric())
                         break@loop
