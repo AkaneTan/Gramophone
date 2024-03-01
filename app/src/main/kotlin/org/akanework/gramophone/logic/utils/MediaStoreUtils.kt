@@ -32,6 +32,7 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -66,14 +67,25 @@ object MediaStoreUtils {
     /**
      * [Album] stores Album metadata.
      */
-    data class Album(
+    interface Album : Item {
+        override val id: Long?
+        override val title: String?
+        val artist: String?
+        val artistId: Long?
+        val albumYear: Int?
+        val cover: Uri?
+        override val songList: MutableList<MediaItem>
+    }
+
+    private data class AlbumImpl(
         override val id: Long?,
         override val title: String?,
-        val artist: String?,
-        val albumYear: Int?,
-        var cover: Uri?,
+        override val artist: String?,
+        override var artistId: Long?,
+        override val albumYear: Int?,
+        override var cover: Uri?,
         override val songList: MutableList<MediaItem>
-    ) : Item
+    ) : Album
 
     /**
      * [Artist] stores Artist metadata.
@@ -282,7 +294,7 @@ object MediaStoreUtils {
         val root = FileNode("storage")
         val shallowRoot = FileNode("shallow")
         val songs = mutableListOf<MediaItem>()
-        val albumMap = hashMapOf<Long?, Album>()
+        val albumMap = hashMapOf<Long?, AlbumImpl>()
         val artistMap = hashMapOf<Long?, Artist>()
         val artistCacheMap = hashMapOf<String?, Long?>()
         val albumArtistMap = hashMapOf<String?, MutableList<MediaItem>>()
@@ -291,22 +303,42 @@ object MediaStoreUtils {
         val playlists = mutableListOf<Pair<Playlist, MutableList<Long>>>()
         var foundFavourites = false
         var foundPlaylistContent = false
+        val albumIdToArtistMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val map = hashMapOf<Long, Pair<Long, String?>>()
+            context.contentResolver.query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, arrayOf(
+                    MediaStore.Audio.Albums._ID,
+                    MediaStore.Audio.Albums.ARTIST, MediaStore.Audio.Albums.ARTIST_ID
+                ), null, null, null
+            )?.use {
+                val idColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+                val artistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+                val artistIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID)
+                while (it.moveToNext()) {
+                    val artistId = it.getLongOrNull(artistIdColumn)
+                    if (artistId != null) {
+                        val id = it.getLong(idColumn)
+                        val artistName = it.getStringOrNull(artistColumn)?.ifEmpty { null }
+                        map[id] = Pair(artistId, artistName)
+                    }
+                }
+            }
+            map
+        } else null
         context.contentResolver.query(@Suppress("DEPRECATION")
             MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, arrayOf(
                 @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID,
                 @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
             ), null, null, null)?.use {
+            val playlistIdColumn = it.getColumnIndexOrThrow(
+                @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID
+            )
+            val playlistNameColumn = it.getColumnIndexOrThrow(
+                @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
+            )
             while (it.moveToNext()) {
-                val playlistId = it.getLong(
-                    it.getColumnIndexOrThrow(
-                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists._ID
-                    )
-                )
-                val playlistName = it.getString(
-                    it.getColumnIndexOrThrow(
-                        @Suppress("DEPRECATION") MediaStore.Audio.Playlists.NAME
-                    )
-                ).ifEmpty { null }.run {
+                val playlistId = it.getLong(playlistIdColumn)
+                val playlistName = it.getString(playlistNameColumn)?.ifEmpty { null }.run {
                     if (!foundFavourites && this == "gramophone_favourite") {
                         foundFavourites = true
                         context.getString(R.string.playlist_favourite)
@@ -494,7 +526,10 @@ object MediaStoreUtils {
                 albumMap.getOrPut(albumId) {
                     // in haveImgPerm case, cover uri is created later using coverCache
                     val cover = if (haveImgPerm) null else ContentUris.withAppendedId(coverUri, albumId)
-                    Album(albumId, album, albumArtist ?: artist, year, cover, mutableListOf())
+                    val artistStr = albumArtist ?: artist
+                    val likelyArtist = albumIdToArtistMap?.get(albumId)
+                        ?.run { if (second == artistStr) this else null }
+                    AlbumImpl(albumId, album, artistStr, likelyArtist?.first, year, cover, mutableListOf())
                 }.songList.add(song)
                 albumArtistMap.getOrPut(albumArtist) { mutableListOf() }.add(song)
                 genreMap.getOrPut(genreId) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
@@ -508,9 +543,11 @@ object MediaStoreUtils {
         }
 
         // Parse all the lists.
-        val albumList = albumMap.values.toMutableList()
-        albumList.forEach {
-            artistMap[artistCacheMap[it.artist]]?.albumList?.add(it)
+        val albumList = albumMap.values.onEach {
+            if (it.artistId == null) {
+                it.artistId = artistCacheMap[it.artist]
+            }
+            artistMap[it.artistId]?.albumList?.add(it)
             // coverCache == null if !haveImgPerm
             coverCache?.get(it.id)?.let { p ->
                 // if this is false, folder contains >1 albums
@@ -533,7 +570,7 @@ object MediaStoreUtils {
                     bestFile?.let { f -> it.cover = Uri.fromFile(f) }
                 }
             }
-        }
+        }.toMutableList<Album>()
         val artistList = artistMap.values.toMutableList()
         val albumArtistList = albumArtistMap.entries.map { (cat, songs) ->
             // we do not get unique IDs for album artists, so just take first match :shrug:
