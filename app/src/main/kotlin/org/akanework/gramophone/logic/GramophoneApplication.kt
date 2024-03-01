@@ -68,8 +68,12 @@ class GramophoneApplication : Application() {
         if (BuildConfig.DEBUG) {
             // Use StrictMode to find anti-patterns issues (as of writing, no known violations)
             // (of course not counting SharedPreferences which just is like that by nature)
-            StrictMode.setThreadPolicy(ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDialog().build())
-            StrictMode.setVmPolicy(VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build())
+            StrictMode.setThreadPolicy(ThreadPolicy.Builder()
+                .detectAll().permitDiskReads() // permit disk reads due to media3 setMetadata()
+                .penaltyLog().penaltyDialog().build())
+            StrictMode.setVmPolicy(VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog().penaltyDeath().build())
         }
 
         // https://github.com/androidx/media/issues/805
