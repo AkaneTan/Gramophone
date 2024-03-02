@@ -172,7 +172,6 @@ class MainActivity : AppCompatActivity() {
                 updateLibrary()
             } else reportFullyDrawn()
         }
-
     }
 
     // https://twitter.com/Piwai/status/1529510076196630528

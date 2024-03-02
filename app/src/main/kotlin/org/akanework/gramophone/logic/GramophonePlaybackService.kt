@@ -334,9 +334,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             : MediaSession.ConnectionResult {
         val availableSessionCommands =
             MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
-        for (commandButton in customCommands) {
-            // Add custom command to available session commands.
-            commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
+        if (controller.packageName == "com.android.systemui") {
+            // currently, all custom actions are only useful when used by SystemUI (notification)
+            // other clients hopefully have repeat/shuffle buttons like MCT does
+            for (commandButton in customCommands) {
+                // Add custom command to available session commands.
+                commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
+            }
         }
         availableSessionCommands.add(SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY))

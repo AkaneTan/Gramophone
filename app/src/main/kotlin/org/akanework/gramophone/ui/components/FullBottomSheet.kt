@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
@@ -38,9 +39,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -101,6 +100,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private var isUserTracking = false
 	private var runnableRunning = false
 	private var firstTime = false
+	private var lastArtworkUri: Uri? = null
 
 	private val prefs = context.gramophoneApplication.prefs
 
@@ -984,16 +984,20 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
-
 	@SuppressLint("NotifyDataSetChanged")
 	override fun onMediaItemTransition(
 		mediaItem: MediaItem?,
 		reason: Int
 	) {
 		if (instance?.mediaItemCount != 0) {
+			val artworkUri = mediaItem?.mediaMetadata?.artworkUri
 			Glide
 				.with(context)
-				.load(mediaItem?.mediaMetadata?.artworkUri)
+				.load(artworkUri)
+				.error(R.drawable.ic_default_cover)
+				// https://github.com/bumptech/glide/issues/527#issuecomment-148840717
+				.thumbnail(if (lastArtworkUri != null)
+					Glide.with(context).load(lastArtworkUri) else null)
 				.addListener(object : RequestListener<Drawable> {
 					override fun onLoadFailed(
 						e: GlideException?,
@@ -1002,8 +1006,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						isFirstResource: Boolean
 					): Boolean {
 						removeColorScheme()
-						target.onLoadFailed(AppCompatResources.getDrawable(context, R.drawable.ic_default_cover))
-						return true
+						return false
 					}
 
 					override fun onResourceReady(
@@ -1013,7 +1016,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						dataSource: DataSource,
 						isFirstResource: Boolean
 					): Boolean {
-						if (Build.VERSION.SDK_INT >= 26 &&
+						if (!isFirstResource && Build.VERSION.SDK_INT >= 26 &&
 							prefs.getBooleanStrict("content_based_color", true)) {
 							handler.post {
 								addColorScheme()
@@ -1022,22 +1025,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						return false
 					}
 				})
-				.into(object : CustomTarget<Drawable>() {
-					override fun onResourceReady(
-						resource: Drawable,
-						transition: Transition<in Drawable>?
-					) {
-						bottomSheetFullCover.setImageDrawable(resource)
-					}
-
-					override fun onLoadFailed(errorDrawable: Drawable?) {
-						bottomSheetFullCover.setImageDrawable(errorDrawable)
-					}
-
-					override fun onLoadCleared(placeholder: Drawable?) {
-						// empty
-					}
-				})
+				.into(bottomSheetFullCover)
+			lastArtworkUri = artworkUri
 			bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title, skipAnimation = firstTime)
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime
@@ -1066,7 +1055,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 			 */
 		} else {
+			lastArtworkUri = null
 			Glide.with(context.applicationContext).clear(bottomSheetFullCover)
+			if (playlistNowPlaying != null) {
+				Glide.with(context.applicationContext).clear(playlistNowPlayingCover!!)
+			}
 		}
 		val position = CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)
 		val duration = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
