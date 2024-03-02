@@ -63,8 +63,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val PERMISSION_READ_MEDIA_AUDIO = 100
-        private const val PERMISSION_READ_EXTERNAL_STORAGE = 101
-        private const val PERMISSION_WRITE_EXTERNAL_STORAGE = 102
     }
 
     // Import our viewModels.
@@ -73,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     private val handler = Handler(Looper.getMainLooper())
+    private val reportFullyDrawnRunnable = Runnable { if (!ready) reportFullyDrawn() }
     private var ready = false
     lateinit var playerBottomSheet: PlayerBottomSheet
         private set
@@ -85,8 +84,13 @@ class MainActivity : AppCompatActivity() {
      *   Calls [updateLibraryWithInCoroutine] in MediaStoreUtils and updates library.
      */
     fun updateLibrary(then: (() -> Unit)? = null) {
+        // If library load takes more than 3s, exit splash to avoid ANR
+        if (!ready) handler.postDelayed(reportFullyDrawnRunnable, 3000)
         CoroutineScope(Dispatchers.Default).launch {
-            updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity, then)
+            updateLibraryWithInCoroutine(libraryViewModel, this@MainActivity) {
+                if (!ready) reportFullyDrawn()
+                then?.let { it() }
+            }
         }
     }
 
@@ -95,7 +99,7 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen().setKeepOnScreenCondition { ready }
+        installSplashScreen().setKeepOnScreenCondition { !ready }
         enableEdgeToEdgeProperly()
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             if (it.resultCode == RESULT_OK) {
@@ -148,7 +152,6 @@ class MainActivity : AppCompatActivity() {
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
             ) != PackageManager.PERMISSION_GRANTED)
         ) {
-            reportFullyDrawn()
             // Ask if was denied.
             ActivityCompat.requestPermissions(
                 this,
@@ -166,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
-                updateLibrary { reportFullyDrawn() }
+                updateLibrary()
             } else reportFullyDrawn()
         }
 
@@ -174,6 +177,7 @@ class MainActivity : AppCompatActivity() {
 
     // https://twitter.com/Piwai/status/1529510076196630528
     override fun reportFullyDrawn() {
+        handler.removeCallbacks(reportFullyDrawnRunnable)
         if (ready) throw IllegalStateException()
         ready = true
         Choreographer.getInstance().postFrameCallback {
@@ -194,43 +198,14 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when (requestCode) {
-            PERMISSION_READ_MEDIA_AUDIO -> {
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    updateLibrary()
-                } else {
-                    // TODO: Show a prompt here
-                }
-            }
-
-            PERMISSION_READ_EXTERNAL_STORAGE -> {
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    updateLibrary()
-                } else {
-                    // TODO: Show a prompt here
-                }
-            }
-
-            PERMISSION_WRITE_EXTERNAL_STORAGE -> {
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    updateLibrary()
-                } else {
-                    // TODO: Show a prompt here
-                }
+        if (requestCode == PERMISSION_READ_MEDIA_AUDIO) {
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
+                updateLibrary()
+            } else {
+                reportFullyDrawn()
+                // TODO: Show a prompt here
             }
         }
     }
