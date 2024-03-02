@@ -30,16 +30,13 @@ object LrcUtils {
     @OptIn(UnstableApi::class)
     fun loadAndParseLyricsFile(musicFile: File?, trim: Boolean): MutableList<MediaStoreUtils.Lyric>? {
         val lrcFile = musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".lrc") }
-        if (lrcFile?.exists() == true) {
-            return loadLrcFile(lrcFile).let {
-                try {
-                    parseLrcString(it, trim)
-                } catch (e: Exception) {
-                    Log.e(TAG, Log.getStackTraceString(e))
-                    null
-                } }
-        }
-        return null
+        return loadLrcFile(lrcFile)?.let {
+            try {
+                parseLrcString(it, trim)
+            } catch (e: Exception) {
+                Log.e(TAG, Log.getStackTraceString(e))
+                null
+            } }
     }
 
     @OptIn(UnstableApi::class)
@@ -48,14 +45,21 @@ object LrcUtils {
             val meta = metadata.get(i)
             if (meta is VorbisComment && meta.key == "LYRICS") // ogg / flac
                 return meta.value
-            if (meta is BinaryFrame && meta.id == "USLT") // mp3 / other id3 based
+            if (meta is BinaryFrame && (meta.id == "USLT" || meta.id == "SYLT")) // mp3 / other id3 based
                 return UsltFrameDecoder.decode(ParsableByteArray(meta.data))
         }
         return null
     }
 
-    private fun loadLrcFile(lrcFile: File): String {
-        return lrcFile.readBytes().toString(Charset.defaultCharset())
+    private fun loadLrcFile(lrcFile: File?): String? {
+        return try {
+            if (lrcFile?.exists() == true)
+                lrcFile.readBytes().toString(Charset.defaultCharset())
+            else null
+        } catch (e: Exception) {
+            Log.e(TAG, e.message ?: Log.getStackTraceString(e))
+            null
+        }
     }
 
     /*

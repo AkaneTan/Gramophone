@@ -148,6 +148,7 @@ class MainActivity : AppCompatActivity() {
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
             ) != PackageManager.PERMISSION_GRANTED)
         ) {
+            reportFullyDrawn()
             // Ask if was denied.
             ActivityCompat.requestPermissions(
                 this,
@@ -162,12 +163,11 @@ class MainActivity : AppCompatActivity() {
                     ),
                 PERMISSION_READ_MEDIA_AUDIO,
             )
-            reportFullyDrawn()
         } else {
             // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
                 updateLibrary { reportFullyDrawn() }
-            }
+            } else reportFullyDrawn()
         }
 
     }

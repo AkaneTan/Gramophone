@@ -120,7 +120,7 @@ object MediaStoreUtils {
      */
     open class Playlist(
         override val id: Long,
-        override var title: String?,
+        override val title: String?,
         override val songList: MutableList<MediaItem>
     ) : Item
 
@@ -543,6 +543,7 @@ object MediaStoreUtils {
         }
 
         // Parse all the lists.
+        val allowedCoverExtensions = listOf("jpg", "png", "jpeg", "bmp", "tiff", "tif", "webp")
         val albumList = albumMap.values.onEach {
             if (it.artistId == null) {
                 it.artistId = artistCacheMap[it.artist]
@@ -552,22 +553,38 @@ object MediaStoreUtils {
             coverCache?.get(it.id)?.let { p ->
                 // if this is false, folder contains >1 albums
                 if (p.second.albumId == it.id) {
-                    val files = p.first.listFiles() ?: return@let
                     var bestScore = 0
                     var bestFile: File? = null
-                    for (file in files) {
-                        if (!(file.name.endsWith(".jpg") || file.name.endsWith(".png")))
-                            continue
-                        var score = 1
-                        if (file.nameWithoutExtension == "albumart") score = 4
-                        else if (file.nameWithoutExtension == "cover") score = 3
-                        else if (file.nameWithoutExtension.contains("cover")) score = 2
-                        if (bestScore < score) {
-                            bestScore = score
-                            bestFile = file
+                    try {
+                        val files = p.first.listFiles() ?: return@let
+                        for (file in files) {
+                            if (file.extension !in allowedCoverExtensions)
+                                continue
+                            var score = 1
+                            when (file.extension) {
+                                "jpg" -> score += 3
+                                "png" -> score += 2
+                                "jpeg" -> score += 1
+                            }
+                            if (file.nameWithoutExtension == "albumart") score += 24
+                            else if (file.nameWithoutExtension == "cover") score += 20
+                            else if (file.nameWithoutExtension.startsWith("albumart")) score += 16
+                            else if (file.nameWithoutExtension.startsWith("cover")) score += 12
+                            else if (file.nameWithoutExtension.contains("albumart")) score += 8
+                            else if (file.nameWithoutExtension.contains("cover")) score += 4
+                            if (bestScore < score) {
+                                bestScore = score
+                                bestFile = file
+                            }
                         }
+                    } catch (e: Exception) {
+                        Log.e(TAG, Log.getStackTraceString(e))
                     }
-                    bestFile?.let { f -> it.cover = Uri.fromFile(f) }
+                    // allow .jpg or .png files with any name, but only permit more exotic
+                    // formats if name contains either cover or albumart
+                    if (bestScore >= 3) {
+                        bestFile?.let { f -> it.cover = Uri.fromFile(f) }
+                    }
                 }
             }
         }.toMutableList<Album>()
