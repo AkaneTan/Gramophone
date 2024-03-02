@@ -10,7 +10,7 @@ import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.ui.adapters.BaseAdapter
 
 class GridPaddingDecoration(context: Context) : RecyclerView.ItemDecoration() {
-    private var mPadding = 10.dpToPx(context)
+    private var mPadding = 24.dpToPx(context)
     private val columnSize = if (context.resources.configuration.orientation
         == Configuration.ORIENTATION_PORTRAIT) 2 else 4
 
