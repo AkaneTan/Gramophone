@@ -28,7 +28,8 @@ class DetailDialogFragment : BaseFragment(false) {
         val rootView = inflater.inflate(R.layout.dialog_info_song, container, false)
         rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
         rootView.findViewById<View>(R.id.scrollView).enableEdgeToEdgePaddingListener()
-        val mediaMetadata = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")].mediaMetadata
+        val mediaItem = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")]
+        val mediaMetadata = mediaItem.mediaMetadata
         val albumCoverImageView = rootView.findViewById<ImageView>(R.id.album_cover)
         val titleTextView = rootView.findViewById<TextView>(R.id.title)
         val artistTextView = rootView.findViewById<TextView>(R.id.artist)
@@ -53,17 +54,18 @@ class DetailDialogFragment : BaseFragment(false) {
         if (mediaMetadata.albumArtist != null) {
             albumArtistTextView.text = mediaMetadata.albumArtist
         }
-        discNumberTextView.text = mediaMetadata.discNumber.toString()
-        trackNumberTextView.text = mediaMetadata.trackNumber.toString()
+        discNumberTextView.text = mediaMetadata.discNumber?.toString()
+        trackNumberTextView.text = mediaMetadata.trackNumber?.toString()
         if (mediaMetadata.genre != null) {
             genreTextView.text = mediaMetadata.genre
         }
         if (mediaMetadata.releaseYear != null) {
-            yearTextView.text = mediaMetadata.releaseYear.toString()
+            yearTextView.text = mediaMetadata.releaseYear?.toString()
         }
         durationTextView.text = convertDurationToTimeStamp(mediaMetadata.extras!!.getLong("Duration"))
-        mimeTypeTextView.text = mediaMetadata.extras!!.getString("MimeType")
-        pathTextView.text = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")].getFile()?.path
+        mimeTypeTextView.text = mediaItem.localConfiguration?.mimeType ?: "(null)"
+        pathTextView.text = mediaItem.getFile()?.path
+            ?: mediaItem.requestMetadata.mediaUri?.toString() ?: "(null)"
         return rootView
     }
 }
