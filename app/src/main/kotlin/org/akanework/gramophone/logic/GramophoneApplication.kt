@@ -49,6 +49,7 @@ class GramophoneApplication : Application() {
     lateinit var prefs: SharedPreferences
         private set
 
+    @OptIn(UnstableApi::class)
     override fun onCreate() {
         // Set up BugHandlerActivity.
         Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
@@ -77,7 +78,6 @@ class GramophoneApplication : Application() {
         }
 
         // https://github.com/androidx/media/issues/805
-        @OptIn(UnstableApi::class)
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)

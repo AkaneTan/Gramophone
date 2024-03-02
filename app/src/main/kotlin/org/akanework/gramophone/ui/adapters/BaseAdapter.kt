@@ -235,6 +235,7 @@ abstract class BaseAdapter<T>(
         updateList(null, now = false, canDiff = true)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun sort(srcList: List<T>? = null, canDiff: Boolean): () -> () -> Unit {
         // Ensure rawList is only accessed on UI thread
         // and ensure calls to this method go in order
@@ -266,7 +267,6 @@ abstract class BaseAdapter<T>(
                         }
                         list.clear()
                         list.addAll(newList)
-                        @SuppressLint("NotifyDataSetChanged")
                         if (diff != null)
                             diff.dispatchUpdatesTo(this)
                         else

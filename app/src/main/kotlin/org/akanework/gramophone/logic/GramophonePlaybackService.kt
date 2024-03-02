@@ -414,7 +414,11 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         controller: MediaSession.ControllerInfo
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
-        lastPlayedManager.restore { settable.set(it()) }
+        lastPlayedManager.restore {
+            val mediaItemsWithStartPosition = it()
+                ?: MediaItemsWithStartPosition(listOf(), 0, 0)
+            settable.set(mediaItemsWithStartPosition)
+        }
         return settable
     }
 
