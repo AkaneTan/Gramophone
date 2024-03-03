@@ -10,23 +10,18 @@
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:contentScrim="?attr/colorSurface"
-        app:liftOnScrollColor="?attr/colorSurface"
-        app:statusBarScrim="?attr/colorSurface">
+        app:liftOnScroll="false">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingtoolbar"
+            style="?attr/collapsingToolbarLayoutLargeStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
             app:collapsedTitleTextColor="?attr/colorOnSurface"
-            app:collapsedTitleTextAppearance="?textAppearanceTitleLarge"
             app:expandedTitleTextColor="?attr/colorOnSurface"
             app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
-            app:contentScrim="?attr/colorSurface"
-            app:liftOnScrollColor="?attr/colorSurface"
-            app:statusBarScrim="?attr/colorSurface"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:titleCollapseMode="scale"
+            app:contentScrim="@android:color/transparent"
             app:title="@string/app_name"
             app:expandedTitleMarginStart="24dp">
 
@@ -36,12 +31,6 @@
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
                 app:layout_collapseMode="pin"
-                android:paddingEnd="8dp"
-                android:paddingStart="24dp"
-                app:contentInsetStartWithNavigation="0dp"
-                app:contentInsetLeft="0dp"
-                app:contentInsetStart="0dp"
-                app:titleMarginStart="0dp"
                 app:menu="@menu/home_menu" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>

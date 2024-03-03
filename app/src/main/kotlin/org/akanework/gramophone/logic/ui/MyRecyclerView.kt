@@ -22,6 +22,7 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 
 	private var appBarLayout: AppBarLayout? = null
 	private var scrollInProgress = false
+	private var scrollIsNatural = false
 
 	fun setAppBar(appBarLayout: AppBarLayout) {
 		this.appBarLayout = appBarLayout
@@ -32,7 +33,6 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 		val isExpanded = behavior is AppBarLayout.Behavior && behavior.topAndBottomOffset == 0
 		if (isExpanded != expanded) {
 			appBarLayout?.setExpanded(expanded, true)
-			// TODO this does not change bg color like a real scroll does
 		}
 	}
 
@@ -69,12 +69,17 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 		super.onScrollStateChanged(state)
 		if (state == SCROLL_STATE_DRAGGING) {
 			scrollInProgress = true
-		} else if (!scrollInProgress && state == SCROLL_STATE_SETTLING) {
+			scrollIsNatural = true
+		} else if (!scrollIsNatural && state == SCROLL_STATE_SETTLING) {
 			scrollInProgress = true
-		} else if (scrollInProgress && state == SCROLL_STATE_IDLE) {
+		} else if (state == SCROLL_STATE_IDLE) {
+			if (scrollInProgress && !scrollIsNatural) {
+				val pos =
+					(layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition()
+				setAppBarExpanded(pos == 0)
+			}
 			scrollInProgress = false
-			val pos = (layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition()
-			setAppBarExpanded(pos == 0)
+			scrollIsNatural = false
 		}
 	}
 

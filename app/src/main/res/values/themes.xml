@@ -6,6 +6,7 @@
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="collapsingToolbarLayoutLargeStyle">@style/CollapsingToolbarLarge</item>
         <item name="popupMenuBackground">@drawable/popup_background</item>
     </style>
 
@@ -98,6 +99,11 @@
 
     <style name="BottomPlayerCornerShape">
         <item name="cornerSize">0dp</item>
+    </style>
+
+    <style name="CollapsingToolbarLarge" parent="Widget.Material3.CollapsingToolbar.Large">
+        <item name="titleCollapseMode">scale</item>
+        <item name="contentScrim">?attr/colorSurfaceContainer</item>
     </style>
 
     <style name="MediaPlayer.ProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
