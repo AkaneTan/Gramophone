@@ -10,11 +10,10 @@
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:contentScrim="?attr/colorSurface"
-        app:liftOnScrollColor="?attr/colorSurface"
-        app:statusBarScrim="?attr/colorSurface">
+        app:liftOnScroll="false">
 
         <LinearLayout
+            android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="64dp">
 

@@ -1,5 +1,5 @@
 /*
- *     Copyright (C) 2016  Farbod Safaei
+ *     Copyright (C) 2016 Farbod Safaei
  *                   2024 Akane Foundation
  *
  *     Gramophone is free software: you can redistribute it and/or modify

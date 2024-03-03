@@ -445,11 +445,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 }
             }
             CoroutineScope(Dispatchers.Main).launch {
-                lyrics = lrc
-                mediaSession!!.broadcastCustomCommand(
-                    SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
-                    Bundle.EMPTY
-                )
+                mediaSession?.let {
+                    lyrics = lrc
+                    it.broadcastCustomCommand(
+                        SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+                        Bundle.EMPTY
+                    )
+                }
             }.join()
         }
     }

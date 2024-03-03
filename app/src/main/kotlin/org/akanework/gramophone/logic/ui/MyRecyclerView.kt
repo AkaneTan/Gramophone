@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2024 Akane Foundation
+ *
+ *     Gramophone is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Gramophone is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.akanework.gramophone.logic.ui
 
 import android.content.Context
@@ -91,7 +108,8 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 
 	fun fastScroll(popupTextProvider: PopupTextProvider?): FastScroller {
 		return FastScrollerBuilder(this)
-			//.setViewHelper(**) TODO fork fastscroll's viewhelper for variable item height
+			// TODO some popuptextprovider produce junk that breaks fastscroller
+			.setViewHelper(RecyclerViewHelper(this, popupTextProvider))
 			.useMd2Style()
 			.setTrackDrawable(
 				AppCompatResources.getDrawable(
@@ -99,7 +117,6 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 					R.drawable.ic_transparent
 				)!!
 			)
-			.setPopupTextProvider(popupTextProvider) // TODO some produce junk that breaks fastscroller and awakenScrollBarsPublic
 			.build()
 	}
 

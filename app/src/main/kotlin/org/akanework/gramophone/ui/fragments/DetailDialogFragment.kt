@@ -25,7 +25,7 @@ class DetailDialogFragment : BaseFragment(false) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.dialog_info_song, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_info_song, container, false)
         rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
         rootView.findViewById<View>(R.id.scrollView).enableEdgeToEdgePaddingListener()
         val mediaItem = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")]
