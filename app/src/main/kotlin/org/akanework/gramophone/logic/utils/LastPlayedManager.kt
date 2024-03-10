@@ -28,7 +28,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 import java.nio.charset.StandardCharsets
 
 @OptIn(UnstableApi::class)
-class LastPlayedManager(context: Context, private val controller: MediaController) {
+class LastPlayedManager(context: Context, private val mediaSession: MediaSession) {
 
     companion object {
         private const val TAG = "LastPlayedManager"
@@ -47,20 +47,23 @@ class LastPlayedManager(context: Context, private val controller: MediaControlle
 
     private fun dumpPlaylist(): MediaItemsWithStartPosition {
         val items = mutableListOf<MediaItem>()
-        for (i in 0 until controller.mediaItemCount) {
-            items.add(controller.getMediaItemAt(i))
+        for (i in 0 until mediaSession.player.mediaItemCount) {
+            items.add(mediaSession.player.getMediaItemAt(i))
         }
         return MediaItemsWithStartPosition(
-            items, controller.currentMediaItemIndex, controller.currentPosition
+            items, mediaSession.player.currentMediaItemIndex, mediaSession.player.currentPosition
         )
     }
 
     fun save() {
-        if (!allowSavingState) return
+        if (!allowSavingState) {
+            Log.i(TAG, "skipped save")
+            return
+        }
         val data = dumpPlaylist()
-        val repeatMode = controller.repeatMode
-        val shuffleModeEnabled = controller.shuffleModeEnabled
-        val playbackParameters = controller.playbackParameters
+        val repeatMode = mediaSession.player.repeatMode
+        val shuffleModeEnabled = mediaSession.player.shuffleModeEnabled
+        val playbackParameters = mediaSession.player.playbackParameters
         CoroutineScope(Dispatchers.Default).launch {
             val editor = prefs.edit()
             val lastPlayed = PrefsListUtils.dump(
@@ -122,15 +125,15 @@ class LastPlayedManager(context: Context, private val controller: MediaControlle
                     return@launch
                 }
                 val repeatMode = prefs.getInt("repeat_mode", Player.REPEAT_MODE_OFF)
-                val shuffeModeEnabled = prefs.getBoolean("shuffle", false)
+                val shuffleModeEnabled = prefs.getBoolean("shuffle", false)
                 val playbackParameters = PlaybackParameters(
                     prefs.getFloat("speed", 1f),
                     prefs.getFloat("pitch", 1f)
                 )
                 runCallback(callback) {
-                    controller.repeatMode = repeatMode
-                    controller.shuffleModeEnabled = shuffeModeEnabled
-                    controller.playbackParameters = playbackParameters
+                    mediaSession.player.repeatMode = repeatMode
+                    mediaSession.player.shuffleModeEnabled = shuffleModeEnabled
+                    mediaSession.player.playbackParameters = playbackParameters
                     MediaItemsWithStartPosition(
                         PrefsListUtils.parse(lastPlayedLst, lastPlayedGrp)
                             .map {

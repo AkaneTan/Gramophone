@@ -35,8 +35,8 @@ class BehaviorSettingsFragment : BaseSettingFragment(R.string.settings_category_
     { BehaviorSettingsTopFragment() })
 
 class BehaviorSettingsTopFragment : BasePreferenceFragment() {
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val preference = findPreference<SwitchPreferenceCompat>("album_covers")!!
             preference.isPersistent = false

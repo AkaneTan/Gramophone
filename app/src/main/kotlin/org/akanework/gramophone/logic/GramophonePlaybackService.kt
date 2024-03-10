@@ -84,6 +84,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
 
     companion object {
+        private const val TAG = "GramoPlaybackService"
         private const val PLAYBACK_SHUFFLE_ACTION_ON = "shuffle_on"
         private const val PLAYBACK_SHUFFLE_ACTION_OFF = "shuffle_off"
         private const val PLAYBACK_REPEAT_OFF = "repeat_off"
@@ -278,7 +279,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 )
                 .build()
         controller = MediaController.Builder(this, mediaSession!!.token).buildAsync().get()
-        lastPlayedManager = LastPlayedManager(this, controller!!)
+        lastPlayedManager = LastPlayedManager(this, mediaSession!!)
         // this allowSavingState flag is to prevent A14 bug (explained below)
         // overriding last played with null because it is saved before it is restored
         lastPlayedManager.allowSavingState = false
@@ -288,12 +289,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 val mediaItemsWithStartPosition = it()
                 if (mediaItemsWithStartPosition != null) {
                     try {
-                        controller?.setMediaItems(
+                        mediaSession?.player?.setMediaItems(
                             mediaItemsWithStartPosition.mediaItems,
                             mediaItemsWithStartPosition.startIndex,
                             mediaItemsWithStartPosition.startPositionMs
                         )
                     } catch (e: IllegalSeekPositionException) {
+                        Log.e(TAG, "failed to restore: " + Log.getStackTraceString(e))
                         // song was edited to be shorter and playback position doesn't exist anymore
                     }
                     // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
@@ -316,6 +318,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         // When destroying, we should release server side player
         // alongside with the mediaSession.
         controller!!.release()
+        controller = null
         lastPlayedManager.save()
         sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
