@@ -416,13 +416,12 @@ object MediaStoreUtils {
 
             while (it.moveToNext()) {
                 val duration = it.getLong(durationColumn)
-                // If duration does not match our filter value, instantly proceed with next song
-                if (duration < limitValue * 1000) continue
-                // If folder is blacklisted, don't even bother loading other information
                 val path = it.getString(pathColumn)
                 val pathFile = File(path)
                 val fldPath = pathFile.parentFile!!.absolutePath
-                if (folderFilter.contains(fldPath)) continue
+                val skip = (duration < limitValue * 1000) || folderFilter.contains(fldPath)
+                // We need to add blacklisted songs to idMap as they can be referenced by playlist
+                if (skip && !foundPlaylistContent) continue
                 val id = it.getLong(idColumn)
                 val title = it.getString(titleColumn)
                 val artist = it.getString(artistColumn)
@@ -517,6 +516,8 @@ object MediaStoreUtils {
 
                 // Build our metadata maps/lists.
                 idMap?.put(id, song)
+                // Now that the song can be found by playlists, do NOT register other metadata.
+                if (skip) continue
                 recentlyAddedMap.add(Pair(addDate, song))
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())

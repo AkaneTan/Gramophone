@@ -332,9 +332,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			recyclerView.scrollToPosition(instance?.currentMediaItemIndex ?: 0)
 			recyclerView.fastScroll(null, null)
 			playlistBottomSheet.setOnDismissListener {
-				Glide.with(context.applicationContext).clear(playlistNowPlayingCover!!)
-				playlistNowPlayingCover = null
-				playlistNowPlaying = null
+				if (playlistNowPlaying != null) {
+					Glide.with(context.applicationContext).clear(playlistNowPlayingCover!!)
+					playlistNowPlayingCover = null
+					playlistNowPlaying = null
+				}
 			}
 			playlistBottomSheet.show()
 		}
