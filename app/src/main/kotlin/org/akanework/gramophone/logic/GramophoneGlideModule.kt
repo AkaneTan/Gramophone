@@ -34,7 +34,7 @@ class GramophoneGlideModule : AppGlideModule() {
         context: Context,
         builder: GlideBuilder,
     ) {
-        builder.setLogLevel(Log.ERROR)
+        builder.setLogLevel(Log.WARN)
         builder.setDefaultRequestOptions(
             RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE).centerCrop())
     }

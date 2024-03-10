@@ -991,13 +991,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	) {
 		if (instance?.mediaItemCount != 0) {
 			val artworkUri = mediaItem?.mediaMetadata?.artworkUri
+			lastArtworkUri = null
 			Glide
 				.with(context)
 				.load(artworkUri)
-				.error(R.drawable.ic_default_cover)
 				// https://github.com/bumptech/glide/issues/527#issuecomment-148840717
-				.thumbnail(if (lastArtworkUri != null)
-					Glide.with(context).load(lastArtworkUri) else null)
 				.addListener(object : RequestListener<Drawable> {
 					override fun onLoadFailed(
 						e: GlideException?,
@@ -1005,8 +1003,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						target: Target<Drawable>,
 						isFirstResource: Boolean
 					): Boolean {
+						target.onLoadFailed(AppCompatResources.getDrawable(context, R.drawable.ic_default_cover))
 						removeColorScheme()
-						return false
+						return true
 					}
 
 					override fun onResourceReady(
@@ -1018,6 +1017,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 					): Boolean {
 						if (!isFirstResource && Build.VERSION.SDK_INT >= 26 &&
 							prefs.getBooleanStrict("content_based_color", true)) {
+							lastArtworkUri = artworkUri
 							handler.post {
 								addColorScheme()
 							}
@@ -1025,8 +1025,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						return false
 					}
 				})
+				.thumbnail(if (lastArtworkUri != null) Glide.with(context).load(lastArtworkUri)
+					else Glide.with(context).load(R.drawable.ic_default_cover))
 				.into(bottomSheetFullCover)
-			lastArtworkUri = artworkUri
 			bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title, skipAnimation = firstTime)
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime
