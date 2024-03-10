@@ -297,7 +297,7 @@ object MediaStoreUtils {
         val albumMap = hashMapOf<Long?, AlbumImpl>()
         val artistMap = hashMapOf<Long?, Artist>()
         val artistCacheMap = hashMapOf<String?, Long?>()
-        val albumArtistMap = hashMapOf<Long?, Pair<MutableList<Album>, MutableList<MediaItem>>>()
+        val albumArtistMap = hashMapOf<Pair<Long?, String?>, Pair<MutableList<Album>, MutableList<MediaItem>>>()
         val genreMap = hashMapOf<Long?, Genre>()
         val dateMap = hashMapOf<Int?, Date>()
         val playlists = mutableListOf<Pair<Playlist, MutableList<Long>>>()
@@ -528,12 +528,12 @@ object MediaStoreUtils {
                     val artistStr = albumArtist ?: artist
                     val likelyArtist = albumIdToArtistMap?.get(albumId)
                         ?.run { if (second == artistStr) this else null }
-                    AlbumImpl(albumId, album, artistStr, likelyArtist?.first, year, cover, mutableListOf()).also { album ->
-                        albumArtistMap.getOrPut(likelyArtist?.first) { Pair(mutableListOf(), mutableListOf()) }
-                            .first.add(album)
+                    AlbumImpl(albumId, album, artistStr, likelyArtist?.first, year, cover, mutableListOf()).also { alb ->
+                        albumArtistMap.getOrPut(Pair(likelyArtist?.first, artistStr)) { Pair(mutableListOf(), mutableListOf()) }
+                            .first.add(alb)
                     }
                 }.also { alb ->
-                    albumArtistMap.getOrPut(alb.artistId) {
+                    albumArtistMap.getOrPut(Pair(alb.artistId, alb.artist)) {
                         Pair(mutableListOf(), mutableListOf()) }.second.add(song)
                 }.songList.add(song)
                 genreMap.getOrPut(genreId) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
@@ -593,9 +593,8 @@ object MediaStoreUtils {
             }
         }.toMutableList<Album>()
         val artistList = artistMap.values.toMutableList()
-        val albumArtistList = albumArtistMap.entries.map { (artistId, albumsAndSongs) ->
-            val baseArtist = artistMap[artistId]
-            Artist(artistId, baseArtist?.title, albumsAndSongs.second, albumsAndSongs.first)
+        val albumArtistList = albumArtistMap.entries.map { (artist, albumsAndSongs) ->
+            Artist(artist.first, artist.second, albumsAndSongs.second, albumsAndSongs.first)
         }.toMutableList()
         val genreList = genreMap.values.toMutableList()
         val dateList = dateMap.values.toMutableList()
