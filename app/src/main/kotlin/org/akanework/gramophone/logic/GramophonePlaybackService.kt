@@ -278,7 +278,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 )
                 .build()
         controller = MediaController.Builder(this, mediaSession!!.token).buildAsync().get()
-        lastPlayedManager = LastPlayedManager(this, mediaSession!!)
+        lastPlayedManager = LastPlayedManager(this, controller!!)
         // this allowSavingState flag is to prevent A14 bug (explained below)
         // overriding last played with null because it is saved before it is restored
         lastPlayedManager.allowSavingState = false
