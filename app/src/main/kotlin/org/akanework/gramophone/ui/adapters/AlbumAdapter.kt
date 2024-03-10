@@ -18,23 +18,21 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
-import org.akanework.gramophone.ui.LibraryViewModel
 
 class AlbumAdapter(
     private val mainActivity: MainActivity,
     albumList: MutableLiveData<List<MediaStoreUtils.Album>>?,
     ownsView: Boolean = true,
-    isSubFragment: Boolean = false
+    isSubFragment: Boolean = false,
+    fallbackSpans: Int = 1
 ) : BaseAdapter<MediaStoreUtils.Album>
     (
     mainActivity,
@@ -45,7 +43,8 @@ class AlbumAdapter(
     pluralStr = R.plurals.albums,
     ownsView = ownsView,
     defaultLayoutType = LayoutType.GRID,
-    isSubFragment = isSubFragment
+    isSubFragment = isSubFragment,
+    fallbackSpans = fallbackSpans
 ) {
 
     private val libraryViewModel: LibraryViewModel by mainActivity.viewModels()
@@ -53,9 +52,14 @@ class AlbumAdapter(
     constructor(
         mainActivity: MainActivity,
         albumList: List<MediaStoreUtils.Album>,
-        isSubFragment: Boolean = false
-    )
-            : this(mainActivity, null, false, isSubFragment = isSubFragment) {
+        isSubFragment: Boolean = false,
+        fallbackSpans: Int = 1
+    ) : this(
+        mainActivity,
+        null,
+        false,
+        isSubFragment = isSubFragment,
+        fallbackSpans = fallbackSpans) {
         updateList(albumList, now = true, false)
     }
 

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/grid_height"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?selectableItemBackground"
     android:gravity="center_horizontal"
-    android:paddingBottom="24dp"
+    android:paddingBottom="@dimen/grid_card_padding_bottom"
     tools:targetApi="m"
     tools:ignore="UnusedAttribute">
 
@@ -18,7 +18,7 @@
         style="?materialCardViewFilledStyle"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/grid_card_margin_top"
         android:layout_marginHorizontal="@dimen/grid_card_side_padding"
         app:cardCornerRadius="@dimen/grid_round_corner_size"
         app:layout_constraintDimensionRatio="1:1"
@@ -40,8 +40,8 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="12.5dp"
+        android:layout_height="@dimen/grid_card_label_height"
+        android:layout_marginVertical="@dimen/grid_card_margin_label"
         app:layout_constraintTop_toBottomOf="@id/cover_frame"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/cover_frame"
@@ -84,7 +84,7 @@
         app:layout_constraintStart_toEndOf="@id/linearLayout"
         app:layout_constraintEnd_toEndOf="@id/cover_frame"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

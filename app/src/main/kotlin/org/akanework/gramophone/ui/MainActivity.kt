@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             // If all permissions are granted, we can update library now.
             if (libraryViewModel.mediaItemList.value == null) {
                 updateLibrary()
-            } else throw IllegalStateException("library isn't null in onCreate()")
+            } else reportFullyDrawn() // <-- when recreating activity due to rotation
         }
     }
 

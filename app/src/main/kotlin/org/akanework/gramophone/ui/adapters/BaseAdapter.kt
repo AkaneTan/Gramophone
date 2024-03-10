@@ -30,6 +30,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.doOnLayout
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
@@ -55,7 +57,6 @@ import org.akanework.gramophone.ui.components.GridPaddingDecoration
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 import java.util.Collections
 
-@Suppress("LeakingThis")
 abstract class BaseAdapter<T>(
     val context: Context,
     protected var liveData: MutableLiveData<List<T>>?,
@@ -68,18 +69,24 @@ abstract class BaseAdapter<T>(
     private val isSubFragment: Boolean = false,
     private val rawOrderExposed: Boolean = false,
     private val allowDiffUtils: Boolean = false,
-    private val canSort: Boolean = true
+    private val canSort: Boolean = true,
+    private val fallbackSpans: Int = 1
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<List<T>>,
     PopupTextProvider, ItemHeightHelper {
 
+    companion object {
+        // this relies on the assumption that all RecyclerViews always have same width
+        // (though it does get invalidated if that is not the case, for eg rotation)
+        private var gridHeightCache = 0
+    }
     private val listHeight = context.resources.getDimensionPixelSize(R.dimen.list_height)
     private val largerListHeight = context.resources.getDimensionPixelSize(R.dimen.larger_list_height)
-    private val gridHeight = context.resources.getDimensionPixelSize(R.dimen.grid_height)
+    private var gridHeight: Int? = null
     private val sorter = Sorter(sortHelper, naturalOrderHelper, rawOrderExposed)
     val decorAdapter by lazy { createDecorAdapter() }
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
-    override val itemHeightHelper =
-        DefaultItemHeightHelper.concatItemHeightHelper(decorAdapter, {1}, this)
+    override val itemHeightHelper by lazy {
+        DefaultItemHeightHelper.concatItemHeightHelper(decorAdapter, {1}, this) }
     private val handler = Handler(Looper.getMainLooper())
     private var bgHandlerThread: HandlerThread? = null
     private var bgHandler: Handler? = null
@@ -93,6 +100,7 @@ abstract class BaseAdapter<T>(
 
     private var prefs = context.gramophoneApplication.prefs
 
+    @Suppress("LeakingThis")
     private var prefSortType: Sorter.Type = Sorter.Type.valueOf(
         prefs.getStringStrict(
             "S" + FileOpUtils.getAdapterType(this).toString(),
@@ -102,6 +110,7 @@ abstract class BaseAdapter<T>(
 
     private var gridPaddingDecoration = GridPaddingDecoration(context)
 
+    @Suppress("LeakingThis")
     private var prefLayoutType: LayoutType = LayoutType.valueOf(
         prefs.getStringStrict(
             "L" + FileOpUtils.getAdapterType(this).toString(),
@@ -132,6 +141,7 @@ abstract class BaseAdapter<T>(
                     applyLayoutManager()
                 }
             }
+            calculateGridSizeIfNeeded()
             notifyDataSetChanged() // we change view type for all items
         }
     private var reverseRaw = false
@@ -178,9 +188,21 @@ abstract class BaseAdapter<T>(
         return Collections.unmodifiableList(list)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
+        if (gridHeight == null && itemCount > 0 && layoutType == LayoutType.GRID) {
+            recyclerView.doOnLayout {
+                recyclerView.post {
+                    if (gridHeight == null) {
+                        if (calculateGridSizeIfNeeded()) {
+                            notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
+        }
         if (ownsView) {
             recyclerView.setHasFixedSize(true)
             if (recyclerView.layoutManager != layoutManager) {
@@ -223,7 +245,7 @@ abstract class BaseAdapter<T>(
     }
 
     override fun onChanged(value: List<T>) {
-        updateList(value, now = false, true)
+        updateList(value, now = false, canDiff = true)
     }
 
     override fun getItemCount(): Int = list.size
@@ -277,8 +299,10 @@ abstract class BaseAdapter<T>(
                         list.addAll(newList)
                         if (diff != null)
                             diff.dispatchUpdatesTo(this)
-                        else
+                        else {
+                            calculateGridSizeIfNeeded()
                             notifyDataSetChanged()
+                        }
                         if (oldCount != newCount) decorAdapter.updateSongCounter()
                     } finally {
                         listLock.release()
@@ -321,6 +345,11 @@ abstract class BaseAdapter<T>(
         holder: ViewHolder,
         position: Int,
     ) {
+        if (layoutType == LayoutType.GRID) {
+            holder.itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                height = gridHeight ?: gridHeightCache
+            }
+        }
         val item = list[position]
         holder.title.text = titleOf(item) ?: virtualTitleOf(item)
         holder.subTitle.text = subTitleOf(item)
@@ -336,6 +365,36 @@ abstract class BaseAdapter<T>(
             onMenu(item, popupMenu)
             popupMenu.show()
         }
+    }
+
+    // need to call notifyDataSetChanged() afterwards
+    private fun calculateGridSizeIfNeeded(): Boolean {
+        if (recyclerView != null && layoutType == LayoutType.GRID && gridHeight == null
+            && recyclerView!!.width != 0) {
+            val cardPadding = context.resources.getDimensionPixelSize(R.dimen.grid_card_side_padding)
+            val marginTop = context.resources.getDimensionPixelSize(R.dimen.grid_card_margin_top)
+            val marginLabel = context.resources.getDimensionPixelSize(R.dimen.grid_card_margin_label)
+            val paddingBottom = context.resources.getDimensionPixelSize(R.dimen.grid_card_padding_bottom)
+            val labelHeight = context.resources.getDimensionPixelSize(R.dimen.grid_card_label_height)
+            // first find out cover's width...
+            var w = recyclerView!!.width
+            w -= recyclerView!!.paddingLeft + recyclerView!!.paddingRight // view padding
+            w -= 2 * cardPadding // item decoration
+            w /= (layoutManager as? GridLayoutManager)?.spanCount ?: fallbackSpans // we want width of one item
+            w -= 2 * cardPadding // side padding
+            // ...then use it to calculate height
+            var h = w // cover is constrained 1:1
+            h += marginTop // top padding of cover
+            h += labelHeight // account for label height
+            h += 2 * marginLabel // label vertical margin
+            h += paddingBottom // bottom padding of whole card
+            gridHeight = h
+            return if (h == gridHeightCache) false else {
+                gridHeightCache = gridHeight!!
+                true
+            }
+        }
+        return false
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
@@ -435,9 +494,9 @@ abstract class BaseAdapter<T>(
     }
 
     override fun getItemHeightFromZeroTo(to: Int): Int {
-        val count = ((to / ((layoutManager as? GridLayoutManager)?.spanCount ?: 1).toFloat()) + 0.5f)
+        val count = ((to / ((layoutManager as? GridLayoutManager)?.spanCount ?: fallbackSpans).toFloat()) + 0.5f)
         return count.toInt() * when (layoutType) {
-            LayoutType.GRID -> gridHeight
+            LayoutType.GRID -> gridHeight ?: gridHeightCache
             LayoutType.COMPACT_LIST -> listHeight
             LayoutType.LIST, null -> largerListHeight
             else -> throw IllegalArgumentException()

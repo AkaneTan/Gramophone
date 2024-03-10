@@ -80,17 +80,19 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
             if (itemType == R.id.album_artist)
                 it.albumArtistItemList else it.artistItemList
         }.value!![position]
-        albumAdapter =
-            AlbumAdapter(requireActivity() as MainActivity, item.albumList.toMutableList(), true)
+        spans = if (requireContext().resources.configuration.orientation
+            == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+        albumAdapter = AlbumAdapter(
+            requireActivity() as MainActivity, item.albumList.toMutableList(), true,
+            fallbackSpans = spans
+        )
         albumAdapter.decorAdapter.jumpDownPos = albumAdapter.concatAdapter.itemCount
         songAdapter = SongAdapter(
             requireActivity() as MainActivity,
             item.songList, true, null, false,
-            isSubFragment = true
+            isSubFragment = true, fallbackSpans = spans
         )
         songAdapter.decorAdapter.jumpUpPos = 0
-        spans = if (requireContext().resources.configuration.orientation
-            == Configuration.ORIENTATION_PORTRAIT) 2 else 4
         recyclerView.layoutManager = GridLayoutManager(context, spans).apply {
             spanSizeLookup = object : SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
@@ -101,17 +103,8 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
                 }
             }
         }
-        val albumsIh = DefaultItemHeightHelper.concatItemHeightHelper(albumAdapter.decorAdapter, {1}) {
-            val albumCount = ((albumAdapter.itemCount / spans.toFloat()) + 0.5f).toInt()
-            val nto = (it / spans.toFloat()).toInt().coerceAtMost(albumCount)
-            albumAdapter.getItemHeightFromZeroTo(nto)
-        }
-        val songsIh = DefaultItemHeightHelper.concatItemHeightHelper(songAdapter.decorAdapter, {1}) {
-            val songCount = ((songAdapter.itemCount / (spans / 2f)) + 0.5f).toInt()
-            val nto = (it / (spans / 2f)).toInt().coerceAtMost(songCount)
-            songAdapter.getItemHeightFromZeroTo(nto)
-        }
-        val ih = DefaultItemHeightHelper.concatItemHeightHelper(albumsIh, { albumAdapter.itemCount + 1 }, songsIh)
+        val ih = DefaultItemHeightHelper.concatItemHeightHelper(albumAdapter.itemHeightHelper,
+            { albumAdapter.concatAdapter.itemCount }, songAdapter.itemHeightHelper)
         recyclerView.enableEdgeToEdgePaddingListener()
         recyclerView.adapter = ConcatAdapter(albumAdapter.concatAdapter, songAdapter.concatAdapter)
         recyclerView.addItemDecoration(gridPaddingDecoration)

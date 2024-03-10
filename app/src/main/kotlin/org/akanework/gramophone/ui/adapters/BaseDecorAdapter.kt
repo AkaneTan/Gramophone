@@ -255,6 +255,6 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
     }
 
     override fun getItemHeightFromZeroTo(to: Int): Int {
-        return (if (to > 0) dpHeight else 0)
+        return if (to > 0) dpHeight else 0
     }
 }

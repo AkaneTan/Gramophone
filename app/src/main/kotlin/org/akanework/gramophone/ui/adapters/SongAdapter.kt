@@ -46,7 +46,8 @@ class SongAdapter(
     ownsView: Boolean,
     isSubFragment: Boolean = false,
     allowDiffUtils: Boolean = false,
-    rawOrderExposed: Boolean = !isSubFragment
+    rawOrderExposed: Boolean = !isSubFragment,
+    fallbackSpans: Int = 1
 ) : BaseAdapter<MediaItem>
     (
     mainActivity,
@@ -63,7 +64,8 @@ class SongAdapter(
     defaultLayoutType = LayoutType.COMPACT_LIST,
     isSubFragment = isSubFragment,
     rawOrderExposed = rawOrderExposed,
-    allowDiffUtils = allowDiffUtils
+    allowDiffUtils = allowDiffUtils,
+    fallbackSpans = fallbackSpans
 ) {
 
     constructor(
@@ -74,7 +76,8 @@ class SongAdapter(
         ownsView: Boolean,
         isSubFragment: Boolean = false,
         allowDiffUtils: Boolean = false,
-        rawOrderExposed: Boolean = !isSubFragment
+        rawOrderExposed: Boolean = !isSubFragment,
+        fallbackSpans: Int = 1
     ) : this(
         mainActivity,
         null,
@@ -83,7 +86,8 @@ class SongAdapter(
         ownsView,
         isSubFragment,
         allowDiffUtils,
-        rawOrderExposed
+        rawOrderExposed,
+        fallbackSpans
     ) {
         updateList(songList, now = true, false)
     }
