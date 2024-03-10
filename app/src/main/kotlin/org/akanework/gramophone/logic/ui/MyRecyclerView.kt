@@ -19,11 +19,13 @@ package org.akanework.gramophone.logic.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import me.zhanghai.android.fastscroll.DefaultAnimationHelper
 import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.FixOnItemTouchListenerRecyclerView
@@ -32,17 +34,20 @@ import org.akanework.gramophone.R
 
 // Please don't try to understand it :) this abstracts away all the ugly details you rather not know
 class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int)
-	: FixOnItemTouchListenerRecyclerView(context, attributeSet, defStyleAttr) {
+	: FixOnItemTouchListenerRecyclerView(context, attributeSet, defStyleAttr),
+	AppBarLayout.OnOffsetChangedListener {
 	constructor(context: Context, attributeSet: AttributeSet?)
 			: this(context, attributeSet, 0)
 	constructor(context: Context) : this(context, null)
 
 	private var appBarLayout: AppBarLayout? = null
+	private var ah: MyAnimationHelper? = null
 	private var scrollInProgress = false
 	private var scrollIsNatural = false
 
 	fun setAppBar(appBarLayout: AppBarLayout) {
 		this.appBarLayout = appBarLayout
+		appBarLayout.addOnOffsetChangedListener(this)
 	}
 
 	private fun setAppBarExpanded(expanded: Boolean) {
@@ -106,6 +111,7 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 	fun fastScroll(popupTextProvider: PopupTextProvider?, ihh: ItemHeightHelper?): FastScroller {
 		return FastScrollerBuilder(this)
 			.setViewHelper(RecyclerViewHelper(this, popupTextProvider, ihh))
+			.also { builder -> builder.setAnimationHelper(MyAnimationHelper().also { ah = it }) }
 			.useMd2Style()
 			.setTrackDrawable(
 				AppCompatResources.getDrawable(
@@ -114,6 +120,10 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 				)!!
 			)
 			.build()
+	}
+
+	override fun onOffsetChanged(unused: AppBarLayout?, offset: Int) {
+		if (offset == 0) ah?.hideScrollbar()
 	}
 
 	abstract class Adapter<VH : ViewHolder> : RecyclerView.Adapter<VH>() {
@@ -129,6 +139,28 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 
 		open fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {}
 		open fun onDetachedFromRecyclerView(recyclerView: MyRecyclerView) {}
+	}
+
+	private inner class MyAnimationHelper : DefaultAnimationHelper(this) {
+		var trackViewCache: View? = null
+		var thumbViewCache: View? = null
+
+		override fun showScrollbar(trackView: View, thumbView: View) {
+			super.showScrollbar(trackView, thumbView)
+			this.trackViewCache = trackView
+			this.thumbViewCache = thumbView
+		}
+
+		override fun hideScrollbar(trackView: View, thumbView: View) {
+			super.hideScrollbar(trackView, thumbView)
+			this.trackViewCache = null
+			this.thumbViewCache = null
+		}
+
+		fun hideScrollbar() {
+			if (trackViewCache != null)
+				hideScrollbar(trackViewCache!!, thumbViewCache!!)
+		}
 	}
 }
 
