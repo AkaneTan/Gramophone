@@ -279,7 +279,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 )
                 .build()
         controller = MediaController.Builder(this, mediaSession!!.token).buildAsync().get()
-        lastPlayedManager = LastPlayedManager(this, mediaSession!!)
+        lastPlayedManager = LastPlayedManager(this, controller!!)
         // this allowSavingState flag is to prevent A14 bug (explained below)
         // overriding last played with null because it is saved before it is restored
         lastPlayedManager.allowSavingState = false
@@ -317,8 +317,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onDestroy() {
         // When destroying, we should release server side player
         // alongside with the mediaSession.
-        controller!!.release()
-        controller = null
+        mediaSession!!.player.stop()
         lastPlayedManager.save()
         sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
@@ -327,7 +326,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 (mediaSession!!.player as ExoPlayer).audioSessionId
             )
         })
-        mediaSession!!.player.stop()
+        controller!!.release()
+        controller = null
         mediaSession!!.release()
         mediaSession!!.player.release()
         mediaSession = null
