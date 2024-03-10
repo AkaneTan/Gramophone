@@ -49,6 +49,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
+import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
@@ -96,6 +97,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     }
 
     private var mediaSession: MediaLibrarySession? = null
+    private var controller: MediaController? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
@@ -104,7 +106,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private lateinit var prefs: SharedPreferences
 
     private fun getRepeatCommand() =
-        when (mediaSession?.player!!.repeatMode) {
+        when (controller!!.repeatMode) {
             Player.REPEAT_MODE_OFF -> customCommands[2]
             Player.REPEAT_MODE_ALL -> customCommands[3]
             Player.REPEAT_MODE_ONE -> customCommands[4]
@@ -112,13 +114,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         }
 
     private fun getShufflingCommand() =
-        if (mediaSession?.player!!.shuffleModeEnabled)
+        if (controller!!.shuffleModeEnabled)
             customCommands[1]
         else
             customCommands[0]
 
     private val timer: Runnable = Runnable {
-        mediaSession?.player?.pause()
+        controller!!.pause()
         timerDuration = 0
     }
 
@@ -139,7 +141,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private val headSetReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-                mediaSession?.player?.pause()
+                controller?.pause()
             }
         }
     }
@@ -275,6 +277,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     ),
                 )
                 .build()
+        controller = MediaController.Builder(this, mediaSession!!.token).buildAsync().get()
         lastPlayedManager = LastPlayedManager(this, mediaSession!!)
         // this allowSavingState flag is to prevent A14 bug (explained below)
         // overriding last played with null because it is saved before it is restored
@@ -285,7 +288,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 val mediaItemsWithStartPosition = it()
                 if (mediaItemsWithStartPosition != null) {
                     try {
-                        mediaSession?.player?.setMediaItems(
+                        controller?.setMediaItems(
                             mediaItemsWithStartPosition.mediaItems,
                             mediaItemsWithStartPosition.startIndex,
                             mediaItemsWithStartPosition.startPositionMs
@@ -295,14 +298,14 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     }
                     // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
                     handler.post {
-                        mediaSession?.player?.prepare()
+                        controller?.prepare()
                     }
                 }
                 lastPlayedManager.allowSavingState = true
             }
         }
-        onShuffleModeEnabledChanged(mediaSession!!.player.shuffleModeEnabled)
-        mediaSession!!.player.addListener(this)
+        onShuffleModeEnabledChanged(controller!!.shuffleModeEnabled)
+        controller!!.addListener(this)
         registerReceiver(
             headSetReceiver,
             IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
@@ -312,6 +315,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onDestroy() {
         // When destroying, we should release server side player
         // alongside with the mediaSession.
+        controller!!.release()
         lastPlayedManager.save()
         sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
@@ -372,12 +376,12 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     ): ListenableFuture<SessionResult> {
         return Futures.immediateFuture(when (customCommand.customAction) {
             PLAYBACK_SHUFFLE_ACTION_ON -> {
-                session.player.shuffleModeEnabled = true
+                this.controller!!.shuffleModeEnabled = true
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
 
             PLAYBACK_SHUFFLE_ACTION_OFF -> {
-                session.player.shuffleModeEnabled = false
+                this.controller!!.shuffleModeEnabled = false
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
 
@@ -400,17 +404,17 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             }
 
             PLAYBACK_REPEAT_OFF -> {
-                session.player.repeatMode = Player.REPEAT_MODE_OFF
+                this.controller!!.repeatMode = Player.REPEAT_MODE_OFF
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
 
             PLAYBACK_REPEAT_ONE -> {
-                session.player.repeatMode = Player.REPEAT_MODE_ONE
+                this.controller!!.repeatMode = Player.REPEAT_MODE_ONE
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
 
             PLAYBACK_REPEAT_ALL -> {
-                session.player.repeatMode = Player.REPEAT_MODE_ALL
+                this.controller!!.repeatMode = Player.REPEAT_MODE_ALL
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
 
@@ -434,7 +438,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        val mediaItem = mediaSession?.player?.currentMediaItem
+        val mediaItem = controller!!.currentMediaItem
         lyricsLock.runInBg {
             val trim = prefs.getBoolean("trim_lyrics", false)
             var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim)
@@ -484,7 +488,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
     // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (!mediaSession!!.player.playWhenReady || mediaSession!!.player.mediaItemCount == 0) {
+        if (!controller!!.playWhenReady || controller!!.mediaItemCount == 0) {
             stopSelf()
         }
     }
