@@ -297,7 +297,7 @@ object MediaStoreUtils {
         val albumMap = hashMapOf<Long?, AlbumImpl>()
         val artistMap = hashMapOf<Long?, Artist>()
         val artistCacheMap = hashMapOf<String?, Long?>()
-        val albumArtistMap = hashMapOf<String?, MutableList<MediaItem>>()
+        val albumArtistMap = hashMapOf<Long?, Pair<MutableList<Album>, MutableList<MediaItem>>>()
         val genreMap = hashMapOf<Long?, Genre>()
         val dateMap = hashMapOf<Int?, Date>()
         val playlists = mutableListOf<Pair<Playlist, MutableList<Long>>>()
@@ -528,9 +528,14 @@ object MediaStoreUtils {
                     val artistStr = albumArtist ?: artist
                     val likelyArtist = albumIdToArtistMap?.get(albumId)
                         ?.run { if (second == artistStr) this else null }
-                    AlbumImpl(albumId, album, artistStr, likelyArtist?.first, year, cover, mutableListOf())
+                    AlbumImpl(albumId, album, artistStr, likelyArtist?.first, year, cover, mutableListOf()).also { album ->
+                        albumArtistMap.getOrPut(likelyArtist?.first) { Pair(mutableListOf(), mutableListOf()) }
+                            .first.add(album)
+                    }
+                }.also { alb ->
+                    albumArtistMap.getOrPut(alb.artistId) {
+                        Pair(mutableListOf(), mutableListOf()) }.second.add(song)
                 }.songList.add(song)
-                albumArtistMap.getOrPut(albumArtist) { mutableListOf() }.add(song)
                 genreMap.getOrPut(genreId) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
                 dateMap.getOrPut(year) { Date(year?.toLong() ?: 0, year?.toString(), mutableListOf()) }.songList.add(song)
                 val fn = handleMediaFolder(path, root)
@@ -588,10 +593,9 @@ object MediaStoreUtils {
             }
         }.toMutableList<Album>()
         val artistList = artistMap.values.toMutableList()
-        val albumArtistList = albumArtistMap.entries.map { (cat, songs) ->
-            // we do not get unique IDs for album artists, so just take first match :shrug:
-            val at = artistList.find { it.title == cat }
-            Artist(at?.id, cat, songs, at?.albumList ?: mutableListOf())
+        val albumArtistList = albumArtistMap.entries.map { (artistId, albumsAndSongs) ->
+            val baseArtist = artistMap[artistId]
+            Artist(artistId, baseArtist?.title, albumsAndSongs.second, albumsAndSongs.first)
         }.toMutableList()
         val genreList = genreMap.values.toMutableList()
         val dateList = dateMap.values.toMutableList()

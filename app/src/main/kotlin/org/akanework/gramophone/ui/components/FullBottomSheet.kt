@@ -39,7 +39,9 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -991,11 +993,10 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	) {
 		if (instance?.mediaItemCount != 0) {
 			val artworkUri = mediaItem?.mediaMetadata?.artworkUri
-			lastArtworkUri = null
 			Glide
 				.with(context)
 				.load(artworkUri)
-				// https://github.com/bumptech/glide/issues/527#issuecomment-148840717
+				.error(R.drawable.ic_default_cover)
 				.addListener(object : RequestListener<Drawable> {
 					override fun onLoadFailed(
 						e: GlideException?,
@@ -1003,9 +1004,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						target: Target<Drawable>,
 						isFirstResource: Boolean
 					): Boolean {
-						target.onLoadFailed(AppCompatResources.getDrawable(context, R.drawable.ic_default_cover))
 						removeColorScheme()
-						return true
+						return false
 					}
 
 					override fun onResourceReady(
@@ -1015,19 +1015,35 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						dataSource: DataSource,
 						isFirstResource: Boolean
 					): Boolean {
-						if (!isFirstResource && Build.VERSION.SDK_INT >= 26 &&
-							prefs.getBooleanStrict("content_based_color", true)) {
-							lastArtworkUri = artworkUri
-							handler.post {
-								addColorScheme()
+						if (!isFirstResource) {
+							if (Build.VERSION.SDK_INT >= 26 &&
+								prefs.getBooleanStrict("content_based_color", true)
+							) {
+								handler.post {
+									addColorScheme()
+								}
 							}
 						}
 						return false
 					}
 				})
-				.thumbnail(if (lastArtworkUri != null) Glide.with(context).load(lastArtworkUri)
-					else Glide.with(context).load(R.drawable.ic_default_cover))
-				.into(bottomSheetFullCover)
+				.into(object : CustomTarget<Drawable>() {
+					override fun onResourceReady(
+						resource: Drawable,
+						transition: Transition<in Drawable>?
+					) {
+						bottomSheetFullCover.setImageDrawable(resource)
+					}
+
+					override fun onLoadFailed(errorDrawable: Drawable?) {
+						bottomSheetFullCover.setImageDrawable(errorDrawable)
+					}
+
+					override fun onLoadCleared(placeholder: Drawable?) {
+						// TODO
+					}
+				})
+			lastArtworkUri = artworkUri
 			bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title, skipAnimation = firstTime)
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime
