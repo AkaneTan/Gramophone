@@ -17,13 +17,8 @@
 
 package org.akanework.gramophone.ui.adapters
 
-import android.content.IntentSender
 import android.net.Uri
-import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
@@ -33,12 +28,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
-import org.akanework.gramophone.ui.LibraryViewModel
 
 
 /**
@@ -46,7 +40,7 @@ import org.akanework.gramophone.ui.LibraryViewModel
  */
 class SongAdapter(
     private val mainActivity: MainActivity,
-    songList: MutableLiveData<MutableList<MediaItem>>?,
+    songList: MutableLiveData<List<MediaItem>>?,
     canSort: Boolean,
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
     ownsView: Boolean,

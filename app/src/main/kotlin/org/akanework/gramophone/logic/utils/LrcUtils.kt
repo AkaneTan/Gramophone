@@ -127,8 +127,11 @@ object LrcUtils {
         val minutes = matchResult?.groupValues?.get(1)?.toLongOrNull() ?: 0
         val seconds = matchResult?.groupValues?.get(2)?.toLongOrNull() ?: 0
         val millisecondsString = matchResult?.groupValues?.get(3)
-        val milliseconds = (millisecondsString?.toLongOrNull() ?: 0) *
-                10f.pow(3 - (millisecondsString?.length ?: 0)).toInt()
+        // if one specifies micro/pico/nano/whatever seconds for some insane reason,
+        // scrap the extra information
+        val milliseconds = (millisecondsString?.substring(0,
+            millisecondsString.length.coerceAtMost(3)) ?.toLongOrNull() ?: 0) *
+                10f.pow(3 - (millisecondsString?.length ?: 0)).toLong()
 
         return minutes * 60000 + seconds * 1000 + milliseconds
     }

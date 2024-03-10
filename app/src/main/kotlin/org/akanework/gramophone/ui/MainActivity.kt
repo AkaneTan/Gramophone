@@ -168,16 +168,16 @@ class MainActivity : AppCompatActivity() {
             )
         } else {
             // If all permissions are granted, we can update library now.
-            if (libraryViewModel.mediaItemList.value!!.isEmpty()) {
+            if (libraryViewModel.mediaItemList.value == null) {
                 updateLibrary()
-            } else reportFullyDrawn()
+            } else throw IllegalStateException("library isn't null in onCreate()")
         }
     }
 
     // https://twitter.com/Piwai/status/1529510076196630528
     override fun reportFullyDrawn() {
         handler.removeCallbacks(reportFullyDrawnRunnable)
-        if (ready) throw IllegalStateException()
+        if (ready) throw IllegalStateException("ready is already true")
         ready = true
         Choreographer.getInstance().postFrameCallback {
             handler.postAtFrontOfQueueAsync {

@@ -1,0 +1,15 @@
+{
+  "uniqueId": "com.binaryheart.common:alphanumeric-comparator",
+  "developers": [{
+    "name": "Farbod Safaei - farbod@binaryheart.com",
+    "organisationUrl": "https://github.com/farbodsafaei"
+  }],
+  "artifactVersion": "1.0.0",
+  "description": "An alphanumeric comparator in Java, for comparing and sorting strings in a more human readable format. It uses a combination of numeric and alphabetic comparisons to compare two strings. This class uses standard Java classes and is independent of any 3rd party libraries.",
+  "name": "AlphaNumericComparator",
+  "tag": "custom",
+  "website": "https://github.com/farbodsafaei/alphanumeric-comparator",
+  "licenses": [
+	"Apache-2.0"
+  ]
+}

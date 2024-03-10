@@ -17,6 +17,7 @@
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -43,6 +44,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="@drawable/ic_arrow_back"
                 app:navigationIconTint="?colorOnSurface" />

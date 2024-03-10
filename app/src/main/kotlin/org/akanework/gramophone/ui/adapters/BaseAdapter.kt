@@ -34,6 +34,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -44,6 +45,8 @@ import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getStringStrict
 import org.akanework.gramophone.logic.gramophoneApplication
+import org.akanework.gramophone.logic.ui.DefaultItemHeightHelper
+import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -55,7 +58,7 @@ import java.util.Collections
 @Suppress("LeakingThis")
 abstract class BaseAdapter<T>(
     val context: Context,
-    protected var liveData: MutableLiveData<MutableList<T>>?,
+    protected var liveData: MutableLiveData<List<T>>?,
     sortHelper: Sorter.Helper<T>,
     naturalOrderHelper: Sorter.NaturalOrderHelper<T>?,
     initialSortType: Sorter.Type,
@@ -66,12 +69,17 @@ abstract class BaseAdapter<T>(
     private val rawOrderExposed: Boolean = false,
     private val allowDiffUtils: Boolean = false,
     private val canSort: Boolean = true
-) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<MutableList<T>>,
-    PopupTextProvider {
+) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<List<T>>,
+    PopupTextProvider, ItemHeightHelper {
 
+    private val listHeight = context.resources.getDimensionPixelSize(R.dimen.list_height)
+    private val largerListHeight = context.resources.getDimensionPixelSize(R.dimen.larger_list_height)
+    private val gridHeight = context.resources.getDimensionPixelSize(R.dimen.grid_height)
     private val sorter = Sorter(sortHelper, naturalOrderHelper, rawOrderExposed)
     val decorAdapter by lazy { createDecorAdapter() }
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
+    override val itemHeightHelper =
+        DefaultItemHeightHelper.concatItemHeightHelper(decorAdapter, {1}, this)
     private val handler = Handler(Looper.getMainLooper())
     private var bgHandlerThread: HandlerThread? = null
     private var bgHandler: Handler? = null
@@ -214,7 +222,7 @@ abstract class BaseAdapter<T>(
         recyclerView?.scrollToPosition(scrollPosition)
     }
 
-    override fun onChanged(value: MutableList<T>) {
+    override fun onChanged(value: List<T>) {
         updateList(value, now = false, true)
     }
 
@@ -423,6 +431,16 @@ abstract class BaseAdapter<T>(
 
         override fun getCover(item: T): Uri? {
             return item.songList.firstOrNull()?.mediaMetadata?.artworkUri
+        }
+    }
+
+    override fun getItemHeightFromZeroTo(to: Int): Int {
+        val count = ((to / ((layoutManager as? GridLayoutManager)?.spanCount ?: 1).toFloat()) + 0.5f)
+        return count.toInt() * when (layoutType) {
+            LayoutType.GRID -> gridHeight
+            LayoutType.COMPACT_LIST -> listHeight
+            LayoutType.LIST, null -> largerListHeight
+            else -> throw IllegalArgumentException()
         }
     }
 }

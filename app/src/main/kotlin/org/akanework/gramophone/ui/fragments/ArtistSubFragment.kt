@@ -32,12 +32,14 @@ import com.google.android.material.appbar.MaterialToolbar
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.ui.DefaultItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.AlbumAdapter
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.components.GridPaddingDecoration
+import kotlin.properties.Delegates
 
 /**
  * ArtistSubFragment:
@@ -56,6 +58,7 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     private lateinit var songAdapter: SongAdapter
     private lateinit var gridPaddingDecoration: GridPaddingDecoration
     private lateinit var recyclerView: MyRecyclerView
+    private var spans by Delegates.notNull<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,25 +89,34 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
             isSubFragment = true
         )
         songAdapter.decorAdapter.jumpUpPos = 0
-        recyclerView.layoutManager = GridLayoutManager(context,
-            if (requireContext().resources.configuration.orientation
-            == Configuration.ORIENTATION_PORTRAIT) 2 else 4).apply {
+        spans = if (requireContext().resources.configuration.orientation
+            == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+        recyclerView.layoutManager = GridLayoutManager(context, spans).apply {
             spanSizeLookup = object : SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     // BaseDecorAdapter always is full width
-                    return if (position == 0 || position == albumAdapter.concatAdapter.itemCount)
-                            (if (requireContext().resources.configuration.orientation
-                                == Configuration.ORIENTATION_PORTRAIT) 2 else 4)
+                    return if (position == 0 || position == albumAdapter.concatAdapter.itemCount) spans
                     // One album takes 1 span, one song takes 2 spans
                     else if (position > 0 && position < albumAdapter.concatAdapter.itemCount) 1 else 2
                 }
             }
         }
+        val albumsIh = DefaultItemHeightHelper.concatItemHeightHelper(albumAdapter.decorAdapter, {1}) {
+            val albumCount = ((albumAdapter.itemCount / spans.toFloat()) + 0.5f).toInt()
+            val nto = (it / spans.toFloat()).toInt().coerceAtMost(albumCount)
+            albumAdapter.getItemHeightFromZeroTo(nto)
+        }
+        val songsIh = DefaultItemHeightHelper.concatItemHeightHelper(songAdapter.decorAdapter, {1}) {
+            val songCount = ((songAdapter.itemCount / (spans / 2f)) + 0.5f).toInt()
+            val nto = (it / (spans / 2f)).toInt().coerceAtMost(songCount)
+            songAdapter.getItemHeightFromZeroTo(nto)
+        }
+        val ih = DefaultItemHeightHelper.concatItemHeightHelper(albumsIh, { albumAdapter.itemCount + 1 }, songsIh)
         recyclerView.enableEdgeToEdgePaddingListener()
         recyclerView.adapter = ConcatAdapter(albumAdapter.concatAdapter, songAdapter.concatAdapter)
         recyclerView.addItemDecoration(gridPaddingDecoration)
         recyclerView.setAppBar(appBarLayout)
-        recyclerView.fastScroll(this)
+        recyclerView.fastScroll(this, ih)
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

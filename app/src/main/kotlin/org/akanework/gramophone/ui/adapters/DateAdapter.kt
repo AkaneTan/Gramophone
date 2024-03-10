@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.ui.adapters
 
-import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.R
@@ -30,7 +29,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class DateAdapter(
     private val mainActivity: MainActivity,
-    dateList: MutableLiveData<MutableList<MediaStoreUtils.Date>>,
+    dateList: MutableLiveData<List<MediaStoreUtils.Date>>,
 ) : BaseAdapter<MediaStoreUtils.Date>
     (
     mainActivity,

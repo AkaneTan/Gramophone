@@ -60,8 +60,15 @@ class GeneralSubFragment : BaseFragment(true) {
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val collapsingToolbarLayout = rootView.findViewById<CollapsingToolbarLayout>(R.id.collapsingtoolbar)
         val recyclerView = rootView.findViewById<MyRecyclerView>(R.id.recyclerview)
-        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
+        appBarLayout.enableEdgeToEdgePaddingListener()
 
+        if (libraryViewModel.albumItemList.value == null) {
+            // TODO make it wait for lib load instead of breaking state restore
+            // (still better than crashing, though)
+            requireActivity().supportFragmentManager.popBackStack()
+            return null
+        }
         val bundle = requireArguments()
         val itemType = bundle.getInt("Item")
         val position = bundle.getInt("Position")
@@ -139,10 +146,11 @@ class GeneralSubFragment : BaseFragment(true) {
             )
 
         recyclerView.enableEdgeToEdgePaddingListener()
+        recyclerView.setAppBar(appBarLayout)
         recyclerView.adapter = songAdapter.concatAdapter
 
         // Build FastScroller.
-        recyclerView.fastScroll(songAdapter)
+        recyclerView.fastScroll(songAdapter, songAdapter.itemHeightHelper)
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()

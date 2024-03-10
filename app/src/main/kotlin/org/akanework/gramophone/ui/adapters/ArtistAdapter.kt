@@ -32,8 +32,8 @@ import org.akanework.gramophone.ui.fragments.ArtistSubFragment
  */
 class ArtistAdapter(
     private val mainActivity: MainActivity,
-    private val artistList: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
-    private val albumArtists: MutableLiveData<MutableList<MediaStoreUtils.Artist>>,
+    private val artistList: MutableLiveData<List<MediaStoreUtils.Artist>>,
+    private val albumArtists: MutableLiveData<List<MediaStoreUtils.Artist>>,
 ) : BaseAdapter<MediaStoreUtils.Artist>
     (
     mainActivity,

@@ -63,7 +63,8 @@ class SearchFragment : BaseFragment(false) {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_search, container, false)
-        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
+        val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)
+        appBarLayout.enableEdgeToEdgePaddingListener()
         editText = rootView.findViewById(R.id.edit_text)
         val recyclerView = rootView.findViewById<MyRecyclerView>(R.id.recyclerview)
         val songAdapter =
@@ -73,11 +74,12 @@ class SearchFragment : BaseFragment(false) {
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
 
         recyclerView.enableEdgeToEdgePaddingListener()
+        recyclerView.setAppBar(appBarLayout)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = songAdapter.concatAdapter
 
         // Build FastScroller.
-        recyclerView.fastScroll(songAdapter)
+        recyclerView.fastScroll(songAdapter, songAdapter.itemHeightHelper)
 
         editText.addTextChangedListener { rawText ->
             // TODO sort results by match quality? (using NaturalOrderHelper)

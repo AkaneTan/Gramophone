@@ -53,6 +53,8 @@ import org.akanework.gramophone.ui.fragments.settings.MainSettingsFragment
 @androidx.annotation.OptIn(UnstableApi::class)
 class ViewPagerFragment : BaseFragment(true) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    lateinit var appBarLayout: AppBarLayout
+        private set
 
     @SuppressLint("StringFormatInvalid", "StringFormatMatches")
     override fun onCreateView(
@@ -65,7 +67,8 @@ class ViewPagerFragment : BaseFragment(true) {
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val viewPager2 = rootView.findViewById<ViewPager2>(R.id.fragment_viewpager)
 
-        rootView.findViewById<AppBarLayout>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
+        appBarLayout = rootView.findViewById(R.id.appbarlayout)
+        appBarLayout.enableEdgeToEdgePaddingListener()
         topAppBar.overflowIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_more_vert_alt)
 
         topAppBar.setOnMenuItemClickListener {
@@ -130,8 +133,6 @@ class ViewPagerFragment : BaseFragment(true) {
                         // Set an anchor for snack bar.
                         if (playerLayout.visible && playerLayout.actuallyVisible)
                             snackBar.anchorView = playerLayout
-                        else
-                            snackBar.anchorView = viewPager2
                         snackBar.show()
                     }
                 }

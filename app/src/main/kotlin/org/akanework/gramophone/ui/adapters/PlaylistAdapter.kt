@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.ui.adapters
 
-import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.R
@@ -30,7 +29,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class PlaylistAdapter(
     private val mainActivity: MainActivity,
-    playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>>,
+    playlistList: MutableLiveData<List<MediaStoreUtils.Playlist>>,
 ) : BaseAdapter<MediaStoreUtils.Playlist>
     (
     mainActivity,

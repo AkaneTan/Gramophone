@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.ui.adapters
 
-import android.os.Bundle
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.R
@@ -30,7 +29,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  */
 class GenreAdapter(
     private val mainActivity: MainActivity,
-    genreList: MutableLiveData<MutableList<MediaStoreUtils.Genre>>,
+    genreList: MutableLiveData<List<MediaStoreUtils.Genre>>,
 ) : BaseAdapter<MediaStoreUtils.Genre>
     (
     mainActivity,

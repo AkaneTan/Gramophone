@@ -3,11 +3,14 @@
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.util.Properties
 
+val aboutLibsVersion = "11.1.0" // keep in sync with plugin version
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.parcelize")
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -114,9 +117,13 @@ android {
     }
 }
 
+aboutLibraries {
+    configPath = "app/config"
+}
+
 dependencies {
     val glideVersion = "5.0.0-rc01"
-    val media3Version = "1.2.1"
+    val media3Version = "1.3.0"
     implementation("androidx.core:core-ktx:1.13.0-alpha05")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
@@ -133,6 +140,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:$glideVersion")
     implementation("com.google.android.material:material:1.12.0-alpha03")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
+    implementation("com.mikepenz:aboutlibraries:$aboutLibsVersion")
     ksp("com.github.bumptech.glide:ksp:$glideVersion")
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app

@@ -30,7 +30,7 @@ import me.zhanghai.android.fastscroll.FixOnItemTouchListenerRecyclerView
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 
-
+// Please don't try to understand it :) this abstracts away all the ugly details you rather not know
 class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int)
 	: FixOnItemTouchListenerRecyclerView(context, attributeSet, defStyleAttr) {
 	constructor(context: Context, attributeSet: AttributeSet?)
@@ -53,26 +53,6 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 		}
 	}
 
-	// TODO expand/unexpand with fastscroll too
-
-	override fun fling(velocityX: Int, velocityY: Int): Boolean {
-		scrollInProgress = true
-		val isZero = (layoutManager as? LinearLayoutManager)
-			?.findFirstVisibleItemPosition() == 0
-		if (isZero && velocityY > 0)
-			setAppBarExpanded(false)
-		return super.fling(velocityX, velocityY)
-	}
-
-	override fun smoothScrollBy(dx: Int, dy: Int) {
-		scrollInProgress = true
-		val isZero = (layoutManager as? LinearLayoutManager)
-			?.findFirstVisibleItemPosition() == 0
-		if (isZero && dy > 0)
-			setAppBarExpanded(false)
-		super.smoothScrollBy(dx, dy)
-	}
-
 	fun startSmoothScrollCompat(scroller: SmoothScroller) {
 		scrollInProgress = true
 		val isZero = (layoutManager as? LinearLayoutManager)
@@ -80,6 +60,29 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 		if (isZero && scroller.targetPosition > 0)
 			setAppBarExpanded(false)
 		layoutManager?.startSmoothScroll(scroller)
+	}
+
+	@Suppress("UNCHECKED_CAST")
+	fun scrollToPositionWithOffsetCompat(position: Int, offset: Int) {
+		val apb = (appBarLayout?.layoutParams as CoordinatorLayout.LayoutParams?)?.behavior
+		val isExpanded = apb is AppBarLayout.Behavior && apb.topAndBottomOffset == 0
+		if (appBarLayout != null && (position > 0 || offset > 0) && isExpanded) {
+			// this is setAppBarExpanded(false) but it works without layout pass
+			val behavior: CoordinatorLayout.Behavior<AppBarLayout>? =
+				(appBarLayout!!.layoutParams as CoordinatorLayout.LayoutParams).behavior
+						as CoordinatorLayout.Behavior<AppBarLayout>?
+			val a = IntArray(2)
+			behavior!!.onNestedPreScroll(
+				appBarLayout!!.parent!! as CoordinatorLayout, appBarLayout!!,
+				appBarLayout!!.parent!! as CoordinatorLayout, 0, Int.MAX_VALUE,
+				a, 0
+			)
+			// in theory, we need to scroll recyclerview back by dy=-a[1] but it does not make
+			// sense because the CollapsingToolbar is pushing away our scroll bar to bottom
+			// and when the scroll bar goes back up after collapse, the scale is different anyway
+			// and we have an ugly jump in the list. I appreciate any idea for improvements.
+		}
+		(layoutManager as LinearLayoutManager?)?.scrollToPositionWithOffset(position, offset)
 	}
 
 	override fun onScrollStateChanged(state: Int) {
@@ -100,16 +103,9 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 		}
 	}
 
-	fun awakenScrollBarsPublic() {
-		// TODO this is a hack
-		scrollBy(0, 1)
-		scrollBy(0, -1)
-	}
-
-	fun fastScroll(popupTextProvider: PopupTextProvider?): FastScroller {
+	fun fastScroll(popupTextProvider: PopupTextProvider?, ihh: ItemHeightHelper?): FastScroller {
 		return FastScrollerBuilder(this)
-			// TODO some popuptextprovider produce junk that breaks fastscroller
-			.setViewHelper(RecyclerViewHelper(this, popupTextProvider))
+			.setViewHelper(RecyclerViewHelper(this, popupTextProvider, ihh))
 			.useMd2Style()
 			.setTrackDrawable(
 				AppCompatResources.getDrawable(
@@ -133,5 +129,19 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 
 		open fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {}
 		open fun onDetachedFromRecyclerView(recyclerView: MyRecyclerView) {}
+	}
+}
+
+abstract class DefaultItemHeightHelper : ItemHeightHelper {
+	companion object {
+		fun concatItemHeightHelper(one: ItemHeightHelper, oneCount: () -> Int, two: ItemHeightHelper): ItemHeightHelper {
+			return object : DefaultItemHeightHelper() {
+				override fun getItemHeightFromZeroTo(to: Int): Int {
+					val oc = oneCount()
+					return one.getItemHeightFromZeroTo(to.coerceAtMost(oc)) +
+							if (to >= oc) two.getItemHeightFromZeroTo(to - oc) else 0
+				}
+			}
+		}
 	}
 }

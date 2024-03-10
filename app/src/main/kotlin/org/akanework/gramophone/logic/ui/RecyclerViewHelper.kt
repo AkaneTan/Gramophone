@@ -27,10 +27,19 @@ import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import me.zhanghai.android.fastscroll.Predicate
 import kotlin.math.max
+import kotlin.math.min
 
+// Changes:
+// - Kotlin
+// - RecyclerView -> MyRecyclerView
+// - use scrollToPositionWithOffsetCompat instead of layoutManager.scrollToPositionWithOffset
+// - ItemHeightHelper support (supports variable item height, or default behaviour if null)
+// - if ItemHeightHelper is set, it counts by adapter position to support flexible grid layouts
+// - nice popup text interpolation (thanks stranger on github :D)
 internal class RecyclerViewHelper(
 	private val mView: MyRecyclerView,
-	private val mPopupTextProvider: PopupTextProvider?
+	private val mPopupTextProvider: PopupTextProvider?,
+	private val itemHeightHelper: ItemHeightHelper?
 ) : FastScroller.ViewHelper {
 	private val mTempRect = Rect()
 	override fun addOnPreDrawListener(onPreDraw: Runnable) {
@@ -75,10 +84,7 @@ internal class RecyclerViewHelper(
 		if (itemCount == 0) {
 			return 0
 		}
-		val itemHeight = itemHeight
-		return if (itemHeight == 0) {
-			0
-		} else mView.paddingTop + itemCount * itemHeight + mView.paddingBottom
+		return mView.paddingTop + getItemHeightFromZeroTo(itemCount) + mView.paddingBottom
 	}
 
 	override fun getScrollOffset(): Int {
@@ -86,9 +92,8 @@ internal class RecyclerViewHelper(
 		if (firstItemPosition == RecyclerView.NO_POSITION) {
 			return 0
 		}
-		val itemHeight = itemHeight
 		val firstItemTop = firstItemOffset
-		return mView.paddingTop + firstItemPosition * itemHeight - firstItemTop
+		return mView.paddingTop + getItemHeightFromZeroTo(firstItemPosition) - firstItemTop
 	}
 
 	override fun scrollTo(offset: Int) {
@@ -96,10 +101,18 @@ internal class RecyclerViewHelper(
 		var newOffset = offset
 		mView.stopScroll()
 		newOffset -= mView.paddingTop
-		val itemHeight = itemHeight
-		// firstItemPosition should be non-negative even if paddingTop is greater than item height.
-		val firstItemPosition = max(0.0, (newOffset / itemHeight).toDouble()).toInt()
-		val firstItemTop = firstItemPosition * itemHeight - newOffset
+		var firstItemPosition = 0
+		if (itemHeightHelper != null) {
+			var h = 0
+			while (h < newOffset) {
+				h = itemHeightHelper.getItemHeightFromZeroTo(++firstItemPosition)
+			}
+			firstItemPosition = (firstItemPosition - 1).coerceAtLeast(0)
+		} else {
+			// firstItemPosition should be non-negative even if paddingTop is greater than item height.
+			firstItemPosition = max(0.0, (newOffset / itemHeight).toDouble()).toInt()
+		}
+		val firstItemTop = getItemHeightFromZeroTo(firstItemPosition) - newOffset
 		scrollToPositionWithOffset(firstItemPosition, firstItemTop)
 	}
 
@@ -114,10 +127,31 @@ internal class RecyclerViewHelper(
 		if (popupTextProvider == null) {
 			return null
 		}
-		val position = firstItemAdapterPosition
+		val position = getPopupTextPosition()
 		return if (position == RecyclerView.NO_POSITION) {
 			null
 		} else popupTextProvider.getPopupText(mView, position)
+	}
+
+	private fun getItemHeightFromZeroTo(to: Int): Int {
+		return itemHeightHelper?.getItemHeightFromZeroTo(to) ?: (itemHeight * to)
+	}
+
+	// https://github.com/zhanghai/AndroidFastScroll/issues/11#issuecomment-922413668
+	private fun getPopupTextPosition(): Int {
+		val position = firstItemAdapterPosition
+		if (position == RecyclerView.NO_POSITION) return RecyclerView.NO_POSITION
+		val linearLayoutManager = verticalLinearLayoutManager ?: return position
+		val viewportHeight = mView.height
+		val range = max((getScrollRange() - viewportHeight).toDouble(), 1.0).toInt()
+		val offset = min(getScrollOffset().toDouble(), range.toDouble()).toInt()
+		val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
+		val lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition()
+		if (firstVisibleItemPosition == RecyclerView.NO_POSITION
+			|| lastVisibleItemPosition == RecyclerView.NO_POSITION) return position
+		val positionOffset =
+			((lastVisibleItemPosition - firstVisibleItemPosition + 1) * 1.0 * offset / range).toInt()
+		return (position + positionOffset).coerceAtMost(itemCount - 1)
 	}
 
 	private val itemCount: Int
@@ -127,7 +161,7 @@ internal class RecyclerViewHelper(
 			if (itemCount == 0) {
 				return 0
 			}
-			if (linearLayoutManager is GridLayoutManager) {
+			if (itemHeightHelper == null && linearLayoutManager is GridLayoutManager) {
 				itemCount = (itemCount - 1) / linearLayoutManager.spanCount + 1
 			}
 			return itemCount
@@ -138,7 +172,6 @@ internal class RecyclerViewHelper(
 				return 0
 			}
 			val itemView = mView.getChildAt(0)
-			//TODO (mView.adapter as ConcatAdapter).get(mView.getChildAdapterPosition(itemView))
 			mView.getDecoratedBoundsWithMargins(itemView, mTempRect)
 			return mTempRect.height()
 		}
@@ -147,7 +180,7 @@ internal class RecyclerViewHelper(
 			var position = firstItemAdapterPosition
 			val linearLayoutManager = verticalLinearLayoutManager
 				?: return RecyclerView.NO_POSITION
-			if (linearLayoutManager is GridLayoutManager) {
+			if (itemHeightHelper == null && linearLayoutManager is GridLayoutManager) {
 				position /= linearLayoutManager.spanCount
 			}
 			return position
@@ -176,12 +209,12 @@ internal class RecyclerViewHelper(
 		var newPosition = position
 		var newOffset = offset
 		val linearLayoutManager = verticalLinearLayoutManager ?: return
-		if (linearLayoutManager is GridLayoutManager) {
+		if (itemHeightHelper == null && linearLayoutManager is GridLayoutManager) {
 			newPosition *= linearLayoutManager.spanCount
 		}
 		// LinearLayoutManager actually takes offset from paddingTop instead of top of RecyclerView.
 		newOffset -= mView.paddingTop
-		linearLayoutManager.scrollToPositionWithOffset(newPosition, newOffset)
+		mView.scrollToPositionWithOffsetCompat(newPosition, newOffset)
 	}
 
 	private val verticalLinearLayoutManager: LinearLayoutManager?
@@ -191,4 +224,9 @@ internal class RecyclerViewHelper(
 				null
 			} else layoutManager
 		}
+}
+
+fun interface ItemHeightHelper {
+	// get amount of pixels from element 0's top to element `to`s top
+	fun getItemHeightFromZeroTo(to: Int): Int
 }

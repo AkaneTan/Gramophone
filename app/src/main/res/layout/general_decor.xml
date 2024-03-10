@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48dp">
+    android:layout_height="@dimen/decor_height">
 
     <TextView
         android:id="@+id/song_counter"
@@ -107,21 +107,6 @@
             app:iconSize="24dp"
             app:iconTint="?attr/colorPrimary"
             tools:visibility="visible" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/scroll"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/rp_buttons"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:icon="@drawable/baseline_keyboard_double_arrow_down_24"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="24dp"
-            app:iconTint="?attr/colorPrimary" />
 
 
     </LinearLayout>

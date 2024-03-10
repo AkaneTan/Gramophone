@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
@@ -62,7 +63,8 @@ class AdapterFragment : BaseFragment(null) {
         recyclerView.enableEdgeToEdgePaddingListener()
         adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
         recyclerView.adapter = adapter.concatAdapter
-        recyclerView.fastScroll(adapter)
+        recyclerView.setAppBar((requireParentFragment() as ViewPagerFragment).appBarLayout)
+        recyclerView.fastScroll(adapter, adapter.itemHeightHelper)
         return rootView
     }
 
@@ -83,6 +85,7 @@ class AdapterFragment : BaseFragment(null) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // TODO is this really needed? if yes, move it to MyRecyclerView to make it global
         adapter.concatAdapter.adapters.forEach {
             it.onDetachedFromRecyclerView(recyclerView)
         }
@@ -91,5 +94,6 @@ class AdapterFragment : BaseFragment(null) {
     abstract class BaseInterface<T : RecyclerView.ViewHolder>
         : MyRecyclerView.Adapter<T>(), PopupTextProvider {
         abstract val concatAdapter: ConcatAdapter
+        abstract val itemHeightHelper: ItemHeightHelper?
     }
 }

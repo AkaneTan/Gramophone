@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -52,6 +53,7 @@ class FolderAdapter(
         SongAdapter(mainActivity, listOf(), false, null, false)
     override val concatAdapter: ConcatAdapter =
         ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
+    override val itemHeightHelper: ItemHeightHelper? = null
     private var root: MediaStoreUtils.FileNode? = null
     private var fileNodePath = ArrayList<String>()
     private var recyclerView: RecyclerView? = null

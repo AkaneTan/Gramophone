@@ -32,7 +32,7 @@ import org.akanework.gramophone.ui.LibraryViewModel
 
 class AlbumAdapter(
     private val mainActivity: MainActivity,
-    albumList: MutableLiveData<MutableList<MediaStoreUtils.Album>>?,
+    albumList: MutableLiveData<List<MediaStoreUtils.Album>>?,
     ownsView: Boolean = true,
     isSubFragment: Boolean = false
 ) : BaseAdapter<MediaStoreUtils.Album>

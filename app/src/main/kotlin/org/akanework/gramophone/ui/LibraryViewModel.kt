@@ -30,39 +30,14 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils
  * @author AkaneTan, nift4
  */
 class LibraryViewModel : ViewModel() {
-    val mediaItemList: MutableLiveData<MutableList<MediaItem>> = MutableLiveData(mutableListOf())
-    val albumItemList: MutableLiveData<MutableList<MediaStoreUtils.Album>> =
-        MutableLiveData(mutableListOf())
-    val albumArtistItemList: MutableLiveData<MutableList<MediaStoreUtils.Artist>> =
-        MutableLiveData(
-            mutableListOf(),
-        )
-    val artistItemList: MutableLiveData<MutableList<MediaStoreUtils.Artist>> =
-        MutableLiveData(
-            mutableListOf(),
-        )
-    val genreItemList: MutableLiveData<MutableList<MediaStoreUtils.Genre>> =
-        MutableLiveData(
-            mutableListOf(),
-        )
-    val dateItemList: MutableLiveData<MutableList<MediaStoreUtils.Date>> =
-        MutableLiveData(
-            mutableListOf(),
-        )
-    val playlistList: MutableLiveData<MutableList<MediaStoreUtils.Playlist>> =
-        MutableLiveData(
-            mutableListOf(),
-        )
-    val folderStructure: MutableLiveData<MediaStoreUtils.FileNode> =
-        MutableLiveData(
-            MediaStoreUtils.FileNode("storage")
-        )
-    val shallowFolderStructure: MutableLiveData<MediaStoreUtils.FileNode> =
-        MutableLiveData(
-            MediaStoreUtils.FileNode("shallowFolder")
-        )
-    val allFolderSet: MutableLiveData<Set<String>> =
-        MutableLiveData(
-            setOf()
-        )
+    val mediaItemList: MutableLiveData<List<MediaItem>> = MutableLiveData()
+    val albumItemList: MutableLiveData<List<MediaStoreUtils.Album>> = MutableLiveData()
+    val albumArtistItemList: MutableLiveData<List<MediaStoreUtils.Artist>> = MutableLiveData()
+    val artistItemList: MutableLiveData<List<MediaStoreUtils.Artist>> = MutableLiveData()
+    val genreItemList: MutableLiveData<List<MediaStoreUtils.Genre>> = MutableLiveData()
+    val dateItemList: MutableLiveData<List<MediaStoreUtils.Date>> = MutableLiveData()
+    val playlistList: MutableLiveData<List<MediaStoreUtils.Playlist>> = MutableLiveData()
+    val folderStructure: MutableLiveData<MediaStoreUtils.FileNode> = MutableLiveData()
+    val shallowFolderStructure: MutableLiveData<MediaStoreUtils.FileNode> = MutableLiveData()
+    val allFolderSet: MutableLiveData<Set<String>> = MutableLiveData()
 }

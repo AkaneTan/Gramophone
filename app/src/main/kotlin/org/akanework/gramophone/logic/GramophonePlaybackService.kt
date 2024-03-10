@@ -26,7 +26,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
@@ -38,12 +37,14 @@ import android.util.Log
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.IllegalSeekPositionException
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util.isBitmapFactorySupportedMimeType
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.CommandButton
@@ -228,12 +229,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     = throw UnsupportedOperationException("decodeBitmap() not supported")
 
                     override fun loadBitmap(
-                        uri: Uri,
-                        options: BitmapFactory.Options?,
+                        uri: Uri
                     ): ListenableFuture<Bitmap> {
-                        if (options != null) {
-                            throw UnsupportedOperationException("options != null not supported")
-                        }
                         return CallbackToFutureAdapter.getFuture { completer ->
                             Glide
                                 .with(this@GramophonePlaybackService)
@@ -261,6 +258,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                         }
                     }
 
+                    override fun supportsMimeType(mimeType: String): Boolean {
+                        return isBitmapFactorySupportedMimeType(mimeType)
+                    }
+
                     override fun loadBitmapFromMetadata(metadata: MediaMetadata): ListenableFuture<Bitmap>? {
                         return metadata.artworkUri?.let { loadBitmap(it) }
                     }
@@ -283,11 +284,15 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             lastPlayedManager.restore {
                 val mediaItemsWithStartPosition = it()
                 if (mediaItemsWithStartPosition != null) {
-                    mediaSession?.player?.setMediaItems(
-                        mediaItemsWithStartPosition.mediaItems,
-                        mediaItemsWithStartPosition.startIndex,
-                        mediaItemsWithStartPosition.startPositionMs
-                    )
+                    try {
+                        mediaSession?.player?.setMediaItems(
+                            mediaItemsWithStartPosition.mediaItems,
+                            mediaItemsWithStartPosition.startIndex,
+                            mediaItemsWithStartPosition.startPositionMs
+                        )
+                    } catch (e: IllegalSeekPositionException) {
+                        // song was edited to be shorter and playback position doesn't exist anymore
+                    }
                     // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
                     handler.post {
                         mediaSession?.player?.prepare()
@@ -334,8 +339,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             : MediaSession.ConnectionResult {
         val availableSessionCommands =
             MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
-        if (controller.packageName == "com.android.systemui") {
-            // currently, all custom actions are only useful when used by SystemUI (notification)
+        if (session.isMediaNotificationController(controller)
+            || session.isAutoCompanionController(controller)
+            || session.isAutomotiveController(controller)) {
+            // currently, all custom actions are only useful when used by notification
             // other clients hopefully have repeat/shuffle buttons like MCT does
             for (commandButton in customCommands) {
                 // Add custom command to available session commands.

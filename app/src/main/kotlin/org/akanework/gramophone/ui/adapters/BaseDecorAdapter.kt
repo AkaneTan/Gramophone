@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.gramophoneApplication
+import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import kotlin.random.Random
@@ -39,9 +40,10 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
     protected val adapter: T,
     private val pluralStr: Int,
     private val isSubFragment: Boolean = false
-) : MyRecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>() {
+) : MyRecyclerView.Adapter<BaseDecorAdapter<T>.ViewHolder>(), ItemHeightHelper {
 
     protected val context: Context = adapter.context
+    private val dpHeight = context.resources.getDimensionPixelSize(R.dimen.decor_height)
     private var recyclerView: MyRecyclerView? = null
     private var prefs = context.gramophoneApplication.prefs
     var jumpUpPos: Int? = null
@@ -182,9 +184,6 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                 } ?: controller?.setMediaItems(listOf())
             }
         }
-        holder.scroll.setOnClickListener {
-            recyclerView?.awakenScrollBarsPublic()
-        }
         holder.jumpUp.visibility = if (jumpUpPos != null) View.VISIBLE else View.GONE
         holder.jumpUp.setOnClickListener {
             scrollToViewPosition(jumpUpPos!!)
@@ -246,7 +245,6 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
         val sortButton: MaterialButton = view.findViewById(R.id.sort)
         val playAll: MaterialButton = view.findViewById(R.id.play_all)
         val shuffleAll: MaterialButton = view.findViewById(R.id.shuffle_all)
-        val scroll: MaterialButton = view.findViewById(R.id.scroll)
         val jumpUp: MaterialButton = view.findViewById(R.id.jumpUp)
         val jumpDown: MaterialButton = view.findViewById(R.id.jumpDown)
         val counter: TextView = view.findViewById(R.id.song_counter)
@@ -254,5 +252,9 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
 
     fun updateSongCounter() {
         notifyItemChanged(0)
+    }
+
+    override fun getItemHeightFromZeroTo(to: Int): Int {
+        return (if (to > 0) dpHeight else 0)
     }
 }

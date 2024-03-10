@@ -36,6 +36,7 @@
             android:summary="@string/unknown_version"
             android:title="@string/settings_package_type" />
         <Preference
+            android:key="contributors"
             android:layout="@layout/basic_preference_iconless"
             android:summary="@string/settings_contributors_detail"
             android:title="@string/settings_contributors" />
