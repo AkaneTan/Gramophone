@@ -17,4 +17,12 @@
         android:summary="@string/settings_lyrics_center_summary"
         android:title="@string/settings_lyrics_center" />
 
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:icon="@drawable/ic_transparent"
+        android:key="lyric_multiline"
+        android:layout="@layout/icon_switch_preference"
+        android:summary="@string/settings_lyrics_multiline_summary"
+        android:title="@string/settings_lyrics_multiline" />
+
 </PreferenceScreen>
