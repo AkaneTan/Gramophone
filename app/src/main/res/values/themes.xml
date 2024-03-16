@@ -133,7 +133,7 @@
         <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
     </style>
     <style name="PreV31Night.Theme.Splash" parent="Base.Night.Theme.Splash">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_gramophone_white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
     </style>
 
