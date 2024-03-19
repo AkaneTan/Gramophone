@@ -25,6 +25,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -317,6 +319,12 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val playlistBottomSheet = BottomSheetDialog(context)
 			playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
 			val recyclerView = playlistBottomSheet.findViewById<MyRecyclerView>(R.id.recyclerview)!!
+			ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, ic ->
+				val i = ic.getInsets(WindowInsetsCompat.Type.systemBars()
+						or WindowInsetsCompat.Type.displayCutout())
+				v.setPadding(i.left, 0, i.right, i.bottom)
+				return@setOnApplyWindowInsetsListener ic
+			}
 			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title

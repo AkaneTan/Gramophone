@@ -74,6 +74,9 @@
 
     <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
         <item name="shapeAppearance">@style/BottomPlayerCornerShape</item>
+        <item name="marginLeftSystemWindowInsets">false</item>
+        <item name="marginRightSystemWindowInsets">false</item>
+        <item name="paddingBottomSystemWindowInsets">false</item>
     </style>
 
     <style name="HeadlineTextAppearance" parent="TextAppearance.Material3.HeadlineSmall">
