@@ -512,12 +512,11 @@ object MediaStoreUtils {
                             })
                             .build(),
                     ).build()
-                songs.add(song)
-
                 // Build our metadata maps/lists.
                 idMap?.put(id, song)
                 // Now that the song can be found by playlists, do NOT register other metadata.
                 if (skip) continue
+                songs.add(song)
                 recentlyAddedMap.add(Pair(addDate, song))
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())
