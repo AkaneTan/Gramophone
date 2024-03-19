@@ -219,7 +219,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         })
 
         setMediaNotificationProvider(DefaultMediaNotificationProvider(this).apply {
-            setSmallIcon(R.drawable.ic_gramophone_notification)
+            setSmallIcon(R.drawable.ic_gramophone)
         })
         mediaSession =
             MediaLibrarySession
