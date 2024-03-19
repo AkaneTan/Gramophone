@@ -47,6 +47,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util.isBitmapFactorySupportedMimeType
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.util.EventLogger
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaController
@@ -67,7 +68,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
+import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.EndedRestoreWorkaroundPlayer
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LrcUtils.loadAndParseLyricsFile
@@ -191,7 +194,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             )
         handler = Handler(Looper.getMainLooper())
 
-        val player = ExoPlayer.Builder(
+        val player = EndedRestoreWorkaroundPlayer(ExoPlayer.Builder(
             this,
             DefaultRenderersFactory(this)
                 .setEnableAudioFloatOutput(
@@ -210,11 +213,14 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
                     .build(), true
             )
-            .build()
+            .build())
+        if (BuildConfig.DEBUG) {
+            player.exoPlayer.addAnalyticsListener(EventLogger())
+        }
         setListener(this)
         sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.exoPlayer.audioSessionId)
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
         })
 
@@ -279,7 +285,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 )
                 .build()
         controller = MediaController.Builder(this, mediaSession!!.token).buildAsync().get()
-        lastPlayedManager = LastPlayedManager(this, controller!!)
+        lastPlayedManager = LastPlayedManager(this, player)
         // this allowSavingState flag is to prevent A14 bug (explained below)
         // overriding last played with null because it is saved before it is restored
         lastPlayedManager.allowSavingState = false
@@ -323,7 +329,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
             putExtra(
                 AudioEffect.EXTRA_AUDIO_SESSION,
-                (mediaSession!!.player as ExoPlayer).audioSessionId
+                (mediaSession!!.player as EndedRestoreWorkaroundPlayer).exoPlayer.audioSessionId
             )
         })
         controller!!.release()

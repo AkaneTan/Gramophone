@@ -28,7 +28,6 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +35,7 @@ import kotlinx.coroutines.launch
 import java.nio.charset.StandardCharsets
 
 @OptIn(UnstableApi::class)
-class LastPlayedManager(context: Context, private val controller: MediaController) {
+class LastPlayedManager(context: Context, private val controller: EndedRestoreWorkaroundPlayer) {
 
     companion object {
         private const val TAG = "LastPlayedManager"
@@ -64,6 +63,7 @@ class LastPlayedManager(context: Context, private val controller: MediaControlle
         val repeatMode = controller.repeatMode
         val shuffleModeEnabled = controller.shuffleModeEnabled
         val playbackParameters = controller.playbackParameters
+        val ended = controller.playbackState == Player.STATE_ENDED
         CoroutineScope(Dispatchers.Default).launch {
             val editor = prefs.edit()
             val lastPlayed = PrefsListUtils.dump(
@@ -107,6 +107,7 @@ class LastPlayedManager(context: Context, private val controller: MediaControlle
             editor.putLong("last_played_pos", data.startPositionMs)
             editor.putInt("repeat_mode", repeatMode)
             editor.putBoolean("shuffle", shuffleModeEnabled)
+            editor.putBoolean("ended", ended)
             editor.putFloat("speed", playbackParameters.speed)
             editor.putFloat("pitch", playbackParameters.pitch)
             editor.apply()
@@ -126,11 +127,13 @@ class LastPlayedManager(context: Context, private val controller: MediaControlle
                 }
                 val repeatMode = prefs.getInt("repeat_mode", Player.REPEAT_MODE_OFF)
                 val shuffleModeEnabled = prefs.getBoolean("shuffle", false)
+                val ended = prefs.getBoolean("ended", false)
                 val playbackParameters = PlaybackParameters(
                     prefs.getFloat("speed", 1f),
                     prefs.getFloat("pitch", 1f)
                 )
                 runCallback(callback) {
+                    controller.isEnded = ended
                     controller.repeatMode = repeatMode
                     controller.shuffleModeEnabled = shuffleModeEnabled
                     controller.playbackParameters = playbackParameters
