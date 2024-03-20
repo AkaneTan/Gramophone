@@ -1236,13 +1236,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				boxEnd: Int,
 				snapPreference: Int
 			): Int {
-				return (super.calculateDtToFit(
+				return super.calculateDtToFit(
 					viewStart,
 					viewEnd,
 					boxStart,
 					boxEnd,
 					snapPreference
-				) + context.resources.displayMetrics.heightPixels / 3).coerceAtMost(viewEnd)
+				) + context.resources.displayMetrics.heightPixels / 3
 			}
 
 			override fun getVerticalSnapPreference(): Int {
