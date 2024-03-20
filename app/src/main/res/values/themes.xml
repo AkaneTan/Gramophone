@@ -92,16 +92,6 @@
         <item name="android:textFontWeight" tools:targetApi="p">500</item>
     </style>
 
-    <style name="BottomPlayerSheetStyle" parent="Widget.Material3.BottomSheet">
-        <item name="android:clipChildren">false</item>
-        <item name="android:clipToPadding">false</item>
-        <item name="shapeAppearance">@style/BottomPlayerCornerShape</item>
-        <item name="marginLeftSystemWindowInsets">false</item>
-        <item name="marginRightSystemWindowInsets">false</item>
-        <item name="paddingBottomSystemWindowInsets">false</item>
-        <item name="layout_behavior">org.akanework.gramophone.logic.ui.MyBottomSheetBehavior</item>
-    </style>
-
     <style name="BottomPlayerCornerShape">
         <item name="cornerSize">0dp</item>
     </style>
