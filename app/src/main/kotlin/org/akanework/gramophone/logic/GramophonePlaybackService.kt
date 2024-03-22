@@ -450,14 +450,16 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         val mediaItem = controller!!.currentMediaItem
         lyricsLock.runInBg {
             val trim = prefs.getBoolean("trim_lyrics", false)
-            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim)
+            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim,
+                prefs.getBoolean("lyric_multiline", false))
             if (lrc == null) {
                 loop@ for (i in tracks.groups) {
                     for (j in 0 until i.length) {
                         if (!i.isTrackSelected(j)) continue
                         // note: wav files can have null metadata
                         val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                        lrc = extractAndParseLyrics(trackMetadata, trim) ?: continue
+                        lrc = extractAndParseLyrics(trackMetadata, trim,
+                            prefs.getBoolean("lyric_multiline", false)) ?: continue
                         // add empty element at the beginning
                         lrc.add(0, MediaStoreUtils.Lyric())
                         break@loop
