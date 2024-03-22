@@ -320,11 +320,12 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         )
     }
 
+    // When destroying, we should release server side player
+    // alongside with the mediaSession.
     override fun onDestroy() {
-        // When destroying, we should release server side player
-        // alongside with the mediaSession.
-        mediaSession!!.player.stop()
+        // Important: this must happen before sending stop() as that changes state ENDED -> IDLE
         lastPlayedManager.save()
+        mediaSession!!.player.stop()
         sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
             putExtra(
@@ -439,6 +440,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
         lastPlayedManager.restore {
+            // TODO empty lists are not supported according to googlers? what to do if restore fails?
             val mediaItemsWithStartPosition = it()
                 ?: MediaItemsWithStartPosition(listOf(), 0, 0)
             settable.set(mediaItemsWithStartPosition)
@@ -505,7 +507,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     }
 
     override fun onForegroundServiceStartNotAllowedException() {
+        // TODO post notification to UI
         Log.w("Gramophone", "Failed to resume playback :/")
-        stopSelf()
     }
 }

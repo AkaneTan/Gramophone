@@ -1,9 +1,11 @@
 package org.akanework.gramophone.logic.utils
 
+import android.util.Log
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import org.akanework.gramophone.BuildConfig
 
 /**
  * If player in STATE_ENDED is resumed, state will be STATE_READY, on play button press it will
@@ -14,9 +16,16 @@ import androidx.media3.exoplayer.ExoPlayer
 class EndedRestoreWorkaroundPlayer(player: ExoPlayer)
 	: ForwardingPlayer(player), Player.Listener {
 
+	companion object {
+		private const val TAG = "EndedRestore..Player"
+	}
+
 	val exoPlayer: ExoPlayer = wrappedPlayer as ExoPlayer
 	var isEnded = false
 		set(value) {
+			if (BuildConfig.DEBUG) {
+				Log.d(TAG, "isEnded set to $value (was $field)")
+			}
 			field = value
 			if (field) {
 				wrappedPlayer.addListener(this)

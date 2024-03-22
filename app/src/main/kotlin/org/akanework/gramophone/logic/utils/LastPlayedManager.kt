@@ -32,6 +32,7 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.akanework.gramophone.BuildConfig
 import java.nio.charset.StandardCharsets
 
 @OptIn(UnstableApi::class)
@@ -58,6 +59,9 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
         if (!allowSavingState) {
             Log.i(TAG, "skipped save")
             return
+        }
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "saving playlist...")
         }
         val data = dumpPlaylist()
         val repeatMode = controller.repeatMode
@@ -115,6 +119,9 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
     }
 
     fun restore(callback: (() -> MediaItemsWithStartPosition?) -> Unit) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "restoring playlist...")
+        }
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 val lastPlayedLst = prefs.getStringSet("last_played_lst", null)

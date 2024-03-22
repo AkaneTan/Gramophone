@@ -37,16 +37,18 @@ android {
             useLegacyPackaging = false
         }
         resources {
-            excludes.add("META-INF/*.version")
+            excludes += "META-INF/*.version"
         }
     }
 
     defaultConfig {
         applicationId = "org.akanework.gramophone"
-        // me.zhanghai.android.fastscroll requires 21 and its not worth the effort to change that
-        // additionally, we (ab)use WindowInsets for bottom sheet padding which won't work on KK
-        minSdk = 21 // Android 5.0
-        targetSdk = 34 // Android 14.0
+        // Reasons to not support KK include me.zhanghai.android.fastscroll, WindowInsets for
+        // bottom sheet padding, ExoPlayer requiring multidex for KK and poor SD card support
+        // That said, supporting Android 5.0 barely costs any tech debt and we plan to keep support
+        // for it for a while.
+        minSdk = 21
+        targetSdk = 34
         versionCode = 6
         versionName = "1.0.4.1"
         if (releaseType != "Release") {
