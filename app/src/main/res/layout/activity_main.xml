@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,9 +16,16 @@
 
     <org.akanework.gramophone.ui.components.PlayerBottomSheet
         android:id="@+id/player_layout"
-        style="@style/BottomPlayerSheetStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:shapeAppearance="@style/BottomPlayerCornerShape"
+        app:marginLeftSystemWindowInsets="false"
+        app:marginRightSystemWindowInsets="false"
+        app:paddingBottomSystemWindowInsets="false"
+        app:layout_behavior="org.akanework.gramophone.logic.ui.MyBottomSheetBehavior"
+        android:backgroundTint="?attr/colorSurfaceContainer"
         tools:behavior_peekHeight="1000dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

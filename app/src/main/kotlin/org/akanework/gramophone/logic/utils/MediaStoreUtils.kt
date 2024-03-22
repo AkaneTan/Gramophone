@@ -297,7 +297,7 @@ object MediaStoreUtils {
         val albumMap = hashMapOf<Long?, AlbumImpl>()
         val artistMap = hashMapOf<Long?, Artist>()
         val artistCacheMap = hashMapOf<String?, Long?>()
-        val albumArtistMap = hashMapOf<Pair<Long?, String?>, Pair<MutableList<Album>, MutableList<MediaItem>>>()
+        val albumArtistMap = hashMapOf<String?, Pair<MutableList<Album>, MutableList<MediaItem>>>()
         val genreMap = hashMapOf<Long?, Genre>()
         val dateMap = hashMapOf<Int?, Date>()
         val playlists = mutableListOf<Pair<Playlist, MutableList<Long>>>()
@@ -512,12 +512,11 @@ object MediaStoreUtils {
                             })
                             .build(),
                     ).build()
-                songs.add(song)
-
                 // Build our metadata maps/lists.
                 idMap?.put(id, song)
                 // Now that the song can be found by playlists, do NOT register other metadata.
                 if (skip) continue
+                songs.add(song)
                 recentlyAddedMap.add(Pair(addDate, song))
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())
@@ -530,11 +529,11 @@ object MediaStoreUtils {
                     val likelyArtist = albumIdToArtistMap?.get(albumId)
                         ?.run { if (second == artistStr) this else null }
                     AlbumImpl(albumId, album, artistStr, likelyArtist?.first, year, cover, mutableListOf()).also { alb ->
-                        albumArtistMap.getOrPut(Pair(likelyArtist?.first, artistStr)) { Pair(mutableListOf(), mutableListOf()) }
+                        albumArtistMap.getOrPut(artistStr) { Pair(mutableListOf(), mutableListOf()) }
                             .first.add(alb)
                     }
                 }.also { alb ->
-                    albumArtistMap.getOrPut(Pair(alb.artistId, alb.artist)) {
+                    albumArtistMap.getOrPut(alb.artist) {
                         Pair(mutableListOf(), mutableListOf()) }.second.add(song)
                 }.songList.add(song)
                 genreMap.getOrPut(genreId) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
@@ -595,7 +594,7 @@ object MediaStoreUtils {
         }.toMutableList<Album>()
         val artistList = artistMap.values.toMutableList()
         val albumArtistList = albumArtistMap.entries.map { (artist, albumsAndSongs) ->
-            Artist(artist.first, artist.second, albumsAndSongs.second, albumsAndSongs.first)
+            Artist(artistCacheMap[artist], artist, albumsAndSongs.second, albumsAndSongs.first)
         }.toMutableList()
         val genreList = genreMap.values.toMutableList()
         val dateList = dateMap.values.toMutableList()

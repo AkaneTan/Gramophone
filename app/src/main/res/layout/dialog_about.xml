@@ -18,10 +18,9 @@
         app:cardCornerRadius="128dp">
 
         <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="8dp"
-            android:src="@drawable/ic_gramophone"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src="@drawable/ic_gramophone_monochrome"
             app:tint="?attr/colorOnSecondaryContainer"
             android:importantForAccessibility="no" />
 

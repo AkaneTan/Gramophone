@@ -54,7 +54,7 @@
     <string name="settings_version">バージョン</string>
     <string name="settings_category_appearance">外観</string>
     <string name="settings_category_behavior">動作</string>
-    <string name="settings_mediastore_filter">短い曲を非表示にする (秒)…</string>
+    <string name="settings_mediastore_filter">曲の最小の長さ (秒)</string>
     <string name="settings_repository">リポジトリ</string>
     <string name="settings_app_theme">アプリのテーマ</string>
     <string name="dialog_title">タイトル</string>
@@ -151,9 +151,11 @@
     <string name="dialog_edit_metadata">編集</string>
     <string name="dialog_lyrics">歌詞</string>
     <string name="album_covers_compat">アルバムアート互換モード</string>
-    <string name="album_covers_compat_desc">Android の環境がアルバムアートに非対応の環境でも表示ができるようにします</string>
+    <string name="album_covers_compat_desc">Android の環境がアルバムアートに非対応の環境でも表示をできるようにします</string>
     <string name="deny_images">画像と動画のアクセス権限を拒否してください</string>
     <string name="grant_images">画像と動画のアクセス権限を許可してください</string>
     <string name="crash_clipboard">クラッシュログをクリップボードにコピー</string>
     <string name="settings_trim_lyrics">歌詞の空白を削除する</string>
+    <string name="settings_lyrics_contrast_summary">非アクティブな歌詞の行を確認する場合に役立ちます</string>
+    <string name="settings_lyrics_contrast">ハイコントラストモード</string>
 </resources>

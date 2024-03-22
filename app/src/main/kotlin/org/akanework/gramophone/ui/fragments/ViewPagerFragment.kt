@@ -169,42 +169,6 @@ class ViewPagerFragment : BaseFragment(true) {
         lastTab.layoutParams = lastParam
         firstTab.layoutParams = firstParam
 
-        if (!EnvUtils.isDarkMode(requireContext())) {
-            tabLayout.setSelectedTabIndicatorColor(
-                MaterialColors.getColor(
-                    tabLayout,
-                    com.google.android.material.R.attr.colorPrimaryContainer
-                )
-            )
-            tabLayout.setTabTextColors(
-                MaterialColors.getColor(
-                    tabLayout,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant
-                ),
-                MaterialColors.getColor(
-                    tabLayout,
-                    com.google.android.material.R.attr.colorOnPrimaryContainer
-                )
-            )
-        } else {
-            tabLayout.setSelectedTabIndicatorColor(
-                MaterialColors.getColor(
-                    tabLayout,
-                    com.google.android.material.R.attr.colorPrimary
-                )
-            )
-            tabLayout.setTabTextColors(
-                MaterialColors.getColor(
-                    tabLayout,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant
-                ),
-                MaterialColors.getColor(
-                    tabLayout,
-                    com.google.android.material.R.attr.colorOnPrimary
-                )
-            )
-        }
-
         return rootView
     }
 }

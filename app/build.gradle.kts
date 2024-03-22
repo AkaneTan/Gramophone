@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.gradle.tasks.PackageAndroidArtifact
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.util.Properties
 
@@ -34,6 +35,9 @@ android {
     packaging {
         jniLibs {
             useLegacyPackaging = false
+        }
+        resources {
+            excludes.add("META-INF/*.version")
         }
     }
 
@@ -114,6 +118,11 @@ android {
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
+    }
+
+    // https://stackoverflow.com/a/77745844
+    tasks.withType<PackageAndroidArtifact> {
+        doFirst { appMetadata.asFile.orNull?.writeText("") }
     }
 }
 
