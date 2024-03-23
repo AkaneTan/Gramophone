@@ -29,7 +29,6 @@
         android:fontFamily="sans-serif"
         android:layout_gravity="center_vertical"
         android:textSize="16sp"
-        tools:targetApi="p"
         tools:text="/storage/0/emulated/Downloads/Ringtone/Every" />
 
 </LinearLayout>

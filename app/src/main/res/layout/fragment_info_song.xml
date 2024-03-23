@@ -60,8 +60,7 @@
                 android:textFontWeight="500"
                 android:textSize="17sp"
                 android:layout_marginTop="24dp"
-                android:layout_marginStart="24dp"
-                tools:targetApi="p" />
+                android:layout_marginStart="24dp" />
 
             <ImageView
                 android:id="@+id/album_cover"
@@ -109,8 +108,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/title"
@@ -122,7 +120,6 @@
                     android:textIsSelectable="true"
                     android:textSize="16sp"
                     android:textFontWeight="500"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -146,8 +143,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/artist"
@@ -159,7 +155,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -183,8 +178,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/album"
@@ -196,7 +190,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -220,8 +213,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/album_artist"
@@ -233,7 +225,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -257,8 +248,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/disc_number"
@@ -269,7 +259,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     tools:text="0"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
@@ -294,8 +283,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/track_num"
@@ -306,7 +294,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     tools:text="0"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
@@ -331,8 +318,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/genre"
@@ -344,7 +330,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -368,8 +353,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/date"
@@ -381,7 +365,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -413,8 +396,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/duration"
@@ -425,7 +407,6 @@
                     android:textIsSelectable="true"
                     android:textSize="16sp"
                     android:textFontWeight="500"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -449,8 +430,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/mime"
@@ -461,7 +441,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />
@@ -485,8 +464,7 @@
                     android:textColor="?colorPrimary"
                     android:textFontWeight="500"
                     android:fontFamily="sans-serif"
-                    android:textSize="17sp"
-                    tools:targetApi="p" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/path"
@@ -497,7 +475,6 @@
                     android:textSize="16sp"
                     android:textFontWeight="500"
                     android:textColor="?colorOnSurface"
-                    tools:targetApi="p"
                     android:layout_marginStart="50dp"
                     android:fontFamily="sans-serif"
                     android:gravity="end" />

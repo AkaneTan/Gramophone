@@ -74,11 +74,6 @@ fun MediaItem.getFile(): File? {
     return getUri()?.path?.let { File(it) }
 }
 
-@Suppress("NewApi") // core library desugar solves this issue ; reified inline for perf
-inline fun <reified K, reified V> HashMap<K, V>.putIfAbsentSupport(key: K, value: V): V? {
-    return putIfAbsent(key, value)
-}
-
 fun Activity.closeKeyboard(view: View) {
     if (ViewCompat.getRootWindowInsets(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
         WindowInsetsControllerCompat(window, view).hide(WindowInsetsCompat.Type.ime())

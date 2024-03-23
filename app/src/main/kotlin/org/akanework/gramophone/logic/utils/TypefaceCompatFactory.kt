@@ -57,6 +57,7 @@ class TypefaceCompatFactory private constructor(context: Context?) : Factory2 {
 			val theme = context.theme
 			var a = theme.obtainStyledAttributes(attrs, R.styleable.AppCompatTextView, 0, 0)
 			var appearance: TypedArray? = null
+			// TODO fix TextAppearance code path (easily observable difference in tab layout)
 			val ap = a.getResourceId(R.styleable.AppCompatTextView_android_textAppearance, -1)
 			a.recycle()
 			if (ap != -1) {

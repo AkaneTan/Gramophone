@@ -23,7 +23,6 @@
         android:paddingBottom="18dp"
         android:textColor="?attr/colorPrimary"
         android:textSize="28sp"
-        tools:targetApi="p"
         tools:text="轢き潰してきた その全てに 对着那被碾碎的 曾经的所有" />
 
 </com.google.android.material.card.MaterialCardView>

@@ -52,7 +52,6 @@
                 android:textFontWeight="400"
                 android:fontFamily="sans-serif"
                 android:textSize="17sp"
-                tools:targetApi="p"
                 tools:text="Example Title" />
 
             <TextView
@@ -64,7 +63,6 @@
                 android:textFontWeight="400"
                 android:fontFamily="sans-serif"
                 android:textSize="15sp"
-                tools:targetApi="p"
                 tools:text="Example Artist" />
 
         </LinearLayout>

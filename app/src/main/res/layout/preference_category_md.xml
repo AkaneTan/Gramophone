@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:paddingStart="24dp"
     android:paddingTop="12dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="RtlSymmetry">
 
     <TextView
         android:id="@android:id/title"
@@ -13,7 +14,6 @@
         android:textColor="?colorPrimary"
         android:fontFamily="sans-serif"
         android:textFontWeight="600"
-        tools:text="Links"
-        tools:targetApi="p" />
+        tools:text="Links" />
 
 </FrameLayout>

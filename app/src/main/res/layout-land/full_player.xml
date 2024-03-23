@@ -91,7 +91,6 @@
 				android:textFontWeight="500"
 				android:fontFamily="sans-serif"
 				android:textSize="22sp"
-				tools:targetApi="p"
 				tools:text="Artifiction" />
 
 			<org.akanework.gramophone.ui.components.MarqueeTextView
@@ -105,7 +104,6 @@
 				android:textFontWeight="500"
 				android:fontFamily="sans-serif"
 				android:textSize="17sp"
-				tools:targetApi="p"
 				tools:text="Artifiction" />
 
 		</LinearLayout>
@@ -170,8 +168,7 @@
 				android:text="@string/default_time"
 				android:textColor="?attr/colorAccent"
 				android:textFontWeight="600"
-				android:fontFamily="sans-serif"
-				tools:targetApi="p" />
+				android:fontFamily="sans-serif" />
 
 			<TextView
 				android:id="@+id/duration"
@@ -181,8 +178,7 @@
 				android:text="@string/default_time"
 				android:textColor="?attr/colorAccent"
 				android:textFontWeight="600"
-				android:fontFamily="sans-serif"
-				tools:targetApi="p" />
+				android:fontFamily="sans-serif" />
 
 		</FrameLayout>
 

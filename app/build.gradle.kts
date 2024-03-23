@@ -121,6 +121,10 @@ android {
         )
     }
 
+    lint {
+        lintConfig = file("lint.xml")
+    }
+
     // https://gitlab.com/IzzyOnDroid/repo/-/issues/491
     dependenciesInfo {
         includeInApk = false
@@ -162,8 +166,7 @@ dependencies {
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app
     debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    //coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
 }
 
 fun String.runCommand(

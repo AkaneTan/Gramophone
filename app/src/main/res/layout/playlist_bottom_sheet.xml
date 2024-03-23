@@ -62,7 +62,6 @@
                 android:textFontWeight="500"
                 android:fontFamily="sans-serif"
                 android:textSize="15sp"
-                tools:targetApi="p"
                 tools:text="Artifact" />
 
         </LinearLayout>

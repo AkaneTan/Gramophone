@@ -20,6 +20,8 @@
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:elevation="1dp"
+        app:behavior_hideable="true"
         app:shapeAppearance="@style/BottomPlayerCornerShape"
         app:marginLeftSystemWindowInsets="false"
         app:marginRightSystemWindowInsets="false"
