@@ -19,7 +19,6 @@ package org.akanework.gramophone.ui
 
 import android.app.NotificationManager
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -47,8 +46,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgeProperly
+import org.akanework.gramophone.logic.hasScopedStorageV2
+import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
+import org.akanework.gramophone.logic.needsNotificationCancelWorkaround
 import org.akanework.gramophone.logic.postAtFrontOfQueueAsync
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
+import org.akanework.gramophone.logic.utils.TypefaceCompatFactory
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
 
@@ -98,6 +101,7 @@ class MainActivity : AppCompatActivity() {
      * onCreate - core of MainActivity.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
+        TypefaceCompatFactory.installViewFactory(this)
         super.onCreate(savedInstanceState)
         installSplashScreen().setKeepOnScreenCondition { !ready }
         enableEdgeToEdgeProperly()
@@ -136,17 +140,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Check all permissions.
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        if ((hasScopedStorageWithMediaTypes()
                     && ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.READ_MEDIA_AUDIO,
             ) != PackageManager.PERMISSION_GRANTED)
-            || (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+            || (!hasScopedStorageV2()
                     && ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
             ) != PackageManager.PERMISSION_GRANTED)
-            || (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+            || (!hasScopedStorageWithMediaTypes()
                     && ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -155,9 +159,9 @@ class MainActivity : AppCompatActivity() {
             // Ask if was denied.
             ActivityCompat.requestPermissions(
                 this,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                if (hasScopedStorageWithMediaTypes())
                     arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO)
-                else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+                else if (hasScopedStorageV2())
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 else
                     arrayOf(
@@ -229,7 +233,7 @@ class MainActivity : AppCompatActivity() {
     @OptIn(UnstableApi::class)
     override fun onDestroy() {
         // https://github.com/androidx/media/issues/805
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        if (needsNotificationCancelWorkaround()
             && (getPlayer()?.playWhenReady != true || getPlayer()?.mediaItemCount == 0)) {
             val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)

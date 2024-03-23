@@ -33,6 +33,9 @@ android {
     }
 
     packaging {
+        dex {
+            useLegacyPackaging = false
+        }
         jniLibs {
             useLegacyPackaging = false
         }
@@ -99,12 +102,14 @@ android {
             if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
+            isPseudoLocalesEnabled = true
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -157,6 +162,8 @@ dependencies {
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app
     debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    //coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
 }
 
 fun String.runCommand(

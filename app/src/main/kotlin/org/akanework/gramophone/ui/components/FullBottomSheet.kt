@@ -6,16 +6,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +22,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.TypefaceCompat
+import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -266,9 +265,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		bottomSheetTimerButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			val picker =
 				MaterialTimePicker
 					.Builder()
@@ -288,9 +285,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		bottomSheetLoopButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			instance?.repeatMode = when (instance?.repeatMode) {
 				Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
 				Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
@@ -313,9 +308,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		 */
 
 		bottomSheetPlaylistButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			val playlistBottomSheet = BottomSheetDialog(context)
 			playlistBottomSheet.setContentView(R.layout.playlist_bottom_sheet)
 			val recyclerView = playlistBottomSheet.findViewById<MyRecyclerView>(R.id.recyclerview)!!
@@ -349,21 +342,15 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			playlistBottomSheet.show()
 		}
 		bottomSheetFullControllerButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			instance?.playOrPause()
 		}
 		bottomSheetFullPreviousButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			instance?.seekToPreviousMediaItem()
 		}
 		bottomSheetFullNextButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			instance?.seekToNextMediaItem()
 		}
 		bottomSheetShuffleButton.addOnCheckedChangeListener { _, isChecked ->
@@ -384,23 +371,17 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		bottomSheetFullSlider.addOnSliderTouchListener(touchListener)
 
 		bottomSheetFullSlideUpButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			minimize?.invoke()
 		}
 
 		bottomSheetLyricButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 			bottomSheetFullLyricRecyclerView.fadInAnimation(LYRIC_FADE_TRANSITION_SEC)
 		}
 
 		bottomSheetShuffleButton.setOnClickListener {
-			if (Build.VERSION.SDK_INT >= 23) {
-				it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-			}
+			ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 		}
 
 		bottomSheetFullLyricRecyclerView.layoutManager =
@@ -448,7 +429,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 		if (key == "color_accuracy" || key == "content_based_color") {
-			if (Build.VERSION.SDK_INT >= 26 &&
+			if (DynamicColors.isDynamicColorAvailable() &&
 				prefs.getBooleanStrict("content_based_color", true)) {
 				addColorScheme()
 			} else {
@@ -483,12 +464,10 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 		}
 		if (key == null || key == "bold_title") {
-			if (prefs.getBooleanStrict("bold_title", true) &&
-				Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-			) {
-				bottomSheetFullTitle.typeface = Typeface.create(null, 700, false)
-			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-				bottomSheetFullTitle.typeface = Typeface.create(null, 500, false)
+			if (prefs.getBooleanStrict("bold_title", true)) {
+				bottomSheetFullTitle.typeface = TypefaceCompat.create(context, null, 700, false)
+			} else {
+				bottomSheetFullTitle.typeface = TypefaceCompat.create(context, null, 500, false)
 			}
 		}
 		if (key == null || key == "album_round_corner") {
@@ -808,7 +787,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						transition: Transition<in Drawable>?
 					) {
 						bottomSheetFullCover.setImageDrawable(resource)
-						if (Build.VERSION.SDK_INT >= 26 &&
+						if (DynamicColors.isDynamicColorAvailable() &&
 							prefs.getBooleanStrict("content_based_color", true)
 						) {
 							addColorScheme()
@@ -997,9 +976,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 			with(holder.lyricCard) {
 				setOnClickListener {
-					if (Build.VERSION.SDK_INT >= 23) {
-						performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-					}
+					ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 					val instance = activity.getPlayer()
 					if (instance?.isPlaying == false) {
 						instance.play()
@@ -1012,10 +989,10 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				visibility = if (lyric.content.isNotEmpty()) View.VISIBLE else View.GONE
 				text = lyric.content
 
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isBoldEnabled) {
-					this.typeface = Typeface.create(null, 700, false)
-				} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-					this.typeface = Typeface.create(null, 500, false)
+				if (isBoldEnabled) {
+					this.typeface = TypefaceCompat.create(context,null, 700, false)
+				} else {
+					this.typeface = TypefaceCompat.create(context, null, 500, false)
 				}
 
 				if (isLyricCentered) {
@@ -1045,8 +1022,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		fun updateLyricStatus() {
-			isBoldEnabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-					prefs.getBooleanStrict("lyric_bold", false)
+			isBoldEnabled = prefs.getBooleanStrict("lyric_bold", false)
 			isLyricCentered = prefs.getBooleanStrict("lyric_center", false)
 			isLyricContrastEnhanced = prefs.getBooleanStrict("lyric_contrast", false)
 		}
@@ -1126,9 +1102,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				.placeholder(R.drawable.ic_default_cover)
 				.into(holder.songCover)
 			holder.closeButton.setOnClickListener {
-				if (Build.VERSION.SDK_INT >= 23) {
-					it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-				}
+				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
 				val pos = holder.bindingAdapterPosition
 				playlist.removeAt(pos)
@@ -1136,9 +1110,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				instance?.removeMediaItem(pos)
 			}
 			holder.itemView.setOnClickListener {
-				if (Build.VERSION.SDK_INT >= 23) {
-					it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-				}
+				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
 				instance?.seekToDefaultPosition(holder.absoluteAdapterPosition)
 			}

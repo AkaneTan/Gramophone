@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Read music files (Android 13 and later) (includes .lrc and thumbnails) -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"
         android:minSdkVersion="33" />
     <!-- Read cover files, this is never requested by UI but exists for users who want it -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
-        android:minSdkVersion="33"
-        tools:ignore="SelectedPhotoAccess" />
+        android:minSdkVersion="33" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+        android:minSdkVersion="34" />
     <!-- Read music files, .lrc files and cover files (Android 12 and earlier) -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"

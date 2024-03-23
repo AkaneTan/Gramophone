@@ -78,6 +78,7 @@ public class MediaScannerActivity extends Activity {
 	/**
 	 * Called when the activity is first created or resumed.
 	 */
+	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);

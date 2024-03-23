@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools">
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+		tools:ignore="ScopedStorage" />
 	<application tools:ignore="MissingApplicationIcon"
-		android:requestLegacyExternalStorage="true">
+		android:memtagMode="sync"
+		android:gwpAsanMode="always"
+		android:requestLegacyExternalStorage="true"
+		tools:targetApi="s">
 		<activity
 			android:name="com.android.development.MediaScannerActivity"
 			android:label="SD Exploder"

@@ -36,6 +36,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -73,15 +74,9 @@ fun MediaItem.getFile(): File? {
     return getUri()?.path?.let { File(it) }
 }
 
-// uses reified for performant inlining only
-inline fun <reified K, reified V> HashMap<K, V>.putIfAbsentSupport(key: K, value: V) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        putIfAbsent(key, value)
-    } else {
-        // meh...
-        if (!containsKey(key))
-            this[key] = value
-    }
+@Suppress("NewApi") // core library desugar solves this issue ; reified inline for perf
+inline fun <reified K, reified V> HashMap<K, V>.putIfAbsentSupport(key: K, value: V): V? {
+    return putIfAbsent(key, value)
 }
 
 fun Activity.closeKeyboard(view: View) {
@@ -178,18 +173,14 @@ fun MediaController.setTimer(value: Int) {
     )
 }
 
+@Suppress("UNCHECKED_CAST")
 fun MediaController.getLyrics(): MutableList<MediaStoreUtils.Lyric>? =
     sendCustomCommand(
         SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
         Bundle.EMPTY
     ).get().extras.let {
-        @Suppress("UNCHECKED_CAST")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            it.getParcelableArray("lyrics", MediaStoreUtils.Lyric::class.java)
-        } else {
-            @Suppress("deprecation")
-            it.getParcelableArray("lyrics") as Array<MediaStoreUtils.Lyric>?
-        }?.toMutableList()
+        (BundleCompat.getParcelableArray(it, "lyrics", MediaStoreUtils.Lyric::class.java)
+                as Array<MediaStoreUtils.Lyric>?)?.toMutableList()
     }
 
 // https://twitter.com/Piwai/status/1529510076196630528
@@ -313,3 +304,31 @@ inline fun SharedPreferences.getBooleanStrict(key: String, defValue: Boolean): B
 inline fun SharedPreferences.getStringSetStrict(key: String, defValue: Set<String>?): Set<String>? {
     return use { getStringSet(key, defValue) }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun needsNotificationCancelWorkaround(): Boolean =
+    Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun hasImprovedMediaStore(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun hasAlbumArtistIdInMediaStore(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun hasOsClipboardDialog(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun hasScopedStorageV2(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun hasScopedStorageV1(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun hasScopedStorageWithMediaTypes(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU

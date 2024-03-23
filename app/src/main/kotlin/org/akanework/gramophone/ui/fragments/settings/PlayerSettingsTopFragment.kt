@@ -19,6 +19,7 @@ package org.akanework.gramophone.ui.fragments.settings
 
 import android.os.Bundle
 import androidx.preference.Preference
+import com.google.android.material.color.DynamicColors
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 import org.akanework.gramophone.ui.fragments.BaseSettingFragment
@@ -29,6 +30,8 @@ class PlayerSettingsFragment : BaseSettingFragment(R.string.settings_player_ui,
 class PlayerSettingsTopFragment : BasePreferenceFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_player, rootKey)
+        findPreference<Preference>("content_based_color")!!
+            .isVisible = DynamicColors.isDynamicColorAvailable()
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {

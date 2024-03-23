@@ -19,11 +19,9 @@ package org.akanework.gramophone.ui.components
 
 import android.content.ComponentName
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -32,6 +30,7 @@ import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.Insets
+import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -138,16 +137,12 @@ class PlayerBottomSheet private constructor(
         }
 
         bottomSheetPreviewControllerButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23) {
-                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-            }
+            ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
             instance?.playOrPause()
         }
 
         bottomSheetPreviewNextButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23) {
-                it.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-            }
+            ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
             instance?.seekToNextMediaItem()
         }
     }

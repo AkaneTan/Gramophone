@@ -6,10 +6,9 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
+    android:background="?attr/selectableItemBackground"
     android:paddingEnd="16dp"
-    android:paddingStart="4dp"
-    tools:targetApi="m">
+    android:paddingStart="4dp">
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/checkbox"

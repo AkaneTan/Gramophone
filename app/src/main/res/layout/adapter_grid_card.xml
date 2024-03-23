@@ -7,11 +7,9 @@
     android:layout_gravity="center_horizontal"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?selectableItemBackground"
+    android:background="?selectableItemBackground"
     android:gravity="center_horizontal"
-    android:paddingBottom="@dimen/grid_card_padding_bottom"
-    tools:targetApi="m"
-    tools:ignore="UnusedAttribute">
+    android:paddingBottom="@dimen/grid_card_padding_bottom">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cover_frame"
