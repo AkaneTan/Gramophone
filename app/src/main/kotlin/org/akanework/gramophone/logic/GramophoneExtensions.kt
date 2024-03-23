@@ -17,6 +17,7 @@
 
 package org.akanework.gramophone.logic
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
@@ -32,6 +33,7 @@ import android.os.Looper
 import android.os.Message
 import android.os.StrictMode
 import android.view.View
+import android.view.WindowInsets
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -75,14 +77,14 @@ fun MediaItem.getFile(): File? {
 }
 
 fun Activity.closeKeyboard(view: View) {
-    if (ViewCompat.getRootWindowInsets(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
+    if (getRootWindowInsetsSupport(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
         WindowInsetsControllerCompat(window, view).hide(WindowInsetsCompat.Type.ime())
     }
 }
 
 fun Activity.showKeyboard(view: View) {
     view.requestFocus()
-    if (ViewCompat.getRootWindowInsets(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == false) {
+    if (getRootWindowInsetsSupport(window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == false) {
         WindowInsetsControllerCompat(window, view).show(WindowInsetsCompat.Type.ime())
     }
 }
@@ -188,11 +190,11 @@ fun Handler.postAtFrontOfQueueAsync(callback: Runnable) {
 }
 
 fun View.enableEdgeToEdgePaddingListener() {
+    if (fitsSystemWindows) throw IllegalArgumentException("must have fitsSystemWindows disabled")
     if (this is AppBarLayout) {
         // AppBarLayout fitsSystemWindows does not handle left/right for a good reason, it has
         // to be applied to children to look good; we rewrite fitsSystemWindows in a way mostly specific
         // to Gramophone to support shortEdges displayCutout
-        if (fitsSystemWindows) throw IllegalArgumentException("must have fitsSystemWindows disabled")
         val collapsingToolbarLayout = children.find { it is CollapsingToolbarLayout } as CollapsingToolbarLayout?
         collapsingToolbarLayout?.let {
             // The CollapsingToolbarLayout mustn't consume insets, we handle padding here anyway
@@ -249,6 +251,33 @@ fun ComponentActivity.enableEdgeToEdgeProperly() {
 val Context.gramophoneApplication
     get() = applicationContext as GramophoneApplication
 
+@SuppressLint("DiscouragedPrivateApi")
+private fun WindowInsets.unconsumeIfNeeded() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        // Api21Impl of getRootWindowInsets returns already-consumed WindowInsets with correct data
+        // Said consumed insets cannot be dispatched again because well, they are already consumed
+        // Workaround this using some reflection (Api23Impl+ are not affected so this is safe)
+        val mSystemWindowInsetsConsumed = WindowInsets::class.java
+            .getDeclaredField("mSystemWindowInsetsConsumed")
+            .apply { isAccessible = true }
+        val mWindowDecorInsetsConsumed = WindowInsets::class.java
+            .getDeclaredField("mWindowDecorInsetsConsumed")
+            .apply { isAccessible = true }
+        val mStableInsetsConsumed = WindowInsets::class.java
+            .getDeclaredField("mStableInsetsConsumed")
+            .apply { isAccessible = true }
+        mSystemWindowInsetsConsumed.set(this, false)
+        mWindowDecorInsetsConsumed.set(this, false)
+        mStableInsetsConsumed.set(this, false)
+    }
+}
+
+fun getRootWindowInsetsSupport(view: View): WindowInsetsCompat? {
+    return ViewCompat.getRootWindowInsets(view).also {
+        it?.toWindowInsets()?.unconsumeIfNeeded()
+    }
+}
+
 inline fun Semaphore.runInBg(crossinline runnable: suspend () -> Unit) {
     CoroutineScope(Dispatchers.Default).launch {
         acquire()
@@ -262,7 +291,7 @@ inline fun Semaphore.runInBg(crossinline runnable: suspend () -> Unit) {
 
 // the whole point of this function is to do literally nothing at all (but without impacting
 // performance) in release builds and ignore StrictMode violations in debug builds
-inline fun <reified T> useSharedPrefs(doIt: () -> T): T {
+inline fun <reified T> allowDiskAccessInStrictMode(doIt: () -> T): T {
     return if (BuildConfig.DEBUG) {
         if (Looper.getMainLooper() != Looper.myLooper()) throw IllegalStateException()
         val policy = StrictMode.allowThreadDiskReads()
@@ -276,7 +305,7 @@ inline fun <reified T> useSharedPrefs(doIt: () -> T): T {
 }
 
 inline fun <reified T> SharedPreferences.use(doIt: SharedPreferences.() -> T): T {
-    return useSharedPrefs { doIt() }
+    return allowDiskAccessInStrictMode { doIt() }
 }
 
 // use below functions if accessing from UI thread only

@@ -29,6 +29,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.allowDiskAccessInStrictMode
 import org.akanework.gramophone.logic.hasOsClipboardDialog
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -79,7 +80,9 @@ class BugHandlerActivity : AppCompatActivity() {
         // Make our life easier by copying the log to clipboard
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("error msg", combinedTextBuilder.toString())
-        clipboard.setPrimaryClip(clip)
+        allowDiskAccessInStrictMode {
+            clipboard.setPrimaryClip(clip)
+        }
         if (!hasOsClipboardDialog()) {
             Toast.makeText(this, R.string.crash_clipboard, Toast.LENGTH_LONG).show()
         }

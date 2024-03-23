@@ -4,7 +4,6 @@
 		<ignore regexp="textFontWeight"/> <!-- backported in TypefaceCompatFactory -->
 	</issue>
 	<issue id="NewApi">
-		<ignore regexp="android:textFontWeight"/> <!-- backported in TypefaceCompatFactory -->
 		<ignore regexp="putIfAbsent"/> <!-- backported with core lib desugar -->
 	</issue>
 </lint>

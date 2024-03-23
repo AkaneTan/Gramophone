@@ -22,6 +22,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -54,6 +55,7 @@ import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
 import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.getRootWindowInsetsSupport
 import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.startAnimation
@@ -67,6 +69,10 @@ class PlayerBottomSheet private constructor(
     Player.Listener, DefaultLifecycleObserver, OnApplyWindowInsetsListener {
     constructor(context: Context, attributeSet: AttributeSet?)
             : this(context, attributeSet, 0, 0)
+
+    companion object {
+        private const val TAG = "PlayerBottomSheet"
+    }
 
     private var sessionToken: SessionToken? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -330,9 +336,10 @@ class PlayerBottomSheet private constructor(
     private fun dispatchBottomSheetInsets() {
         // This dispatches the last known insets again to force regeneration of
         // FragmentContainerView's insets which will in turn call generateBottomSheetInsets().
-        ViewCompat.getRootWindowInsets(activity.window.decorView)?.let {
-            ViewCompat.dispatchApplyWindowInsets(activity.window.decorView, it)
-        }
+        val i = getRootWindowInsetsSupport(activity.window.decorView)
+        if (i != null) {
+            ViewCompat.dispatchApplyWindowInsets(activity.window.decorView, i)
+        } else Log.e(TAG, "getRootWindowInsets returned null, this should NEVER happen")
     }
 
     fun getPlayer(): MediaController? = instance

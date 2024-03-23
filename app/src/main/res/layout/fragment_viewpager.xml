@@ -52,6 +52,7 @@
             app:tabIndicatorGravity="stretch"
             app:tabMinWidth="0dp"
             app:tabMode="scrollable"
+            app:tabGravity="start"
             app:tabPaddingEnd="12dp"
             app:tabPaddingStart="12dp"
             app:tabRippleColor="@android:color/transparent"
