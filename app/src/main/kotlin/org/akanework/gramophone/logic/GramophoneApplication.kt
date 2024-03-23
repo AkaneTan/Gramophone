@@ -31,7 +31,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
-import com.google.android.material.color.DynamicColors
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.ui.BugHandlerActivity
 import kotlin.system.exitProcess
@@ -96,9 +95,6 @@ class GramophoneApplication : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-
-        // Apply dynamic colors.
-        DynamicColors.applyToActivitiesIfAvailable(this)
 
         // Disk cache has been disabled for Gramophone, so clear out what's left of it
         // This should be removed in a few months
