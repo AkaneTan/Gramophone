@@ -43,6 +43,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -56,7 +57,6 @@ import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
 import org.akanework.gramophone.logic.getBooleanStrict
 import org.akanework.gramophone.logic.getRootWindowInsetsSupport
-import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
@@ -88,7 +88,7 @@ class PlayerBottomSheet private constructor(
 
     private val activity
         get() = context as MainActivity
-    private val prefs = context.gramophoneApplication.prefs
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
     private val lifecycleOwner: LifecycleOwner
         get() = activity
     private val handler = Handler(Looper.getMainLooper())

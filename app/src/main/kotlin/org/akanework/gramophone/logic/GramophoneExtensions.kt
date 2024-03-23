@@ -248,9 +248,6 @@ fun ComponentActivity.enableEdgeToEdgeProperly() {
     }
 }
 
-val Context.gramophoneApplication
-    get() = applicationContext as GramophoneApplication
-
 @SuppressLint("DiscouragedPrivateApi")
 private fun WindowInsets.unconsumeIfNeeded() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {

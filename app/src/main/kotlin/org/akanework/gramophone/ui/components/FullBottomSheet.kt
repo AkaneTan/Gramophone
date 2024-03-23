@@ -32,6 +32,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -65,7 +66,6 @@ import org.akanework.gramophone.logic.getBooleanStrict
 import org.akanework.gramophone.logic.getIntStrict
 import org.akanework.gramophone.logic.getLyrics
 import org.akanework.gramophone.logic.getTimer
-import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.setTextAnimation
@@ -101,7 +101,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private var firstTime = false
 	private var lastArtworkUri: Uri? = null
 
-	private val prefs = context.gramophoneApplication.prefs
+	private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
 	companion object {
 		const val SLIDER_UPDATE_INTERVAL: Long = 100

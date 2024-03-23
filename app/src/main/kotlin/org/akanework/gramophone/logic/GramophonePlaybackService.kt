@@ -57,6 +57,7 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -152,7 +153,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
     override fun onCreate() {
         super.onCreate()
-        prefs = gramophoneApplication.prefs
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         customCommands =
             listOf(

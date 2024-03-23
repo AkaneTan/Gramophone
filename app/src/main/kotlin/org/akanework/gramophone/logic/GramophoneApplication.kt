@@ -20,7 +20,6 @@ package org.akanework.gramophone.logic
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -44,9 +43,6 @@ import kotlin.system.exitProcess
  */
 class GramophoneApplication : Application() {
 
-    lateinit var prefs: SharedPreferences
-        private set
-
     @OptIn(UnstableApi::class)
     override fun onCreate() {
         // Set up BugHandlerActivity.
@@ -63,7 +59,7 @@ class GramophoneApplication : Application() {
         }
         super.onCreate()
         // Cheat by loading preferences before setting up StrictMode.
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         if (BuildConfig.DEBUG) {
             // Use StrictMode to find anti-patterns issues (as of writing, no known violations)
             // (of course not counting SharedPreferences which just is like that by nature)

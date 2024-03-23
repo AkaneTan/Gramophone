@@ -34,6 +34,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -46,7 +47,6 @@ import kotlinx.coroutines.sync.Semaphore
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getStringStrict
-import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.ui.DefaultItemHeightHelper
 import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
@@ -98,7 +98,7 @@ abstract class BaseAdapter<T>(
     protected var recyclerView: MyRecyclerView? = null
         private set
 
-    private var prefs = context.gramophoneApplication.prefs
+    private var prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
     @Suppress("LeakingThis")
     private var prefSortType: Sorter.Type = Sorter.Type.valueOf(

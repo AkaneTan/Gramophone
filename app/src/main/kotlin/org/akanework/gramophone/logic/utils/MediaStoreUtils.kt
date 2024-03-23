@@ -36,12 +36,12 @@ import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.gramophoneApplication
 import org.akanework.gramophone.logic.hasAlbumArtistIdInMediaStore
 import org.akanework.gramophone.logic.hasImprovedMediaStore
 import org.akanework.gramophone.logic.hasScopedStorageV1
@@ -279,7 +279,7 @@ object MediaStoreUtils {
                     add(MediaStore.Audio.Media.AUTHOR)
                 }
             }.toTypedArray()
-        val prefs = context.gramophoneApplication.prefs
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val limitValue = prefs.getInt(
             "mediastore_filter",
             context.resources.getInteger(R.integer.filter_default_sec)
