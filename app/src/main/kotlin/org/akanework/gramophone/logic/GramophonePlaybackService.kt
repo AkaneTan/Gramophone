@@ -502,7 +502,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
     // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (!controller!!.playWhenReady || controller!!.mediaItemCount == 0) {
+        if (controller!!.playbackState == Player.STATE_ENDED || !controller!!.playWhenReady || controller!!.mediaItemCount == 0) {
             stopSelf()
         }
     }
