@@ -27,13 +27,17 @@ class ExperimentalSettingsFragment : BaseSettingFragment(R.string.settings_exper
     { ExperimentalSettingsTopFragment() })
 
 class ExperimentalSettingsTopFragment : BasePreferenceFragment() {
+
+    private lateinit var e: Exception
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_experimental, rootKey)
+        e = RuntimeException("skill issue")
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         if (preference.key == "crash") {
-            throw IllegalAccessException("I crashed your app >:)")
+            throw IllegalArgumentException("I crashed your app >:)", e)
         }
         return super.onPreferenceTreeClick(preference)
     }

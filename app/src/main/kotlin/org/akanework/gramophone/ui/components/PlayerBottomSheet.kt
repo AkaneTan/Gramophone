@@ -296,10 +296,12 @@ class PlayerBottomSheet private constructor(
         // View is behind the status bar, paddingTopSystemWindowInsets just allows it to go
         // behind it, which differs from the other padding*SystemWindowInsets. We can't use the
         // other padding*SystemWindowInsets to apply systemBars() because previewPlayer and
-        // fullPlayer should extend into system bars and display cutout. fullPlayer uses
-        // fitsSystemWindows so there's no need to worry about it, but previewPlayer can't
-        // because it doesn't want top padding from status bar. We have to do it manually, duh.
+        // fullPlayer should extend into system bars and display cutout. previewPlayer can't use
+        // fitsSystemWindows because it doesn't want top padding from status bar.
+        // We have to do it manually, duh.
         previewPlayer.setPadding(myInsets.left, 0, myInsets.right, myInsets.bottom)
+        // Let fullPlayer handle insets itself (and discard result as it is not relevant to main UI)
+        ViewCompat.dispatchApplyWindowInsets(fullPlayer, insets)
         // Now make sure BottomSheetBehaviour has the correct View height set.
         if (isLaidOut && !isLayoutRequested) {
             updatePeekHeight()
@@ -309,7 +311,14 @@ class PlayerBottomSheet private constructor(
                 dispatchBottomSheetInsets()
             }
         }
-        return insets
+        val i = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+                or WindowInsetsCompat.Type.displayCutout())
+        return WindowInsetsCompat.Builder(insets)
+            .setInsets(WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout(), Insets.of(0, myInsets.top, 0, 0))
+            .setInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout(), Insets.of(0, i.top, 0, 0))
+            .build()
     }
 
     private fun updatePeekHeight() {

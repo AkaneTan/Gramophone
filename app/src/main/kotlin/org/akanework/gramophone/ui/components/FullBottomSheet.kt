@@ -22,8 +22,10 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.Insets
 import androidx.core.graphics.TypefaceCompat
 import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -80,7 +82,7 @@ import kotlin.math.min
 
 class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
 	ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), Player.Listener,
-	SharedPreferences.OnSharedPreferenceChangeListener {
+	SharedPreferences.OnSharedPreferenceChangeListener, OnApplyWindowInsetsListener {
 	constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 		this(context, attrs, defStyleAttr, 0)
 	constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -227,6 +229,24 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			this,
 			com.google.android.material.R.attr.colorSecondaryContainer
 		)
+		ViewCompat.setOnApplyWindowInsetsListener(this, this)
+		ViewCompat.setOnApplyWindowInsetsListener(bottomSheetFullLyricRecyclerView) { v, insets ->
+			val myInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+					or WindowInsetsCompat.Type.displayCutout())
+			v.updateLayoutParams<MarginLayoutParams> {
+				leftMargin = -myInsets.left
+				topMargin = -myInsets.top
+				rightMargin = -myInsets.right
+				bottomMargin = -myInsets.bottom
+			}
+			v.setPadding(myInsets.left, myInsets.top, myInsets.right, myInsets.bottom)
+			return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(insets)
+				.setInsets(WindowInsetsCompat.Type.systemBars()
+						or WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
+				.setInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+						or WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
+				.build()
+		}
 		refreshSettings(null)
 		prefs.registerOnSharedPreferenceChangeListener(this)
 
@@ -315,8 +335,15 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, ic ->
 				val i = ic.getInsets(WindowInsetsCompat.Type.systemBars()
 						or WindowInsetsCompat.Type.displayCutout())
+				val i2 = ic.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+						or WindowInsetsCompat.Type.displayCutout())
 				v.setPadding(i.left, 0, i.right, i.bottom)
-				return@setOnApplyWindowInsetsListener ic
+				return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(ic)
+					.setInsets(WindowInsetsCompat.Type.systemBars()
+							or WindowInsetsCompat.Type.displayCutout(), Insets.of(0, i.top, 0, 0))
+					.setInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+							or WindowInsetsCompat.Type.displayCutout(), Insets.of(0, i2.top, 0, 0))
+					.build()
 			}
 			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
@@ -515,14 +542,17 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		controllerFuture = null
 	}
 
-	override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
-		super.setPadding(left, top, right, bottom)
-		// this is to enable edge to edge for lyric view with some trickery
-		bottomSheetFullLyricRecyclerView.updateLayoutParams<MarginLayoutParams> {
-			topMargin = -top
-			bottomMargin = -bottom
-		}
-		bottomSheetFullLyricRecyclerView.setPadding(0, top, 0, bottom)
+	override fun onApplyWindowInsets(ignored: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+		val myInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+				or WindowInsetsCompat.Type.displayCutout())
+		setPadding(myInsets.left, myInsets.top, myInsets.right, myInsets.bottom)
+		ViewCompat.dispatchApplyWindowInsets(bottomSheetFullLyricRecyclerView, insets)
+		return WindowInsetsCompat.Builder(insets)
+			.setInsets(WindowInsetsCompat.Type.systemBars()
+					or WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
+			.setInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+					or WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
+			.build()
 	}
 
 	private fun removeColorScheme() {

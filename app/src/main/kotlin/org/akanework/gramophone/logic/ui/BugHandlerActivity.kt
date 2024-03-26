@@ -23,13 +23,17 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.allowDiskAccessInStrictMode
+import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.hasOsClipboardDialog
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -49,6 +53,9 @@ class BugHandlerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_bug_handler)
+        findViewById<View>(R.id.appbarlayout).enableEdgeToEdgePaddingListener()
+        findViewById<MaterialToolbar>(R.id.topAppBar).setNavigationOnClickListener { finish() }
+        onBackPressedDispatcher.addCallback { finish() }
 
         val bugText = findViewById<TextView>(R.id.error)
         val exceptionMessage = intent.getStringExtra("exception_message")
@@ -76,6 +83,7 @@ class BugHandlerActivity : AppCompatActivity() {
 
         bugText.typeface = Typeface.MONOSPACE
         bugText.text = combinedTextBuilder.toString()
+        bugText.enableEdgeToEdgePaddingListener()
 
         // Make our life easier by copying the log to clipboard
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager

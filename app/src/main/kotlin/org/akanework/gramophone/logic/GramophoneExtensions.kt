@@ -38,6 +38,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.core.graphics.Insets
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -189,9 +190,10 @@ fun Handler.postAtFrontOfQueueAsync(callback: Runnable) {
     })
 }
 
-fun View.enableEdgeToEdgePaddingListener() {
+fun View.enableEdgeToEdgePaddingListener(ime: Boolean = false, top: Boolean = false) {
     if (fitsSystemWindows) throw IllegalArgumentException("must have fitsSystemWindows disabled")
     if (this is AppBarLayout) {
+        if (ime) throw IllegalArgumentException("AppBarLayout must have ime flag disabled")
         // AppBarLayout fitsSystemWindows does not handle left/right for a good reason, it has
         // to be applied to children to look good; we rewrite fitsSystemWindows in a way mostly specific
         // to Gramophone to support shortEdges displayCutout
@@ -217,7 +219,14 @@ fun View.enableEdgeToEdgePaddingListener() {
                 it.setPadding(cutoutAndBars.left, 0, cutoutAndBars.right, 0)
             }
             v.setPadding(0, cutoutAndBars.top, 0, 0)
-            return@setOnApplyWindowInsetsListener insets
+            val i = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout())
+            return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(insets)
+                .setInsets(WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout(), Insets.of(cutoutAndBars.left, 0, cutoutAndBars.right, cutoutAndBars.bottom))
+                .setInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout(), Insets.of(i.left, 0, i.right, i.bottom))
+                .build()
         }
     } else {
         val pl = paddingLeft
@@ -225,25 +234,27 @@ fun View.enableEdgeToEdgePaddingListener() {
         val pr = paddingRight
         val pb = paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-            val cutoutAndBars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-                        or WindowInsetsCompat.Type.ime()
-            )
-            v.setPadding(pl + cutoutAndBars.left, pt, pr + cutoutAndBars.right,
-                pb + cutoutAndBars.bottom)
-            return@setOnApplyWindowInsetsListener insets
+            val mask = WindowInsetsCompat.Type.systemBars() or
+                    WindowInsetsCompat.Type.displayCutout() or
+                    if (ime) WindowInsetsCompat.Type.ime() else 0
+            val i = insets.getInsets(mask)
+            v.setPadding(pl + i.left, pt + (if (top) i.top else 0), pr + i.right,
+                pb + i.bottom)
+            return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(insets)
+                .setInsets(mask, Insets.NONE)
+                .setInsetsIgnoringVisibility(mask, Insets.NONE)
+                .build()
         }
     }
 }
 
 // enableEdgeToEdge() without enforcing contrast, magic based on androidx EdgeToEdge.kt
 fun ComponentActivity.enableEdgeToEdgeProperly() {
-    val darkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
     if ((resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
         Configuration.UI_MODE_NIGHT_YES) {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
     } else {
+        val darkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, darkScrim))
     }
 }

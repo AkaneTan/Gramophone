@@ -23,6 +23,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.customview.widget.ViewDragHelper
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.lang.reflect.Field
@@ -75,6 +76,23 @@ class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet) :
         }
         super.handleBackInvoked()
         setHideableInternal(true)
+    }
+
+    override fun onLayoutChild(parent: CoordinatorLayout, child: T, layoutDirection: Int): Boolean {
+        val value = super.onLayoutChild(parent, child, layoutDirection)
+        /*ViewCompat.setWindowInsetsAnimationCallback(child, object : WindowInsetsAnimationCompat.Callback(
+            DISPATCH_MODE_CONTINUE_ON_SUBTREE
+        ) {
+            override fun onProgress(
+                p0: WindowInsetsCompat,
+                p1: MutableList<WindowInsetsAnimationCompat>
+            ): WindowInsetsCompat {
+                TODO("Not yet implemented")
+            }
+
+        })
+        // TODO y no work*/
+        return value
     }
 }
 

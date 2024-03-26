@@ -20,7 +20,7 @@ class EndedRestoreWorkaroundPlayer(player: ExoPlayer)
 		private const val TAG = "EndedRestore..Player"
 	}
 
-	val exoPlayer: ExoPlayer = wrappedPlayer as ExoPlayer
+	val exoPlayer = wrappedPlayer as ExoPlayer
 	var isEnded = false
 		set(value) {
 			if (BuildConfig.DEBUG) {
