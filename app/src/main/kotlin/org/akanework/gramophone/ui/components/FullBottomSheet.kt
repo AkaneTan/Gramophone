@@ -17,6 +17,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
@@ -25,10 +26,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
 import androidx.core.graphics.TypefaceCompat
 import androidx.core.view.HapticFeedbackConstantsCompat
-import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -62,6 +61,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.GramophonePlaybackService
+import org.akanework.gramophone.logic.clone
 import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.getBooleanStrict
@@ -74,6 +74,7 @@ import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyRecyclerView
+import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -82,7 +83,7 @@ import kotlin.math.min
 
 class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
 	ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), Player.Listener,
-	SharedPreferences.OnSharedPreferenceChangeListener, OnApplyWindowInsetsListener {
+	SharedPreferences.OnSharedPreferenceChangeListener {
 	constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 		this(context, attrs, defStyleAttr, 0)
 	constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -229,15 +230,14 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			this,
 			com.google.android.material.R.attr.colorSecondaryContainer
 		)
-		ViewCompat.setOnApplyWindowInsetsListener(this, this)
 		ViewCompat.setOnApplyWindowInsetsListener(bottomSheetFullLyricRecyclerView) { v, insets ->
 			val myInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()
 					or WindowInsetsCompat.Type.displayCutout())
-			v.updateLayoutParams<MarginLayoutParams> {
-				leftMargin = -myInsets.left
-				topMargin = -myInsets.top
-				rightMargin = -myInsets.right
-				bottomMargin = -myInsets.bottom
+			v.updateMargin {
+				left = -myInsets.left
+				top = -myInsets.top
+				right = -myInsets.right
+				bottom = -myInsets.bottom
 			}
 			v.setPadding(myInsets.left, myInsets.top, myInsets.right, myInsets.bottom)
 			return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(insets)
@@ -542,17 +542,19 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		controllerFuture = null
 	}
 
-	override fun onApplyWindowInsets(ignored: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+	override fun dispatchApplyWindowInsets(platformInsets: WindowInsets): WindowInsets {
+		val insets = WindowInsetsCompat.toWindowInsetsCompat(platformInsets)
 		val myInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()
 				or WindowInsetsCompat.Type.displayCutout())
 		setPadding(myInsets.left, myInsets.top, myInsets.right, myInsets.bottom)
-		ViewCompat.dispatchApplyWindowInsets(bottomSheetFullLyricRecyclerView, insets)
+		ViewCompat.dispatchApplyWindowInsets(bottomSheetFullLyricRecyclerView, insets.clone())
 		return WindowInsetsCompat.Builder(insets)
 			.setInsets(WindowInsetsCompat.Type.systemBars()
 					or WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
 			.setInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
 					or WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
 			.build()
+			.toWindowInsets()!!
 	}
 
 	private fun removeColorScheme() {

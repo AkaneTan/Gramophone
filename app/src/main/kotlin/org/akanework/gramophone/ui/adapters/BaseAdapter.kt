@@ -346,7 +346,7 @@ abstract class BaseAdapter<T>(
         position: Int,
     ) {
         if (layoutType == LayoutType.GRID) {
-            holder.itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            holder.itemView.updateLayoutParams<ViewGroup.LayoutParams> {
                 height = gridHeight ?: gridHeightCache
             }
         }
