@@ -7,6 +7,7 @@ import androidx.media3.common.Metadata
 import androidx.media3.common.util.ParsableByteArray
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.extractor.metadata.id3.BinaryFrame
+import androidx.media3.extractor.metadata.id3.TextInformationFrame
 import androidx.media3.extractor.metadata.vorbis.VorbisComment
 import java.io.File
 import java.nio.charset.Charset
@@ -47,6 +48,8 @@ object LrcUtils {
                 return meta.value
             if (meta is BinaryFrame && (meta.id == "USLT" || meta.id == "SYLT")) // mp3 / other id3 based
                 return UsltFrameDecoder.decode(ParsableByteArray(meta.data))
+            if (meta is TextInformationFrame && (meta.id == "USLT" || meta.id == "SYLT")) // m4a
+                return meta.values.joinToString("\n")
         }
         return null
     }

@@ -71,8 +71,8 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
     }
 
     override fun onStop() {
-        super.onStop()
         preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
+        super.onStop()
     }
 
     override fun onDestroy() {

@@ -378,8 +378,6 @@ abstract class BaseAdapter<T>(
         holder: ViewHolder,
         position: Int,
     ) {
-        // TODO remove below line once root cause is fixed
-        if (holder.itemView.isVerticalScrollBarEnabled && fragment != null) throw IllegalStateException()
         if (layoutType == LayoutType.GRID) {
             val newHeight = gridHeight ?: gridHeightCache
             if (holder.itemView.layoutParams.height != newHeight) {
