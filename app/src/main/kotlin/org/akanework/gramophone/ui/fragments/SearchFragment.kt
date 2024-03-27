@@ -40,7 +40,6 @@ import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.showKeyboard
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.ui.LibraryViewModel
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 
 /**
@@ -68,7 +67,7 @@ class SearchFragment : BaseFragment(false) {
         editText = rootView.findViewById(R.id.edit_text)
         val recyclerView = rootView.findViewById<MyRecyclerView>(R.id.recyclerview)
         val songAdapter =
-            SongAdapter(requireActivity() as MainActivity, listOf(),
+            SongAdapter(this, listOf(),
                 true, null, false, isSubFragment = true,
                 allowDiffUtils = true, rawOrderExposed = true)
         val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)

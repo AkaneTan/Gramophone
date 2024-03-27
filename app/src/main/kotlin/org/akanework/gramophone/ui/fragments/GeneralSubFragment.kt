@@ -32,7 +32,6 @@ import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.LibraryViewModel
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
 
@@ -137,7 +136,7 @@ class GeneralSubFragment : BaseFragment(true) {
 
         val songAdapter =
             SongAdapter(
-                requireActivity() as MainActivity,
+                this,
                 itemList,
                 true,
                 helper,

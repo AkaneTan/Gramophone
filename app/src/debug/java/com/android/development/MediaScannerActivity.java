@@ -29,6 +29,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Process;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.text.Editable;
@@ -81,6 +83,8 @@ public class MediaScannerActivity extends Activity {
 	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	public void onCreate(Bundle icicle) {
+		StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
+		StrictMode.setVmPolicy(StrictMode.VmPolicy.LAX);
 		super.onCreate(icicle);
 		setContentView(R.layout.media_scanner_activity);
 		IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MEDIA_SCANNER_STARTED);
@@ -126,6 +130,7 @@ public class MediaScannerActivity extends Activity {
 		unregisterReceiver(mReceiver);
 		mInsertHandler.removeMessages(0);
 		super.onDestroy();
+		Process.killProcess(Process.myPid());
 	}
 
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -247,6 +252,7 @@ public class MediaScannerActivity extends Activity {
 		startActivity(new Intent(Intent.ACTION_RUN)
 				.setClassName("com.gmail.jerickson314.sdscanner",
 						"com.gmail.jerickson314.sdscanner.MainActivity"));
+		finishAndRemoveTask();
 	}
 
 	/**

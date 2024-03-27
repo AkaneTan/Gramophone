@@ -61,23 +61,23 @@ class AdapterFragment : BaseFragment(null) {
         val rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false)
         recyclerView = rootView.findViewById(R.id.recyclerview)
         recyclerView.enableEdgeToEdgePaddingListener()
-        adapter = createAdapter(requireActivity() as MainActivity, libraryViewModel)
+        adapter = createAdapter(libraryViewModel)
         recyclerView.adapter = adapter.concatAdapter
         recyclerView.setAppBar((requireParentFragment() as ViewPagerFragment).appBarLayout)
         recyclerView.fastScroll(adapter, adapter.itemHeightHelper)
         return rootView
     }
 
-    private fun createAdapter(m: MainActivity, v: LibraryViewModel): BaseInterface<*> {
+    private fun createAdapter(v: LibraryViewModel): BaseInterface<*> {
         return when (arguments?.getInt("ID", -1)) {
-            R.id.songs -> SongAdapter(m, v.mediaItemList, true, null, true)
-            R.id.albums -> AlbumAdapter(m, v.albumItemList)
-            R.id.artists -> ArtistAdapter(m, v.artistItemList, v.albumArtistItemList)
-            R.id.genres -> GenreAdapter(m, v.genreItemList)
-            R.id.dates -> DateAdapter(m, v.dateItemList)
-            R.id.folders -> FolderAdapter(m, v.folderStructure)
-            R.id.detailed_folders -> DetailedFolderAdapter(m, v.shallowFolderStructure)
-            R.id.playlists -> PlaylistAdapter(m, v.playlistList)
+            R.id.songs -> SongAdapter(this, v.mediaItemList, true, null, true)
+            R.id.albums -> AlbumAdapter(this, v.albumItemList)
+            R.id.artists -> ArtistAdapter(this, v.artistItemList, v.albumArtistItemList)
+            R.id.genres -> GenreAdapter(this, v.genreItemList)
+            R.id.dates -> DateAdapter(this, v.dateItemList)
+            R.id.folders -> FolderAdapter(this, v.folderStructure)
+            R.id.detailed_folders -> DetailedFolderAdapter(this, v.shallowFolderStructure)
+            R.id.playlists -> PlaylistAdapter(this, v.playlistList)
             -1, null -> throw IllegalArgumentException("unset ID value")
             else -> throw IllegalArgumentException("invalid ID value")
         }

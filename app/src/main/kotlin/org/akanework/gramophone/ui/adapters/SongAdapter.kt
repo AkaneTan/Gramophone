@@ -20,6 +20,7 @@ package org.akanework.gramophone.ui.adapters
 import android.net.Uri
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -29,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.LibraryViewModel
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
@@ -39,7 +39,7 @@ import org.akanework.gramophone.ui.fragments.GeneralSubFragment
  * [SongAdapter] is an adapter for displaying songs.
  */
 class SongAdapter(
-    private val mainActivity: MainActivity,
+    fragment: Fragment,
     songList: MutableLiveData<List<MediaItem>>?,
     canSort: Boolean,
     helper: Sorter.NaturalOrderHelper<MediaItem>?,
@@ -50,7 +50,7 @@ class SongAdapter(
     fallbackSpans: Int = 1
 ) : BaseAdapter<MediaItem>
     (
-    mainActivity,
+    fragment,
     liveData = songList,
     sortHelper = MediaItemHelper(),
     naturalOrderHelper = if (canSort) helper else null,
@@ -69,7 +69,7 @@ class SongAdapter(
 ) {
 
     constructor(
-        mainActivity: MainActivity,
+        fragment: Fragment,
         songList: List<MediaItem>,
         canSort: Boolean,
         helper: Sorter.NaturalOrderHelper<MediaItem>?,
@@ -79,7 +79,7 @@ class SongAdapter(
         rawOrderExposed: Boolean = !isSubFragment,
         fallbackSpans: Int = 1
     ) : this(
-        mainActivity,
+        fragment,
         null,
         canSort,
         helper,

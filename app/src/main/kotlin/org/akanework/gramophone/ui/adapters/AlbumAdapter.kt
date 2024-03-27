@@ -20,22 +20,22 @@ package org.akanework.gramophone.ui.adapters
 import android.net.Uri
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.LibraryViewModel
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 class AlbumAdapter(
-    private val mainActivity: MainActivity,
+    fragment: Fragment,
     albumList: MutableLiveData<List<MediaStoreUtils.Album>>?,
     ownsView: Boolean = true,
     isSubFragment: Boolean = false,
     fallbackSpans: Int = 1
 ) : BaseAdapter<MediaStoreUtils.Album>
     (
-    mainActivity,
+    fragment,
     liveData = albumList,
     sortHelper = StoreAlbumHelper(),
     naturalOrderHelper = null,
@@ -50,12 +50,12 @@ class AlbumAdapter(
     private val libraryViewModel: LibraryViewModel by mainActivity.viewModels()
 
     constructor(
-        mainActivity: MainActivity,
+        fragment: Fragment,
         albumList: List<MediaStoreUtils.Album>,
         isSubFragment: Boolean = false,
         fallbackSpans: Int = 1
     ) : this(
-        mainActivity,
+        fragment,
         null,
         false,
         isSubFragment = isSubFragment,

@@ -18,21 +18,21 @@
 package org.akanework.gramophone.ui.adapters
 
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 /**
  * [DateAdapter] is an adapter for displaying dates.
  */
 class DateAdapter(
-    private val mainActivity: MainActivity,
+    fragment: Fragment,
     dateList: MutableLiveData<List<MediaStoreUtils.Date>>,
 ) : BaseAdapter<MediaStoreUtils.Date>
     (
-    mainActivity,
+    fragment,
     liveData = dateList,
     sortHelper = StoreItemHelper(),
     naturalOrderHelper = null,

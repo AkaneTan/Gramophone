@@ -18,12 +18,12 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
@@ -43,14 +43,15 @@ import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 
 class FolderAdapter(
-    mainActivity: MainActivity,
+    internal val fragment: Fragment,
     private val liveData: MutableLiveData<MediaStoreUtils.FileNode>
 ) : AdapterFragment.BaseInterface<RecyclerView.ViewHolder>(), Observer<MediaStoreUtils.FileNode> {
+    private val mainActivity = fragment.requireActivity() as MainActivity
     private val folderPopAdapter: FolderPopAdapter = FolderPopAdapter(this)
     private val folderAdapter: FolderListAdapter =
         FolderListAdapter(listOf(), mainActivity, this)
     private val songAdapter: SongAdapter =
-        SongAdapter(mainActivity, listOf(), false, null, false)
+        SongAdapter(fragment, listOf(), false, null, false)
     override val concatAdapter: ConcatAdapter =
         ConcatAdapter(this, folderPopAdapter, folderAdapter, songAdapter)
     override val itemHeightHelper: ItemHeightHelper? = null
@@ -257,8 +258,7 @@ class FolderAdapter(
         MyRecyclerView.Adapter<FolderCardAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(
-                LayoutInflater
-                    .from(parent.context)
+                folderFragment.fragment.layoutInflater
                     .inflate(R.layout.adapter_folder_card, parent, false),
             )
 

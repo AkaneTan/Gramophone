@@ -18,7 +18,6 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -53,8 +52,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
         parent: ViewGroup,
         viewType: Int,
     ): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.general_decor, parent, false)
+        val view = adapter.layoutInflater.inflate(R.layout.general_decor, parent, false)
         return ViewHolder(view)
     }
 

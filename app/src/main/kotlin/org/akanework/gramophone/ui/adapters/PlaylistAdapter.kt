@@ -18,21 +18,21 @@
 package org.akanework.gramophone.ui.adapters
 
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 
 /**
  * [PlaylistAdapter] is an adapter for displaying artists.
  */
 class PlaylistAdapter(
-    private val mainActivity: MainActivity,
+    fragment: Fragment,
     playlistList: MutableLiveData<List<MediaStoreUtils.Playlist>>,
 ) : BaseAdapter<MediaStoreUtils.Playlist>
     (
-    mainActivity,
+    fragment,
     liveData = playlistList,
     sortHelper = StoreItemHelper(),
     naturalOrderHelper = null,
