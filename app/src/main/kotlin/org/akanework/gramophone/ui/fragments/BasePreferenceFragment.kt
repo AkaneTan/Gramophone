@@ -26,9 +26,10 @@ import android.view.View
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.allowDiskAccessInStrictMode
 import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
-import org.akanework.gramophone.logic.allowDiskAccessInStrictMode
 
 /**
  * BasePreferenceFragment:
@@ -72,6 +73,12 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
     override fun onStop() {
         super.onStop()
         preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onDestroy() {
+        // Work around b/331383944: PreferenceFragmentCompat permanently mutates activity theme (enables vertical scrollbars)
+        requireContext().theme.applyStyle(R.style.Theme_Gramophone, true)
+        super.onDestroy()
     }
 
 }

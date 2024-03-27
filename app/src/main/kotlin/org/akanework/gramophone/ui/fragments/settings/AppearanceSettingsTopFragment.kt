@@ -33,9 +33,6 @@ class AppearanceSettingsTopFragment : BasePreferenceFragment() {
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        // TODO remove below line once root cause is fixed
-        requireActivity().supportFragmentManager.popBackStackImmediate()
-        requireActivity().supportFragmentManager.popBackStackImmediate()
         when (key) {
             "theme_mode" -> {
                 when (sharedPreferences?.getString("theme_mode", "0")) {
