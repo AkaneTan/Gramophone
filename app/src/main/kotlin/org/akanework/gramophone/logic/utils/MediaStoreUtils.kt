@@ -302,7 +302,9 @@ object MediaStoreUtils {
         val artistMap = hashMapOf<Long?, Artist>()
         val artistCacheMap = hashMapOf<String?, Long?>()
         val albumArtistMap = hashMapOf<String?, Pair<MutableList<Album>, MutableList<MediaItem>>>()
-        val genreMap = hashMapOf<Long?, Genre>()
+        // Note: it has been observed on a user's Pixel(!) that MediaStore assigned 3 different IDs
+        // for "Unknown genre" (null genre tag), hence we practically ignore genre IDs as key
+        val genreMap = hashMapOf<String?, Genre>()
         val dateMap = hashMapOf<Int?, Date>()
         val playlists = mutableListOf<Pair<Playlist, MutableList<Long>>>()
         var foundFavourites = false
@@ -540,7 +542,7 @@ object MediaStoreUtils {
                     albumArtistMap.getOrPut(alb.artist) {
                         Pair(mutableListOf(), mutableListOf()) }.second.add(song)
                 }.songList.add(song)
-                genreMap.getOrPut(genreId) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
+                genreMap.getOrPut(genre) { Genre(genreId, genre, mutableListOf()) }.songList.add(song)
                 dateMap.getOrPut(year) { Date(year?.toLong() ?: 0, year?.toString(), mutableListOf()) }.songList.add(song)
                 val fn = handleMediaFolder(path, root)
                 fn.addSong(song, albumId)
