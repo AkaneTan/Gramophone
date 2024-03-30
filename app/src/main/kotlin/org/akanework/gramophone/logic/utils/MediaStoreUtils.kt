@@ -47,6 +47,7 @@ import org.akanework.gramophone.logic.hasImprovedMediaStore
 import org.akanework.gramophone.logic.hasScopedStorageV1
 import org.akanework.gramophone.logic.hasScopedStorageV2
 import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
+import org.akanework.gramophone.logic.putIfAbsentSupport
 import org.akanework.gramophone.ui.LibraryViewModel
 import java.io.File
 import java.time.Instant
@@ -527,7 +528,7 @@ object MediaStoreUtils {
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())
                 }.songList.add(song)
-                artistCacheMap.putIfAbsent(artist, artistId)
+                artistCacheMap.putIfAbsentSupport(artist, artistId)
                 albumMap.getOrPut(albumId) {
                     // in haveImgPerm case, cover uri is created later using coverCache
                     val cover = if (haveImgPerm) null else ContentUris.withAppendedId(coverUri, albumId)
@@ -546,7 +547,7 @@ object MediaStoreUtils {
                 dateMap.getOrPut(year) { Date(year?.toLong() ?: 0, year?.toString(), mutableListOf()) }.songList.add(song)
                 val fn = handleMediaFolder(path, root)
                 fn.addSong(song, albumId)
-                coverCache?.putIfAbsent(albumId, Pair(pathFile.parentFile!!, fn))
+                coverCache?.putIfAbsentSupport(albumId, Pair(pathFile.parentFile!!, fn))
                 handleShallowMediaItem(song, albumId, path, shallowRoot, folderArray)
                 folders.add(fldPath)
             }

@@ -173,6 +173,16 @@ fun MediaController.setTimer(value: Int) {
     )
 }
 
+inline fun <reified T, reified U> HashMap<T, U>.putIfAbsentSupport(key: T, value: U) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        putIfAbsent(key, value)
+    } else {
+        // Duh...
+        if (!containsKey(key))
+            put(key, value)
+    }
+}
+
 @Suppress("UNCHECKED_CAST")
 fun MediaController.getLyrics(): MutableList<MediaStoreUtils.Lyric>? =
     sendCustomCommand(

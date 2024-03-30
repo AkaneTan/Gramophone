@@ -86,7 +86,6 @@ android {
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
-            isCoreLibraryDesugaringEnabled = true
         }
 
         kotlinOptions {
@@ -164,7 +163,6 @@ aboutLibraries {
 }
 
 dependencies {
-    implementation("androidx.activity:activity:1.8.0")
     val glideVersion = "5.0.0-rc01"
     val media3Version = "1.3.0"
     implementation("androidx.core:core-ktx:1.13.0-beta01")
@@ -185,12 +183,12 @@ dependencies {
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
     implementation("com.mikepenz:aboutlibraries:$aboutLibsVersion")
     ksp("com.github.bumptech.glide:ksp:$glideVersion")
+    // --- below does not apply to release builds ---
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app
     debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
-    "userdebugImplementation"(kotlin("reflect"))
+    "userdebugImplementation"(kotlin("reflect")) // who thought String.invoke() is a good idea?????
     debugImplementation(kotlin("reflect"))
 }
 

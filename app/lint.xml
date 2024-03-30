@@ -3,7 +3,4 @@
 	<issue id="UnusedAttribute">
 		<ignore regexp="textFontWeight"/> <!-- backported in TypefaceCompatFactory -->
 	</issue>
-	<issue id="NewApi">
-		<ignore regexp="putIfAbsent"/> <!-- backported with core lib desugar -->
-	</issue>
 </lint>
