@@ -19,6 +19,17 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
+		<activity
+			android:name="org.akanework.gramophone.Reflections"
+			android:label="Reflections"
+			android:launchMode="singleInstance"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 	</application>
 
 </manifest>

@@ -115,15 +115,35 @@ android {
         create("profiling") {
             isMinifyEnabled = false
             isProfileable = true
-            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
-                signingConfig = signingConfigs["release"]
-            }
+        }
+        create("userdebug") {
+            isMinifyEnabled = false
+            isProfileable = true
+            isJniDebuggable = true
+            isPseudoLocalesEnabled = true
         }
         debug {
             isPseudoLocalesEnabled = true
             if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
+        }
+    }
+
+    sourceSets {
+        getByName("debug") {
+            // This does NOT remove src/debug/ source sets, hence "debug" is a superset of "userdebug"
+            java.srcDir("src/userdebug/java")
+            kotlin.srcDir("src/userdebug/kotlin")
+            resources.srcDir("src/userdebug/resources")
+            res.srcDir("src/userdebug/res")
+            assets.srcDir("src/userdebug/assets")
+            aidl.srcDir("src/userdebug/aidl")
+            renderscript.srcDir("src/userdebug/renderscript")
+            baselineProfiles.srcDir("src/userdebug/baselineProfiles")
+            jniLibs.srcDir("src/userdebug/jniLibs")
+            shaders.srcDir("src/userdebug/shaders")
+            mlModels.srcDir("src/userdebug/mlModels")
         }
     }
 
@@ -144,6 +164,7 @@ aboutLibraries {
 }
 
 dependencies {
+    implementation("androidx.activity:activity:1.8.0")
     val glideVersion = "5.0.0-rc01"
     val media3Version = "1.3.0"
     implementation("androidx.core:core-ktx:1.13.0-beta01")
@@ -169,6 +190,8 @@ dependencies {
     debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
+    "userdebugImplementation"(kotlin("reflect"))
+    debugImplementation(kotlin("reflect"))
 }
 
 fun String.runCommand(

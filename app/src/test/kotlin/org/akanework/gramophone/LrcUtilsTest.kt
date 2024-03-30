@@ -8,7 +8,8 @@ class LrcUtilsTest {
 
 	@Test
 	fun emptyInEmptyOut() {
-		assertTrue(LrcUtils.parseLrcString("").isEmpty())
+		assertTrue(LrcUtils.parseLrcString("", trim = false,
+			multilineEnable = false).isEmpty())
 	}
 
 }
