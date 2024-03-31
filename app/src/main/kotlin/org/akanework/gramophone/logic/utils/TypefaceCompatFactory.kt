@@ -147,7 +147,7 @@ class TypefaceCompatFactory private constructor(context: Context?) : Factory2 {
 		@Deprecated(
 			"Deprecated in Java", ReplaceWith(
 				"super.setTextAppearance(resId)",
-				"androidx.widget.TextView"
+				"android.widget.TextView"
 			)
 		)
 		override fun setTextAppearance(context: Context?, resId: Int) {
