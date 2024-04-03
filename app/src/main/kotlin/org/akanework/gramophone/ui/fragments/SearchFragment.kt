@@ -119,10 +119,10 @@ class SearchFragment : BaseFragment(false) {
     }
 
     override fun onPause() {
-        super.onPause()
         if (!isHidden) {
             requireActivity().closeKeyboard(editText)
         }
+        super.onPause()
     }
 
     override fun onResume() {
@@ -133,10 +133,11 @@ class SearchFragment : BaseFragment(false) {
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
         if (hidden) {
             requireActivity().closeKeyboard(editText)
+            super.onHiddenChanged(true)
         } else {
+            super.onHiddenChanged(false)
             requireActivity().showKeyboard(editText)
         }
     }
