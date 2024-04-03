@@ -195,7 +195,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             )
         handler = Handler(Looper.getMainLooper())
 
-        val player = EndedRestoreWorkaroundPlayer(this, ExoPlayer.Builder(
+        val player = EndedRestoreWorkaroundPlayer(ExoPlayer.Builder(
             this,
             DefaultRenderersFactory(this)
                 .setEnableAudioFloatOutput(
@@ -308,9 +308,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     // Prepare Player after UI thread is less busy (loads tracks, required for lyric)
                     handler.post {
                         controller?.prepare()
-                        if ((application as GramophoneApplication).autoPlay) {
-                            controller?.play()
-                        }
                     }
                 }
                 lastPlayedManager.allowSavingState = true

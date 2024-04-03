@@ -45,7 +45,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.GramophoneApplication
 import org.akanework.gramophone.logic.enableEdgeToEdgeProperly
 import org.akanework.gramophone.logic.hasScopedStorageV2
 import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
@@ -130,10 +129,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }, false)
-
-        if (!(applicationContext as GramophoneApplication).autoPlay) {
-            Toast.makeText(this, "THANK YOU FOR BUYING PRO", Toast.LENGTH_LONG).show()
-        }
 
         // Set content Views.
         setContentView(R.layout.activity_main)

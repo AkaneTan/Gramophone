@@ -163,8 +163,7 @@ aboutLibraries {
 }
 
 dependencies {
-    implementation("androidx.activity:activity:1.8.0")
-	val glideVersion = "5.0.0-rc01"
+    val glideVersion = "5.0.0-rc01"
     val media3Version = "1.3.0"
     implementation("androidx.core:core-ktx:1.13.0-beta01")
     implementation("androidx.activity:activity-ktx:1.8.2")
