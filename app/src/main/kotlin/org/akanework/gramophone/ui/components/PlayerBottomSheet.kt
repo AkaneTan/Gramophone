@@ -30,6 +30,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.OptIn
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.Insets
 import androidx.core.view.HapticFeedbackConstantsCompat
@@ -41,6 +42,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
@@ -61,6 +63,7 @@ import org.akanework.gramophone.logic.getBooleanStrict
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyBottomSheetBehavior
+import org.akanework.gramophone.logic.utils.EndedRestoreWorkaroundPlayer
 import org.akanework.gramophone.ui.MainActivity
 
 
@@ -93,9 +96,10 @@ class PlayerBottomSheet private constructor(
     private val lifecycleOwner: LifecycleOwner
         get() = activity
     private val handler = Handler(Looper.getMainLooper())
-    private val instance: MediaController?
+    private var pauseInstance: Player? = null
+    private val instance: Player?
         get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
-            null else controllerFuture?.get()
+            null else pauseInstance
     private var ready = false
         set(value) {
             field = value
@@ -362,7 +366,7 @@ class PlayerBottomSheet private constructor(
             .toWindowInsets()!!
     }
 
-    fun getPlayer(): MediaController? = instance
+    fun getPlayer(): Player? = instance
 
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
@@ -421,6 +425,7 @@ class PlayerBottomSheet private constructor(
         }
     }
 
+    @OptIn(UnstableApi::class)
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         sessionToken =
@@ -432,7 +437,9 @@ class PlayerBottomSheet private constructor(
                 .buildAsync()
         controllerFuture!!.addListener(
             {
+                pauseInstance = EndedRestoreWorkaroundPlayer(context, controllerFuture!!.get())
                 instance?.addListener(this)
+                instance?.repeatMode = instance?.repeatMode!!
                 onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
                 onMediaItemTransition(
                     instance?.currentMediaItem,

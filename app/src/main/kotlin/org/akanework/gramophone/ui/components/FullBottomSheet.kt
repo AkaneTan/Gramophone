@@ -21,6 +21,7 @@ import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.annotation.OptIn
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
@@ -30,6 +31,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
@@ -77,6 +79,7 @@ import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
+import org.akanework.gramophone.logic.utils.EndedRestoreWorkaroundPlayer
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import kotlin.math.min
@@ -92,9 +95,10 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private val activity
 		get() = context as MainActivity
 	private var controllerFuture: ListenableFuture<MediaController>? = null
-	private val instance: MediaController?
+	private var pauseInstance: Player? = null
+	private val instance: Player?
 		get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
-			null else controllerFuture?.get()
+			null else pauseInstance
 	var minimize: (() -> Unit)? = null
 
 	private var wrappedContext: Context? = null
@@ -289,17 +293,17 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val picker =
 				MaterialTimePicker
 					.Builder()
-					.setHour((instance?.getTimer() ?: 0) / 3600 / 1000)
-					.setMinute(((instance?.getTimer() ?: 0) % (3600 * 1000)) / (60 * 1000))
+					.setHour((controllerFuture!!.get().getTimer() ?: 0) / 3600 / 1000)
+					.setMinute(((controllerFuture!!.get().getTimer() ?: 0) % (3600 * 1000)) / (60 * 1000))
 					.setTimeFormat(TimeFormat.CLOCK_24H)
 					.setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
 					.build()
 			picker.addOnPositiveButtonClickListener {
 				val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
-				instance?.setTimer(destinationTime)
+				controllerFuture!!.get().setTimer(destinationTime)
 			}
 			picker.addOnDismissListener {
-				bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
+				bottomSheetTimerButton.isChecked = controllerFuture!!.get().hasTimer() == true
 			}
 			picker.show(activity.supportFragmentManager, "timer")
 		}
@@ -432,7 +436,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}
 
 				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
-					val parsedLyrics = instance?.getLyrics()
+					val parsedLyrics = controllerFuture!!.get().getLyrics()
 					if (bottomSheetFullLyricList != parsedLyrics) {
 						bottomSheetFullLyricList.clear()
 						if (parsedLyrics?.isEmpty() != false) {
@@ -508,12 +512,14 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
+	@OptIn(UnstableApi::class)
 	fun onStart(cf: ListenableFuture<MediaController>) {
 		controllerFuture = cf
 		controllerFuture!!.addListener({
+			pauseInstance = EndedRestoreWorkaroundPlayer(context, controllerFuture!!.get())
 			firstTime = true
 			instance?.addListener(this)
-			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
+			bottomSheetTimerButton.isChecked = controllerFuture!!.get().hasTimer() == true
 			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
 			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)
 			onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)

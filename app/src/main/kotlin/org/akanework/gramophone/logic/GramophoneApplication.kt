@@ -43,7 +43,9 @@ import kotlin.system.exitProcess
  */
 class GramophoneApplication : Application() {
 
-    @OptIn(UnstableApi::class)
+    var autoPlay: Boolean = false
+
+	@OptIn(UnstableApi::class)
     override fun onCreate() {
         // Set up BugHandlerActivity.
         Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
@@ -97,5 +99,7 @@ class GramophoneApplication : Application() {
         Thread {
             Glide.get(applicationContext).clearDiskCache()
         }.start()
+
+        autoPlay = !prefs.getBooleanStrict("AprilFools2024", false)
     }
 }
