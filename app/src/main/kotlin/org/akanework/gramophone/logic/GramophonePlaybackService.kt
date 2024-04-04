@@ -152,8 +152,15 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     }
 
     override fun onCreate() {
+        handler = Handler(Looper.getMainLooper())
         super.onCreate()
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        setListener(this)
+        setMediaNotificationProvider(
+            DefaultMediaNotificationProvider.Builder(this).build().apply {
+                setSmallIcon(R.drawable.ic_gramophone_notification)
+            }
+        )
 
         customCommands =
             listOf(
@@ -193,7 +200,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     .setIconResId(R.drawable.ic_repeat_one_on)
                     .build(),
             )
-        handler = Handler(Looper.getMainLooper())
 
         val player = EndedRestoreWorkaroundPlayer(ExoPlayer.Builder(
             this,
@@ -218,16 +224,14 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         if (BuildConfig.DEBUG) {
             player.exoPlayer.addAnalyticsListener(EventLogger())
         }
-        setListener(this)
         sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
             putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.exoPlayer.audioSessionId)
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
         })
+        lastPlayedManager = LastPlayedManager(this, player)
+        lastPlayedManager.allowSavingState = false
 
-        setMediaNotificationProvider(DefaultMediaNotificationProvider(this).apply {
-            setSmallIcon(R.drawable.ic_gramophone_notification)
-        })
         mediaSession =
             MediaLibrarySession
                 .Builder(this, player, this)
@@ -286,20 +290,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 )
                 .build()
         controller = MediaController.Builder(this, mediaSession!!.token).buildAsync().get()
-        lastPlayedManager = LastPlayedManager(this, player)
-        // this allowSavingState flag is to prevent A14 bug (explained below)
-        // overriding last played with null because it is saved before it is restored
-        lastPlayedManager.allowSavingState = false
         handler.post {
             if (mediaSession == null) return@post
             lastPlayedManager.restore {
-                val mediaItemsWithStartPosition = it()
-                if (mediaItemsWithStartPosition != null) {
+                if (it != null) {
                     try {
                         mediaSession?.player?.setMediaItems(
-                            mediaItemsWithStartPosition.mediaItems,
-                            mediaItemsWithStartPosition.startIndex,
-                            mediaItemsWithStartPosition.startPositionMs
+                            it.mediaItems, it.startIndex, it.startPositionMs
                         )
                     } catch (e: IllegalSeekPositionException) {
                         Log.e(TAG, "failed to restore: " + Log.getStackTraceString(e))
@@ -313,7 +310,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 lastPlayedManager.allowSavingState = true
             }
         }
-        onShuffleModeEnabledChanged(controller!!.shuffleModeEnabled)
+        onShuffleModeEnabledChanged(controller!!.shuffleModeEnabled) // refresh custom commands
         controller!!.addListener(this)
         registerReceiver(
             headSetReceiver,
@@ -441,10 +438,17 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
         lastPlayedManager.restore {
-            // TODO empty lists are not supported according to googlers? what to do if restore fails?
-            val mediaItemsWithStartPosition = it()
-                ?: MediaItemsWithStartPosition(listOf(), 0, 0)
-            settable.set(mediaItemsWithStartPosition)
+            // TODO empty lists in set() are not supported according to googlers
+            //  is this fallback correct though?
+            if (it == null) {
+                settable.setException(NullPointerException(
+                    "null MediaItemsWithStartPosition, see former logs for root cause"))
+            } else if (it.mediaItems.isNotEmpty()) {
+                settable.set(it)
+            } else {
+                settable.setException(IndexOutOfBoundsException(
+                    "LastPlayedManager restored empty MediaItemsWithStartPosition"))
+            }
         }
         return settable
     }
@@ -453,16 +457,15 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         val mediaItem = controller!!.currentMediaItem
         lyricsLock.runInBg {
             val trim = prefs.getBoolean("trim_lyrics", false)
-            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim,
-                prefs.getBoolean("lyric_multiline", false))
+            val multiLine = prefs.getBoolean("lyric_multiline", false)
+            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim, multiLine)
             if (lrc == null) {
                 loop@ for (i in tracks.groups) {
                     for (j in 0 until i.length) {
                         if (!i.isTrackSelected(j)) continue
                         // note: wav files can have null metadata
                         val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                        lrc = extractAndParseLyrics(trackMetadata, trim,
-                            prefs.getBoolean("lyric_multiline", false)) ?: continue
+                        lrc = extractAndParseLyrics(trackMetadata, trim, multiLine) ?: continue
                         // add empty element at the beginning
                         lrc.add(0, MediaStoreUtils.Lyric())
                         break@loop
@@ -500,7 +503,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
     }
 
-    // https://github.com/androidx/media/commit/6a5ac19140253e7e78ea65745914b0746e527058
+    // TODO remove this and use new default onTaskRemoved() in next release
     override fun onTaskRemoved(rootIntent: Intent?) {
         if (controller!!.playbackState == Player.STATE_ENDED || !controller!!.playWhenReady || controller!!.mediaItemCount == 0) {
             stopSelf()

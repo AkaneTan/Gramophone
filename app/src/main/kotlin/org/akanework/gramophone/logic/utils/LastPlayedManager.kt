@@ -118,7 +118,7 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
         }
     }
 
-    fun restore(callback: (() -> MediaItemsWithStartPosition?) -> Unit) {
+    fun restore(callback: (MediaItemsWithStartPosition?) -> Unit) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "restoring playlist...")
         }
@@ -245,9 +245,9 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
 }
 
 @OptIn(UnstableApi::class)
-private inline fun runCallback(crossinline callback: (() -> MediaItemsWithStartPosition?) -> Unit,
+private inline fun runCallback(crossinline callback: (MediaItemsWithStartPosition?) -> Unit,
                                noinline parameter: () -> MediaItemsWithStartPosition?) {
-    CoroutineScope(Dispatchers.Main).launch { callback(parameter) }
+    CoroutineScope(Dispatchers.Main).launch { callback(parameter()) }
 }
 
 private class SafeDelimitedStringConcat(private val delimiter: String) {

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CheckstyleConfigurable">
     <option name="suppFilterFilename" value="" />
@@ -42,7 +43,7 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="0.39579305331534376" />
+        <option name="scale" value="0.280437756497948" />
       </ProjectState>
     </option>
   </component>
