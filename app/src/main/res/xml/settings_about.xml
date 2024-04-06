@@ -17,48 +17,65 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <PreferenceCategory
-        android:title="@string/settings_category_basic_info"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_basic_info">
+
         <Preference
             android:key="app_name"
-            android:layout="@layout/basic_preference_iconless"
+            android:layout="@layout/preference_basic"
             android:summary="@string/app_name"
-            android:title="@string/settings_app_name" />
+            android:title="@string/settings_app_name"
+            app:iconSpaceReserved="false" />
+
         <Preference
             android:key="app_version"
-            android:layout="@layout/basic_preference_iconless"
+            android:layout="@layout/preference_basic"
             android:summary="@string/unknown_version"
-            android:title="@string/settings_version" />
+            android:title="@string/settings_version"
+            app:iconSpaceReserved="false" />
+
         <Preference
             android:key="package_type"
-            android:layout="@layout/basic_preference_iconless"
+            android:layout="@layout/preference_basic"
             android:summary="@string/unknown_version"
-            android:title="@string/settings_package_type" />
+            android:title="@string/settings_package_type"
+            app:iconSpaceReserved="false" />
+
         <Preference
             android:key="contributors"
-            android:layout="@layout/basic_preference_iconless"
+            android:layout="@layout/preference_basic"
             android:summary="@string/settings_contributors_detail"
-            android:title="@string/settings_contributors" />
+            android:title="@string/settings_contributors"
+            app:iconSpaceReserved="false" />
+
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="@string/settings_category_links"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_links">
+
         <Preference
-            android:layout="@layout/basic_preference_iconless"
+            android:layout="@layout/preference_basic"
             android:summary="https://github.com/AkaneTan/Gramophone"
-            android:title="@string/settings_repository">
+            android:title="@string/settings_repository"
+            app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/AkaneTan/Gramophone" />
         </Preference>
+
         <Preference
-            android:layout="@layout/basic_preference_iconless"
+            android:layout="@layout/preference_basic"
             android:summary="@string/check_for_updates"
-            android:title="Telegram">
+            android:title="Telegram"
+            app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://t.me/AkaneDistribution" />
         </Preference>
+
     </PreferenceCategory>
+
 </PreferenceScreen>

@@ -15,31 +15,46 @@
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <PreferenceCategory
-        android:title="@string/preference_category_quality"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/preference_category_quality">
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="floatoutput"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/preference_switch"
             android:summary="@string/settings_float_output_summary"
-            android:title="@string/settings_float_output" />
+            android:title="@string/settings_float_output"
+            android:widgetLayout="@layout/preference_switch_widget"
+            app:iconSpaceReserved="false" />
+
         <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="ps_hardware_acc"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/preference_switch"
             android:summary="@string/settings_hardware_acceleration_summary"
-            android:title="@string/settings_hardware_acceleration" />
+            android:title="@string/settings_hardware_acceleration"
+            android:widgetLayout="@layout/preference_switch_widget"
+            app:iconSpaceReserved="false" />
+
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="@string/settings_category_misc"
-        android:layout="@layout/preference_category_md">
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_category_misc">
+
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="skip_silence"
-            android:layout="@layout/icon_switch_preference"
+            android:layout="@layout/preference_switch"
             android:summary="@string/settings_skip_silence_summary"
-            android:title="@string/settings_skip_silence" />
+            android:title="@string/settings_skip_silence"
+            android:widgetLayout="@layout/preference_switch_widget"
+            app:iconSpaceReserved="false" />
+
     </PreferenceCategory>
+
 </PreferenceScreen>

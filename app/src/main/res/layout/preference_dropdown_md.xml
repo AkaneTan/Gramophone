@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~     Copyright (C) 2024 Akane Foundation
   ~
   ~     Gramophone is free software: you can redistribute it and/or modify
@@ -16,45 +15,37 @@
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?materialCardViewFilledStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="?materialCardViewFilledStyle"
     app:cardBackgroundColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
+        android:background="?selectableItemBackground"
+        android:baselineAligned="false"
         android:orientation="horizontal"
-        android:background="?selectableItemBackground">
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="20dp">
 
-        <ImageView
-            android:id="@android:id/icon"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center_vertical"
-            android:importantForAccessibility="no"
-            app:tint="?attr/colorOnSurface"
-            tools:src="@drawable/settings_art" />
+        <include layout="@layout/preference_icon" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_weight="1">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="19sp"
                 tools:text="Title" />
@@ -63,21 +54,24 @@
                 android:id="@android:id/summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@android:id/title"
+                android:layout_alignParentStart="true"
                 android:layout_marginTop="1dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="15sp"
                 tools:text="Summary" />
 
-        </LinearLayout>
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@android:id/title"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
 
     </LinearLayout>
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="76dp"
-        android:visibility="invisible" />
 
 </com.google.android.material.card.MaterialCardView>
