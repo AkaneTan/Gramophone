@@ -58,8 +58,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="16dp"
-                android:layout_toStartOf="@id/seekbar_value"
+                android:layout_marginEnd="64dp"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="19sp"
                 tools:text="Title" />
