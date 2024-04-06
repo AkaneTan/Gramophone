@@ -24,7 +24,6 @@ import android.widget.TextView
 import androidx.preference.Preference
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.mikepenz.aboutlibraries.LibsBuilder
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
@@ -65,7 +64,7 @@ class AboutSettingsTopFragment : BasePreferenceFragment() {
             versionTextView.text =
                 BuildConfig.VERSION_NAME
         } else if (preference.key == "contributors") {
-            LibsBuilder().start(requireActivity())
+            // LibsBuilder().start(requireActivity())
         }
         return super.onPreferenceTreeClick(preference)
     }
