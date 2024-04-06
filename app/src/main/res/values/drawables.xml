@@ -11,4 +11,9 @@
     <drawable name="filter_art">@drawable/ic_filter_alt</drawable>
     <drawable name="folder_art">@drawable/ic_folder</drawable>
 
+    <!-- Media3 -->
+    <drawable name="media3_notification_play">@drawable/ic_play_arrow_filled</drawable>
+    <drawable name="media3_notification_pause">@drawable/ic_pause_filled</drawable>
+    <drawable name="media3_notification_seek_to_previous">@drawable/ic_skip_previous_filled</drawable>
+    <drawable name="media3_notification_seek_to_next">@drawable/ic_skip_next_filled</drawable>
 </resources>
