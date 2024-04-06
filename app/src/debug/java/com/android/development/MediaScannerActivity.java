@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 package com.android.development;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.BroadcastReceiver;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.Build;
@@ -40,7 +41,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import org.akanework.gramophone.R;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,18 +61,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
-import org.akanework.gramophone.R;
-import org.akanework.gramophone.SdScanner;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldDataInvalidException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
 
 public class MediaScannerActivity extends Activity {
 	private TextView mTitle;
@@ -95,7 +96,7 @@ public class MediaScannerActivity extends Activity {
 		} else {
 			registerReceiver(mReceiver, intentFilter);
 		}
-		EditText t = (EditText) findViewById(R.id.numsongs);
+		EditText t = findViewById(R.id.numsongs);
 		t.addTextChangedListener(new TextWatcher() {
 			public void afterTextChanged(Editable s) {
 				String text = s.toString();
@@ -113,7 +114,7 @@ public class MediaScannerActivity extends Activity {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 			}
 		});
-		mTitle = (TextView) findViewById(R.id.title);
+		mTitle = findViewById(R.id.title);
 		mResolver = getContentResolver();
 		mAudioUri = Audio.Media.EXTERNAL_CONTENT_URI;
 		for (int i = 0; i < 10; i++) {
@@ -146,7 +147,7 @@ public class MediaScannerActivity extends Activity {
 
 	private void setInsertButtonText() {
 		String label = getString(R.string.insertbutton, mNumToInsert);
-		Button b = (Button) findViewById(R.id.insertbutton);
+		Button b = findViewById(R.id.insertbutton);
 		b.setText(label);
 	}
 
@@ -161,7 +162,7 @@ public class MediaScannerActivity extends Activity {
 
 	Handler mInsertHandler = new Handler(Looper.getMainLooper()) {
 		@Override
-		public void handleMessage(Message msg) {
+		public void handleMessage(@NonNull Message msg) {
 			if (mNumToInsert-- > 0) {
 				addAlbum();
 				runOnUiThread(mDisplayUpdater);
@@ -217,22 +218,10 @@ public class MediaScannerActivity extends Activity {
 			mArtists += 11;
 		} catch (SQLiteConstraintException ex) {
 			Log.d("@@@@", "insert failed", ex);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (CannotWriteException e) {
-			throw new RuntimeException(e);
-		} catch (CannotReadException e) {
-			throw new RuntimeException(e);
-		} catch (FieldDataInvalidException e) {
-			throw new RuntimeException(e);
-		} catch (TagException e) {
-			throw new RuntimeException(e);
-		} catch (InvalidAudioFrameException e) {
-			throw new RuntimeException(e);
-		} catch (ReadOnlyFileException e) {
+		} catch (IOException | CannotWriteException | CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException e) {
 			throw new RuntimeException(e);
 		}
-	}
+    }
 
 	public void startScan(View v) {
 		/*SdScanner.Companion.scan(getApplicationContext(),

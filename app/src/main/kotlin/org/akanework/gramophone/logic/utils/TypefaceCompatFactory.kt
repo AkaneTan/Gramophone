@@ -38,14 +38,10 @@ import org.akanework.gramophone.R
  */
 
 class TypefaceCompatFactory private constructor(context: Context?) : Factory2 {
-	private val mBaseFactory: Factory2?
-
-	init {
-		mBaseFactory = try {
-			(context as AppCompatActivity).delegate as Factory2
-		} catch (e: ClassCastException) {
-			e.printStackTrace(); null
-		}
+	private val mBaseFactory: Factory2? = try {
+		(context as AppCompatActivity).delegate as Factory2
+	} catch (e: ClassCastException) {
+		e.printStackTrace(); null
 	}
 
 	override fun onCreateView(
