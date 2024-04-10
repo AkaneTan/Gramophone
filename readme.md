@@ -17,7 +17,7 @@ A sane music player built with media3 and material design library that is follow
 - Search your favourite music
 - Web streaming (coming soon!)
 - Synced lyrics
-- Manage & Add your playlist
+- Manage & Add your playlist (coming soon!)
 
 ## Why us?
 - Clean code and unified code style
