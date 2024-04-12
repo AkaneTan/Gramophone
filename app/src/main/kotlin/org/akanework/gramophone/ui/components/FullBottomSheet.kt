@@ -813,6 +813,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}) // do not react to onStart() which sets placeholder
 				data(mediaItem?.mediaMetadata?.artworkUri)
 				error(R.drawable.ic_default_cover)
+				allowHardware(false)
 				crossfade(true)
 				listener(onSuccess = { _, _ ->
 					if (DynamicColors.isDynamicColorAvailable() &&
