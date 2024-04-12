@@ -158,7 +158,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         setListener(this)
         setMediaNotificationProvider(
             DefaultMediaNotificationProvider.Builder(this).build().apply {
-                setSmallIcon(R.drawable.ic_gramophone_notification)
+                setSmallIcon(R.drawable.ic_gramophone_monochrome)
             }
         )
 
