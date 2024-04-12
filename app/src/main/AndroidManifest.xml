@@ -29,6 +29,10 @@
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:node="remove" />
 
+    <!-- TODO now that google fixed androidx, for enableOnBackInvokedCallback we need to fix
+        1. bottom sheet hide/show (eg settings)
+        2. bottom sheet -> home
+        3. lyrics -> bottom sheet -->
     <application
         android:name=".logic.GramophoneApplication"
         android:allowBackup="true"

@@ -24,6 +24,9 @@ import android.widget.TextView
 import androidx.preference.Preference
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.LibsBuilder
+import com.mikepenz.aboutlibraries.util.withJson
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.ColorUtils
@@ -64,7 +67,11 @@ class AboutSettingsTopFragment : BasePreferenceFragment() {
             versionTextView.text =
                 BuildConfig.VERSION_NAME
         } else if (preference.key == "contributors") {
-            // LibsBuilder().start(requireActivity())
+            LibsBuilder()
+                // This line could technically be deleted, but this saves us some reflection
+                // and hence makes ProGuard + resource shrinking work without weird hacks.
+                .withLibs(Libs.Builder().withJson(requireContext(), R.raw.aboutlibraries).build())
+                .start(requireActivity())
         }
         return super.onPreferenceTreeClick(preference)
     }

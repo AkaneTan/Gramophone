@@ -1,0 +1,15 @@
+{
+  "uniqueId": "com.github.yoheimuta.amplayer:usltframedecoder",
+  "developers": [{
+	"name": "yohei yoshimuta",
+	"organisationUrl": "https://github.com/yoheimuta"
+  }],
+  "artifactVersion": "1.0.0",
+  "description": "UsltFrameDecoder (ID3 USLT binary frame decoder) from ExoPlayerMusic project",
+  "name": "UsltFrameDecoder",
+  "tag": "custom",
+  "website": "https://github.com/yoheimuta/ExoPlayerMusic/blob/master/app/src/main/java/com/github/yoheimuta/amplayer/playback/UsltFrameDecoder.kt",
+  "licenses": [
+	"MIT"
+  ]
+}
