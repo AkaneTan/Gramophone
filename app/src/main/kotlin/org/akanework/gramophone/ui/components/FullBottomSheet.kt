@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.imageLoader
 import coil.load
+import coil.request.Disposable
 import coil.request.ImageRequest
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -189,6 +190,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	private var colorContrastFaintedFinalColor: Int = -1
 	private var playlistNowPlaying: TextView? = null
 	private var playlistNowPlayingCover: ImageView? = null
+	private var lastDisposable: Disposable? = null
 
 	init {
 		inflate(context, R.layout.full_player, this)
@@ -571,16 +573,18 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				return@launch
 			}
 			val colorAccuracy = prefs.getBoolean("color_accuracy", false)
-			val targetWidth = if (colorAccuracy) bitmap.width / 4 else bitmap.width / 16
-			val targetHeight = if (colorAccuracy) bitmap.height / 4 else bitmap.width / 16
+			val targetWidth = if (colorAccuracy) (bitmap.width / 4).coerceAtMost(256) else 16
+			val targetHeight = if (colorAccuracy) (bitmap.height / 4).coerceAtMost(256) else 16
 			val scaledBitmap =
-				Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
+				Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false)
+
+			val options = DynamicColorsOptions.Builder()
+				.setContentBasedSource(scaledBitmap)
+				.build() // <-- this is computationally expensive!
 
 			wrappedContext = DynamicColors.wrapContextIfAvailable(
 				context,
-				DynamicColorsOptions.Builder()
-					.setContentBasedSource(scaledBitmap)
-					.build()
+				options
 			)
 
 			applyColorScheme()
@@ -805,7 +809,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		reason: Int
 	) {
 		if (instance?.mediaItemCount != 0) {
-			context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
+			lastDisposable?.dispose()
+			lastDisposable = context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
 				target(onSuccess = {
 					bottomSheetFullCover.setImageDrawable(it)
 				}, onError = {
@@ -854,7 +859,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 			 */
 		} else {
-			bottomSheetFullCover.dispose()
+			lastDisposable?.dispose()
+			lastDisposable = null
 			playlistNowPlayingCover?.dispose()
 		}
 		val position = CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)

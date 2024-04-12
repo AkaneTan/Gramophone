@@ -44,8 +44,8 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
-import coil.dispose
 import coil.imageLoader
+import coil.request.Disposable
 import coil.request.ImageRequest
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -77,6 +77,7 @@ class PlayerBottomSheet private constructor(
     }
 
     private var sessionToken: SessionToken? = null
+    private var lastDisposable: Disposable? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
@@ -370,7 +371,8 @@ class PlayerBottomSheet private constructor(
         reason: Int,
     ) {
         if ((instance?.mediaItemCount ?: 0) > 0) {
-            context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
+            lastDisposable?.dispose()
+            lastDisposable = context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
                 target(onSuccess = {
                     bottomSheetPreviewCover.setImageDrawable(it)
                 }, onError = {
@@ -384,7 +386,8 @@ class PlayerBottomSheet private constructor(
             bottomSheetPreviewSubtitle.text =
                 mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist)
         } else {
-            bottomSheetPreviewCover.dispose()
+            lastDisposable?.dispose()
+            lastDisposable = null
         }
         var newState = standardBottomSheetBehavior!!.state
         if ((instance?.mediaItemCount ?: 0) > 0 && visible) {
