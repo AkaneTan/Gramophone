@@ -29,19 +29,19 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
-import com.bumptech.glide.Glide
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.util.DebugLogger
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.ui.BugHandlerActivity
 import kotlin.system.exitProcess
 
 /**
- * GramophoneApplication:
- *   We recover some configuration and apply dynamic color
- * here.
+ * GramophoneApplication
  *
  * @author AkaneTan, nift4
  */
-class GramophoneApplication : Application() {
+class GramophoneApplication : Application(), ImageLoaderFactory {
 
     @OptIn(UnstableApi::class)
     override fun onCreate() {
@@ -91,11 +91,15 @@ class GramophoneApplication : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
+    }
 
-        // Disk cache has been disabled for Gramophone, so clear out what's left of it
-        // This should be removed in a few months
-        Thread {
-            Glide.get(applicationContext).clearDiskCache()
-        }.start()
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .diskCache(null)
+            .run {
+                if (!BuildConfig.DEBUG) this else
+                logger(DebugLogger())
+            }
+            .build()
     }
 }

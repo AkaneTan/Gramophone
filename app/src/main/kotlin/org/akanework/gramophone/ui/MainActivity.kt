@@ -40,7 +40,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
-import com.bumptech.glide.Glide
+import coil.imageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // we don't ever want covers to be the cause of service being killed by too high mem usage
         // (this is placed after super.onDestroy() to make sure all ImageViews are dead)
-        Glide.get(applicationContext).clearMemory()
+        imageLoader.memoryCache?.clear()
     }
 
     /**

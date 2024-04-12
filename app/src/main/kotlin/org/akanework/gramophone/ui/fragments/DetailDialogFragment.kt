@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import coil.load
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.R
@@ -46,12 +45,11 @@ class DetailDialogFragment : BaseFragment(false) {
         val durationTextView = rootView.findViewById<TextView>(R.id.duration)
         val mimeTypeTextView = rootView.findViewById<TextView>(R.id.mime)
         val pathTextView = rootView.findViewById<TextView>(R.id.path)
-        Glide
-            .with(this)
-            .load(mediaMetadata.artworkUri)
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.ic_default_cover)
-            .into(albumCoverImageView)
+        albumCoverImageView.load(mediaMetadata.artworkUri) {
+            crossfade(true)
+            placeholder(R.drawable.ic_default_cover)
+            error(R.drawable.ic_default_cover)
+        }
         titleTextView.text = mediaMetadata.title
         artistTextView.text = mediaMetadata.artist
         albumTextView.text = mediaMetadata.albumTitle

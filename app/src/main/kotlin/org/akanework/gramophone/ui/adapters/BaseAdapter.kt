@@ -41,8 +41,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import coil.dispose
+import coil.load
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.sync.Semaphore
 import me.zhanghai.android.fastscroll.PopupTextProvider
@@ -389,12 +389,11 @@ abstract class BaseAdapter<T>(
         val item = list[position]
         holder.title.text = titleOf(item) ?: virtualTitleOf(item)
         holder.subTitle.text = subTitleOf(item)
-        Glide
-            .with(holder.songCover.context)
-            .load(coverOf(item))
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(defaultCover)
-            .into(holder.songCover)
+        holder.songCover.load(coverOf(item)) {
+            crossfade(true)
+            placeholder(defaultCover)
+            error(defaultCover)
+        }
         holder.itemView.setOnClickListener { onClick(item) }
         holder.moreButton.setOnClickListener {
             val popupMenu = PopupMenu(it.context, it)
@@ -434,8 +433,8 @@ abstract class BaseAdapter<T>(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
+        holder.songCover.dispose()
         super.onViewRecycled(holder)
-        Glide.with(context.applicationContext).clear(holder.songCover)
     }
 
     private fun toId(item: T): String {

@@ -26,7 +26,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.graphics.drawable.BitmapDrawable
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.net.Uri
@@ -35,6 +35,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.concurrent.futures.CallbackToFutureAdapter
+import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.IllegalSeekPositionException
@@ -58,9 +59,8 @@ import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -236,7 +236,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             MediaLibrarySession
                 .Builder(this, player, this)
                 .setBitmapLoader(object : BitmapLoader {
-                    // Glide-based bitmap loader to reuse Glide's caching and to make sure we use
+                    // Coil-based bitmap loader to reuse Coil's caching and to make sure we use
                     // the same cover art as the rest of the app, ie MediaStore's cover
 
                     override fun decodeBitmap(data: ByteArray)
@@ -246,29 +246,30 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                         uri: Uri
                     ): ListenableFuture<Bitmap> {
                         return CallbackToFutureAdapter.getFuture { completer ->
-                            Glide
-                                .with(this@GramophonePlaybackService)
-                                .asBitmap()
-                                .load(uri)
-                                .dontTransform()
-                                .dontAnimate()
-                                .into(object : CustomTarget<Bitmap>() {
-                                    override fun onResourceReady(
-                                        resource: Bitmap,
-                                        transition: Transition<in Bitmap>?
-                                    ) {
-                                        completer.set(resource)
-                                    }
-
-                                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                                        completer.setException(RuntimeException("onLoadFailed() called"))
-                                    }
-
-                                    override fun onLoadCleared(placeholder: Drawable?) {
-                                        completer.setCancelled()
-                                    }
-                                })
-                            "Glide load for $uri"
+                            imageLoader.enqueue(
+                                ImageRequest.Builder(this@GramophonePlaybackService)
+                                    .data(uri)
+                                    .allowHardware(false)
+                                    .target(
+                                        onStart = { _ ->
+                                            // We don't need or want a placeholder.
+                                        },
+                                        onSuccess = { result ->
+                                            completer.set((result as BitmapDrawable).bitmap)
+                                        },
+                                        onError = { _ ->
+                                            completer.setException(Exception("coil onError called"))
+                                        }
+                                    )
+                                    .build())
+                                .also {
+                                    completer.addCancellationListener(
+                                        { it.dispose() },
+                                        ContextCompat.getMainExecutor(
+                                            this@GramophonePlaybackService)
+                                    )
+                                }
+                            "coil load for $uri"
                         }
                     }
 
