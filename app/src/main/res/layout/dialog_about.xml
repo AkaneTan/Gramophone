@@ -20,8 +20,9 @@
         <ImageView
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:src="@drawable/ic_gramophone_monochrome"
+            android:src="@drawable/ic_launcher_foreground"
             app:tint="?attr/colorOnSecondaryContainer"
+            android:scaleType="fitCenter"
             android:importantForAccessibility="no" />
 
     </com.google.android.material.card.MaterialCardView>

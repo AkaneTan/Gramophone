@@ -32,6 +32,7 @@
                 android:padding="10dp"
                 android:layout_gravity="center_vertical"
                 android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_folder" />
 
         </com.google.android.material.card.MaterialCardView>

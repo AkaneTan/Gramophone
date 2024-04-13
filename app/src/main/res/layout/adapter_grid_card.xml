@@ -31,6 +31,7 @@
             android:layout_height="match_parent"
             android:background="?attr/colorSurfaceContainer"
             android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_default_cover" />
 
     </com.google.android.material.card.MaterialCardView>

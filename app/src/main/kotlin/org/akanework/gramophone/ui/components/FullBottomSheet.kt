@@ -35,11 +35,16 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import coil.dispose
-import coil.imageLoader
-import coil.load
-import coil.request.Disposable
-import coil.request.ImageRequest
+import coil3.annotation.ExperimentalCoilApi
+import coil3.dispose
+import coil3.imageLoader
+import coil3.load
+import coil3.request.Disposable
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.size.Scale
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -73,6 +78,7 @@ import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyRecyclerView
+import org.akanework.gramophone.logic.ui.coolCrossfade
 import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
@@ -349,7 +355,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title
 			playlistNowPlayingCover = playlistBottomSheet.findViewById(R.id.now_playing_cover)
 			playlistNowPlayingCover!!.load(instance?.currentMediaItem?.mediaMetadata?.artworkUri) {
-				crossfade(true)
+				coolCrossfade(true)
 				placeholder(R.drawable.ic_default_cover)
 				error(R.drawable.ic_default_cover)
 			}
@@ -803,6 +809,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
+	@OptIn(ExperimentalCoilApi::class)
 	@SuppressLint("NotifyDataSetChanged")
 	override fun onMediaItemTransition(
 		mediaItem: MediaItem?,
@@ -812,14 +819,14 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			lastDisposable?.dispose()
 			lastDisposable = context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
 				target(onSuccess = {
-					bottomSheetFullCover.setImageDrawable(it)
+					bottomSheetFullCover.setImageDrawable(it.asDrawable(context.resources))
 				}, onError = {
-					bottomSheetFullCover.setImageDrawable(it)
+					bottomSheetFullCover.setImageDrawable(it?.asDrawable(context.resources))
 				}) // do not react to onStart() which sets placeholder
 				data(mediaItem?.mediaMetadata?.artworkUri)
+				scale(Scale.FILL)
 				error(R.drawable.ic_default_cover)
 				allowHardware(false)
-				crossfade(true)
 				listener(onSuccess = { _, _ ->
 					if (DynamicColors.isDynamicColorAvailable() &&
 						prefs.getBooleanStrict("content_based_color", true)) {
@@ -842,7 +849,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			if (playlistNowPlaying != null) {
 				playlistNowPlaying!!.text = mediaItem?.mediaMetadata?.title
 				playlistNowPlayingCover!!.load(mediaItem?.mediaMetadata?.artworkUri) {
-					crossfade(true)
+					coolCrossfade(true)
 					placeholder(R.drawable.ic_default_cover)
 					error(R.drawable.ic_default_cover)
 				}
@@ -1121,7 +1128,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 					playlist[holder.bindingAdapterPosition].mediaMetadata.extras?.getLong("Duration")!!
 				)
 			holder.songCover.load(playlist[position].mediaMetadata.artworkUri) {
-				crossfade(true)
+				coolCrossfade(true)
 				placeholder(R.drawable.ic_default_cover)
 				error(R.drawable.ic_default_cover)
 			}

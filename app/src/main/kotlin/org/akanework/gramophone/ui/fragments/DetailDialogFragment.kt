@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
-import coil.load
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.getFile
+import org.akanework.gramophone.logic.ui.coolCrossfade
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.ui.LibraryViewModel
 
@@ -46,7 +49,7 @@ class DetailDialogFragment : BaseFragment(false) {
         val mimeTypeTextView = rootView.findViewById<TextView>(R.id.mime)
         val pathTextView = rootView.findViewById<TextView>(R.id.path)
         albumCoverImageView.load(mediaMetadata.artworkUri) {
-            crossfade(true)
+            coolCrossfade(true)
             placeholder(R.drawable.ic_default_cover)
             error(R.drawable.ic_default_cover)
         }

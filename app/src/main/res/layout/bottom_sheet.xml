@@ -35,6 +35,7 @@
                 android:layout_height="50dp"
                 android:background="?attr/colorSurfaceContainer"
                 android:contentDescription="@string/dialog_album"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_default_cover" />
 
         </com.google.android.material.card.MaterialCardView>

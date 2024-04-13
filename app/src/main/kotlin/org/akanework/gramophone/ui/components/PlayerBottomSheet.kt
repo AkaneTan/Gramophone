@@ -44,9 +44,12 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
-import coil.imageLoader
-import coil.request.Disposable
-import coil.request.ImageRequest
+import coil3.annotation.ExperimentalCoilApi
+import coil3.imageLoader
+import coil3.request.Disposable
+import coil3.request.ImageRequest
+import coil3.request.error
+import coil3.size.Scale
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.button.MaterialButton
@@ -355,6 +358,7 @@ class PlayerBottomSheet private constructor(
 
     fun getPlayer(): MediaController? = instance
 
+    @OptIn(ExperimentalCoilApi::class)
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
@@ -363,12 +367,12 @@ class PlayerBottomSheet private constructor(
             lastDisposable?.dispose()
             lastDisposable = context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
                 target(onSuccess = {
-                    bottomSheetPreviewCover.setImageDrawable(it)
+                    bottomSheetPreviewCover.setImageDrawable(it.asDrawable(context.resources))
                 }, onError = {
-                    bottomSheetPreviewCover.setImageDrawable(it)
+                    bottomSheetPreviewCover.setImageDrawable(it?.asDrawable(context.resources))
                 }) // do not react to onStart() which sets placeholder
                 data(mediaItem?.mediaMetadata?.artworkUri)
-                crossfade(true)
+                scale(Scale.FILL)
                 error(R.drawable.ic_default_cover)
             }.build())
             bottomSheetPreviewTitle.text = mediaItem?.mediaMetadata?.title
@@ -398,13 +402,14 @@ class PlayerBottomSheet private constructor(
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
+        if (playbackState == Player.STATE_BUFFERING) return
         val myTag = bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int?
         if (instance?.isPlaying == true && myTag != 1) {
             bottomSheetPreviewControllerButton.icon =
                 AppCompatResources.getDrawable(context, R.drawable.play_anim)
             bottomSheetPreviewControllerButton.icon.startAnimation()
             bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
-        } else if (playbackState != Player.STATE_BUFFERING && myTag != 2) {
+        } else if (instance?.isPlaying == false && myTag != 2) {
             bottomSheetPreviewControllerButton.icon =
                 AppCompatResources.getDrawable(context, R.drawable.pause_anim)
             bottomSheetPreviewControllerButton.icon.startAnimation()

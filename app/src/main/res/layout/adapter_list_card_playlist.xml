@@ -30,6 +30,7 @@
                 android:layout_gravity="center_vertical"
                 android:background="?attr/colorSurfaceContainer"
                 android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_default_cover" />
 
         </com.google.android.material.card.MaterialCardView>

@@ -29,9 +29,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.preference.PreferenceManager
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.util.DebugLogger
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.util.DebugLogger
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.ui.BugHandlerActivity
 import kotlin.system.exitProcess
@@ -41,7 +42,7 @@ import kotlin.system.exitProcess
  *
  * @author AkaneTan, nift4
  */
-class GramophoneApplication : Application(), ImageLoaderFactory {
+class GramophoneApplication : Application(), SingletonImageLoader.Factory {
 
     @OptIn(UnstableApi::class)
     override fun onCreate() {
@@ -93,8 +94,8 @@ class GramophoneApplication : Application(), ImageLoaderFactory {
         }
     }
 
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(this)
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        return ImageLoader.Builder(context)
             .diskCache(null)
             .run {
                 if (!BuildConfig.DEBUG) this else

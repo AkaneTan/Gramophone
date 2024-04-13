@@ -71,6 +71,7 @@
                 android:layout_marginTop="16dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_default_cover"
+                android:scaleType="centerCrop"
                 android:importantForAccessibility="no" />
 
             <com.google.android.material.button.MaterialButton
