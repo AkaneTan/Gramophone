@@ -89,7 +89,7 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
         songAdapter = SongAdapter(
             this,
             item.songList, true, null, false,
-            isSubFragment = true, fallbackSpans = spans
+            isSubFragment = true, fallbackSpans = spans / 2 // one song takes 2 spans
         )
         songAdapter.decorAdapter.jumpUpPos = 0
         recyclerView.layoutManager = GridLayoutManager(context, spans).apply {

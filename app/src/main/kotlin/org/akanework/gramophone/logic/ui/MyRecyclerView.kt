@@ -170,8 +170,9 @@ abstract class DefaultItemHeightHelper : ItemHeightHelper {
 			return object : DefaultItemHeightHelper() {
 				override fun getItemHeightFromZeroTo(to: Int): Int {
 					val oc = oneCount()
-					return one.getItemHeightFromZeroTo(to.coerceAtMost(oc)) +
-							if (to >= oc) two.getItemHeightFromZeroTo(to - oc) else 0
+					val oh = one.getItemHeightFromZeroTo(to.coerceAtMost(oc))
+					val th = if (to >= oc) two.getItemHeightFromZeroTo(to - oc) else 0
+					return (oh + th)
 				}
 			}
 		}

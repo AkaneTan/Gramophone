@@ -529,8 +529,9 @@ abstract class BaseAdapter<T>(
     }
 
     override fun getItemHeightFromZeroTo(to: Int): Int {
-        val count = ((to / ((layoutManager as? GridLayoutManager)?.spanCount ?: fallbackSpans).toFloat()) + 0.5f)
-        return count.toInt() * when (layoutType) {
+        val count = ((to / ((layoutManager as? GridLayoutManager)?.spanCount ?: fallbackSpans)
+            .toFloat()) + 0.5f).toInt()
+        return count * when (layoutType) {
             LayoutType.GRID -> gridHeight ?: gridHeightCache
             LayoutType.COMPACT_LIST -> listHeight
             LayoutType.LIST, null -> largerListHeight
