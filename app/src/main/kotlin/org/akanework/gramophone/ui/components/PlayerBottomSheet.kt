@@ -98,17 +98,6 @@ class PlayerBottomSheet private constructor(
     private val instance: MediaController?
         get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
             null else controllerFuture?.get()
-    private var ready = false
-        set(value) {
-            field = value
-            if (value) onUiReadyListener?.run()
-        }
-    private/*public when needed*/ var waitedForContainer = true
-    private/*public when needed*/ var onUiReadyListener: Runnable? = null
-        set(value) {
-            field = value
-            if (ready) onUiReadyListener?.run()
-        }
     private var lastActuallyVisible: Boolean? = null
     private var lastMeasuredHeight: Int? = null
     var visible = false
@@ -400,10 +389,7 @@ class PlayerBottomSheet private constructor(
         handler.post {
             // if we are destroyed after onMediaItemTransition but before this runs,
             // standardBottomSheetBehavior will be null
-            if (!waitedForContainer) {
-                waitedForContainer = true
-                standardBottomSheetBehavior?.setStateWithoutAnimation(newState)
-            } else standardBottomSheetBehavior?.state = newState
+            standardBottomSheetBehavior?.state = newState
         }
     }
 
@@ -412,20 +398,17 @@ class PlayerBottomSheet private constructor(
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
-        if (instance?.isPlaying == true) {
-            if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 1) {
-                bottomSheetPreviewControllerButton.icon =
-                    AppCompatResources.getDrawable(context, R.drawable.play_anim)
-                bottomSheetPreviewControllerButton.icon.startAnimation()
-                bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
-            }
-        } else if (playbackState != Player.STATE_BUFFERING) {
-            if (bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int? != 2) {
-                bottomSheetPreviewControllerButton.icon =
-                    AppCompatResources.getDrawable(context, R.drawable.pause_anim)
-                bottomSheetPreviewControllerButton.icon.startAnimation()
-                bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
-            }
+        val myTag = bottomSheetPreviewControllerButton.getTag(R.id.play_next) as Int?
+        if (instance?.isPlaying == true && myTag != 1) {
+            bottomSheetPreviewControllerButton.icon =
+                AppCompatResources.getDrawable(context, R.drawable.play_anim)
+            bottomSheetPreviewControllerButton.icon.startAnimation()
+            bottomSheetPreviewControllerButton.setTag(R.id.play_next, 1)
+        } else if (playbackState != Player.STATE_BUFFERING && myTag != 2) {
+            bottomSheetPreviewControllerButton.icon =
+                AppCompatResources.getDrawable(context, R.drawable.pause_anim)
+            bottomSheetPreviewControllerButton.icon.startAnimation()
+            bottomSheetPreviewControllerButton.setTag(R.id.play_next, 2)
         }
     }
 
@@ -448,9 +431,6 @@ class PlayerBottomSheet private constructor(
                 )
                 if (prefs.getBooleanStrict("autoplay", false) && instance?.isPlaying != true) {
                     instance?.play()
-                }
-                handler.post {
-                    ready = true
                 }
             },
             MoreExecutors.directExecutor(),
