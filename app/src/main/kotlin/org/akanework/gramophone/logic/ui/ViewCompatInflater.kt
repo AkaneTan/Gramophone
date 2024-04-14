@@ -20,7 +20,10 @@ class ViewCompatInflater
 	class ViewCompatInflaterImpl : MaterialComponentsViewInflater(), Callback {
 
 		override fun createTextView(context: Context, attrs: AttributeSet?): AppCompatTextView {
-			return TypefaceCompatTextView(context, attrs)
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+				return TypefaceCompatTextView(context, attrs)
+			}
+			return super.createTextView(context, attrs)
 		}
 
 		class TypefaceCompatTextView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
