@@ -34,9 +34,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.BuildConfig
 import java.nio.charset.StandardCharsets
+import kotlin.random.Random
 
 @OptIn(UnstableApi::class)
-class LastPlayedManager(context: Context, private val controller: EndedRestoreWorkaroundPlayer) {
+class LastPlayedManager(context: Context,
+                        private val controller: EndedRestoreWorkaroundPlayer,
+                        private val seedProvider: () -> Long) {
 
     companion object {
         private const val TAG = "LastPlayedManager"
@@ -67,6 +70,7 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
         val repeatMode = controller.repeatMode
         val shuffleModeEnabled = controller.shuffleModeEnabled
         val playbackParameters = controller.playbackParameters
+        val seed = seedProvider()
         val ended = controller.playbackState == Player.STATE_ENDED
         CoroutineScope(Dispatchers.Default).launch {
             val editor = prefs.edit()
@@ -111,6 +115,7 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
             editor.putLong("last_played_pos", data.startPositionMs)
             editor.putInt("repeat_mode", repeatMode)
             editor.putBoolean("shuffle", shuffleModeEnabled)
+            editor.putLong("shuffle_seed", seed)
             editor.putBoolean("ended", ended)
             editor.putFloat("speed", playbackParameters.speed)
             editor.putFloat("pitch", playbackParameters.pitch)
@@ -118,18 +123,19 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
         }
     }
 
-    fun restore(callback: (MediaItemsWithStartPosition?) -> Unit) {
+    fun restore(callback: (MediaItemsWithStartPosition?, Long) -> Unit) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "restoring playlist...")
         }
         CoroutineScope(Dispatchers.Default).launch {
+            val seed = prefs.getLong("shuffle_seed", Random.nextLong())
             try {
                 val lastPlayedLst = prefs.getStringSet("last_played_lst", null)
                 val lastPlayedGrp = prefs.getString("last_played_grp", null)
                 val lastPlayedIdx = prefs.getInt("last_played_idx", 0)
                 val lastPlayedPos = prefs.getLong("last_played_pos", 0)
                 if (lastPlayedGrp == null || lastPlayedLst == null) {
-                    runCallback(callback) { null }
+                    runCallback(callback, seed) { null }
                     return@launch
                 }
                 val repeatMode = prefs.getInt("repeat_mode", Player.REPEAT_MODE_OFF)
@@ -139,7 +145,7 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
                     prefs.getFloat("speed", 1f),
                     prefs.getFloat("pitch", 1f)
                 )
-                runCallback(callback) {
+                runCallback(callback, seed) {
                     controller.isEnded = ended
                     controller.repeatMode = repeatMode
                     controller.shuffleModeEnabled = shuffleModeEnabled
@@ -237,7 +243,7 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
                 return@launch
             } catch (e: Exception) {
                 Log.e(TAG, Log.getStackTraceString(e))
-                runCallback(callback) { null }
+                runCallback(callback, seed) { null }
                 return@launch
             }
         }
@@ -245,9 +251,10 @@ class LastPlayedManager(context: Context, private val controller: EndedRestoreWo
 }
 
 @OptIn(UnstableApi::class)
-private inline fun runCallback(crossinline callback: (MediaItemsWithStartPosition?) -> Unit,
+private inline fun runCallback(crossinline callback: (MediaItemsWithStartPosition?, Long) -> Unit,
+                               seed: Long,
                                noinline parameter: () -> MediaItemsWithStartPosition?) {
-    CoroutineScope(Dispatchers.Main).launch { callback(parameter()) }
+    CoroutineScope(Dispatchers.Main).launch { callback(parameter(), seed) }
 }
 
 private class SafeDelimitedStringConcat(private val delimiter: String) {
