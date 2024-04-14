@@ -22,14 +22,12 @@
 
 -dontobfuscate
 
--dontwarn org.jaudiotagger.**
--keep class org.jaudiotagger.** { *; }
+# reflection by androidx via theme attr viewInflaterClass
+-keep class org.akanework.gramophone.logic.ui.ViewCompatInflater { *; }
 
+# get rid of spammy logging
 -assumenosideeffects class
                   android.util.Log {
     public static int v(...);
-    public static int i(...);
-    public static int w(...);
     public static int d(...);
-    public static int e(...);
 }

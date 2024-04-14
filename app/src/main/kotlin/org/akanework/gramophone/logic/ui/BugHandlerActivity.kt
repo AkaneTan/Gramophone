@@ -60,7 +60,6 @@ class BugHandlerActivity : AppCompatActivity() {
         val bugText = findViewById<TextView>(R.id.error)
         val exceptionMessage = intent.getStringExtra("exception_message")
         val threadName = intent.getStringExtra("thread")
-        Log.e(TAG, "Error on thread $threadName:\n $exceptionMessage")
 
         val deviceBrand = Build.BRAND
         val deviceModel = Build.MODEL

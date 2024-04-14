@@ -44,12 +44,17 @@ import kotlin.system.exitProcess
  */
 class GramophoneApplication : Application(), SingletonImageLoader.Factory {
 
+    companion object {
+        private const val TAG = "GramophoneApplication"
+    }
+
     @OptIn(UnstableApi::class)
     override fun onCreate() {
         // Set up BugHandlerActivity.
         Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
             val exceptionMessage = Log.getStackTraceString(paramThrowable)
             val threadName = Thread.currentThread().name
+            Log.e(TAG, "Error on thread $threadName:\n $exceptionMessage")
             val intent = Intent(this, BugHandlerActivity::class.java)
             intent.putExtra("exception_message", exceptionMessage)
             intent.putExtra("thread", threadName)

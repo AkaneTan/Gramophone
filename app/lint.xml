@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
 	<issue id="UnusedAttribute">
-		<ignore regexp="textFontWeight"/> <!-- backported in TypefaceCompatFactory -->
+		<ignore regexp="textFontWeight"/> <!-- backported in ViewCompatInflater -->
+		<ignore regexp="tooltipText"/> <!-- backported in ViewCompatInflater -->
 	</issue>
 </lint>

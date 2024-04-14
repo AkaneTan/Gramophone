@@ -19,10 +19,6 @@ A sane music player built with media3 and material design library that is follow
 - Synced lyrics
 - Manage & Add your playlist (coming soon!)
 
-## Why us?
-- Clean code and unified code style
-- Friendly for inline compile with custom ROMs
-
 ## Screenshots
 | ![Screenshot 1](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_1.jpg) | ![Screenshot 2](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_2.jpg) | ![Screenshot 3](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_3.jpg) |
 |---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
@@ -49,8 +45,8 @@ $ touch package.properties
 
 In it type:
 
-```bash
-releaseType="SelfBuilt"
+```
+releaseType=SelfBuilt
 ```
 
 After this launch android studio, import your own signature. You should be able to build gramophone now.
@@ -66,5 +62,5 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ## Notice
 - For bug reporting: [Telegram](https://t.me/AkaneDev)
 
-## Friend
+## Friends
 [SongSync](https://github.com/lambada10/songsync)

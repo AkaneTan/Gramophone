@@ -51,7 +51,6 @@ import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
 import org.akanework.gramophone.logic.needsNotificationCancelWorkaround
 import org.akanework.gramophone.logic.postAtFrontOfQueueAsync
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
-import org.akanework.gramophone.logic.utils.TypefaceCompatFactory
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
 import org.akanework.gramophone.ui.fragments.BaseFragment
 
@@ -101,9 +100,8 @@ class MainActivity : AppCompatActivity() {
      * onCreate - core of MainActivity.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-        TypefaceCompatFactory.installViewFactory(this)
-        super.onCreate(savedInstanceState)
         installSplashScreen().setKeepOnScreenCondition { !ready }
+        super.onCreate(savedInstanceState)
         enableEdgeToEdgeProperly()
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             if (it.resultCode == RESULT_OK) {

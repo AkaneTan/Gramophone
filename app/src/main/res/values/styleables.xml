@@ -3,4 +3,7 @@
 	<declare-styleable name="MyTextAppearance">
 		<attr name="textFontWeight" format="integer"/>
 	</declare-styleable>
+	<declare-styleable name="MyTooltipCompat">
+		<attr name="android:tooltipText" format="string"/>
+	</declare-styleable>
 </resources>

@@ -23,6 +23,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
@@ -30,7 +31,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -70,7 +70,7 @@ class SearchFragment : BaseFragment(false) {
             SongAdapter(this, listOf(),
                 true, null, false, isSubFragment = true,
                 allowDiffUtils = true, rawOrderExposed = true)
-        val returnButton = rootView.findViewById<MaterialButton>(R.id.return_button)
+        val returnButton = rootView.findViewById<Button>(R.id.return_button)
 
         recyclerView.enableEdgeToEdgePaddingListener(ime = true)
         recyclerView.setAppBar(appBarLayout)
