@@ -41,6 +41,7 @@ import androidx.media3.common.IllegalSeekPositionException
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.UnstableApi
@@ -109,6 +110,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private var controller: MediaController? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
     private var shuffleSeed: Long? = null
+    private var lazyShuffleSeedApply = false
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var lastPlayedManager: LastPlayedManager
@@ -300,7 +302,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         handler.post {
             if (mediaSession == null) return@post
             lastPlayedManager.restore { items, seed ->
-                applyShuffleSeed(seed)
+                applyShuffleSeed(seed, true)
                 if (items != null) {
                     try {
                         mediaSession?.player?.setMediaItems(
@@ -446,7 +448,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
         lastPlayedManager.restore { items, seed ->
-            applyShuffleSeed(seed)
+            applyShuffleSeed(seed, true)
             // TODO empty lists in set() are not supported according to googlers
             //  is this fallback correct though?
             if (items == null) {
@@ -507,7 +509,14 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
         // when disabling shuffle, re-shuffle lists so that when enabling again, the order changes
         if (!shuffleModeEnabled) {
-            applyShuffleSeed(Random.nextLong())
+            applyShuffleSeed(Random.nextLong(), false)
+        }
+    }
+
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+        super.onTimelineChanged(timeline, reason)
+        if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED && lazyShuffleSeedApply) {
+            shuffleSeed?.let { applyShuffleSeed(it, false) }
         }
     }
 
@@ -528,10 +537,15 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         Log.w("Gramophone", "Failed to resume playback :/")
     }
 
-    private fun applyShuffleSeed(seed: Long) {
+    private fun applyShuffleSeed(seed: Long, lazy: Boolean) {
         shuffleSeed = seed
-        (mediaSession?.player as EndedRestoreWorkaroundPlayer?)?.exoPlayer?.let {
-            it.setShuffleOrder(ShuffleOrder.DefaultShuffleOrder(it.mediaItemCount, seed))
+        if (lazy) {
+            lazyShuffleSeedApply = true
+        } else {
+            (mediaSession?.player as EndedRestoreWorkaroundPlayer?)?.exoPlayer?.let {
+                it.setShuffleOrder(ShuffleOrder.DefaultShuffleOrder(it.mediaItemCount, seed))
+            }
+            lazyShuffleSeedApply = false
         }
     }
 }
