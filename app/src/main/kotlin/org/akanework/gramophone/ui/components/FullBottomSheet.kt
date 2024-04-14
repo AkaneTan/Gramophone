@@ -442,7 +442,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 						if (parsedLyrics?.isEmpty() != false) {
 							bottomSheetFullLyricList.add(
 								MediaStoreUtils.Lyric(
-									0,
+									null,
 									context.getString(R.string.no_lyric_found)
 								)
 							)
@@ -1008,12 +1008,17 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 			with(holder.lyricCard) {
 				setOnClickListener {
-					ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
-					val instance = activity.getPlayer()
-					if (instance?.isPlaying == false) {
-						instance.play()
+					lyric.timeStamp?.let { it1 ->
+						ViewCompat.performHapticFeedback(
+							it,
+							HapticFeedbackConstantsCompat.CONTEXT_CLICK
+						)
+						val instance = activity.getPlayer()
+						if (instance?.isPlaying == false) {
+							instance.play()
+						}
+						instance?.seekTo(it1)
 					}
-					instance?.seekTo(lyric.timeStamp)
 				}
 			}
 
@@ -1205,12 +1210,12 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val newIndex: Int
 
 			val filteredList = bottomSheetFullLyricList.filterIndexed { _, lyric ->
-				lyric.timeStamp <= (instance?.currentPosition ?: 0)
+				(lyric.timeStamp ?: 0) <= (instance?.currentPosition ?: 0)
 			}
 
 			newIndex = if (filteredList.isNotEmpty()) {
 				filteredList.indices.maxBy {
-					filteredList[it].timeStamp
+					(filteredList[it].timeStamp ?: 0)
 				}
 			} else {
 				-1
