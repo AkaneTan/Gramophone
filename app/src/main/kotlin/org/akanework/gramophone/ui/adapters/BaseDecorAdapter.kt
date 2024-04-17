@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.edit
 import androidx.media3.common.C
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.preference.PreferenceManager
@@ -121,12 +122,12 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                             adapter.sort(buttonMap[menuItem.itemId]!!)
                             menuItem.isChecked = true
                             if (!isSubFragment) {
-                                prefs.edit()
-                                    .putString(
+                                prefs.edit {
+                                    putString(
                                         "S" + FileOpUtils.getAdapterType(adapter).toString(),
                                         buttonMap[menuItem.itemId].toString()
                                     )
-                                    .apply()
+                                }
                             }
                         }
                         true
@@ -137,12 +138,12 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                             adapter.layoutType = layoutMap[menuItem.itemId]!!
                             menuItem.isChecked = true
                             if (!isSubFragment) {
-                                prefs.edit()
-                                    .putString(
+                                prefs.edit {
+                                    putString(
                                         "L" + FileOpUtils.getAdapterType(adapter).toString(),
                                         layoutMap[menuItem.itemId].toString()
                                     )
-                                    .apply()
+                                }
                             }
                         }
                         true

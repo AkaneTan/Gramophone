@@ -434,7 +434,8 @@ class PlayerBottomSheet private constructor(
                     instance?.currentMediaItem,
                     Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
                 )
-                if (prefs.getBooleanStrict("autoplay", false) && instance?.isPlaying != true) {
+                if ((activity.consumeAutoPlay() || prefs.getBooleanStrict("autoplay",
+                        false)) && instance?.isPlaying != true) {
                     instance?.play()
                 }
             },

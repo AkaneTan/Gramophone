@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.fragment.app.commit
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import coil3.imageLoader
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val PERMISSION_READ_MEDIA_AUDIO = 100
+        const val PLAYBACK_AUTO_START_FOR_FGS = "AutoStartFgs"
     }
 
     // Import our viewModels.
@@ -75,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val reportFullyDrawnRunnable = Runnable { if (!ready) reportFullyDrawn() }
     private var ready = false
+    private var autoPlay = false
     lateinit var playerBottomSheet: PlayerBottomSheet
         private set
     lateinit var intentSender: ActivityResultLauncher<IntentSenderRequest>
@@ -103,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen().setKeepOnScreenCondition { !ready }
         super.onCreate(savedInstanceState)
         enableEdgeToEdgeProperly()
+        autoPlay = intent?.extras?.getBoolean(PLAYBACK_AUTO_START_FOR_FGS, false) == true
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             if (it.resultCode == RESULT_OK) {
                 if (intentSenderAction != null) {
@@ -220,12 +224,11 @@ class MainActivity : AppCompatActivity() {
      * @param frag: Target fragment.
      */
     fun startFragment(frag: Fragment, args: (Bundle.() -> Unit)? = null) {
-        supportFragmentManager
-            .beginTransaction()
-            .addToBackStack(System.currentTimeMillis().toString())
-            .hide(supportFragmentManager.fragments.let { it[it.size - 1] })
-            .add(R.id.container, frag.apply { args?.let { arguments = Bundle().apply(it) } })
-            .commit()
+        supportFragmentManager.commit {
+            addToBackStack(System.currentTimeMillis().toString())
+            hide(supportFragmentManager.fragments.last())
+            add(R.id.container, frag.apply { args?.let { arguments = Bundle().apply(it) } })
+        }
     }
 
     @OptIn(UnstableApi::class)
@@ -247,4 +250,8 @@ class MainActivity : AppCompatActivity() {
      *   Returns a media controller.
      */
     fun getPlayer() = playerBottomSheet.getPlayer()
+
+    fun consumeAutoPlay(): Boolean {
+        return autoPlay.also { autoPlay = false }
+    }
 }

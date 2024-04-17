@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -38,15 +39,15 @@ class BlacklistFolderAdapter(
         holder.checkBox.isChecked = folderFilter.contains(folderArray[position])
         holder.folderLocation.text = folderArray[position]
         holder.checkBox.setOnClickListener {
-            prefs.edit()
-                .putStringSet("folderFilter",
+            prefs.edit {
+                putStringSet("folderFilter",
                     folderFilter.also {
-                            if (holder.checkBox.isChecked)
-                                it.add(folderArray[position])
-                            else
-                                it.remove(folderArray[position])
-                        })
-                .apply()
+                        if (holder.checkBox.isChecked)
+                            it.add(folderArray[position])
+                        else
+                            it.remove(folderArray[position])
+                    })
+            }
         }
         holder.itemView.setOnClickListener {
             holder.checkBox.isChecked = !holder.checkBox.isChecked

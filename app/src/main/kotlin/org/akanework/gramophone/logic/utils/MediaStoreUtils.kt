@@ -32,8 +32,10 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.preference.PreferenceManager
@@ -42,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.getColumnIndexOrNull
 import org.akanework.gramophone.logic.hasAlbumArtistIdInMediaStore
 import org.akanework.gramophone.logic.hasImprovedMediaStore
 import org.akanework.gramophone.logic.hasScopedStorageV1
@@ -188,7 +191,7 @@ object MediaStoreUtils {
         val songList = mutableListOf<MediaItem>()
         var albumId: Long? = null
             private set
-        fun addSong(item: MediaItem, id: Long) {
+        fun addSong(item: MediaItem, id: Long?) {
             if (albumId != null && id != albumId) {
                 albumId = null
             } else if (albumId == null && songList.isEmpty()) {
@@ -216,7 +219,7 @@ object MediaStoreUtils {
 
     private fun handleShallowMediaItem(
         mediaItem: MediaItem,
-        albumId: Long,
+        albumId: Long?,
         path: String,
         shallowFolder: FileNode,
         folderArray: MutableList<String>
@@ -398,8 +401,7 @@ object MediaStoreUtils {
             val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
             val artistIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID)
             val mimeTypeColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
-            val discNumberColumn = it.getColumnIndex(MediaStore.Audio.Media.DISC_NUMBER)
-                .run { if (this == -1) null else this }
+            val discNumberColumn = it.getColumnIndexOrNull(MediaStore.Audio.Media.DISC_NUMBER)
             val trackNumberColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
             val genreColumn = if (hasImprovedMediaStore())
                 it.getColumnIndexOrThrow(MediaStore.Audio.Media.GENRE) else null
@@ -422,25 +424,25 @@ object MediaStoreUtils {
             val modifiedDateColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
 
             while (it.moveToNext()) {
-                val duration = it.getLong(durationColumn)
-                val path = it.getString(pathColumn)
+                val path = it.getStringOrNull(pathColumn) ?: continue
+                val duration = it.getLongOrNull(durationColumn)
                 val pathFile = File(path)
                 val fldPath = pathFile.parentFile!!.absolutePath
-                val skip = (duration < limitValue * 1000) || folderFilter.contains(fldPath)
+                val skip = (duration != null && duration < limitValue * 1000) || folderFilter.contains(fldPath)
                 // We need to add blacklisted songs to idMap as they can be referenced by playlist
                 if (skip && !foundPlaylistContent) continue
-                val id = it.getLong(idColumn)
-                val title = it.getString(titleColumn)
-                val artist = it.getString(artistColumn)
+                val id = it.getLongOrNull(idColumn)!!
+                val title = it.getStringOrNull(titleColumn)!!
+                val artist = it.getStringOrNull(artistColumn)
                     .let { v -> if (v == "<unknown>") null else v }
                 val album = it.getStringOrNull(albumColumn)
-                val albumArtist = it.getString(albumArtistColumn) ?: null
-                val year = it.getInt(yearColumn).let { v -> if (v == 0) null else v }
-                val albumId = it.getLong(albumIdColumn)
-                val artistId = it.getLong(artistIdColumn)
-                val mimeType = it.getString(mimeTypeColumn)
-                var discNumber = discNumberColumn?.let { col -> it.getInt(col) }
-                var trackNumber = it.getInt(trackNumberColumn)
+                val albumArtist = it.getStringOrNull(albumArtistColumn)
+                val year = it.getIntOrNull(yearColumn).let { v -> if (v == 0) null else v }
+                val albumId = it.getLongOrNull(albumIdColumn)
+                val artistId = it.getLongOrNull(artistIdColumn)
+                val mimeType = it.getStringOrNull(mimeTypeColumn)
+                var discNumber = discNumberColumn?.let { col -> it.getIntOrNull(col) }
+                var trackNumber = it.getIntOrNull(trackNumberColumn)
                 val cdTrackNumber = cdTrackNumberColumn?.let { col -> it.getStringOrNull(col) }
                 val compilation = compilationColumn?.let { col -> it.getStringOrNull(col) }
                 val dateTaken = dateTakenColumn?.let { col -> it.getStringOrNull(col) }
@@ -448,9 +450,9 @@ object MediaStoreUtils {
                 val writer = writerColumn?.let { col -> it.getStringOrNull(col) }
                 val author = authorColumn?.let { col -> it.getStringOrNull(col) }
                 val genre = genreColumn?.let { col -> it.getStringOrNull(col) }
-                val genreId = genreIdColumn?.let { col -> it.getLong(col) }
-                val addDate = it.getLong(addDateColumn)
-                val modifiedDate = it.getLong(modifiedDateColumn)
+                val genreId = genreIdColumn?.let { col -> it.getLongOrNull(col) }
+                val addDate = it.getLongOrNull(addDateColumn)
+                val modifiedDate = it.getLongOrNull(modifiedDateColumn)
                 val dateTakenParsed = if (hasImprovedMediaStore()) {
                     // the column exists since R, so we can always use these APIs
                     dateTaken?.toLongOrNull()?.let { it1 -> Instant.ofEpochMilli(it1) }
@@ -473,7 +475,7 @@ object MediaStoreUtils {
 
                 // Process track numbers that have disc number added on.
                 // e.g. 1001 - Disc 01, Track 01
-                if (trackNumber >= 1000) {
+                if (trackNumber != null && trackNumber >= 1000) {
                     discNumber = trackNumber / 1000
                     trackNumber %= 1000
                 }
@@ -481,7 +483,7 @@ object MediaStoreUtils {
                 // Build our mediaItem.
                 val song = MediaItem
                     .Builder()
-                    .setUri(Uri.fromFile(pathFile))
+                    .setUri(pathFile.toUri())
                     .setMediaId(id.toString())
                     .setMimeType(mimeType)
                     .setMediaMetadata(
@@ -505,15 +507,25 @@ object MediaStoreUtils {
                             .setRecordingYear(dateTakenYear)
                             .setReleaseYear(year)
                             .setExtras(Bundle().apply {
-                                putLong("ArtistId", artistId)
-                                putLong("AlbumId", albumId)
+                                if (artistId != null) {
+                                    putLong("ArtistId", artistId)
+                                }
+                                if (albumId != null) {
+                                    putLong("AlbumId", albumId)
+                                }
                                 if (genreId != null) {
                                     putLong("GenreId", genreId)
                                 }
                                 putString("Author", author)
-                                putLong("AddDate", addDate)
-                                putLong("Duration", duration)
-                                putLong("ModifiedDate", modifiedDate)
+                                if (addDate != null) {
+                                    putLong("AddDate", addDate)
+                                }
+                                if (duration != null) {
+                                    putLong("Duration", duration)
+                                }
+                                if (modifiedDate != null) {
+                                    putLong("ModifiedDate", modifiedDate)
+                                }
                                 cdTrackNumber?.toIntOrNull()
                                     ?.let { it1 -> putInt("CdTrackNumber", it1) }
                             })
@@ -524,14 +536,17 @@ object MediaStoreUtils {
                 // Now that the song can be found by playlists, do NOT register other metadata.
                 if (skip) continue
                 songs.add(song)
-                recentlyAddedMap.add(Pair(addDate, song))
+                if (addDate != null) {
+                    recentlyAddedMap.add(Pair(addDate, song))
+                }
                 artistMap.getOrPut(artistId) {
                     Artist(artistId, artist, mutableListOf(), mutableListOf())
                 }.songList.add(song)
                 artistCacheMap.putIfAbsentSupport(artist, artistId)
                 albumMap.getOrPut(albumId) {
                     // in haveImgPerm case, cover uri is created later using coverCache
-                    val cover = if (haveImgPerm) null else ContentUris.withAppendedId(coverUri, albumId)
+                    val cover = if (haveImgPerm || albumId == null) null else
+                        ContentUris.withAppendedId(coverUri, albumId)
                     val artistStr = albumArtist ?: artist
                     val likelyArtist = albumIdToArtistMap?.get(albumId)
                         ?.run { if (second == artistStr) this else null }
@@ -547,7 +562,9 @@ object MediaStoreUtils {
                 dateMap.getOrPut(year) { Date(year?.toLong() ?: 0, year?.toString(), mutableListOf()) }.songList.add(song)
                 val fn = handleMediaFolder(path, root)
                 fn.addSong(song, albumId)
-                coverCache?.putIfAbsentSupport(albumId, Pair(pathFile.parentFile!!, fn))
+                if (albumId != null) {
+                    coverCache?.putIfAbsentSupport(albumId, Pair(pathFile.parentFile!!, fn))
+                }
                 handleShallowMediaItem(song, albumId, path, shallowRoot, folderArray)
                 folders.add(fldPath)
             }
@@ -594,7 +611,7 @@ object MediaStoreUtils {
                     // allow .jpg or .png files with any name, but only permit more exotic
                     // formats if name contains either cover or albumart
                     if (bestScore >= 3) {
-                        bestFile?.let { f -> it.cover = Uri.fromFile(f) }
+                        bestFile?.let { f -> it.cover = f.toUri() }
                     }
                 }
             }

@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.OptIn
+import androidx.core.content.edit
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
@@ -34,12 +35,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.akanework.gramophone.BuildConfig
 import java.nio.charset.StandardCharsets
-import kotlin.random.Random
 
 @OptIn(UnstableApi::class)
 class LastPlayedManager(context: Context,
-                        private val controller: EndedRestoreWorkaroundPlayer,
-                        private val seedProvider: () -> Long) {
+                        private val controller: EndedWorkaroundPlayer,
+                        private val seedProvider: () -> CircularShuffleOrder.Persistent) {
 
     companion object {
         private const val TAG = "LastPlayedManager"
@@ -70,10 +70,9 @@ class LastPlayedManager(context: Context,
         val repeatMode = controller.repeatMode
         val shuffleModeEnabled = controller.shuffleModeEnabled
         val playbackParameters = controller.playbackParameters
-        val seed = seedProvider()
+        val persistent = seedProvider()
         val ended = controller.playbackState == Player.STATE_ENDED
         CoroutineScope(Dispatchers.Default).launch {
-            val editor = prefs.edit()
             val lastPlayed = PrefsListUtils.dump(
                 data.mediaItems.map {
                     val b = SafeDelimitedStringConcat(":")
@@ -109,26 +108,28 @@ class LastPlayedManager(context: Context,
                     b.writeLong(it.mediaMetadata.extras?.getLong("ModifiedDate"))
                     b.toString()
                 })
-            editor.putStringSet("last_played_lst", lastPlayed.first)
-            editor.putString("last_played_grp", lastPlayed.second)
-            editor.putInt("last_played_idx", data.startIndex)
-            editor.putLong("last_played_pos", data.startPositionMs)
-            editor.putInt("repeat_mode", repeatMode)
-            editor.putBoolean("shuffle", shuffleModeEnabled)
-            editor.putLong("shuffle_seed", seed)
-            editor.putBoolean("ended", ended)
-            editor.putFloat("speed", playbackParameters.speed)
-            editor.putFloat("pitch", playbackParameters.pitch)
-            editor.apply()
+            prefs.edit {
+                putStringSet("last_played_lst", lastPlayed.first)
+                putString("last_played_grp", lastPlayed.second)
+                putInt("last_played_idx", data.startIndex)
+                putLong("last_played_pos", data.startPositionMs)
+                putInt("repeat_mode", repeatMode)
+                putBoolean("shuffle", shuffleModeEnabled)
+                putString("shuffle_persist", persistent.toString())
+                putBoolean("ended", ended)
+                putFloat("speed", playbackParameters.speed)
+                putFloat("pitch", playbackParameters.pitch)
+                apply()
+            }
         }
     }
 
-    fun restore(callback: (MediaItemsWithStartPosition?, Long) -> Unit) {
+    fun restore(callback: (MediaItemsWithStartPosition?, CircularShuffleOrder.Persistent) -> Unit) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "restoring playlist...")
         }
         CoroutineScope(Dispatchers.Default).launch {
-            val seed = prefs.getLong("shuffle_seed", Random.nextLong())
+            val seed = CircularShuffleOrder.Persistent.deserialize(prefs.getString("shuffle_persist", null))
             try {
                 val lastPlayedLst = prefs.getStringSet("last_played_lst", null)
                 val lastPlayedGrp = prefs.getString("last_played_grp", null)
@@ -251,8 +252,9 @@ class LastPlayedManager(context: Context,
 }
 
 @OptIn(UnstableApi::class)
-private inline fun runCallback(crossinline callback: (MediaItemsWithStartPosition?, Long) -> Unit,
-                               seed: Long,
+private inline fun runCallback(crossinline callback: (MediaItemsWithStartPosition?,
+                                                      CircularShuffleOrder.Persistent) -> Unit,
+                               seed: CircularShuffleOrder.Persistent,
                                noinline parameter: () -> MediaItemsWithStartPosition?) {
     CoroutineScope(Dispatchers.Main).launch { callback(parameter(), seed) }
 }

@@ -22,6 +22,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -40,12 +41,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.core.graphics.Insets
+import androidx.core.net.toFile
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -77,7 +80,7 @@ fun MediaItem.getUri(): Uri? {
 }
 
 fun MediaItem.getFile(): File? {
-    return getUri()?.path?.let { File(it) }
+    return getUri()?.toFile()
 }
 
 fun Activity.closeKeyboard(view: View) {
@@ -276,12 +279,13 @@ data class Margin(var left: Int, var top: Int, var right: Int, var bottom: Int) 
 
     @Suppress("NOTHING_TO_INLINE")
     internal inline fun apply(marginLayoutParams: MarginLayoutParams) {
-        marginLayoutParams.leftMargin = left
-        marginLayoutParams.topMargin = top
-        marginLayoutParams.rightMargin = right
-        marginLayoutParams.bottomMargin = bottom
+        marginLayoutParams.updateMargins(left, top, right, bottom)
     }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Cursor.getColumnIndexOrNull(columnName: String): Int? =
+    getColumnIndex(columnName).let { if (it == -1) null else it }
 
 fun View.updateMargin(
     block: Margin.() -> Unit
@@ -411,3 +415,8 @@ inline fun hasScopedStorageV1(): Boolean =
 @Suppress("NOTHING_TO_INLINE")
 inline fun hasScopedStorageWithMediaTypes(): Boolean =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun mayThrowForegroundServiceStartNotAllowed(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2

@@ -19,6 +19,7 @@ package org.akanework.gramophone.ui.adapters
 
 import android.view.MenuItem
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
@@ -107,7 +108,7 @@ class ArtistAdapter(
 
     private fun setAlbumArtist(albumArtist: Boolean) {
         isAlbumArtist = albumArtist
-        prefs.edit().putBoolean("isDisplayingAlbumArtist", isAlbumArtist).apply()
+        prefs.edit { putBoolean("isDisplayingAlbumArtist", isAlbumArtist) }
         if (recyclerView != null)
             liveData?.removeObserver(this)
         liveData = if (isAlbumArtist) albumArtists else artistList

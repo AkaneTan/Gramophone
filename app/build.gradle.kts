@@ -164,23 +164,28 @@ aboutLibraries {
 
 dependencies {
     val media3Version = "1.3.1"
-    implementation("androidx.core:core-ktx:1.13.0-rc01")
     implementation("androidx.activity:activity-ktx:1.8.2")
-    implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
-    implementation("androidx.transition:transition-ktx:1.5.0-rc01") // <-- for predictive back
-    implementation("androidx.fragment:fragment-ktx:1.8.0-alpha01")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("androidx.collection:collection-ktx:1.4.0")
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
+    implementation("androidx.core:core-ktx:1.13.0-rc01")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    //implementation("androidx.datastore:datastore-preferences:1.1.0-rc01") TODO don't abuse shared prefs
+    implementation("androidx.fragment:fragment-ktx:1.8.0-alpha01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-exoplayer-midi:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
+    //implementation("androidx.navigation:navigation-fragment-ktx:2.7.7") TODO consider it
+    //implementation("androidx.paging:paging-runtime-ktx:3.2.1") TODO paged, partial, flow based library loading
+    //implementation("androidx.paging:paging-guava:3.2.1") TODO do we have guava? do we need this?
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("io.coil-kt.coil3:coil:3.0.0-alpha06")
+    implementation("androidx.transition:transition-ktx:1.5.0-rc01") // <-- for predictive back
+    implementation("com.mikepenz:aboutlibraries:$aboutLibsVersion")
     implementation("com.google.android.material:material:1.12.0-rc01")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
-    implementation("com.mikepenz:aboutlibraries:$aboutLibsVersion")
+    implementation("io.coil-kt.coil3:coil:3.0.0-alpha06")
     // --- below does not apply to release builds ---
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app

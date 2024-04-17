@@ -7,17 +7,18 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import org.akanework.gramophone.BuildConfig
 
+
 /**
  * If player in STATE_ENDED is resumed, state will be STATE_READY, on play button press it will
  * update to STATE_ENDED and only then media3 will wrap around playlist for us. This is a workaround
  * to restore STATE_ENDED as well and fake it for media3 until it indeed wraps around playlist.
  */
 @UnstableApi
-class EndedRestoreWorkaroundPlayer(player: ExoPlayer)
+class EndedWorkaroundPlayer(player: ExoPlayer)
 	: ForwardingPlayer(player), Player.Listener {
 
 	companion object {
-		private const val TAG = "EndedRestore..Player"
+		private const val TAG = "EndedWorkaroundPlayer"
 	}
 
 	val exoPlayer
