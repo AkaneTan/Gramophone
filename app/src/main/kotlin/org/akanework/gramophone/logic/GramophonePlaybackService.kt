@@ -43,6 +43,7 @@ import androidx.media3.common.IllegalSeekPositionException
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED
 import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.BitmapLoader
@@ -118,7 +119,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private var controller: MediaController? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
     private var shuffleFactory: ((Int) -> CircularShuffleOrder)? = null
-    private var shufflePersister: CircularShuffleOrder.Persistent? = null
+    private var shufflePersistent: CircularShuffleOrder.Persistent? = null
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var nm: NotificationManagerCompat
@@ -268,7 +269,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.exoPlayer.audioSessionId)
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
         })
-        lastPlayedManager = LastPlayedManager(this, player) { shufflePersister!! }
+        lastPlayedManager = LastPlayedManager(this, player) { shufflePersistent }
         lastPlayedManager.allowSavingState = false
 
         mediaSession =
@@ -333,6 +334,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         handler.post {
             if (mediaSession == null) return@post
             lastPlayedManager.restore { items, factory ->
+                if (mediaSession == null) return@restore
                 applyShuffleSeed(true, factory.toFactory(this, controller!!))
                 if (items != null) {
                     try {
@@ -535,14 +537,22 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         lastPlayedManager.save()
     }
 
-    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-        mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
-        // when enabling shuffle, re-shuffle lists so that the order changes and first index is up to date
-        if (shuffleModeEnabled && shuffleFactory == null) {
+    override fun onEvents(player: Player, events: Player.Events) {
+        super.onEvents(player, events)
+        // if timeline changed, handle shuffle update in onTimelineChanged() instead
+        // (onTimelineChanged() runs before both this callback and onShuffleModeEnabledChanged(),
+        // which means shuffleFactory != null is not a valid check)
+        if (events.contains(EVENT_SHUFFLE_MODE_ENABLED_CHANGED) && player.shuffleModeEnabled &&
+            shuffleFactory == null && !events.contains(Player.EVENT_TIMELINE_CHANGED)) {
+            // when enabling shuffle, re-shuffle lists so that the first index is up to date
             applyShuffleSeed(false) { CircularShuffleOrder(
                 this, it, controller!!.mediaItemCount, Random.nextLong()) }
         }
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+        mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -558,13 +568,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onRepeatModeChanged(repeatMode: Int) {
         super.onRepeatModeChanged(repeatMode)
         mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
-    }
-
-    // TODO remove this and use new default onTaskRemoved() in next release
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        if (controller!!.playbackState == Player.STATE_ENDED || !controller!!.playWhenReady || controller!!.mediaItemCount == 0) {
-            stopSelf()
-        }
     }
 
     @SuppressLint("MissingPermission") // only used on S/S_V2
@@ -613,7 +616,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     }
 
     override fun onPersistableDataUpdated(order: CircularShuffleOrder.Persistent) {
-        shufflePersister = order
+        shufflePersistent = order
     }
 
     override fun onLazilySetShuffleOrder(factory: (Int) -> CircularShuffleOrder) {

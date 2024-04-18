@@ -32,9 +32,11 @@ import androidx.preference.PreferenceManager
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import coil3.util.DebugLogger
+import coil3.request.NullRequestDataException
+import coil3.util.Logger
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.ui.BugHandlerActivity
+import java.io.FileNotFoundException
 import kotlin.system.exitProcess
 
 /**
@@ -104,7 +106,27 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
             .diskCache(null)
             .run {
                 if (!BuildConfig.DEBUG) this else
-                logger(DebugLogger())
+                logger(object : Logger {
+                    override var minLevel = Logger.Level.Verbose
+                    override fun log(
+                        tag: String,
+                        level: Logger.Level,
+                        message: String?,
+                        throwable: Throwable?
+                    ) {
+                        if (level < minLevel) return
+                        val priority = level.ordinal + 2 // obviously the best way to do it
+                        if (message != null) {
+                            Log.println(priority, tag, message)
+                        }
+                        // Let's keep the log readable and ignore normal events' stack traces.
+                        if (throwable != null && throwable !is NullRequestDataException
+                            && (throwable !is FileNotFoundException
+                                    || throwable.message != "No album art found")) {
+                            Log.println(priority, tag, Log.getStackTraceString(throwable))
+                        }
+                    }
+                })
             }
             .build()
     }

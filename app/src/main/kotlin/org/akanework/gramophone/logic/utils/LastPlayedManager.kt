@@ -39,7 +39,7 @@ import java.nio.charset.StandardCharsets
 @OptIn(UnstableApi::class)
 class LastPlayedManager(context: Context,
                         private val controller: EndedWorkaroundPlayer,
-                        private val seedProvider: () -> CircularShuffleOrder.Persistent) {
+                        private val seedProvider: () -> CircularShuffleOrder.Persistent?) {
 
     companion object {
         private const val TAG = "LastPlayedManager"
@@ -115,7 +115,7 @@ class LastPlayedManager(context: Context,
                 putLong("last_played_pos", data.startPositionMs)
                 putInt("repeat_mode", repeatMode)
                 putBoolean("shuffle", shuffleModeEnabled)
-                putString("shuffle_persist", persistent.toString())
+                putString("shuffle_persist", persistent?.toString())
                 putBoolean("ended", ended)
                 putFloat("speed", playbackParameters.speed)
                 putFloat("pitch", playbackParameters.pitch)

@@ -1,5 +1,6 @@
 package org.akanework.gramophone.logic.utils
 
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.ShuffleOrder
@@ -24,6 +25,7 @@ class CircularShuffleOrder private constructor(
 	}
 
 	companion object {
+		private const val TAG = "GramophoneShuffleOrder"
 		private fun calculateShuffledList(offset: Int, length: Int, random: Random): IntArray {
 			val shuffled = IntArray(length)
 			var swapIndex: Int
@@ -77,7 +79,7 @@ class CircularShuffleOrder private constructor(
 	}
 
 	// This shuffles the inserted items among themselves and then adds them after
-	// indexInShuffled[insertionIndex] - so if song A is playing and we add three songs B, C and D,
+	// the previous index into shuffled - so if song A is playing and we add three songs B, C and D,
 	// B,C,D will be shuffled among themselves to ie D,B,C and then this list will be inserted after
 	// A so that song list will now be A,D,B,C,...
 	override fun cloneAndInsert(insertionIndex: Int, insertionCount: Int): ShuffleOrder {
@@ -87,7 +89,11 @@ class CircularShuffleOrder private constructor(
 			return CircularShuffleOrder(listener, 0, insertionCount, random.nextLong())
 				.also { listener.onPersistableDataUpdated(Persistent(it)) }
 		}
-		val ii = indexInShuffled[insertionIndex]
+		// the original list: [0, 1, 2] shuffled: [2, 0, 1] indexInShuffled: [1, 2, 0]
+		// insertionIndex for adding after 1 would be 2, 2 is at index 0 in shuffled list, after 0
+		// would be 1 so we want to insert into shuffled at index 1 here.
+		// If insertionIndex is 0, just add it to the very beginning.
+		val ii = if (insertionIndex > 0) indexInShuffled[insertionIndex - 1] + 1 else 0
 		val insertionPoints = (ii..<(ii+insertionCount)).toList().toIntArray()
 		val insertionValues = calculateShuffledList(insertionIndex, insertionCount, random)
 		val newShuffled = IntArray(shuffled.size + insertionCount)
@@ -105,7 +111,7 @@ class CircularShuffleOrder private constructor(
 			}
 		}
 
-		return CircularShuffleOrder(listener, newShuffled, random.nextLong())
+		return CircularShuffleOrder(listener, newShuffled, Random(random.nextLong()))
 			.also { listener.onPersistableDataUpdated(Persistent(it)) }
 	}
 
@@ -123,12 +129,12 @@ class CircularShuffleOrder private constructor(
 			}
 		}
 
-		return CircularShuffleOrder(listener, newShuffled, random.nextLong())
+		return CircularShuffleOrder(listener, newShuffled, Random(random.nextLong()))
 			.also { listener.onPersistableDataUpdated(Persistent(it)) }
 	}
 
 	override fun cloneAndClear(): ShuffleOrder {
-		return CircularShuffleOrder(listener, 0, 0, random.nextLong())
+		return CircularShuffleOrder(listener, 0, 0, Random(random.nextLong()))
 			.also { listener.onPersistableDataUpdated(Persistent(it)) }
 	}
 
@@ -137,26 +143,31 @@ class CircularShuffleOrder private constructor(
 		fun onLazilySetShuffleOrder(factory: (Int) -> CircularShuffleOrder)
 	}
 
-	class Persistent private constructor(private val seed: Long, private val data: IntArray?) {
+	//TODO play next persistent doesn't seem to work either
+	class Persistent private constructor(private val seed: Long, private val data: IntArray) {
 		constructor(order: CircularShuffleOrder) : this(order.random.nextLong(), order.shuffled)
 		companion object {
 			fun deserialize(data: String?): Persistent {
-				if (data == null || data.length < 2) return Persistent(Random.nextLong(), null)
+				if (data == null || data.length < 2) throw IllegalArgumentException()
 				val split = data.split(';')
-				return Persistent(split[0].toLong(), if (split.size > 1)
-					split[1].split(',').map(String::toInt).toIntArray() else null)
+				return Persistent(split[0].toLong(), split[1].split(',')
+					.map(String::toInt).toIntArray())
 			}
 		}
 
 		override fun toString(): String {
-			return if (data != null) "$seed;${data.joinToString(",")}" else seed.toString()
+			return "$seed;${data.joinToString(",")}"
 		}
 
 		fun toFactory(listener: Listener, controller: MediaController): (Int) -> CircularShuffleOrder {
-			if (data == null) {
-				return { CircularShuffleOrder(listener, it, controller.mediaItemCount, seed) }
-			} else {
-				return { CircularShuffleOrder(listener, data, seed) }
+			return {
+				if (controller.mediaItemCount != data.size) {
+					throw IllegalStateException("CircularShuffleOrder.Persistable: " +
+							"${controller.mediaItemCount} != ${data.size}").also {
+						Log.e(TAG, Log.getStackTraceString(it))
+					}
+				}
+				CircularShuffleOrder(listener, data, seed)
 			}
 		}
 	}
