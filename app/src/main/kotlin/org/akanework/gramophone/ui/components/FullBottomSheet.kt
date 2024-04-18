@@ -26,6 +26,7 @@ import androidx.core.graphics.TypefaceCompat
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -972,10 +973,18 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
-	private fun dumpPlaylist(): MutableList<MediaItem> {
-		val items = mutableListOf<MediaItem>()
-		for (i in 0 until instance!!.mediaItemCount) {
-			items.add(instance!!.getMediaItemAt(i))
+	private fun dumpPlaylist(): MutableList<Pair<Int, MediaItem>> {
+		val items = mutableListOf<Pair<Int, MediaItem>>()
+		if (instance!!.shuffleModeEnabled) {
+			var i = instance!!.currentTimeline.getFirstWindowIndex(true)
+			while (i != C.INDEX_UNSET) {
+				items.add(Pair(i, instance!!.getMediaItemAt(i)))
+				i = instance!!.currentTimeline.getNextWindowIndex(i, Player.REPEAT_MODE_OFF, true)
+			}
+		} else {
+			for (i in 0 until instance!!.mediaItemCount) {
+				items.add(Pair(i, instance!!.getMediaItemAt(i)))
+			}
 		}
 		return items
 	}
@@ -1111,7 +1120,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 
 	private class PlaylistCardAdapter(
-		private val playlist: MutableList<MediaItem>,
+		private val playlist: MutableList<Pair<Int, MediaItem>>,
 		private val activity: MainActivity
 	) : MyRecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
 
@@ -1126,13 +1135,14 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			)
 
 		override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-			holder.songName.text = playlist[holder.bindingAdapterPosition].mediaMetadata.title
-			holder.songArtist.text = playlist[holder.bindingAdapterPosition].mediaMetadata.artist
+			val item = playlist[holder.bindingAdapterPosition].second
+			holder.songName.text = item.mediaMetadata.title
+			holder.songArtist.text = item.mediaMetadata.artist
 			holder.indicator.text =
 				CalculationUtils.convertDurationToTimeStamp(
-					playlist[holder.bindingAdapterPosition].mediaMetadata.extras?.getLong("Duration")!!
+					item.mediaMetadata.extras?.getLong("Duration")!!
 				)
-			holder.songCover.load(playlist[position].mediaMetadata.artworkUri) {
+			holder.songCover.load(item.mediaMetadata.artworkUri) {
 				coolCrossfade(true)
 				placeholder(R.drawable.ic_default_cover)
 				error(R.drawable.ic_default_cover)
@@ -1141,9 +1151,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
 				val pos = holder.bindingAdapterPosition
+				instance?.removeMediaItem(playlist[pos].first)
 				playlist.removeAt(pos)
 				notifyItemRemoved(pos)
-				instance?.removeMediaItem(pos)
 			}
 			holder.itemView.setOnClickListener {
 				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
