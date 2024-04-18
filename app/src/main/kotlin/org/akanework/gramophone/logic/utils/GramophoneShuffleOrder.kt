@@ -144,30 +144,36 @@ class CircularShuffleOrder private constructor(
 	}
 
 	//TODO play next persistent doesn't seem to work either
-	class Persistent private constructor(private val seed: Long, private val data: IntArray) {
+	class Persistent private constructor(private val seed: Long, private val data: IntArray?) {
 		constructor(order: CircularShuffleOrder) : this(order.random.nextLong(), order.shuffled)
 		companion object {
 			fun deserialize(data: String?): Persistent {
-				if (data == null || data.length < 2) throw IllegalArgumentException()
+				if (data == null || data.length < 2) return Persistent(Random.nextLong(), null)
 				val split = data.split(';')
-				return Persistent(split[0].toLong(), split[1].split(',')
-					.map(String::toInt).toIntArray())
+				return Persistent(split[0].toLong(), if (split.size > 1) split[1]
+					.split(',').map(String::toInt).toIntArray() else null)
 			}
 		}
 
 		override fun toString(): String {
-			return "$seed;${data.joinToString(",")}"
+			return if (data != null) "$seed;${data.joinToString(",")}" else seed.toString()
 		}
 
 		fun toFactory(listener: Listener, controller: MediaController): (Int) -> CircularShuffleOrder {
-			return {
-				if (controller.mediaItemCount != data.size) {
-					throw IllegalStateException("CircularShuffleOrder.Persistable: " +
-							"${controller.mediaItemCount} != ${data.size}").also {
-						Log.e(TAG, Log.getStackTraceString(it))
+			if (data == null) {
+				return { CircularShuffleOrder(listener, it, controller.mediaItemCount, seed) }
+			} else {
+				return {
+					if (controller.mediaItemCount != data.size) {
+						throw IllegalStateException(
+							"CircularShuffleOrder.Persistable: " +
+									"${controller.mediaItemCount} != ${data.size}"
+						).also {
+							Log.e(TAG, Log.getStackTraceString(it))
+						}
 					}
+					CircularShuffleOrder(listener, data, seed)
 				}
-				CircularShuffleOrder(listener, data, seed)
 			}
 		}
 	}
