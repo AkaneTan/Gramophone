@@ -143,7 +143,6 @@ class CircularShuffleOrder private constructor(
 		fun onLazilySetShuffleOrder(factory: (Int) -> CircularShuffleOrder)
 	}
 
-	//TODO play next persistent doesn't seem to work either
 	class Persistent private constructor(private val seed: Long, private val data: IntArray?) {
 		constructor(order: CircularShuffleOrder) : this(order.random.nextLong(), order.shuffled)
 		companion object {

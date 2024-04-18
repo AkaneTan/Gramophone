@@ -22,7 +22,6 @@ import android.content.ClipboardManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -44,10 +43,6 @@ import java.util.Locale
  *   An activity makes crash reporting easier.
  */
 class BugHandlerActivity : AppCompatActivity() {
-
-    companion object {
-        private const val TAG = "BugHandlerActivity"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

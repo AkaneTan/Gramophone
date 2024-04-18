@@ -80,7 +80,7 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
         }
 
         // https://github.com/androidx/media/issues/805
-        if (needsNotificationCancelWorkaround()) {
+        if (needsMissingOnDestroyCallWorkarounds()) {
             val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
         }

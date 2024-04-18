@@ -49,7 +49,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgeProperly
 import org.akanework.gramophone.logic.hasScopedStorageV2
 import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
-import org.akanework.gramophone.logic.needsNotificationCancelWorkaround
+import org.akanework.gramophone.logic.needsMissingOnDestroyCallWorkarounds
 import org.akanework.gramophone.logic.postAtFrontOfQueueAsync
 import org.akanework.gramophone.logic.utils.MediaStoreUtils.updateLibraryWithInCoroutine
 import org.akanework.gramophone.ui.components.PlayerBottomSheet
@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
     @OptIn(UnstableApi::class)
     override fun onDestroy() {
         // https://github.com/androidx/media/issues/805
-        if (needsNotificationCancelWorkaround()
+        if (needsMissingOnDestroyCallWorkarounds()
             && (getPlayer()?.playWhenReady != true || getPlayer()?.mediaItemCount == 0)) {
             val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)

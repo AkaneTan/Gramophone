@@ -269,7 +269,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.exoPlayer.audioSessionId)
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
         })
-        lastPlayedManager = LastPlayedManager(this, player) { shufflePersistent }
+        lastPlayedManager = LastPlayedManager(this, player) {
+            if (mediaSession?.player?.shuffleModeEnabled == true) shufflePersistent else null }
         lastPlayedManager.allowSavingState = false
 
         mediaSession =
@@ -482,8 +483,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
         lastPlayedManager.restore { items, factory ->
             applyShuffleSeed(true, factory.toFactory(this, this.controller!!))
-            // TODO empty lists in set() are not supported according to googlers
-            //  is this fallback correct though?
             if (items == null) {
                 settable.setException(NullPointerException(
                     "null MediaItemsWithStartPosition, see former logs for root cause"))
@@ -542,7 +541,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         // if timeline changed, handle shuffle update in onTimelineChanged() instead
         // (onTimelineChanged() runs before both this callback and onShuffleModeEnabledChanged(),
         // which means shuffleFactory != null is not a valid check)
-        if (events.contains(EVENT_SHUFFLE_MODE_ENABLED_CHANGED) && player.shuffleModeEnabled &&
+        if (events.contains(EVENT_SHUFFLE_MODE_ENABLED_CHANGED) &&
             shuffleFactory == null && !events.contains(Player.EVENT_TIMELINE_CHANGED)) {
             // when enabling shuffle, re-shuffle lists so that the first index is up to date
             applyShuffleSeed(false) { CircularShuffleOrder(
@@ -553,6 +552,9 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         super.onShuffleModeEnabledChanged(shuffleModeEnabled)
         mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
+        if (needsMissingOnDestroyCallWorkarounds()) {
+            handler.post { lastPlayedManager.save() }
+        }
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -568,6 +570,9 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onRepeatModeChanged(repeatMode: Int) {
         super.onRepeatModeChanged(repeatMode)
         mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
+        if (needsMissingOnDestroyCallWorkarounds()) {
+            handler.post { lastPlayedManager.save() }
+        }
     }
 
     @SuppressLint("MissingPermission") // only used on S/S_V2
@@ -602,7 +607,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         }
     }
 
-    // TODO does setShuffleOrder properly invalidate media controllers? i dont think so...
     private fun applyShuffleSeed(lazy: Boolean, factory: (Int) -> CircularShuffleOrder) {
         if (lazy) {
             shuffleFactory = factory

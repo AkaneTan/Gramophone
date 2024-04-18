@@ -389,7 +389,7 @@ inline fun SharedPreferences.getStringSetStrict(key: String, defValue: Set<Strin
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun needsNotificationCancelWorkaround(): Boolean =
+inline fun needsMissingOnDestroyCallWorkarounds(): Boolean =
     Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
 @Suppress("NOTHING_TO_INLINE")
