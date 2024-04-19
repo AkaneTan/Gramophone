@@ -46,6 +46,7 @@ import kotlinx.parcelize.Parcelize
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getColumnIndexOrNull
 import org.akanework.gramophone.logic.hasAlbumArtistIdInMediaStore
+import org.akanework.gramophone.logic.hasImagePermission
 import org.akanework.gramophone.logic.hasImprovedMediaStore
 import org.akanework.gramophone.logic.hasScopedStorageV1
 import org.akanework.gramophone.logic.hasScopedStorageV2
@@ -288,9 +289,7 @@ object MediaStoreUtils {
             "mediastore_filter",
             context.resources.getInteger(R.integer.filter_default_sec)
         )
-        val haveImgPerm = if (hasScopedStorageWithMediaTypes())
-            context.checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) ==
-                    PackageManager.PERMISSION_GRANTED else
+        val haveImgPerm = if (hasScopedStorageWithMediaTypes()) context.hasImagePermission() else
             prefs.getBoolean("album_covers", false)
         val coverUri = Uri.parse("content://media/external/audio/albumart")
         val folderFilter = prefs.getStringSet("folderFilter", setOf()) ?: setOf()

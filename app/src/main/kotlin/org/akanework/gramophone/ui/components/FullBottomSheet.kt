@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Size
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -70,9 +71,13 @@ import org.akanework.gramophone.logic.clone
 import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.getFile
 import org.akanework.gramophone.logic.getIntStrict
 import org.akanework.gramophone.logic.getLyrics
 import org.akanework.gramophone.logic.getTimer
+import org.akanework.gramophone.logic.hasImagePermission
+import org.akanework.gramophone.logic.hasScopedStorageV1
+import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
 import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.setTextAnimation
@@ -351,7 +356,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 							or WindowInsetsCompat.Type.displayCutout(), Insets.of(0, i2.top, 0, 0))
 					.build()
 			}
-			val playlistAdapter = PlaylistCardAdapter(dumpPlaylist(), activity)
+			val pl = dumpPlaylist()
+			val playlistAdapter = PlaylistCardAdapter(pl, activity)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title
 			playlistNowPlayingCover = playlistBottomSheet.findViewById(R.id.now_playing_cover)
@@ -362,7 +368,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 			recyclerView.layoutManager = LinearLayoutManager(context)
 			recyclerView.adapter = playlistAdapter
-			recyclerView.scrollToPosition(instance?.currentMediaItemIndex ?: 0)
+			recyclerView.scrollToPosition(pl.indexOfFirst { item ->
+				item.first == (instance?.currentMediaItemIndex ?: 0)
+			})
 			recyclerView.fastScroll(null, null)
 			playlistBottomSheet.setOnDismissListener {
 				if (playlistNowPlaying != null) {
@@ -817,29 +825,56 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		reason: Int
 	) {
 		if (instance?.mediaItemCount != 0) {
-			lastDisposable?.dispose()
-			lastDisposable = context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
-				target(onSuccess = {
-					bottomSheetFullCover.setImageDrawable(it.asDrawable(context.resources))
-				}, onError = {
-					bottomSheetFullCover.setImageDrawable(it?.asDrawable(context.resources))
-				}) // do not react to onStart() which sets placeholder
-				data(mediaItem?.mediaMetadata?.artworkUri)
-				scale(Scale.FILL)
-				error(R.drawable.ic_default_cover)
-				allowHardware(false)
-				listener(onSuccess = { _, _ ->
-					if (DynamicColors.isDynamicColorAvailable() &&
-						prefs.getBooleanStrict("content_based_color", true)) {
-						addColorScheme()
-					}
-				}, onError = { _, _ ->
-					if (DynamicColors.isDynamicColorAvailable() &&
-						prefs.getBooleanStrict("content_based_color", true)) {
-						removeColorScheme()
-					}
-				})
-			}.build())
+			val req = { data: Any?, block: ImageRequest.Builder.() -> Unit ->
+				lastDisposable?.dispose()
+				lastDisposable = context.imageLoader.enqueue(ImageRequest.Builder(context).apply {
+					data(data)
+					scale(Scale.FILL)
+					block()
+					error(R.drawable.ic_default_cover)
+					allowHardware(false)
+				}.build())
+			}
+			val load = { data: Any? ->
+				req(data) {
+					target(onSuccess = {
+						bottomSheetFullCover.setImageDrawable(it.asDrawable(context.resources))
+					}, onError = {
+						bottomSheetFullCover.setImageDrawable(it?.asDrawable(context.resources))
+					}) // do not react to onStart() which sets placeholder
+					listener(onSuccess = { _, _ ->
+						if (DynamicColors.isDynamicColorAvailable() &&
+							prefs.getBooleanStrict("content_based_color", true)
+						) {
+							addColorScheme()
+						}
+					}, onError = { _, _ ->
+						if (DynamicColors.isDynamicColorAvailable() &&
+							prefs.getBooleanStrict("content_based_color", true)
+						) {
+							removeColorScheme()
+						}
+					})
+				}
+			}
+			val file = mediaItem?.getFile()
+			if (hasScopedStorageV1() && (!hasScopedStorageWithMediaTypes()
+						|| context.hasImagePermission()) && file != null) {
+				req(Pair(file, Size(bottomSheetFullCover.width, bottomSheetFullCover.height))) {
+					target(onSuccess = {
+						bottomSheetFullCover.setImageDrawable(it.asDrawable(context.resources))
+						if (DynamicColors.isDynamicColorAvailable() &&
+							prefs.getBooleanStrict("content_based_color", true)
+						) {
+							addColorScheme()
+						}
+					}, onError = {
+						load(mediaItem.mediaMetadata.artworkUri)
+					})
+				}
+			} else {
+				load(mediaItem?.mediaMetadata?.artworkUri)
+			}
 			bottomSheetFullTitle.setTextAnimation(mediaItem?.mediaMetadata?.title, skipAnimation = firstTime)
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime
@@ -1158,7 +1193,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			holder.itemView.setOnClickListener {
 				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
-				instance?.seekToDefaultPosition(holder.absoluteAdapterPosition)
+				instance?.seekToDefaultPosition(playlist[holder.absoluteAdapterPosition].first)
 			}
 		}
 

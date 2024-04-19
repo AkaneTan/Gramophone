@@ -21,6 +21,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.database.Cursor
 import android.graphics.Color
@@ -40,6 +41,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.core.graphics.Insets
 import androidx.core.net.toFile
 import androidx.core.os.BundleCompat
@@ -387,6 +389,11 @@ inline fun SharedPreferences.getBooleanStrict(key: String, defValue: Boolean): B
 inline fun SharedPreferences.getStringSetStrict(key: String, defValue: Set<String>?): Set<String>? {
     return use { getStringSet(key, defValue) }
 }
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+fun Context.hasImagePermission() =
+    checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) ==
+            PackageManager.PERMISSION_GRANTED
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun needsMissingOnDestroyCallWorkarounds(): Boolean =
