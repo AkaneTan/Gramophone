@@ -1,67 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".logic.ui.BugHandlerActivity">
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".logic.ui.BugHandlerActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbarlayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stateListAnimator="@null">
+            android:id="@+id/appbarlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stateListAnimator="@null">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsingtoolbar"
-            style="?attr/collapsingToolbarLayoutLargeStyle"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
-            app:collapsedTitleTextColor="?attr/colorOnSurface"
-            app:collapsedTitleTextAppearance="?textAppearanceTitleLarge"
-            app:expandedTitleTextColor="?attr/colorOnSurface"
-            app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:expandedTitleMarginStart="24dp"
-            app:title="@string/gramophone_crashed"
-            app:titleCollapseMode="scale">
+                android:id="@+id/collapsingtoolbar"
+                style="?attr/collapsingToolbarLayoutLargeStyle"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+                app:collapsedTitleTextColor="?attr/colorOnSurface"
+                app:collapsedTitleTextAppearance="?textAppearanceTitleLarge"
+                app:expandedTitleTextColor="?attr/colorOnSurface"
+                app:expandedTitleTextAppearance="?textAppearanceHeadlineLarge"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:expandedTitleMarginStart="24dp"
+                app:title="@string/gramophone_crashed"
+                app:titleCollapseMode="scale">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:elevation="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="8dp"
-                app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_arrow_back"
-                app:navigationIconTint="?colorOnSurface" />
+                    android:id="@+id/topAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:elevation="0dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="8dp"
+                    app:layout_collapseMode="pin"
+                    app:navigationIcon="@drawable/ic_arrow_back"
+                    app:navigationIconTint="?colorOnSurface" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/error"
-            android:textIsSelectable="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="?attr/colorOnSurface"
-            android:paddingTop="12dp"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:textSize="11sp" />
+            android:clipToPadding="false"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <TextView
+                    android:id="@+id/error"
+                    android:textIsSelectable="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="?attr/colorOnSurface"
+                    android:paddingTop="12dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:textSize="11sp" />
         </HorizontalScrollView>
     </androidx.core.widget.NestedScrollView>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/actionShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/action_share"
+            app:icon="@drawable/outline_share_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
