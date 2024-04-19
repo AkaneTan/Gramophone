@@ -70,6 +70,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="@string/share"
-            app:icon="@drawable/outline_share_24" />
+            app:icon="@drawable/ic_share_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
