@@ -122,7 +122,6 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
                         if (size !is Size?) return@Factory null
                         val file = data.first as? File ?: return@Factory null
                         return@Factory Fetcher {
-                            // TODO what if theres no cover? does this work correctly at all?
                             ImageFetchResult(
                                 ThumbnailUtils.createAudioThumbnail(file, options.size.let {
                                         Size(it.width.pxOrElse { size?.width ?: 10000 },
