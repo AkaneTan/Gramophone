@@ -20,6 +20,7 @@ package org.akanework.gramophone.logic.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.Typeface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
