@@ -47,6 +47,9 @@
         android:clipToPadding="false"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <TextView
             android:id="@+id/error"
             android:textIsSelectable="true"
@@ -57,7 +60,7 @@
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:textSize="11sp" />
-
+        </HorizontalScrollView>
     </androidx.core.widget.NestedScrollView>
 
 
