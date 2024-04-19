@@ -20,6 +20,7 @@ package org.akanework.gramophone.logic.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.Typeface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -29,6 +30,7 @@ import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.allowDiskAccessInStrictMode
@@ -53,6 +55,7 @@ class BugHandlerActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback { finish() }
 
         val bugText = findViewById<TextView>(R.id.error)
+        val actionShare findViewById<ExtendedFloatingActionButton>(R.id.actionShare)
         val exceptionMessage = intent.getStringExtra("exception_message")
         val threadName = intent.getStringExtra("thread")
 
@@ -87,6 +90,17 @@ class BugHandlerActivity : AppCompatActivity() {
         }
         if (!hasOsClipboardDialog()) {
             Toast.makeText(this, R.string.crash_clipboard, Toast.LENGTH_LONG).show()
+        }
+
+        fab.setOnClickListener {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TITLE,"Gramophone Logs")
+                putExtra(Intent.EXTRA_TEXT, bugText.text)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
         }
     }
 }

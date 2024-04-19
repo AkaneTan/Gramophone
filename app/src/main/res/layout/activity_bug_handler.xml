@@ -59,6 +59,13 @@
             android:textSize="11sp" />
 
     </androidx.core.widget.NestedScrollView>
-
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/actionShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/share"
+            android:layout_gravity="bottom|end"
+            app:icon="@drawable/ic_share_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
