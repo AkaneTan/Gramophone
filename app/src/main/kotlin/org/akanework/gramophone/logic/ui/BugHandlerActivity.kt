@@ -19,8 +19,8 @@ package org.akanework.gramophone.logic.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.graphics.Typeface
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -55,7 +55,7 @@ class BugHandlerActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback { finish() }
 
         val bugText = findViewById<TextView>(R.id.error)
-        val actionShare findViewById<ExtendedFloatingActionButton>(R.id.actionShare)
+        val actionShare = findViewById<ExtendedFloatingActionButton>(R.id.actionShare)
         val exceptionMessage = intent.getStringExtra("exception_message")
         val threadName = intent.getStringExtra("thread")
 
@@ -92,7 +92,7 @@ class BugHandlerActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.crash_clipboard, Toast.LENGTH_LONG).show()
         }
 
-        fab.setOnClickListener {
+        actionShare.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TITLE,"Gramophone Logs")
