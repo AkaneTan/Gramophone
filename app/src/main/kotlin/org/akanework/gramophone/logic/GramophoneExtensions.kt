@@ -208,7 +208,8 @@ fun Handler.postAtFrontOfQueueAsync(callback: Runnable) {
     })
 }
 
-fun View.enableEdgeToEdgePaddingListener(ime: Boolean = false, top: Boolean = false) {
+fun View.enableEdgeToEdgePaddingListener(ime: Boolean = false, top: Boolean = false,
+                                         extra: ((Insets) -> Unit)? = null) {
     if (fitsSystemWindows) throw IllegalArgumentException("must have fitsSystemWindows disabled")
     if (this is AppBarLayout) {
         if (ime) throw IllegalArgumentException("AppBarLayout must have ime flag disabled")
@@ -241,6 +242,7 @@ fun View.enableEdgeToEdgePaddingListener(ime: Boolean = false, top: Boolean = fa
             v.setPadding(0, cutoutAndBars.top, 0, 0)
             val i = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout())
+            extra?.invoke(cutoutAndBars)
             return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(insets)
                 .setInsets(WindowInsetsCompat.Type.systemBars()
                         or WindowInsetsCompat.Type.displayCutout(), Insets.of(cutoutAndBars.left, 0, cutoutAndBars.right, cutoutAndBars.bottom))
@@ -260,6 +262,7 @@ fun View.enableEdgeToEdgePaddingListener(ime: Boolean = false, top: Boolean = fa
             val i = insets.getInsets(mask)
             v.setPadding(pl + i.left, pt + (if (top) i.top else 0), pr + i.right,
                 pb + i.bottom)
+            extra?.invoke(i)
             return@setOnApplyWindowInsetsListener WindowInsetsCompat.Builder(insets)
                 .setInsets(mask, Insets.NONE)
                 .setInsetsIgnoringVisibility(mask, Insets.NONE)

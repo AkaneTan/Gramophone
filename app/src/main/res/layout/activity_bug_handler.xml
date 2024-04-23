@@ -59,6 +59,7 @@
             android:textSize="11sp" />
 
     </androidx.core.widget.NestedScrollView>
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/actionShare"
             android:layout_width="wrap_content"

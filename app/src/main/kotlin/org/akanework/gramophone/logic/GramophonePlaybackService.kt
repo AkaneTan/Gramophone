@@ -612,7 +612,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             shuffleFactory = factory
         } else {
             (mediaSession?.player as EndedWorkaroundPlayer?)?.exoPlayer?.let {
-                it.setShuffleOrder(factory(it.currentMediaItemIndex).also { s ->
+                val data = try {
+                    factory(it.currentMediaItemIndex)
+                } catch (e: IllegalStateException) {
+                    lastPlayedManager.eraseShuffleOrder()
+                    throw e
+                }
+                it.setShuffleOrder(data.also { s ->
                     onPersistableDataUpdated(CircularShuffleOrder.Persistent(s))
                 })
             }

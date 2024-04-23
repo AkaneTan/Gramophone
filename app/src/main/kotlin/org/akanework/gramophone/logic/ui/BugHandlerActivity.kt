@@ -29,6 +29,9 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.marginBottom
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import org.akanework.gramophone.BuildConfig
@@ -36,6 +39,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.allowDiskAccessInStrictMode
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.hasOsClipboardDialog
+import org.akanework.gramophone.logic.updateMargin
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -80,7 +84,16 @@ class BugHandlerActivity : AppCompatActivity() {
 
         bugText.typeface = Typeface.MONOSPACE
         bugText.text = combinedTextBuilder.toString()
-        bugText.enableEdgeToEdgePaddingListener()
+        val baseLeft = actionShare.marginLeft
+        val baseRight = actionShare.marginRight
+        val baseBottom = actionShare.marginBottom
+        bugText.enableEdgeToEdgePaddingListener {
+            actionShare.updateMargin {
+                left = baseLeft + it.left
+                right = baseRight + it.right
+                bottom = baseBottom + it.bottom
+            }
+        }
 
         // Make our life easier by copying the log to clipboard
         val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
