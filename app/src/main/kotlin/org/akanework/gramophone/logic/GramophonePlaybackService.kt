@@ -51,10 +51,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util.isBitmapFactorySupportedMimeType
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.util.EventLogger
-import androidx.media3.extractor.DefaultExtractorsFactory
-import androidx.media3.extractor.mp3.Mp3Extractor
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaController
@@ -249,10 +246,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         )
             .setWakeMode(C.WAKE_MODE_LOCAL)
             .setSkipSilenceEnabled(prefs.getBooleanStrict("skip_silence", false))
-            .setMediaSourceFactory(
+            /*.setMediaSourceFactory(
                 DefaultMediaSourceFactory(this, DefaultExtractorsFactory()
                     .setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_INDEX_SEEKING))
-            )
+            ) TODO flag breaks playback of AcousticGuitar.mp3, report exo bug + add UI toggle*/
             .setAudioAttributes(
                 AudioAttributes
                     .Builder()

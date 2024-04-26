@@ -329,12 +329,12 @@ private class SafeDelimitedStringDecat(delimiter: String, str: String) {
 private object PrefsListUtils {
     fun parse(stringSet: Set<String>, groupStr: String): List<String> {
         val groups = groupStr.split(",")
-        return stringSet.sortedBy {
-            groups.indexOf(it.hashCode().toString())
-        }.mapIndexed { index, s -> s.substring(index.toString().length) }
+        return groups.map { hashCode ->
+            stringSet.first { it.hashCode().toString() == hashCode }
+        }
     }
 
     fun dump(list: List<String>): Pair<Set<String>, String> {
-        return Pair(list.mapIndexed { index, s -> "$index$s" }.toSet(), list.joinToString(",") { it.hashCode().toString() })
+        return Pair(list.toSet(), list.joinToString(",") { it.hashCode().toString() })
     }
 }
