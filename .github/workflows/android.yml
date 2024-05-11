@@ -44,7 +44,7 @@ jobs:
         run: |
           touch package.properties
           echo releaseType=CI >> package.properties
-          echo ${{ secrets.KEYSTORE_SECRET }} | base64 --decode > key.jks
+          echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode > key.jks
           echo AKANE_RELEASE_STORE_FILE=../key.jks >> gradle.properties
           echo AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }} >> gradle.properties
           echo AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }} >> gradle.properties
