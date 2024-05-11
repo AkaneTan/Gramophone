@@ -44,7 +44,7 @@ jobs:
         run: |
           echo releaseType=CI > package.properties
           echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > key.jks
-          echo "AKANE_RELEASE_STORE_FILE=$(realpath key.jks)" > local.properties
+          echo "AKANE_RELEASE_STORE_FILE=${{ github.workspace }}/key.jks" > local.properties
           echo "AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }}" >> local.properties
           echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> local.properties
           echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> local.properties
