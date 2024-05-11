@@ -44,8 +44,9 @@ jobs:
         run: |
           touch package.properties
           echo releaseType=CI >> package.properties
-          echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode > key.jks
-          echo AKANE_RELEASE_STORE_FILE=../key.jks >> gradle.properties
+          echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > key.jks
+          echo "KEYSTORE_PATH=$(realpath ../key.jks)" >> $GITHUB_ENV
+          echo AKANE_RELEASE_STORE_FILE=${{ env.KEYSTORE_PATH }} >> gradle.properties
           echo AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }} >> gradle.properties
           echo AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }} >> gradle.properties
           echo AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }} >> gradle.properties
@@ -63,3 +64,4 @@ jobs:
         with:
           name: ${{ env.APK_FILE_NAME }}
           path: ${{ env.APK_FILE }}
+          compression-level: 9
