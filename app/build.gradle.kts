@@ -4,7 +4,7 @@ import com.android.build.gradle.tasks.PackageAndroidArtifact
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.util.Properties
 
-val aboutLibsVersion = "11.1.3" // keep in sync with plugin version
+val aboutLibsVersion = "11.1.4" // keep in sync with plugin version
 
 plugins {
     id("com.android.application")
@@ -110,6 +110,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
+                signingConfig = signingConfigs["release"]
+            }
         }
         create("profiling") {
             isMinifyEnabled = false
@@ -165,11 +168,11 @@ aboutLibraries {
 dependencies {
     val media3Version = "1.4.0-alpha01"
     implementation("androidx.activity:activity-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("androidx.appcompat:appcompat:1.7.0-beta01")
     implementation("androidx.collection:collection-ktx:1.4.0")
     implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
-    implementation("androidx.core:core-ktx:1.13.0")
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     //implementation("androidx.datastore:datastore-preferences:1.1.0-rc01") TODO don't abuse shared prefs
     implementation("androidx.fragment:fragment-ktx:1.8.0-alpha02")
@@ -181,13 +184,13 @@ dependencies {
     //implementation("androidx.paging:paging-runtime-ktx:3.2.1") TODO paged, partial, flow based library loading
     //implementation("androidx.paging:paging-guava:3.2.1") TODO do we have guava? do we need this?
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.transition:transition-ktx:1.5.0-rc02") // <-- for predictive back
+    implementation("androidx.transition:transition-ktx:1.5.0") // <-- for predictive back
     implementation("com.mikepenz:aboutlibraries:$aboutLibsVersion")
-    implementation("com.google.android.material:material:1.12.0-rc01")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
     implementation("io.coil-kt.coil3:coil:3.0.0-alpha06")
     // --- below does not apply to release builds ---
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app
     debugImplementation("net.jthink:jaudiotagger:3.0.1") // <-- for "SD Exploder"
     testImplementation("junit:junit:4.13.2")
