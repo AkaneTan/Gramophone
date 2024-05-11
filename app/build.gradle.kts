@@ -26,11 +26,11 @@ android {
 
     signingConfigs {
         create("release") {
-            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
-                storeFile = file(project.properties["AKANE_RELEASE_STORE_FILE"].toString())
-                storePassword = project.properties["AKANE_RELEASE_STORE_PASSWORD"].toString()
-                keyAlias = project.properties["AKANE_RELEASE_KEY_ALIAS"].toString()
-                keyPassword = project.properties["AKANE_RELEASE_KEY_PASSWORD"].toString()
+            if (readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS") != null) {
+                storeFile = file(readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_STORE_FILE"))
+                storePassword = readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_STORE_PASSWORD")
+                keyAlias = readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS")
+                keyPassword = readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_PASSWORD")
             }
         }
     }
@@ -110,7 +110,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
+            if (readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS") != null) {
                 signingConfig = signingConfigs["release"]
             }
         }
@@ -126,7 +126,7 @@ android {
         }
         debug {
             isPseudoLocalesEnabled = true
-            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
+            if (readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS") != null) {
                 signingConfig = signingConfigs["release"]
             }
         }

@@ -42,12 +42,12 @@ jobs:
 
       - name: Create Sign File
         run: |
-          echo releaseType=CI > package.properties
+          echo releaseType=CI >> package.properties
           echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > key.jks
-          echo "AKANE_RELEASE_STORE_FILE=${{ github.workspace }}/key.jks" >> gradle.properties
-          echo "AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }}" >> gradle.properties
-          echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> gradle.properties
-          echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> gradle.properties
+          echo "AKANE_RELEASE_STORE_FILE=${{ github.workspace }}/key.jks" >> package.properties
+          echo "AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }}" >> package.properties
+          echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> package.properties
+          echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> package.properties
 
       - name: Build with Gradle
         run: ./gradlew assembleRelease
@@ -55,7 +55,8 @@ jobs:
       - name: Find Apk
         run: |
           echo "APK_FILE=$(find app/build/outputs/apk/release -name '*.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_NAME=$(basename ${{ env.APK_FILE }} .apk)" >> $GITHUB_ENV
+          export APK_FILE=$(find app/build/outputs/apk/release -name '*.apk')
+          echo "APK_FILE_NAME=$(basename $APK_FILE .apk)" >> $GITHUB_ENV
 
       - name: Upload Apk
         uses: actions/upload-artifact@v4
