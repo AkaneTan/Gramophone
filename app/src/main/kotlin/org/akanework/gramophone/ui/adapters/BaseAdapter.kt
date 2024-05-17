@@ -378,6 +378,7 @@ abstract class BaseAdapter<T>(
             onMenu(item, popupMenu)
             popupMenu.show()
         }
+        holder.nowPlaying.visibility = View.GONE
     }
 
     // need to call notifyDataSetChanged() afterwards
