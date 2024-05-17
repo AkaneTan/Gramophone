@@ -18,21 +18,26 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.net.Uri
-import androidx.activity.viewModels
+import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.LibraryViewModel
+import org.akanework.gramophone.ui.MediaControllerViewModel
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
+import org.akanework.gramophone.ui.registerLifecycleCallback
+import java.util.GregorianCalendar
 
 
 /**
@@ -96,7 +101,40 @@ class SongAdapter(
 
     fun getActivity() = mainActivity
 
-    private val viewModel: LibraryViewModel by mainActivity.viewModels()
+    private val viewModel: LibraryViewModel by fragment.activityViewModels()
+    private val mediaControllerViewModel: MediaControllerViewModel by fragment.activityViewModels()
+    private val idToPosMap = hashMapOf<String, Int>()
+    private var currentMediaItem = mediaControllerViewModel.get()?.currentMediaItem?.mediaId
+        set(value) {
+            if (field != value) {
+                val oldValue = field
+                field = value
+                val oldPos = idToPosMap[oldValue]
+                val newPos = idToPosMap[value]
+                if (oldPos != null) {
+                    notifyItemChanged(oldPos)
+                }
+                if (newPos != null) {
+                    notifyItemChanged(newPos)
+                }
+            }
+        }
+
+    init {
+        mediaControllerViewModel.addOneOffControllerCallback(fragment.viewLifecycleOwner.lifecycle, false) {
+            it.registerLifecycleCallback(fragment.viewLifecycleOwner.lifecycle, object : Player.Listener {
+                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    currentMediaItem = mediaItem?.mediaId
+                }
+            })
+        }
+    }
+
+    override fun onListUpdated() {
+        // TODO run this method on a different thread / in advance
+        idToPosMap.clear()
+        list.forEachIndexed { i, item -> idToPosMap[item.mediaId] = i }
+    }
 
     override fun virtualTitleOf(item: MediaItem): String {
         return "null"
@@ -262,6 +300,14 @@ class SongAdapter(
         }
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+        val item = list[position]
+        holder.nowPlaying.visibility =
+            if (currentMediaItem != null && item.mediaId == currentMediaItem)
+                View.VISIBLE else View.GONE
+    }
+
     class MediaItemHelper(
         types: Set<Sorter.Type> = setOf(
             Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
@@ -269,6 +315,7 @@ class SongAdapter(
             Sorter.Type.ByAlbumTitleDescending, Sorter.Type.ByAlbumTitleAscending,
             Sorter.Type.ByAlbumArtistDescending, Sorter.Type.ByAlbumArtistAscending,
             Sorter.Type.ByAddDateDescending, Sorter.Type.ByAddDateAscending,
+            Sorter.Type.ByReleaseDateDescending, Sorter.Type.ByReleaseDateAscending,
             Sorter.Type.ByModifiedDateDescending, Sorter.Type.ByModifiedDateAscending
         )
     ) : Sorter.Helper<MediaItem>(types) {
@@ -298,6 +345,13 @@ class SongAdapter(
 
         override fun getAddDate(item: MediaItem): Long {
             return item.mediaMetadata.extras!!.getLong("AddDate")
+        }
+
+        override fun getReleaseDate(item: MediaItem): Long {
+            return GregorianCalendar((item.mediaMetadata.releaseYear ?: 0) + 1900,
+                (item.mediaMetadata.releaseMonth ?: 1) - 1,
+                item.mediaMetadata.releaseDay ?: 0, 0, 0, 0)
+                .timeInMillis
         }
 
         override fun getModifiedDate(item: MediaItem): Long {

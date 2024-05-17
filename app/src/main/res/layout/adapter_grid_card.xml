@@ -44,7 +44,7 @@
         app:layout_constraintTop_toBottomOf="@id/cover_frame"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/cover_frame"
-        app:layout_constraintEnd_toStartOf="@id/more"
+        app:layout_constraintEnd_toStartOf="@id/now_playing"
         android:orientation="vertical"
         tools:ignore="RtlSymmetry">
 
@@ -75,13 +75,30 @@
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/more"
+        android:id="@+id/now_playing"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         app:layout_constraintTop_toTopOf="@id/linearLayout"
         app:layout_constraintBottom_toBottomOf="@id/linearLayout"
-        app:layout_constraintStart_toEndOf="@id/linearLayout"
+        app:layout_constraintEnd_toStartOf="@id/more"
+        android:background="@drawable/rp_buttons"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/media3_icon_play"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
+        app:iconTint="?attr/colorOnSurface" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/more"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintTop_toTopOf="@id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="@id/linearLayout"
         app:layout_constraintEnd_toEndOf="@id/cover_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
         android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

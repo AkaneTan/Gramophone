@@ -44,9 +44,15 @@
             android:title="@string/sort_by_add_date"
             app:showAsAction="never" />
         <item
-            android:id="@+id/mod_date"
+            android:id="@+id/release_date"
             android:checked="false"
             android:orderInCategory="6"
+            android:title="@string/sort_by_release_date"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/mod_date"
+            android:checked="false"
+            android:orderInCategory="7"
             android:title="@string/sort_by_modified_date"
             app:showAsAction="never" />
     </group>

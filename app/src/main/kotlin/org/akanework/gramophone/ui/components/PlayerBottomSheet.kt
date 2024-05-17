@@ -348,8 +348,6 @@ class PlayerBottomSheet private constructor(
             .toWindowInsets()!!
     }
 
-    fun getPlayer(): MediaController? = instance
-
     @OptIn(ExperimentalCoilApi::class)
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
@@ -431,6 +429,7 @@ class PlayerBottomSheet private constructor(
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
+        instance?.removeListener(this)
         fullPlayer.onStop()
     }
 

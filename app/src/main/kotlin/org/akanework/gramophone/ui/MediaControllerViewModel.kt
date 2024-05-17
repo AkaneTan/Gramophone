@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
@@ -57,12 +58,13 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 				}
 	}
 
-	fun addOneOffControllerCallback(lifecycle: Lifecycle?, callback: (MediaController) -> Unit) {
+	fun addOneOffControllerCallback(lifecycle: Lifecycle?, clear: Boolean = true, callback: (MediaController) -> Unit) {
 		val instance = get()
+		if (instance == null || !clear) {
+			connectionListeners.addCallback(lifecycle, clear, callback)
+		}
 		if (instance != null) {
 			callback(instance)
-		} else {
-			connectionListeners.addCallback(lifecycle, true, callback)
 		}
 	}
 
@@ -113,4 +115,13 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 		}
 		return future
 	}
+}
+
+fun Player.registerLifecycleCallback(lifecycle: Lifecycle, callback: Player.Listener) {
+	addListener(callback)
+	lifecycle.addObserver(object : DefaultLifecycleObserver {
+		override fun onDestroy(owner: LifecycleOwner) {
+			removeListener(callback)
+		}
+	})
 }

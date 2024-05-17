@@ -18,7 +18,6 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Handler
@@ -63,7 +62,7 @@ import org.akanework.gramophone.ui.fragments.AdapterFragment
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
-    val context: Context,
+    protected val fragment: Fragment,
     protected var liveData: MutableLiveData<List<T>>?,
     sortHelper: Sorter.Helper<T>,
     naturalOrderHelper: Sorter.NaturalOrderHelper<T>?,
@@ -78,45 +77,17 @@ abstract class BaseAdapter<T>(
     private val fallbackSpans: Int = 1
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<List<T>>,
     PopupTextProvider, ItemHeightHelper {
-    constructor(
-        fragment: Fragment,
-        liveData: MutableLiveData<List<T>>?,
-        sortHelper: Sorter.Helper<T>,
-        naturalOrderHelper: Sorter.NaturalOrderHelper<T>?,
-        initialSortType: Sorter.Type,
-        pluralStr: Int,
-        ownsView: Boolean,
-        defaultLayoutType: LayoutType,
-        isSubFragment: Boolean = false,
-        rawOrderExposed: Boolean = false,
-        allowDiffUtils: Boolean = false,
-        canSort: Boolean = true,
-        fallbackSpans: Int = 1
-    ) : this(
-        fragment.requireContext(),
-        liveData,
-        sortHelper,
-        naturalOrderHelper,
-        initialSortType,
-        pluralStr,
-        ownsView,
-        defaultLayoutType,
-        isSubFragment,
-        rawOrderExposed,
-        allowDiffUtils,
-        canSort,
-        fallbackSpans
-    ) { this.fragment = fragment }
 
     companion object {
         // this relies on the assumption that all RecyclerViews always have same width
         // (though it does get invalidated if that is not the case, for eg rotation)
         private var gridHeightCache = 0
     }
-    protected var fragment: Fragment? = null
-    protected val mainActivity = context as MainActivity
-    internal val layoutInflater: LayoutInflater
-        get() = fragment?.layoutInflater ?: LayoutInflater.from(context)
+    val context = fragment.requireContext()
+    protected inline val mainActivity
+        get() = context as MainActivity
+    internal inline val layoutInflater: LayoutInflater
+        get() = fragment.layoutInflater
     private val listHeight = context.resources.getDimensionPixelSize(R.dimen.list_height)
     private val largerListHeight = context.resources.getDimensionPixelSize(R.dimen.larger_list_height)
     private var gridHeight: Int? = null
@@ -217,6 +188,7 @@ abstract class BaseAdapter<T>(
         view: View,
     ) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
+        val nowPlaying: MaterialButton = view.findViewById(R.id.now_playing)
         val title: TextView = view.findViewById(R.id.title)
         val subTitle: TextView = view.findViewById(R.id.artist)
         val moreButton: MaterialButton = view.findViewById(R.id.more)
@@ -340,6 +312,7 @@ abstract class BaseAdapter<T>(
                             notifyDataSetChanged()
                         }
                         if (oldCount != newCount) decorAdapter.updateSongCounter()
+                        onListUpdated()
                     } finally {
                         listLock.release()
                     }
@@ -363,6 +336,8 @@ abstract class BaseAdapter<T>(
             }
         }
     }
+
+    protected open fun onListUpdated() {}
 
     protected open fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<T>> {
         return BaseDecorAdapter(this, pluralStr, isSubFragment)

@@ -540,6 +540,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 	fun onStop() {
+		instance?.removeListener(this)
 		runnableRunning = false
 	}
 
