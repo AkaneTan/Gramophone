@@ -17,7 +17,6 @@
 
 package org.akanework.gramophone.ui.components
 
-import android.content.ComponentName
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -42,7 +41,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
-import androidx.media3.session.SessionToken
 import androidx.preference.PreferenceManager
 import coil3.annotation.ExperimentalCoilApi
 import coil3.imageLoader
@@ -53,11 +51,8 @@ import coil3.size.Scale
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.button.MaterialButton
-import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.util.concurrent.MoreExecutors
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.GramophonePlaybackService
 import org.akanework.gramophone.logic.clone
 import org.akanework.gramophone.logic.fadInAnimation
 import org.akanework.gramophone.logic.fadOutAnimation
@@ -79,9 +74,7 @@ class PlayerBottomSheet private constructor(
         private const val TAG = "PlayerBottomSheet"
     }
 
-    private var sessionToken: SessionToken? = null
     private var lastDisposable: Disposable? = null
-    private var controllerFuture: ListenableFuture<MediaController>? = null
     private var standardBottomSheetBehavior: MyBottomSheetBehavior<FrameLayout>? = null
     private var bottomSheetBackCallback: OnBackPressedCallback? = null
     val fullPlayer: FullBottomSheet
@@ -99,8 +92,7 @@ class PlayerBottomSheet private constructor(
         get() = activity
     private val handler = Handler(Looper.getMainLooper())
     private val instance: MediaController?
-        get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
-            null else controllerFuture?.get()
+        get() = activity.getPlayer()
     private var lastActuallyVisible: Boolean? = null
     private var lastMeasuredHeight: Int? = null
     var visible = false
@@ -419,38 +411,27 @@ class PlayerBottomSheet private constructor(
 
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
-        sessionToken =
-            SessionToken(context, ComponentName(context, GramophonePlaybackService::class.java))
-        controllerFuture =
-            MediaController
-                .Builder(context, sessionToken!!)
-                .setListener(fullPlayer.sessionListener)
-                .buildAsync()
-        controllerFuture!!.addListener(
-            {
-                instance?.addListener(this)
-                onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
-                onMediaItemTransition(
-                    instance?.currentMediaItem,
-                    Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
-                )
-                if ((activity.consumeAutoPlay() || prefs.getBooleanStrict("autoplay",
-                        false)) && instance?.isPlaying != true) {
-                    instance?.play()
-                }
-            },
-            MoreExecutors.directExecutor(),
-        )
-        fullPlayer.onStart(controllerFuture!!)
+        activity.controllerViewModel.addOneOffControllerCallback(activity.lifecycle) {
+            instance?.addListener(this)
+            onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
+            onMediaItemTransition(
+                instance?.currentMediaItem,
+                Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
+            )
+            if ((activity.consumeAutoPlay() || prefs.getBooleanStrict(
+                    "autoplay",
+                    false
+                )) && instance?.isPlaying != true
+            ) {
+                instance?.play()
+            }
+        }
+        fullPlayer.onStart()
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         fullPlayer.onStop()
-        instance?.removeListener(this)
-        instance?.release()
-        controllerFuture?.cancel(true)
-        controllerFuture = null
     }
 
 }

@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     // Import our viewModels.
     private val libraryViewModel: LibraryViewModel by viewModels()
+    val controllerViewModel: MediaControllerViewModel by viewModels()
     val startingActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
@@ -105,6 +106,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { !ready }
         super.onCreate(savedInstanceState)
+        lifecycle.addObserver(controllerViewModel)
         enableEdgeToEdgeProperly()
         autoPlay = intent?.extras?.getBoolean(PLAYBACK_AUTO_START_FOR_FGS, false) == true
         intentSender = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
@@ -249,7 +251,7 @@ class MainActivity : AppCompatActivity() {
      * getPlayer:
      *   Returns a media controller.
      */
-    fun getPlayer() = playerBottomSheet.getPlayer()
+    fun getPlayer() = controllerViewModel.get()
 
     fun consumeAutoPlay(): Boolean {
         return autoPlay.also { autoPlay = false }

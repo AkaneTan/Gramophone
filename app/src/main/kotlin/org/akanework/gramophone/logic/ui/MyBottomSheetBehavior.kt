@@ -22,10 +22,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.OverScroller
-import androidx.customview.widget.ViewDragHelper
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import java.lang.reflect.Field
 
 class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet) :
     BottomSheetBehavior<T>(context, attrs) {
@@ -45,27 +42,6 @@ class MyBottomSheetBehavior<T : View>(context: Context, attrs: AttributeSet) :
     @SuppressLint("RestrictedApi")
     override fun isHideableWhenDragging(): Boolean {
         return false
-    }
-
-    // based on https://stackoverflow.com/a/63474805
-    private object BottomSheetUtil {
-        val viewDragHelper: Field = BottomSheetBehavior::class.java
-            .getDeclaredField("viewDragHelper")
-            .apply { isAccessible = true }
-        val mScroller: Field = ViewDragHelper::class.java
-            .getDeclaredField("mScroller")
-            .apply { isAccessible = true }
-    }
-
-    private fun getViewDragHelper(): ViewDragHelper? =
-        BottomSheetUtil.viewDragHelper.get(this) as? ViewDragHelper?
-
-    private fun ViewDragHelper.getScroller(): OverScroller? =
-        BottomSheetUtil.mScroller.get(this) as? OverScroller?
-
-    fun setStateWithoutAnimation(state: Int) {
-        setState(state)
-        getViewDragHelper()!!.getScroller()!!.abortAnimation()
     }
 
     @SuppressLint("RestrictedApi")

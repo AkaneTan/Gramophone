@@ -26,11 +26,11 @@ android {
 
     signingConfigs {
         create("release") {
-            if (readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS") != null) {
-                storeFile = file(readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_STORE_FILE"))
-                storePassword = readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_STORE_PASSWORD")
-                keyAlias = readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS")
-                keyPassword = readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_PASSWORD")
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
+                storeFile = file(project.properties["AKANE_RELEASE_STORE_FILE"].toString())
+                storePassword = project.properties["AKANE_RELEASE_STORE_PASSWORD"].toString()
+                keyAlias = project.properties["AKANE_RELEASE_KEY_ALIAS"].toString()
+                keyPassword = project.properties["AKANE_RELEASE_KEY_PASSWORD"].toString()
             }
         }
     }
@@ -110,7 +110,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            if (readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS") != null) {
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
         }
@@ -126,7 +126,7 @@ android {
         }
         debug {
             isPseudoLocalesEnabled = true
-            if (readProperties(file("../package.properties")).getProperty("AKANE_RELEASE_KEY_ALIAS") != null) {
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
         }
@@ -168,15 +168,15 @@ aboutLibraries {
 dependencies {
     val media3Version = "1.4.0-alpha01"
     implementation("androidx.activity:activity-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.7.0-beta01")
+    implementation("androidx.appcompat:appcompat:1.7.0-rc01")
     implementation("androidx.collection:collection-ktx:1.4.0")
     implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     //implementation("androidx.datastore:datastore-preferences:1.1.0-rc01") TODO don't abuse shared prefs
-    implementation("androidx.fragment:fragment-ktx:1.8.0-alpha02")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.0-beta01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-exoplayer-midi:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")

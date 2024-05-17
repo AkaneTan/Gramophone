@@ -8,7 +8,6 @@ import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.TransitionDrawable
-import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Size
 import android.view.Gravity
@@ -31,7 +30,6 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
-import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,8 +55,6 @@ import com.google.android.material.slider.Slider
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.common.util.concurrent.Futures
-import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -92,6 +88,7 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import kotlin.math.min
 
+@SuppressLint("NotifyDataSetChanged")
 class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
 	ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), Player.Listener,
 	SharedPreferences.OnSharedPreferenceChangeListener {
@@ -102,10 +99,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 	private val activity
 		get() = context as MainActivity
-	private var controllerFuture: ListenableFuture<MediaController>? = null
 	private val instance: MediaController?
-		get() = if (controllerFuture?.isDone == false || controllerFuture?.isCancelled == true)
-			null else controllerFuture?.get()
+		get() = activity.getPlayer()
 	var minimize: (() -> Unit)? = null
 
 	private var wrappedContext: Context? = null
@@ -260,6 +255,37 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 		refreshSettings(null)
 		prefs.registerOnSharedPreferenceChangeListener(this)
+		activity.controllerViewModel.customCommandListeners.addCallback(activity.lifecycle) { _, command, _ ->
+			when (command.customAction) {
+				GramophonePlaybackService.SERVICE_TIMER_CHANGED -> {
+					bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
+				}
+
+				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
+					val parsedLyrics = instance?.getLyrics()
+					if (bottomSheetFullLyricList != parsedLyrics) {
+						bottomSheetFullLyricList.clear()
+						if (parsedLyrics?.isEmpty() != false) {
+							bottomSheetFullLyricList.add(
+								MediaStoreUtils.Lyric(
+									null,
+									context.getString(R.string.no_lyric_found)
+								)
+							)
+						} else {
+							bottomSheetFullLyricList.addAll(parsedLyrics)
+						}
+						bottomSheetFullLyricAdapter.notifyDataSetChanged()
+						resetToDefaultLyricPosition()
+					}
+				}
+
+				else -> {
+					return@addCallback Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
+				}
+			}
+			return@addCallback Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+		}
 
 		val seekBarProgressWavelength =
 			context.resources
@@ -432,41 +458,6 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		removeColorScheme()
 	}
 
-	val sessionListener: MediaController.Listener = object : MediaController.Listener {
-		@SuppressLint("NotifyDataSetChanged")
-		override fun onCustomCommand(
-			controller: MediaController,
-			command: SessionCommand,
-			args: Bundle
-		): ListenableFuture<SessionResult> {
-			when (command.customAction) {
-				GramophonePlaybackService.SERVICE_TIMER_CHANGED -> {
-					bottomSheetTimerButton.isChecked = controller.hasTimer()
-				}
-
-				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
-					val parsedLyrics = instance?.getLyrics()
-					if (bottomSheetFullLyricList != parsedLyrics) {
-						bottomSheetFullLyricList.clear()
-						if (parsedLyrics?.isEmpty() != false) {
-							bottomSheetFullLyricList.add(
-								MediaStoreUtils.Lyric(
-									null,
-									context.getString(R.string.no_lyric_found)
-								)
-							)
-						} else {
-							bottomSheetFullLyricList.addAll(parsedLyrics)
-						}
-						bottomSheetFullLyricAdapter.notifyDataSetChanged()
-						resetToDefaultLyricPosition()
-					}
-				}
-			}
-			return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-		}
-	}
-
 	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 		if (key == "color_accuracy" || key == "content_based_color") {
 			if (DynamicColors.isDynamicColorAvailable() &&
@@ -521,9 +512,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
-	fun onStart(cf: ListenableFuture<MediaController>) {
-		controllerFuture = cf
-		controllerFuture!!.addListener({
+	fun onStart() {
+		activity.controllerViewModel.addOneOffControllerCallback(activity.lifecycle) {
 			firstTime = true
 			instance?.addListener(this)
 			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
@@ -546,13 +536,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 
 			 */
-		}, MoreExecutors.directExecutor())
+		}
 	}
 
 	fun onStop() {
 		runnableRunning = false
-		instance?.removeListener(this)
-		controllerFuture = null
 	}
 
 	override fun dispatchApplyWindowInsets(platformInsets: WindowInsets): WindowInsets {
