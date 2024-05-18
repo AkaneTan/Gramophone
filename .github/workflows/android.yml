@@ -40,25 +40,26 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Create Sign File
+      - name: Create signing files
         run: |
-          echo releaseType=CI >> package.properties
-          echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > key.jks
-          echo "AKANE_RELEASE_STORE_FILE=${{ github.workspace }}/key.jks" >> package.properties
-          echo "AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }}" >> package.properties
-          echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> package.properties
-          echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> package.properties
+          echo releaseType=CI > package.properties
+          mkdir -p ~/.gradle
+          echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > ~/key.jks
+          echo "AKANE_RELEASE_STORE_FILE=~/key.jks" > ~/.gradle/gradle.properties
+          echo "AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }}" >> ~/.gradle/gradle.properties
+          echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> ~/.gradle/gradle.properties
+          echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> ~/.gradle/gradle.properties
 
       - name: Build with Gradle
-        run: ./gradlew assembleRelease
+        run: ./gradlew :app:assembleRelease
 
-      - name: Find Apk
+      - name: Find apk
         run: |
-          echo "APK_FILE=$(find app/build/outputs/apk/release -name '*.apk')" >> $GITHUB_ENV
-          export APK_FILE=$(find app/build/outputs/apk/release -name '*.apk')
+          APK_FILE=$(find app/build/outputs/apk/release -name '*.apk')
+          echo "APK_FILE=$APK_FILE" >> $GITHUB_ENV
           echo "APK_FILE_NAME=$(basename $APK_FILE .apk)" >> $GITHUB_ENV
 
-      - name: Upload Apk
+      - name: Upload apk
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.APK_FILE_NAME }}
