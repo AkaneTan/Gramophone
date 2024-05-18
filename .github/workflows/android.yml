@@ -45,7 +45,7 @@ jobs:
           echo releaseType=CI > package.properties
           mkdir -p ~/.gradle
           echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > ~/key.jks
-          echo "AKANE_RELEASE_STORE_FILE=~/key.jks" > ~/.gradle/gradle.properties
+          echo "AKANE_RELEASE_STORE_FILE=$(realpath ~/key.jks)" > ~/.gradle/gradle.properties
           echo "AKANE_RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PWD }}" >> ~/.gradle/gradle.properties
           echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> ~/.gradle/gradle.properties
           echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> ~/.gradle/gradle.properties
