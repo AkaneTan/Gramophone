@@ -33,10 +33,10 @@ import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MediaControllerViewModel
+import org.akanework.gramophone.ui.components.NowPlayingDrawable
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
-import org.akanework.gramophone.ui.registerLifecycleCallback
 import java.util.GregorianCalendar
 
 
@@ -103,37 +103,40 @@ class SongAdapter(
 
     private val viewModel: LibraryViewModel by fragment.activityViewModels()
     private val mediaControllerViewModel: MediaControllerViewModel by fragment.activityViewModels()
-    private val idToPosMap = hashMapOf<String, Int>()
+    private var idToPosMap: HashMap<String, Int>? = null
     private var currentMediaItem = mediaControllerViewModel.get()?.currentMediaItem?.mediaId
         set(value) {
             if (field != value) {
                 val oldValue = field
                 field = value
-                val oldPos = idToPosMap[oldValue]
-                val newPos = idToPosMap[value]
-                if (oldPos != null) {
-                    notifyItemChanged(oldPos)
-                }
-                if (newPos != null) {
-                    notifyItemChanged(newPos)
+                if (idToPosMap != null) {
+                    val oldPos = idToPosMap!![oldValue]
+                    val newPos = idToPosMap!![value]
+                    if (oldPos != null) {
+                        notifyItemChanged(oldPos)
+                    }
+                    if (newPos != null) {
+                        notifyItemChanged(newPos)
+                    }
                 }
             }
         }
 
     init {
-        mediaControllerViewModel.addOneOffControllerCallback(fragment.viewLifecycleOwner.lifecycle, false) {
-            it.registerLifecycleCallback(fragment.viewLifecycleOwner.lifecycle, object : Player.Listener {
+        mediaControllerViewModel.addRecreationalPlayerListener(
+            fragment.viewLifecycleOwner.lifecycle,
+            object : Player.Listener {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                     currentMediaItem = mediaItem?.mediaId
                 }
-            })
-        }
+            }
+        )
     }
 
     override fun onListUpdated() {
         // TODO run this method on a different thread / in advance
-        idToPosMap.clear()
-        list.forEachIndexed { i, item -> idToPosMap[item.mediaId] = i }
+        idToPosMap = hashMapOf()
+        list.forEachIndexed { i, item -> idToPosMap!![item.mediaId] = i }
     }
 
     override fun virtualTitleOf(item: MediaItem): String {
@@ -302,10 +305,18 @@ class SongAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        val item = list[position]
-        holder.nowPlaying.visibility =
-            if (currentMediaItem != null && item.mediaId == currentMediaItem)
-                View.VISIBLE else View.GONE
+        if (currentMediaItem != null && list[position].mediaId == currentMediaItem) {
+            holder.nowPlaying.icon = NowPlayingDrawable()
+            holder.nowPlaying.visibility = View.VISIBLE
+            mediaControllerViewModel.addRecreationalPlayerListener( // TODO
+                fragment.viewLifecycleOwner.lifecycle,
+                object : Player.Listener {
+                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                        currentMediaItem = mediaItem?.mediaId
+                    }
+                }
+            )
+        }
     }
 
     class MediaItemHelper(

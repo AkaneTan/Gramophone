@@ -42,8 +42,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil3.dispose
 import coil3.load
+import coil3.request.crossfade
 import coil3.request.error
-import coil3.request.placeholder
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.sync.Semaphore
 import me.zhanghai.android.fastscroll.PopupTextProvider
@@ -52,7 +52,7 @@ import org.akanework.gramophone.logic.getStringStrict
 import org.akanework.gramophone.logic.ui.DefaultItemHeightHelper
 import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
-import org.akanework.gramophone.logic.ui.coolCrossfade
+import org.akanework.gramophone.logic.ui.placeholderScaleToFit
 import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -368,8 +368,8 @@ abstract class BaseAdapter<T>(
         holder.title.text = titleOf(item) ?: virtualTitleOf(item)
         holder.subTitle.text = subTitleOf(item)
         holder.songCover.load(coverOf(item)) {
-            coolCrossfade(true)
-            placeholder(defaultCover)
+            placeholderScaleToFit(defaultCover)
+            crossfade(true)
             error(defaultCover)
         }
         holder.itemView.setOnClickListener { onClick(item) }
@@ -378,7 +378,6 @@ abstract class BaseAdapter<T>(
             onMenu(item, popupMenu)
             popupMenu.show()
         }
-        holder.nowPlaying.visibility = View.GONE
     }
 
     // need to call notifyDataSetChanged() afterwards
@@ -412,6 +411,8 @@ abstract class BaseAdapter<T>(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
+        holder.nowPlaying.icon = null
+        holder.nowPlaying.visibility = View.GONE
         holder.songCover.dispose()
         super.onViewRecycled(holder)
     }

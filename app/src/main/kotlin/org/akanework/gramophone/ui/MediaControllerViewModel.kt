@@ -7,7 +7,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
@@ -16,7 +18,6 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import org.akanework.gramophone.logic.GramophoneApplication
 import org.akanework.gramophone.logic.GramophonePlaybackService
-import org.akanework.gramophone.logic.utils.LifecycleCallbackList
 import org.akanework.gramophone.logic.utils.LifecycleCallbackListImpl
 
 class MediaControllerViewModel(application: Application) : AndroidViewModel(application),
@@ -24,22 +25,20 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 
 	private val context: GramophoneApplication
 		get() = getApplication()
+	private var controllerLifecycle: LifecycleHost? = null
 	private var controllerFuture: ListenableFuture<MediaController>? = null
 	private val customCommandListenersImpl = LifecycleCallbackListImpl<
-				(MediaController, SessionCommand, Bundle) -> ListenableFuture<SessionResult>>()
-	private val disconnectionListenersImpl = LifecycleCallbackListImpl<() -> Unit>()
-	private val connectionListenersImpl = LifecycleCallbackListImpl<(MediaController) -> Unit>()
-	val customCommandListeners: LifecycleCallbackList<
-				(MediaController, SessionCommand, Bundle) -> ListenableFuture<SessionResult>>
-		get() = customCommandListenersImpl
-	val disconnectionListeners: LifecycleCallbackList<() -> Unit>
-		get() = disconnectionListenersImpl
-	val connectionListeners: LifecycleCallbackList<(MediaController) -> Unit>
-		get() = connectionListenersImpl
+				(MediaController,SessionCommand, Bundle) -> ListenableFuture<SessionResult>>()
+	private val connectionListenersImpl = LifecycleCallbackListImpl<LifecycleCallbackListImpl.Disposable.(MediaController, Lifecycle) -> Unit>()
+	val customCommandListeners
+		get() = customCommandListenersImpl.toBaseInterface()
+	val connectionListeners
+		get() = connectionListenersImpl.toBaseInterface()
 
 	override fun onStart(owner: LifecycleOwner) {
 		val sessionToken =
 			SessionToken(context, ComponentName(context, GramophonePlaybackService::class.java))
+		controllerLifecycle = LifecycleHost()
 		controllerFuture =
 			MediaController
 				.Builder(context, sessionToken)
@@ -48,23 +47,37 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 				.apply {
 					addListener(
 						{
+							if (controllerFuture != null && this != controllerFuture)
+								throw IllegalStateException()
 							if (controllerFuture?.isDone == true &&
 								controllerFuture?.isCancelled == false) {
 								val instance = get()
-								connectionListenersImpl.dispatch { it(instance) }
+								val lifecycle = controllerLifecycle!!
+								lifecycle.lifecycleRegistry.currentState = Lifecycle.State.CREATED
+								connectionListenersImpl.dispatch { it(instance, lifecycle.lifecycle) }
 							}
 						}, ContextCompat.getMainExecutor(context)
 					)
 				}
 	}
 
-	fun addOneOffControllerCallback(lifecycle: Lifecycle?, clear: Boolean = true, callback: (MediaController) -> Unit) {
+	fun addOneOffControllerCallback(lifecycle: Lifecycle?,
+	                                callback: LifecycleCallbackListImpl.Disposable.(MediaController, Lifecycle) -> Unit) {
+		// TODO migrate this to kt flows or LiveData?
 		val instance = get()
-		if (instance == null || !clear) {
-			connectionListeners.addCallback(lifecycle, clear, callback)
-		}
+		val ds = LifecycleCallbackListImpl.DisposableImpl()
 		if (instance != null) {
-			callback(instance)
+			ds.callback(instance, controllerLifecycle!!.lifecycle)
+		}
+		if (instance == null || !ds.disposed) {
+			connectionListeners.addCallback(lifecycle, callback)
+		}
+	}
+
+	fun addRecreationalPlayerListener(lifecycle: Lifecycle, callback: Player.Listener) {
+		addOneOffControllerCallback(lifecycle) { controller, controllerLifecycle ->
+			controller.registerLifecycleCallback(
+				LifecycleIntersection(lifecycle, controllerLifecycle).lifecycle, callback)
 		}
 	}
 
@@ -76,8 +89,9 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 	}
 
 	override fun onDisconnected(controller: MediaController) {
+		controllerLifecycle?.destroy()
+		controllerLifecycle = null
 		controllerFuture = null
-		disconnectionListenersImpl.dispatch { it() }
 	}
 
 	override fun onStop(owner: LifecycleOwner) {
@@ -89,17 +103,15 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 			}
 		} else {
 			controllerFuture?.cancel(true)
+			controllerLifecycle?.destroy()
+			controllerLifecycle = null
 			controllerFuture = null
-			disconnectionListenersImpl.dispatch { it() }
 		}
 	}
 
 	override fun onDestroy(owner: LifecycleOwner) {
-		ContextCompat.getMainExecutor(context).execute {
-			customCommandListenersImpl.throwIfRelease()
-			connectionListenersImpl.throwIfRelease()
-			disconnectionListenersImpl.throwIfRelease()
-		}
+		customCommandListenersImpl.release()
+		connectionListenersImpl.release()
 	}
 
 	override fun onCustomCommand(
@@ -114,6 +126,51 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 			future = listenerIterator.next()(controller, command, args)
 		}
 		return future
+	}
+
+	private class LifecycleHost : LifecycleOwner {
+		val lifecycleRegistry = LifecycleRegistry(this)
+		override val lifecycle
+			get() = lifecycleRegistry
+
+		fun destroy() {
+			// you cannot set DESTROYED before setting CREATED
+			// this would leak observers if the LifecycleHost is exposed to clients before ON_CREATE
+			// but it's not and that is apparently what google wanted to achieve with this check
+			if (lifecycle.currentState != Lifecycle.State.INITIALIZED)
+				lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+		}
+	}
+
+	class LifecycleIntersection(private val lifecycleOne: Lifecycle,
+	                            private val lifecycleTwo: Lifecycle)
+		: LifecycleOwner, LifecycleEventObserver {
+		private val lifecycleRegistry = LifecycleRegistry(this)
+		override val lifecycle
+			get() = lifecycleRegistry
+
+		init {
+			lifecycleRegistry.addObserver(object : DefaultLifecycleObserver {
+				override fun onDestroy(owner: LifecycleOwner) {
+					lifecycleOne.removeObserver(this@LifecycleIntersection)
+					lifecycleTwo.removeObserver(this@LifecycleIntersection)
+				}
+			})
+			lifecycleOne.addObserver(this)
+			lifecycleTwo.addObserver(this)
+		}
+
+		override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+			if (lifecycleOne.currentState == Lifecycle.State.DESTROYED ||
+				lifecycleTwo.currentState == Lifecycle.State.DESTROYED
+			) {
+				lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+				return
+			}
+			val target = lifecycleOne.currentState.coerceAtMost(lifecycleTwo.currentState)
+			if (target == lifecycleRegistry.currentState) return
+			lifecycleRegistry.currentState = target
+		}
 	}
 }
 

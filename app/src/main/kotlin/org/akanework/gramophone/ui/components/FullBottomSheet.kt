@@ -42,8 +42,8 @@ import coil3.load
 import coil3.request.Disposable
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
+import coil3.request.crossfade
 import coil3.request.error
-import coil3.request.placeholder
 import coil3.size.Scale
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -80,7 +80,7 @@ import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.ui.MyRecyclerView
-import org.akanework.gramophone.logic.ui.coolCrossfade
+import org.akanework.gramophone.logic.ui.placeholderScaleToFit
 import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
@@ -388,8 +388,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			playlistNowPlaying!!.text = instance?.currentMediaItem?.mediaMetadata?.title
 			playlistNowPlayingCover = playlistBottomSheet.findViewById(R.id.now_playing_cover)
 			playlistNowPlayingCover!!.load(instance?.currentMediaItem?.mediaMetadata?.artworkUri) {
-				coolCrossfade(true)
-				placeholder(R.drawable.ic_default_cover)
+				placeholderScaleToFit(R.drawable.ic_default_cover)
+				crossfade(true)
 				error(R.drawable.ic_default_cover)
 			}
 			recyclerView.layoutManager = LinearLayoutManager(context)
@@ -513,7 +513,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 	fun onStart() {
-		activity.controllerViewModel.addOneOffControllerCallback(activity.lifecycle) {
+		activity.controllerViewModel.addOneOffControllerCallback(activity.lifecycle) { _, _ ->
 			firstTime = true
 			instance?.addListener(this)
 			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
@@ -874,8 +874,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			if (playlistNowPlaying != null) {
 				playlistNowPlaying!!.text = mediaItem?.mediaMetadata?.title
 				playlistNowPlayingCover!!.load(mediaItem?.mediaMetadata?.artworkUri) {
-					coolCrossfade(true)
-					placeholder(R.drawable.ic_default_cover)
+					placeholderScaleToFit(R.drawable.ic_default_cover)
+					crossfade(true)
 					error(R.drawable.ic_default_cover)
 				}
 			}
@@ -1167,8 +1167,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 					item.mediaMetadata.extras?.getLong("Duration")!!
 				)
 			holder.songCover.load(item.mediaMetadata.artworkUri) {
-				coolCrossfade(true)
-				placeholder(R.drawable.ic_default_cover)
+				placeholderScaleToFit(R.drawable.ic_default_cover)
+				crossfade(true)
 				error(R.drawable.ic_default_cover)
 			}
 			holder.closeButton.setOnClickListener {

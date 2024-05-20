@@ -3,45 +3,48 @@ package org.akanework.gramophone.logic.utils
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import coil3.request.Disposable
 
 interface LifecycleCallbackList<T> {
-	fun addCallbackForever(clear: Boolean = false, callback: T) {
-		addCallback(null, clear, callback)
+	fun addCallbackForever(callback: T) {
+		addCallback(null, callback)
 	}
-	fun addCallback(lifecycle: Lifecycle?, clear: Boolean = false, callback: T)
+	fun addCallback(lifecycle: Lifecycle?, callback: T)
 	fun removeCallback(callback: T)
 }
 
 class LifecycleCallbackListImpl<T>(lifecycle: Lifecycle? = null)
 	: LifecycleCallbackList<T>, DefaultLifecycleObserver {
-	private var list = hashMapOf<T, Pair<Boolean, CallbackLifecycleObserver?>>()
+	private val list = hashMapOf<T, CallbackLifecycleObserver?>()
 
 	init {
 		lifecycle?.addObserver(this)
 	}
 
-	override fun addCallback(lifecycle: Lifecycle?, clear: Boolean, callback: T) {
+	fun toBaseInterface(): LifecycleCallbackList<T> {
+		return this
+	}
+
+	override fun addCallback(lifecycle: Lifecycle?, callback: T) {
 		if (list.containsKey(callback)) throw IllegalArgumentException("cannot add same callback twice")
-		list[callback] = Pair(clear, lifecycle?.let { CallbackLifecycleObserver(it, callback) })
+		list[callback] = lifecycle?.let { CallbackLifecycleObserver(it, callback) }
 	}
 
 	override fun removeCallback(callback: T) {
-		list.remove(callback)?.second?.release()
+		list.remove(callback)?.release()
 	}
 
-	fun dispatch(callback: (T) -> Unit) {
-		list.forEach { callback(it.key) }
-		list = HashMap(list.filterValues { !it.first })
+	fun dispatch(callback: Disposable.(T) -> Unit) {
+		val ds = DisposableImpl()
+		list.toList().forEach {
+			ds.disposed = false
+			ds.callback(it.first)
+			if (ds.disposed) removeCallback(it.first)
+		}
 	}
 
 	fun release() {
-		dispatch { removeCallback(it) }
-	}
-
-	fun throwIfRelease() {
-		if (list.size == 0) return
-		release()
-		throw IllegalStateException("Callbacks leaked in LifecycleCallbackList")
+		dispatch { dispose() }
 	}
 
 	fun iterator(): Iterator<T> {
@@ -50,6 +53,17 @@ class LifecycleCallbackListImpl<T>(lifecycle: Lifecycle? = null)
 
 	override fun onDestroy(owner: LifecycleOwner) {
 		release()
+	}
+
+	interface Disposable {
+		fun dispose()
+	}
+	class DisposableImpl : Disposable {
+		var disposed = false
+		override fun dispose() {
+			if (disposed) throw IllegalStateException("already disposed")
+			disposed = true
+		}
 	}
 
 	private inner class CallbackLifecycleObserver(private val lifecycle: Lifecycle,

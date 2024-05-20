@@ -86,7 +86,7 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:icon="@drawable/media3_icon_play"
+        android:visibility="gone"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="24dp"
