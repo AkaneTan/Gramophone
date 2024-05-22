@@ -139,6 +139,22 @@ class PlayerBottomSheet private constructor(
             ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
             instance?.seekToNextMediaItem()
         }
+
+        activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
+            instance?.addListener(this@PlayerBottomSheet)
+            onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
+            onMediaItemTransition(
+                instance?.currentMediaItem,
+                Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
+            )
+            if ((activity.consumeAutoPlay() || prefs.getBooleanStrict(
+                    "autoplay",
+                    false
+                )) && instance?.isPlaying != true
+            ) {
+                instance?.play()
+            }
+        }
     }
 
     private val bottomSheetCallback = object : BottomSheetCallback() {
@@ -372,9 +388,9 @@ class PlayerBottomSheet private constructor(
             lastDisposable?.dispose()
             lastDisposable = null
         }
-        var newState = standardBottomSheetBehavior!!.state
+        var newState = 0
         if ((instance?.mediaItemCount ?: 0) > 0 && visible) {
-            if (newState != BottomSheetBehavior.STATE_EXPANDED) {
+            if (standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_EXPANDED) {
                 newState = BottomSheetBehavior.STATE_COLLAPSED
             }
         } else {
@@ -407,30 +423,8 @@ class PlayerBottomSheet private constructor(
         }
     }
 
-    override fun onStart(owner: LifecycleOwner) {
-        super.onStart(owner)
-        activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
-            instance?.addListener(this@PlayerBottomSheet)
-            onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
-            onMediaItemTransition(
-                instance?.currentMediaItem,
-                Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
-            )
-            if ((activity.consumeAutoPlay() || prefs.getBooleanStrict(
-                    "autoplay",
-                    false
-                )) && instance?.isPlaying != true
-            ) {
-                instance?.play()
-            }
-            dispose() // do not call callback again
-        }
-        fullPlayer.onStart()
-    }
-
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
-        instance?.removeListener(this)
         fullPlayer.onStop()
     }
 

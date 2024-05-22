@@ -456,6 +456,31 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			bottomSheetFullLyricAdapter
 
 		removeColorScheme()
+
+		activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
+			firstTime = true
+			instance?.addListener(this@FullBottomSheet)
+			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
+			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
+			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)
+			onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
+			onMediaItemTransition(
+				instance?.currentMediaItem,
+				Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
+			)
+			firstTime = false
+			/*
+			if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
+					.songList.contains(instance.currentMediaItem)) {
+				bottomSheetFavoriteButton.isChecked = true
+				// TODO
+			} else {
+				bottomSheetFavoriteButton.isChecked = false
+				// TODO
+			}
+
+			 */
+		}
 	}
 
 	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -512,35 +537,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
-	fun onStart() {
-		activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
-			firstTime = true
-			instance?.addListener(this@FullBottomSheet)
-			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
-			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
-			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)
-			onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
-			onMediaItemTransition(
-				instance?.currentMediaItem,
-				Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
-			)
-			firstTime = false
-			/*
-			if (activity.libraryViewModel.playlistList.value!![MediaStoreUtils.favPlaylistPosition]
-					.songList.contains(instance.currentMediaItem)) {
-				bottomSheetFavoriteButton.isChecked = true
-				// TODO
-			} else {
-				bottomSheetFavoriteButton.isChecked = false
-				// TODO
-			}
-
-			 */
-		}
-	}
-
 	fun onStop() {
-		instance?.removeListener(this)
 		runnableRunning = false
 	}
 

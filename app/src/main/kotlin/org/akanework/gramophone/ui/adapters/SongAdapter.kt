@@ -137,14 +137,18 @@ class SongAdapter(
         mediaControllerViewModel.addRecreationalPlayerListener(
             fragment.viewLifecycleOwner.lifecycle) {
             currentMediaItem = it.currentMediaItem?.mediaId
-            currentIsPlaying = it.isPlaying
+            currentIsPlaying = it.playWhenReady && it.playbackState != Player.STATE_ENDED
             object : Player.Listener {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                     currentMediaItem = mediaItem?.mediaId
                 }
 
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    currentIsPlaying = isPlaying
+                override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                    currentIsPlaying = playWhenReady && it.playbackState != Player.STATE_ENDED
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    currentIsPlaying = it.playWhenReady && playbackState != Player.STATE_ENDED
                 }
             }
         }
