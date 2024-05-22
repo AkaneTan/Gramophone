@@ -513,9 +513,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 	fun onStart() {
-		activity.controllerViewModel.addOneOffControllerCallback(activity.lifecycle) { _, _ ->
+		activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
 			firstTime = true
-			instance?.addListener(this)
+			instance?.addListener(this@FullBottomSheet)
 			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
 			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
 			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)

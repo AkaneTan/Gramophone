@@ -409,8 +409,8 @@ class PlayerBottomSheet private constructor(
 
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
-        activity.controllerViewModel.addOneOffControllerCallback(activity.lifecycle) { _, _ ->
-            instance?.addListener(this)
+        activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
+            instance?.addListener(this@PlayerBottomSheet)
             onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
             onMediaItemTransition(
                 instance?.currentMediaItem,
@@ -423,6 +423,7 @@ class PlayerBottomSheet private constructor(
             ) {
                 instance?.play()
             }
+            dispose() // do not call callback again
         }
         fullPlayer.onStart()
     }

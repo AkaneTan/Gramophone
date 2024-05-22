@@ -45,7 +45,7 @@ import coil3.util.Logger
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.ui.BugHandlerActivity
 import java.io.File
-import java.io.FileNotFoundException
+import java.io.IOException
 import kotlin.system.exitProcess
 
 /**
@@ -148,7 +148,7 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
                         }
                         // Let's keep the log readable and ignore normal events' stack traces.
                         if (throwable != null && throwable !is NullRequestDataException
-                            && (throwable !is FileNotFoundException
+                            && (throwable !is IOException
                                     || throwable.message != "No album art found")) {
                             Log.println(priority, tag, Log.getStackTraceString(throwable))
                         }

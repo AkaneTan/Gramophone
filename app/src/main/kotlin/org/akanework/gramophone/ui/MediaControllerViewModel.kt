@@ -61,23 +61,25 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 				}
 	}
 
-	fun addOneOffControllerCallback(lifecycle: Lifecycle?,
-	                                callback: LifecycleCallbackListImpl.Disposable.(MediaController, Lifecycle) -> Unit) {
+	fun addControllerCallback(lifecycle: Lifecycle?,
+	                          callback: LifecycleCallbackListImpl.Disposable.(MediaController, Lifecycle) -> Unit) {
 		// TODO migrate this to kt flows or LiveData?
 		val instance = get()
-		val ds = LifecycleCallbackListImpl.DisposableImpl()
+		var skip = false
 		if (instance != null) {
+			val ds = LifecycleCallbackListImpl.DisposableImpl()
 			ds.callback(instance, controllerLifecycle!!.lifecycle)
+			skip = ds.disposed
 		}
-		if (instance == null || !ds.disposed) {
+		if (instance == null || !skip) {
 			connectionListeners.addCallback(lifecycle, callback)
 		}
 	}
 
-	fun addRecreationalPlayerListener(lifecycle: Lifecycle, callback: Player.Listener) {
-		addOneOffControllerCallback(lifecycle) { controller, controllerLifecycle ->
+	fun addRecreationalPlayerListener(lifecycle: Lifecycle, callback: (Player) -> Player.Listener) {
+		addControllerCallback(lifecycle) { controller, controllerLifecycle ->
 			controller.registerLifecycleCallback(
-				LifecycleIntersection(lifecycle, controllerLifecycle).lifecycle, callback)
+				LifecycleIntersection(lifecycle, controllerLifecycle).lifecycle, callback(controller))
 		}
 	}
 

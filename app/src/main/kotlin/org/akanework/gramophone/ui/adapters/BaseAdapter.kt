@@ -96,7 +96,7 @@ abstract class BaseAdapter<T>(
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
     override val itemHeightHelper by lazy {
         DefaultItemHeightHelper.concatItemHeightHelper(decorAdapter, {1}, this) }
-    private val handler = Handler(Looper.getMainLooper())
+    protected val handler = Handler(Looper.getMainLooper())
     private var bgHandlerThread: HandlerThread? = null
     private var bgHandler: Handler? = null
     private val rawList = ArrayList<T>(liveData?.value?.size ?: 0)
@@ -188,7 +188,7 @@ abstract class BaseAdapter<T>(
         view: View,
     ) : RecyclerView.ViewHolder(view) {
         val songCover: ImageView = view.findViewById(R.id.cover)
-        val nowPlaying: MaterialButton = view.findViewById(R.id.now_playing)
+        val nowPlaying: ImageView = view.findViewById(R.id.now_playing)
         val title: TextView = view.findViewById(R.id.title)
         val subTitle: TextView = view.findViewById(R.id.artist)
         val moreButton: MaterialButton = view.findViewById(R.id.more)
@@ -354,7 +354,7 @@ abstract class BaseAdapter<T>(
 
     override fun onBindViewHolder(
         holder: ViewHolder,
-        position: Int,
+        position: Int
     ) {
         if (layoutType == LayoutType.GRID) {
             val newHeight = gridHeight ?: gridHeightCache
@@ -411,7 +411,7 @@ abstract class BaseAdapter<T>(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        holder.nowPlaying.icon = null
+        holder.nowPlaying.setImageDrawable(null)
         holder.nowPlaying.visibility = View.GONE
         holder.songCover.dispose()
         super.onViewRecycled(holder)

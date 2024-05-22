@@ -69,21 +69,15 @@
 
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
+    <ImageView
         android:id="@+id/now_playing"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:padding="12dp"
+        app:tint="?attr/colorControlNormal"
         android:layout_gravity="end|center_vertical"
-        android:background="@drawable/rp_buttons"
-        android:insetLeft="0dp"
-        android:insetTop="0dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
+        android:contentDescription="@string/now_playing"
         android:visibility="gone"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:iconSize="24dp"
-        app:iconTint="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/more"
         app:layout_constraintTop_toTopOf="parent" />

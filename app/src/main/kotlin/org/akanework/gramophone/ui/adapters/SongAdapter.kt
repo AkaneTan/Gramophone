@@ -104,7 +104,7 @@ class SongAdapter(
     private val viewModel: LibraryViewModel by fragment.activityViewModels()
     private val mediaControllerViewModel: MediaControllerViewModel by fragment.activityViewModels()
     private var idToPosMap: HashMap<String, Int>? = null
-    private var currentMediaItem = mediaControllerViewModel.get()?.currentMediaItem?.mediaId
+    private var currentMediaItem: String? = null
         set(value) {
             if (field != value) {
                 val oldValue = field
@@ -113,10 +113,21 @@ class SongAdapter(
                     val oldPos = idToPosMap!![oldValue]
                     val newPos = idToPosMap!![value]
                     if (oldPos != null) {
-                        notifyItemChanged(oldPos)
+                        notifyItemChanged(oldPos, true)
                     }
                     if (newPos != null) {
-                        notifyItemChanged(newPos)
+                        notifyItemChanged(newPos, true)
+                    }
+                }
+            }
+        }
+    private var currentIsPlaying: Boolean? = null
+        set(value) {
+            if (field != value) {
+                field = value
+                if (value != null && currentMediaItem != null) {
+                    idToPosMap?.get(currentMediaItem)?.let {
+                        notifyItemChanged(it, false)
                     }
                 }
             }
@@ -124,13 +135,19 @@ class SongAdapter(
 
     init {
         mediaControllerViewModel.addRecreationalPlayerListener(
-            fragment.viewLifecycleOwner.lifecycle,
+            fragment.viewLifecycleOwner.lifecycle) {
+            currentMediaItem = it.currentMediaItem?.mediaId
+            currentIsPlaying = it.isPlaying
             object : Player.Listener {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                     currentMediaItem = mediaItem?.mediaId
                 }
+
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    currentIsPlaying = isPlaying
+                }
             }
-        )
+        }
     }
 
     override fun onListUpdated() {
@@ -303,20 +320,25 @@ class SongAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-        if (currentMediaItem != null && list[position].mediaId == currentMediaItem) {
-            holder.nowPlaying.icon = NowPlayingDrawable()
-            holder.nowPlaying.visibility = View.VISIBLE
-            mediaControllerViewModel.addRecreationalPlayerListener( // TODO
-                fragment.viewLifecycleOwner.lifecycle,
-                object : Player.Listener {
-                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                        currentMediaItem = mediaItem?.mediaId
-                    }
-                }
-            )
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty()) {
+            if (payloads.none { it is Boolean && it }) {
+                holder.nowPlaying.drawable.level = if (currentIsPlaying == true) 1 else 0
+                return
+            }
+            if (currentMediaItem == null || list[position].mediaId != currentMediaItem) {
+                holder.nowPlaying.visibility = View.GONE
+                holder.nowPlaying.setImageDrawable(null)
+                return
+            }
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+            if (currentMediaItem == null || list[position].mediaId != currentMediaItem)
+                return
         }
+        holder.nowPlaying.setImageDrawable(NowPlayingDrawable()
+            .also { it.level = if (currentIsPlaying == true) 1 else 0 })
+        holder.nowPlaying.visibility = View.VISIBLE
     }
 
     class MediaItemHelper(

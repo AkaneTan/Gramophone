@@ -23,7 +23,6 @@ private inline val barWidth
 class NowPlayingDrawable : Drawable() {
 
 	private val paint = Paint()
-	private var state: Int = 0 // 0 = paused, 1 = playing
 	private var sx: Float = 1f // scale x
 	private var sy: Float = 1f // scale y
 	private var lc: Float = 0f // left current
@@ -35,13 +34,13 @@ class NowPlayingDrawable : Drawable() {
 
 	override fun draw(canvas: Canvas) {
 		// Left bar
-		canvas.drawBar(0f, 320f)
+		canvas.drawBar(0f, if (level == 1) 320f else 10f)
 
 		// Middle bar
-		canvas.drawBar(240f, 640f)
+		canvas.drawBar(240f, if (level == 1) 640f else 10f)
 
 		// Right bar
-		canvas.drawBar(480f, 480f)
+		canvas.drawBar(480f, if (level == 1) 480f else 10f)
 
 		// invalidateSelf()
 	}
@@ -69,6 +68,11 @@ class NowPlayingDrawable : Drawable() {
 
 	override fun getTransparentRegion(): Region {
 		return tr
+	}
+
+	override fun onLevelChange(level: Int): Boolean {
+		invalidateSelf()
+		return true
 	}
 
 	override fun setAlpha(alpha: Int) {
@@ -107,11 +111,6 @@ class NowPlayingDrawable : Drawable() {
 			PorterDuffColorFilter(tintColor!!, tintMode)
 		paint.color = if (tintColor == null) Color.BLACK else
 			if (tintMode == null) tintColor!! else Color.WHITE
-	}
-
-	override fun onLevelChange(level: Int): Boolean {
-		this.state = level
-		return true
 	}
 
 	@Deprecated("Deprecated in Java",

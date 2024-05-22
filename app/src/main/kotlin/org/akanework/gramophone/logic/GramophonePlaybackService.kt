@@ -296,7 +296,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                                             completer.set((result as BitmapImage).bitmap)
                                         },
                                         onError = { _ ->
-                                            completer.setException(Exception("coil onError called"))
+                                            completer.setException(Exception("coil onError called" +
+                                                    " (normal if no album art exists)"))
                                         }
                                     )
                                     .build())
