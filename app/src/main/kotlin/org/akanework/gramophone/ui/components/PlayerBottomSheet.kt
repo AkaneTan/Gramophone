@@ -388,9 +388,9 @@ class PlayerBottomSheet private constructor(
             lastDisposable?.dispose()
             lastDisposable = null
         }
-        var newState = 0
+        var newState = standardBottomSheetBehavior?.state
         if ((instance?.mediaItemCount ?: 0) > 0 && visible) {
-            if (standardBottomSheetBehavior?.state != BottomSheetBehavior.STATE_EXPANDED) {
+            if (newState != BottomSheetBehavior.STATE_EXPANDED) {
                 newState = BottomSheetBehavior.STATE_COLLAPSED
             }
         } else {

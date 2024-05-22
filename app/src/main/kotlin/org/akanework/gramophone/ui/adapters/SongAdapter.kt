@@ -331,11 +331,11 @@ class SongAdapter(
                 return
             }
             if (currentMediaItem == null || list[position].mediaId != currentMediaItem) {
-                (holder.nowPlaying.drawable as NowPlayingDrawable).level2Done = Runnable {
+                (holder.nowPlaying.drawable as? NowPlayingDrawable?)?.level2Done = Runnable {
                     holder.nowPlaying.visibility = View.GONE
                     holder.nowPlaying.setImageDrawable(null)
                 }
-                holder.nowPlaying.drawable.level = 2
+                holder.nowPlaying.drawable?.level = 2
                 return
             }
         } else {
