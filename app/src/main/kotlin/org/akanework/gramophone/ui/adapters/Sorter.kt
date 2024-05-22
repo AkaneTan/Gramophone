@@ -253,7 +253,7 @@ class Sorter<T>(
             }
 
             Type.None -> null
-        }?.ifEmpty { null }
+        }?.ifEmpty { null }?.uppercase()
     }
 
     abstract class HintedComparator<T>(val type: Type) : Comparator<T>

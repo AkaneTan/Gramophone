@@ -58,6 +58,7 @@ import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.components.GridPaddingDecoration
+import org.akanework.gramophone.ui.components.NowPlayingDrawable
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 import java.util.Collections
 
@@ -411,6 +412,7 @@ abstract class BaseAdapter<T>(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
+        (holder.nowPlaying.drawable as? NowPlayingDrawable?)?.level2Done = null
         holder.nowPlaying.setImageDrawable(null)
         holder.nowPlaying.visibility = View.GONE
         holder.songCover.dispose()
