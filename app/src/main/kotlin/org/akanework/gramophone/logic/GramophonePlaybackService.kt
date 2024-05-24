@@ -140,14 +140,14 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
     private val timer: Runnable = Runnable {
         controller!!.pause()
-        timerDuration = 0
+        timerDuration = null
     }
 
-    private var timerDuration = 0
+    private var timerDuration: Long? = null
         set(value) {
             field = value
-            if (value > 0) {
-                handler.postDelayed(timer, value.toLong())
+            if (value != null && value > 0) {
+                handler.postDelayed(timer, value - System.currentTimeMillis())
             } else {
                 handler.removeCallbacks(timer)
             }
@@ -437,13 +437,17 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
             SERVICE_SET_TIMER -> {
                 // 0 = clear timer
-                timerDuration = customCommand.customExtras.getInt("duration")
+                customCommand.customExtras.getInt("duration").let {
+                    timerDuration = if (it > 0) System.currentTimeMillis() + it else null
+                }
                 SessionResult(SessionResult.RESULT_SUCCESS)
             }
 
             SERVICE_QUERY_TIMER -> {
                 SessionResult(SessionResult.RESULT_SUCCESS).also {
-                    it.extras.putInt("duration", timerDuration)
+                    timerDuration?.let { td ->
+                        it.extras.putInt("duration", (td - System.currentTimeMillis()).toInt())
+                    }
                 }
             }
 

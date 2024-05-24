@@ -356,6 +356,7 @@
 			android:insetBottom="0dp"
 			android:saveEnabled="false"
 			android:tooltipText="@string/timer"
+			app:toggleCheckedStateOnClick="false"
 			app:icon="@drawable/sl_check_timer"
 			app:iconGravity="textStart"
 			app:iconPadding="0dp"

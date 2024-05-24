@@ -349,6 +349,7 @@
 			android:insetRight="0dp"
 			android:insetBottom="0dp"
 			android:saveEnabled="false"
+			app:toggleCheckedStateOnClick="false"
 			app:icon="@drawable/sl_check_timer"
 			app:iconGravity="textStart"
 			app:iconPadding="0dp"

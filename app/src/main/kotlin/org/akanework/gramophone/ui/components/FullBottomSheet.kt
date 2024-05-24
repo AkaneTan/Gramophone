@@ -8,6 +8,7 @@ import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.TransitionDrawable
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.util.Size
 import android.view.Gravity
@@ -20,6 +21,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.TooltipCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
 import androidx.core.graphics.TypefaceCompat
@@ -74,7 +76,6 @@ import org.akanework.gramophone.logic.getTimer
 import org.akanework.gramophone.logic.hasImagePermission
 import org.akanework.gramophone.logic.hasScopedStorageV1
 import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
-import org.akanework.gramophone.logic.hasTimer
 import org.akanework.gramophone.logic.playOrPause
 import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
@@ -257,9 +258,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		prefs.registerOnSharedPreferenceChangeListener(this)
 		activity.controllerViewModel.customCommandListeners.addCallback(activity.lifecycle) { _, command, _ ->
 			when (command.customAction) {
-				GramophonePlaybackService.SERVICE_TIMER_CHANGED -> {
-					bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
-				}
+				GramophonePlaybackService.SERVICE_TIMER_CHANGED -> updateTimer()
 
 				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
 					val parsedLyrics = instance?.getLyrics()
@@ -334,9 +333,6 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			picker.addOnPositiveButtonClickListener {
 				val destinationTime: Int = picker.hour * 1000 * 3600 + picker.minute * 1000 * 60
 				instance?.setTimer(destinationTime)
-			}
-			picker.addOnDismissListener {
-				bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
 			}
 			picker.show(activity.supportFragmentManager, "timer")
 		}
@@ -460,7 +456,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		activity.controllerViewModel.addControllerCallback(activity.lifecycle) { _, _ ->
 			firstTime = true
 			instance?.addListener(this@FullBottomSheet)
-			bottomSheetTimerButton.isChecked = instance?.hasTimer() == true
+			updateTimer()
 			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
 			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)
 			onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
@@ -481,6 +477,16 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 			 */
 		}
+	}
+
+	private fun updateTimer() {
+		val t = instance?.getTimer()
+		bottomSheetTimerButton.isChecked = t != null
+		TooltipCompat.setTooltipText(bottomSheetTimerButton,
+			if (t != null) context.getString(R.string.timer_expiry,
+				DateFormat.getTimeFormat(context).format(System.currentTimeMillis() + t)
+			) else context.getString(R.string.timer)
+		)
 	}
 
 	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
