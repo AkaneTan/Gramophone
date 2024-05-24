@@ -65,7 +65,12 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
         savedInstanceState: Bundle?,
     ): View? {
         gridPaddingDecoration = GridPaddingDecoration(requireContext())
-
+        if (libraryViewModel.artistItemList.value == null || libraryViewModel.albumArtistItemList.value == null) {
+            // TODO make it wait for lib load instead of breaking state restore
+            // (still better than crashing, though)
+            requireActivity().supportFragmentManager.popBackStack()
+            return null
+        }
         val rootView = inflater.inflate(R.layout.fragment_general_sub, container, false)
         val topAppBar = rootView.findViewById<MaterialToolbar>(R.id.topAppBar)
         val appBarLayout = rootView.findViewById<AppBarLayout>(R.id.appbarlayout)

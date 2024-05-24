@@ -17,15 +17,19 @@
 
 package org.akanework.gramophone.logic.comparators
 
-import android.annotation.SuppressLint
-
 class SupportComparator<T, U>(
     private val cmp: Comparator<U>,
+    private val fallback: Comparator<T>?,
     private val invert: Boolean,
     private val convert: (T) -> U
 ) : Comparator<T> {
     override fun compare(o1: T, o2: T): Int {
-        return cmp.compare(convert(o1), convert(o2)) * (if (invert) -1 else 1)
+        val c1 = convert(o1)
+        val c2 = convert(o2)
+        val i = cmp.compare(c1, c2) * (if (invert) -1 else 1)
+        if (i != 0) return i
+        fallback?.let { return it.compare(o1, o2) }
+        return 0
     }
 
     companion object {
@@ -33,19 +37,20 @@ class SupportComparator<T, U>(
             return Comparator { _, _ -> 0 }
         }
 
-        fun <T> createInversionComparator(cmp: Comparator<T>, invert: Boolean = false):
+        fun <T> createInversionComparator(cmp: Comparator<T>, invert: Boolean = false, fallback: Comparator<T>? = null):
                 Comparator<T> {
             if (!invert) return cmp
-            return SupportComparator(cmp, true) { it }
+            return SupportComparator(cmp, fallback, true) { it }
         }
 
-        @SuppressLint("NewApi")
         fun <T> createAlphanumericComparator(
             inverted: Boolean = false,
-            cnv: (T) -> CharSequence
+            cnv: (T) -> CharSequence,
+            fallback: Comparator<T>? = null
         ): Comparator<T> {
             return SupportComparator(
                 AlphaNumericComparator(),
+                fallback,
                 inverted
             ) { cnv(it).toString() }
         }

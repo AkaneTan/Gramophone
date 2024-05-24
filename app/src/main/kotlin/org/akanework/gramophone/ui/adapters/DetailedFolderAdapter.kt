@@ -89,7 +89,7 @@ class DetailedFolderAdapter(
         if (path != null) {
             fileNodePath.add(path)
             update(false)
-        } else {
+        } else if (fileNodePath.isNotEmpty()) {
             fileNodePath.removeLast()
             update(true)
         }

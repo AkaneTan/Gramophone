@@ -86,6 +86,7 @@ android {
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
+            isCoreLibraryDesugaringEnabled = true // TODO kill it once alpha2 is out
         }
 
         kotlinOptions {
@@ -166,7 +167,7 @@ aboutLibraries {
 }
 
 dependencies {
-    val media3Version = "1.4.0-alpha01" // TODO update to alpha2 before releasing new version
+    val media3Version = "1.4.0-alpha01"
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0-rc01")
     implementation("androidx.collection:collection-ktx:1.4.0")
@@ -184,13 +185,14 @@ dependencies {
     //implementation("androidx.paging:paging-runtime-ktx:3.2.1") TODO paged, partial, flow based library loading
     //implementation("androidx.paging:paging-guava:3.2.1") TODO do we have guava? do we need this?
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.transition:transition-ktx:1.5.0") // <-- for predictive back
+    implementation("androidx.transition:transition-ktx:1.5.0") // <-- for predictive back TODO can we remove explicit dep now?
     implementation("com.mikepenz:aboutlibraries:$aboutLibsVersion")
     implementation("com.google.android.material:material:1.12.0")
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
     implementation("io.coil-kt.coil3:coil:3.0.0-alpha06")
     //noinspection GradleDependency newer versions need java.nio which is api 26+
     //implementation("com.github.albfernandez:juniversalchardet:2.0.3") TODO
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // TODO kill it once alpha2 is out
     // --- below does not apply to release builds ---
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app
