@@ -1147,7 +1147,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 
 
 	private class PlaylistCardAdapter(
-		private val playlist: MutableList<Pair<Int, MediaItem>>,
+		private var playlist: MutableList<Pair<Int, MediaItem>>,
 		private val activity: MainActivity
 	) : MyRecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
 
@@ -1174,12 +1174,13 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				crossfade(true)
 				error(R.drawable.ic_default_cover)
 			}
-			holder.closeButton.setOnClickListener {
-				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
+			holder.closeButton.setOnClickListener { v ->
+				ViewCompat.performHapticFeedback(v, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
 				val pos = holder.bindingAdapterPosition
 				instance?.removeMediaItem(playlist[pos].first)
-				playlist.removeAt(pos)
+				val idx = playlist.removeAt(pos).first
+				playlist = playlist.map { it.copy(first = if (it.first > idx) it.first - 1 else it.first) }.toMutableList()
 				notifyItemRemoved(pos)
 			}
 			holder.itemView.setOnClickListener {
