@@ -393,6 +393,13 @@ class SongAdapter(
         }
 
         override fun getReleaseDate(item: MediaItem): Long {
+            if (item.mediaMetadata.releaseYear == null && item.mediaMetadata.releaseMonth == null
+                && item.mediaMetadata.releaseDay == null) {
+                return GregorianCalendar((item.mediaMetadata.recordingYear ?: 0) + 1900,
+                    (item.mediaMetadata.recordingMonth ?: 1) - 1,
+                    item.mediaMetadata.recordingDay ?: 0, 0, 0, 0)
+                    .timeInMillis
+            }
             return GregorianCalendar((item.mediaMetadata.releaseYear ?: 0) + 1900,
                 (item.mediaMetadata.releaseMonth ?: 1) - 1,
                 item.mediaMetadata.releaseDay ?: 0, 0, 0, 0)

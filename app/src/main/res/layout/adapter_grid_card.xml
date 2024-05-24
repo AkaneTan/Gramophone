@@ -80,12 +80,11 @@
         android:layout_height="48dp"
         android:padding="12dp"
         app:tint="?attr/colorControlNormal"
-        android:layout_gravity="end|center_vertical"
         android:contentDescription="@string/now_playing"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/more"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="@id/linearLayout"
+        app:layout_constraintEnd_toStartOf="@id/more" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/more"

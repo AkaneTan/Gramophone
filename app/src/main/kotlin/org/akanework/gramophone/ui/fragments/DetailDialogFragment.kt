@@ -64,8 +64,8 @@ class DetailDialogFragment : BaseFragment(false) {
         if (mediaMetadata.genre != null) {
             genreTextView.text = mediaMetadata.genre
         }
-        if (mediaMetadata.releaseYear != null) {
-            yearTextView.text = mediaMetadata.releaseYear?.toString()
+        if (mediaMetadata.releaseYear != null || mediaMetadata.recordingYear != null) {
+            yearTextView.text = (mediaMetadata.releaseYear ?: mediaMetadata.recordingYear)?.toString()
         }
         durationTextView.text = convertDurationToTimeStamp(mediaMetadata.extras!!.getLong("Duration"))
         mimeTypeTextView.text = mediaItem.localConfiguration?.mimeType ?: "(null)"
