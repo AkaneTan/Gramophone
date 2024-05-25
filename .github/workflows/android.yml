@@ -41,6 +41,7 @@ jobs:
           cache: gradle
 
       - name: Create signing files
+        if: github.event_name == 'push'
         run: |
           echo releaseType=CI > package.properties
           mkdir -p ~/.gradle
