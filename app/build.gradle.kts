@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.api.dsl.ApplicationBuildType
 import com.android.build.gradle.tasks.PackageAndroidArtifact
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.util.Properties
@@ -35,6 +36,44 @@ android {
         }
     }
 
+    androidResources {
+        generateLocaleConfig = true
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    packaging {
+        dex {
+            useLegacyPackaging = false
+        }
+        jniLibs {
+            useLegacyPackaging = false
+        }
+        resources {
+            excludes += "META-INF/*.version"
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true // TODO kill it once alpha2 is out
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs += listOf(
+            "-Xno-param-assertions",
+            "-Xno-call-assertions",
+            "-Xno-receiver-assertions",
+        )
+    }
+
+    lint {
+        lintConfig = file("lint.xml")
+    }
+
     defaultConfig {
         applicationId = "org.akanework.gramophone"
         // Reasons to not support KK include me.zhanghai.android.fastscroll, WindowInsets for
@@ -48,9 +87,6 @@ android {
         if (releaseType != "Release") {
             versionNameSuffix = myVersionName
         }
-        if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
-            signingConfig = signingConfigs["release"]
-        }
         buildConfigField(
             "String",
             "MY_VERSION_NAME",
@@ -62,45 +98,6 @@ android {
             "\"$releaseType\""
         )
         setProperty("archivesBaseName", "Gramophone-$versionName${versionNameSuffix ?: ""}")
-
-        androidResources {
-            generateLocaleConfig = true
-        }
-
-        buildFeatures {
-            buildConfig = true
-        }
-
-        packaging {
-            dex {
-                useLegacyPackaging = false
-            }
-            jniLibs {
-                useLegacyPackaging = false
-            }
-            resources {
-                excludes += "META-INF/*.version"
-            }
-        }
-
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
-            isCoreLibraryDesugaringEnabled = true // TODO kill it once alpha2 is out
-        }
-
-        kotlinOptions {
-            jvmTarget = "17"
-            freeCompilerArgs += listOf(
-                "-Xno-param-assertions",
-                "-Xno-call-assertions",
-                "-Xno-receiver-assertions",
-            )
-        }
-
-        lint {
-            lintConfig = file("lint.xml")
-        }
     }
 
     buildTypes {
@@ -111,9 +108,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
-                signingConfig = signingConfigs["release"]
-            }
         }
         create("profiling") {
             isMinifyEnabled = false
@@ -127,9 +121,18 @@ android {
         }
         debug {
             isPseudoLocalesEnabled = true
+        }
+    }
+
+    buildTypes.forEach {
+        (it as ApplicationBuildType).run {
+            vcsInfo {
+                include = false
+            }
             if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
                 signingConfig = signingConfigs["release"]
             }
+            isCrunchPngs = false // for reproducible builds TODO how much size impact does this have? where are the pngs from? can we use webp?
         }
     }
 
@@ -164,6 +167,8 @@ android {
 
 aboutLibraries {
     configPath = "app/config"
+    // Remove the "generated" timestamp to allow for reproducible builds
+    excludeFields = arrayOf("generated")
 }
 
 dependencies {
