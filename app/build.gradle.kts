@@ -9,6 +9,7 @@ val aboutLibsVersion = "11.1.4" // keep in sync with plugin version
 
 plugins {
     id("com.android.application")
+    id("androidx.baselineprofile")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.parcelize")
@@ -74,6 +75,10 @@ android {
         lintConfig = file("lint.xml")
     }
 
+    baselineProfile {
+        dexLayoutOptimization = true
+    }
+
     defaultConfig {
         applicationId = "org.akanework.gramophone"
         // Reasons to not support KK include me.zhanghai.android.fastscroll, WindowInsets for
@@ -98,6 +103,9 @@ android {
             "\"$releaseType\""
         )
         setProperty("archivesBaseName", "Gramophone-$versionName${versionNameSuffix ?: ""}")
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
@@ -198,6 +206,8 @@ dependencies {
     //noinspection GradleDependency newer versions need java.nio which is api 26+
     //implementation("com.github.albfernandez:juniversalchardet:2.0.3") TODO
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // TODO kill it once alpha2 is out
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    "baselineProfile"(project(":baselineprofile"))
     // --- below does not apply to release builds ---
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     // Note: JAudioTagger is not compatible with Android 5, we can't ship it in app

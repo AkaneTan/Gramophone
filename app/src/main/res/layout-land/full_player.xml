@@ -50,7 +50,7 @@
 			android:layout_height="match_parent"
 			android:contentDescription="@string/dialog_album"
 			android:scaleType="centerCrop"
-			android:src="@drawable/ic_default_cover" />
+			app:srcCompat="@drawable/ic_default_cover" />
 
 	</com.google.android.material.card.MaterialCardView>
 

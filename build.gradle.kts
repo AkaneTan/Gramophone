@@ -1,6 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     id("com.android.application") version "8.4.0" apply false
+	id("com.android.test") version "8.4.0" apply false
+	id("androidx.baselineprofile") version "1.2.3" apply false
     val kotlinVersion = "2.0.0-RC2"
     id("org.jetbrains.kotlin.android") version kotlinVersion apply false
     id("org.jetbrains.kotlin.plugin.parcelize") version kotlinVersion apply false

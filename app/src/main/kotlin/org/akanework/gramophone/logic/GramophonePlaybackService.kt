@@ -78,11 +78,13 @@ import kotlinx.coroutines.sync.Semaphore
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.CircularShuffleOrder
-import org.akanework.gramophone.logic.utils.EndedWorkaroundPlayer
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LrcUtils.loadAndParseLyricsFile
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.exoplayer.EndedWorkaroundPlayer
+import org.akanework.gramophone.logic.utils.exoplayer.GramophoneMediaSourceFactory
+import org.akanework.gramophone.logic.utils.exoplayer.GramophoneRenderFactory
 import org.akanework.gramophone.ui.MainActivity
 import kotlin.random.Random
 
@@ -233,17 +235,16 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     .build(),
             )
 
-        // TODO https://developer.android.com/media/media3/exoplayer/shrinking
         val player = EndedWorkaroundPlayer(ExoPlayer.Builder(
             this,
-            DefaultRenderersFactory(this)
+            GramophoneRenderFactory(this)
                 .setEnableAudioFloatOutput(
                     prefs.getBooleanStrict("floatoutput", false))
                 .setEnableDecoderFallback(true)
                 .setEnableAudioTrackPlaybackParams( // hardware/system-accelerated playback speed
                     prefs.getBooleanStrict("ps_hardware_acc", true))
-                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
-        )
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER),
+                GramophoneMediaSourceFactory(this))
             .setWakeMode(C.WAKE_MODE_LOCAL)
             .setSkipSilenceEnabled(prefs.getBooleanStrict("skip_silence", false))
             /*.setMediaSourceFactory(

@@ -1,4 +1,4 @@
-package org.akanework.gramophone.logic.utils
+package org.akanework.gramophone.logic.utils.exoplayer
 
 import android.util.Log
 import androidx.media3.common.ForwardingPlayer
