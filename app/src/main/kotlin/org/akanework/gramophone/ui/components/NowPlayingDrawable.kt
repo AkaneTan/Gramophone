@@ -12,7 +12,7 @@ import android.graphics.Rect
 import android.graphics.Region
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
-import com.google.android.material.math.MathUtils
+import org.akanework.gramophone.logic.utils.CalculationUtils.lerp
 import kotlin.random.Random
 
 private inline val padding
@@ -60,15 +60,15 @@ class NowPlayingDrawable : Drawable() {
 		val scale = ((System.currentTimeMillis() - ts) / animDuration).coerceAtMost(1f)
 
 		// Left bar
-		lc = MathUtils.lerp(li, lt, scale)
+		lc = lerp(li, lt, scale)
 		canvas.drawBar(0f, lc)
 
 		// Middle bar
-		mc = MathUtils.lerp(mi, mt, scale)
+		mc = lerp(mi, mt, scale)
 		canvas.drawBar(240f, mc)
 
 		// Right bar
-		rc = MathUtils.lerp(ri, rt, scale)
+		rc = lerp(ri, rt, scale)
 		canvas.drawBar(480f, rc)
 
 		if (level != 1 && lc == lt && mc == mt && rc == rt) ts = 0L

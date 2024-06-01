@@ -53,13 +53,13 @@ import org.akanework.gramophone.logic.ui.DefaultItemHeightHelper
 import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.ui.placeholderScaleToFit
-import org.akanework.gramophone.logic.utils.FileOpUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.components.GridPaddingDecoration
 import org.akanework.gramophone.ui.components.NowPlayingDrawable
 import org.akanework.gramophone.ui.fragments.AdapterFragment
+import org.akanework.gramophone.ui.getAdapterType
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
@@ -113,7 +113,7 @@ abstract class BaseAdapter<T>(
     @Suppress("LeakingThis")
     private var prefSortType: Sorter.Type = Sorter.Type.valueOf(
         prefs.getStringStrict(
-            "S" + FileOpUtils.getAdapterType(this).toString(),
+            "S" + getAdapterType(this).toString(),
             Sorter.Type.None.toString()
         )!!
     )
@@ -123,7 +123,7 @@ abstract class BaseAdapter<T>(
     @Suppress("LeakingThis")
     private var prefLayoutType: LayoutType = LayoutType.valueOf(
         prefs.getStringStrict(
-            "L" + FileOpUtils.getAdapterType(this).toString(),
+            "L" + getAdapterType(this).toString(),
             LayoutType.NONE.toString()
         )!!
     )

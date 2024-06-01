@@ -297,9 +297,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width)
 				.toFloat()
 
-		progressDrawable = SquigglyProgress()
-		bottomSheetFullSeekBar.progressDrawable = progressDrawable
-		progressDrawable.let {
+		bottomSheetFullSeekBar.progressDrawable = SquigglyProgress().also {
+			progressDrawable = it
 			it.waveLength = seekBarProgressWavelength
 			it.lineAmplitude = seekBarProgressAmplitude
 			it.phaseSpeed = seekBarProgressPhase
@@ -775,8 +774,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				colorSurface
 			)
 			bottomSheetFullLyricAdapter.updateTextColor(
-				colorOnSurfaceVariant,
-				colorContrastFainted,
+				androidx.core.graphics.ColorUtils.setAlphaComponent(colorOnSurfaceVariant, 170),
+				androidx.core.graphics.ColorUtils.setAlphaComponent(colorPrimary, 77),
 				colorPrimary
 			)
 

@@ -74,8 +74,8 @@ object CalculationUtils {
         return if (amount < low) low else amount.coerceAtMost(high)
     }
 
-
-    fun lerp(start: Float, stop: Float, amount: Float): Float {
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun lerp(start: Float, stop: Float, amount: Float): Float {
         return start + (stop - start) * amount
     }
 
@@ -85,7 +85,8 @@ object CalculationUtils {
      *
      * If `a == b`, then this function will return 0.
      */
-    fun lerpInv(a: Float, b: Float, value: Float): Float {
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun lerpInv(a: Float, b: Float, value: Float): Float {
         return if (a != b) (value - a) / (b - a) else 0.0f
     }
 

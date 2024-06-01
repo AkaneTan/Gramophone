@@ -33,7 +33,7 @@ import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
-import org.akanework.gramophone.logic.utils.FileOpUtils
+import org.akanework.gramophone.ui.getAdapterType
 import kotlin.random.Random
 
 open class BaseDecorAdapter<T : BaseAdapter<*>>(
@@ -125,7 +125,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                             if (!isSubFragment) {
                                 prefs.edit {
                                     putString(
-                                        "S" + FileOpUtils.getAdapterType(adapter).toString(),
+                                        "S" + getAdapterType(adapter).toString(),
                                         buttonMap[menuItem.itemId].toString()
                                     )
                                 }
@@ -141,7 +141,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                             if (!isSubFragment) {
                                 prefs.edit {
                                     putString(
-                                        "L" + FileOpUtils.getAdapterType(adapter).toString(),
+                                        "L" + getAdapterType(adapter).toString(),
                                         layoutMap[menuItem.itemId].toString()
                                     )
                                 }
