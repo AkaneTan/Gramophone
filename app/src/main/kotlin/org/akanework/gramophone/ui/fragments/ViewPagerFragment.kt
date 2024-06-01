@@ -26,6 +26,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
@@ -36,7 +38,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.clone
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.needsManualSnackBarInset
+import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter
@@ -132,6 +137,16 @@ class ViewPagerFragment : BaseFragment(true) {
                         // Set an anchor for snack bar.
                         if (playerLayout.visible && playerLayout.actuallyVisible)
                             snackBar.anchorView = playerLayout
+                        else if (needsManualSnackBarInset()) {
+                            // snack bar only implements proper insets handling for Q+
+                            snackBar.view.updateMargin {
+                                val i = ViewCompat.getRootWindowInsets(activity.window.decorView)
+                                if (i != null) {
+                                    bottom += i.clone()
+                                        .getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                                }
+                            }
+                        }
                         snackBar.show()
                     }
                 }

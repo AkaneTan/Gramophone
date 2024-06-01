@@ -415,6 +415,10 @@ inline fun hasImprovedMediaStore(): Boolean =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 @Suppress("NOTHING_TO_INLINE")
+inline fun needsManualSnackBarInset(): Boolean =
+    Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+
+@Suppress("NOTHING_TO_INLINE")
 inline fun hasAlbumArtistIdInMediaStore(): Boolean =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
