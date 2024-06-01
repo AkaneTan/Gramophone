@@ -50,6 +50,7 @@ import org.akanework.gramophone.ui.adapters.SongAdapter
  * @author AkaneTan
  */
 class SearchFragment : BaseFragment(false) {
+    // TODO this class leaks InsetSourceControl
     private val handler = Handler(Looper.getMainLooper())
     private val libraryViewModel: LibraryViewModel by activityViewModels()
     private val filteredList: MutableList<MediaItem> = mutableListOf()

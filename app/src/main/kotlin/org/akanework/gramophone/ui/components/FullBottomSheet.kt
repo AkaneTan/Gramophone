@@ -138,10 +138,6 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		override fun onStopTrackingTouch(seekBar: SeekBar?) {
-			// This value is multiplied by 1000 is because
-			// when the number is too big (like when toValue
-			// used the duration directly) we might encounter
-			// some performance problem.
 			val mediaId = instance?.currentMediaItem?.mediaId
 			if (mediaId != null) {
 				if (seekBar != null) {
@@ -158,10 +154,6 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		override fun onStopTrackingTouch(slider: Slider) {
-			// This value is multiplied by 1000 is because
-			// when the number is too big (like when toValue
-			// used the duration directly) we might encounter
-			// some performance problem.
 			val mediaId = instance?.currentMediaItem?.mediaId
 			if (mediaId != null) {
 				instance?.seekTo((slider.value.toLong()))
@@ -596,7 +588,10 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			wrappedContext = DynamicColors.wrapContextIfAvailable(
 				context,
 				options
-			)
+			).apply {
+				// TODO does https://stackoverflow.com/a/58004553 describe this or another bug? will google ever fix anything?
+				resources.configuration.uiMode = context.resources.configuration.uiMode
+			}
 
 			applyColorScheme()
 		}
@@ -907,7 +902,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		if (duration != null && !isUserTracking) {
 			bottomSheetFullSeekBar.max = duration.toInt()
 			bottomSheetFullSeekBar.progress = instance?.currentPosition?.toInt() ?: 0
-			bottomSheetFullSlider.valueTo = duration.toFloat()
+			bottomSheetFullSlider.valueTo = duration.toFloat().coerceAtLeast(1f)
 			bottomSheetFullSlider.value =
 				min(instance?.currentPosition?.toFloat() ?: 0f, bottomSheetFullSlider.valueTo)
 			bottomSheetFullPosition.text = position
