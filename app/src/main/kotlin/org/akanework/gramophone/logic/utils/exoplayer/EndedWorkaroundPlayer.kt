@@ -6,6 +6,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import org.akanework.gramophone.BuildConfig
+import org.akanework.gramophone.logic.utils.CircularShuffleOrder
 
 
 /**
@@ -35,6 +36,9 @@ class EndedWorkaroundPlayer(player: ExoPlayer)
 				wrappedPlayer.removeListener(this)
 			}
 		}
+	val shufflePersistent: CircularShuffleOrder.Persistent?
+		get() = if (shuffleModeEnabled) shuffleOrder?.let { CircularShuffleOrder.Persistent(it) } else null
+	private var shuffleOrder: CircularShuffleOrder? = null
 
 	override fun onPositionDiscontinuity(
 		oldPosition: Player.PositionInfo,
@@ -50,5 +54,33 @@ class EndedWorkaroundPlayer(player: ExoPlayer)
 	override fun getPlaybackState(): Int {
 		if (isEnded) return STATE_ENDED
 		return super.getPlaybackState()
+	}
+
+	fun setShuffleOrder(
+		shuffleOrderFactory: ((CircularShuffleOrder) -> Unit) -> CircularShuffleOrder) {
+		val shuffleOrder = shuffleOrderFactory { shuffleOrder = it }
+		exoPlayer.setShuffleOrder(shuffleOrder)
+		this.shuffleOrder = shuffleOrder
+	}
+
+	override fun moveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
+		super.moveMediaItems(fromIndex, toIndex, newIndex)
+		try {
+			shuffleOrder?.let {
+				exoPlayer.setShuffleOrder(
+					it.cloneAndRemove(fromIndex, toIndex)
+						.cloneAndInsert(newIndex, toIndex - fromIndex)
+				)
+			}
+		} catch (e: Exception) {
+			Log.e(TAG, Log.getStackTraceString(e))
+			throw e
+		}
+	}
+
+	override fun moveMediaItem(currentIndex: Int, newIndex: Int) {
+		if (currentIndex != newIndex) {
+			moveMediaItems(currentIndex, currentIndex + 1, newIndex)
+		}
 	}
 }

@@ -40,8 +40,7 @@ import java.nio.charset.StandardCharsets
 
 @OptIn(UnstableApi::class)
 class LastPlayedManager(context: Context,
-                        private val controller: EndedWorkaroundPlayer,
-                        private val seedProvider: () -> CircularShuffleOrder.Persistent?) {
+                        private val controller: EndedWorkaroundPlayer) {
 
     companion object {
         private const val TAG = "LastPlayedManager"
@@ -61,7 +60,7 @@ class LastPlayedManager(context: Context,
     }
 
     fun eraseShuffleOrder() {
-        prefs.use {
+        prefs.use(relax = true) {
             edit(commit = true) {
                 putString("shuffle_persist", null)
             }
@@ -80,7 +79,7 @@ class LastPlayedManager(context: Context,
         val repeatMode = controller.repeatMode
         val shuffleModeEnabled = controller.shuffleModeEnabled
         val playbackParameters = controller.playbackParameters
-        val persistent = seedProvider()
+        val persistent = controller.shufflePersistent
         val ended = controller.playbackState == Player.STATE_ENDED
         CoroutineScope(Dispatchers.Default).launch {
             if (BuildConfig.DEBUG) {
@@ -143,7 +142,12 @@ class LastPlayedManager(context: Context,
             Log.d(TAG, "decoding playlist...")
         }
         CoroutineScope(Dispatchers.Default).launch {
-            val seed = CircularShuffleOrder.Persistent.deserialize(prefs.getString("shuffle_persist", null))
+            val seed = try {
+                CircularShuffleOrder.Persistent.deserialize(prefs.getString("shuffle_persist", null))
+            } catch (e: Exception) {
+                eraseShuffleOrder()
+                throw e
+            }
             try {
                 val lastPlayedLst = prefs.getStringSet("last_played_lst", null)
                 val lastPlayedGrp = prefs.getString("last_played_grp", null)

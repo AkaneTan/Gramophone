@@ -10,6 +10,7 @@ import androidx.media3.extractor.ExtractorsFactory
 import androidx.media3.extractor.flac.FlacExtractor
 import androidx.media3.extractor.mkv.MatroskaExtractor
 import androidx.media3.extractor.mp3.Mp3Extractor
+import androidx.media3.extractor.mp4.FragmentedMp4Extractor
 import androidx.media3.extractor.mp4.Mp4Extractor
 import androidx.media3.extractor.ogg.OggExtractor
 import androidx.media3.extractor.text.SubtitleParser
@@ -49,7 +50,7 @@ class GramophoneExtractorsFactory : ExtractorsFactory {
 	private var flacFlags = 0
 	private var matroskaFlags = 0
 	private var mp4Flags = 0
-	//private var fragmentedMp4Flags = 0
+	private var fragmentedMp4Flags = 0
 	private var mp3Flags = 0
 
 	@Synchronized
@@ -88,11 +89,11 @@ class GramophoneExtractorsFactory : ExtractorsFactory {
 		return this
 	}
 
-	/*@Synchronized
+	@Synchronized
 	fun setFragmentedMp4ExtractorFlags(flags: Int): GramophoneExtractorsFactory {
 		this.fragmentedMp4Flags = flags
 		return this
-	}*/
+	}
 
 	@Synchronized
 	fun setMp3ExtractorFlags(flags: Int): GramophoneExtractorsFactory {
@@ -153,12 +154,12 @@ class GramophoneExtractorsFactory : ExtractorsFactory {
 			)
 			7 -> extractors.add(Mp3Extractor(this.mp3Flags or (if (this.constantBitrateSeekingEnabled) Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING else 0) or (if (this.constantBitrateSeekingAlwaysEnabled) Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING_ALWAYS else 0)))
 			8 -> {
-				/*extractors.add(
+				extractors.add(
 					FragmentedMp4Extractor(
 						SubtitleParser.Factory.UNSUPPORTED,
 						this.fragmentedMp4Flags or FragmentedMp4Extractor.FLAG_EMIT_RAW_SUBTITLE_DATA
 					)
-				)*/
+				)
 				extractors.add(
 					Mp4Extractor(
 						SubtitleParser.Factory.UNSUPPORTED,

@@ -12,7 +12,7 @@ import kotlin.random.Random
  */
 @UnstableApi
 class CircularShuffleOrder private constructor(
-	private val listener: Listener,
+	private val listener: (CircularShuffleOrder) -> Unit,
 	private val shuffled: IntArray,
 	private val random: Random
 ) : ShuffleOrder {
@@ -47,13 +47,13 @@ class CircularShuffleOrder private constructor(
 		}
 	}
 
-	constructor(listener: Listener, firstIndex: Int, length: Int, randomSeed: Long) :
+	constructor(listener: (CircularShuffleOrder) -> Unit, firstIndex: Int, length: Int, randomSeed: Long) :
 			this(listener, firstIndex, length, Random(randomSeed))
 
-	private constructor(listener: Listener, firstIndex: Int, length: Int, random: Random) :
+	private constructor(listener: (CircularShuffleOrder) -> Unit, firstIndex: Int, length: Int, random: Random) :
 			this(listener, calculateListWithFirstIndex(calculateShuffledList(0, length, random), firstIndex), random)
 
-	constructor(listener: Listener, shuffledIndices: IntArray, randomSeed: Long) :
+	constructor(listener: (CircularShuffleOrder) -> Unit, shuffledIndices: IntArray, randomSeed: Long) :
 			this(listener, shuffledIndices.copyOf(), Random(randomSeed))
 
 	override fun getLength(): Int {
@@ -83,25 +83,18 @@ class CircularShuffleOrder private constructor(
 	// B,C,D will be shuffled among themselves to ie D,B,C and then this list will be inserted after
 	// A so that song list will now be A,D,B,C,...
 	override fun cloneAndInsert(insertionIndex: Int, insertionCount: Int): ShuffleOrder {
-		if (shuffled.isEmpty()) {
-			listener.onLazilySetShuffleOrder {
-				CircularShuffleOrder(listener, it, insertionCount, random.nextLong()) }
-			return CircularShuffleOrder(listener, 0, insertionCount, random.nextLong())
-				.also { listener.onPersistableDataUpdated(Persistent(it)) }
-		}
 		// the original list: [0, 1, 2] shuffled: [2, 0, 1] indexInShuffled: [1, 2, 0]
 		// insertionIndex for adding after 1 would be 2, 2 is at index 0 in shuffled list, after 0
 		// would be 1 so we want to insert into shuffled at index 1 here.
 		// If insertionIndex is 0, just add it to the very beginning.
-		val ii = if (insertionIndex > 0) indexInShuffled[insertionIndex - 1] + 1 else 0
-		val insertionPoints = (ii..<(ii+insertionCount)).toList().toIntArray()
+		val insertionPoint = if (insertionIndex > 0) indexInShuffled[insertionIndex - 1] + 1 else 0
 		val insertionValues = calculateShuffledList(insertionIndex, insertionCount, random)
 		val newShuffled = IntArray(shuffled.size + insertionCount)
 		var indexInInsertionList = 0
 		var indexInOldShuffled = 0
 
 		for (i in 0 until shuffled.size + insertionCount) {
-			if (indexInInsertionList < insertionCount && indexInOldShuffled == insertionPoints[indexInInsertionList]) {
+			if (indexInInsertionList < insertionCount && indexInOldShuffled == insertionPoint) {
 				newShuffled[i] = insertionValues[indexInInsertionList++]
 			} else {
 				newShuffled[i] = shuffled[indexInOldShuffled++]
@@ -112,7 +105,7 @@ class CircularShuffleOrder private constructor(
 		}
 
 		return CircularShuffleOrder(listener, newShuffled, Random(random.nextLong()))
-			.also { listener.onPersistableDataUpdated(Persistent(it)) }
+			.also { listener(it) }
 	}
 
 	override fun cloneAndRemove(indexFrom: Int, indexToExclusive: Int): ShuffleOrder {
@@ -130,17 +123,12 @@ class CircularShuffleOrder private constructor(
 		}
 
 		return CircularShuffleOrder(listener, newShuffled, Random(random.nextLong()))
-			.also { listener.onPersistableDataUpdated(Persistent(it)) }
+			.also { listener(it) }
 	}
 
 	override fun cloneAndClear(): ShuffleOrder {
 		return CircularShuffleOrder(listener, 0, 0, Random(random.nextLong()))
-			.also { listener.onPersistableDataUpdated(Persistent(it)) }
-	}
-
-	interface Listener {
-		fun onPersistableDataUpdated(order: Persistent)
-		fun onLazilySetShuffleOrder(factory: (Int) -> CircularShuffleOrder)
+			.also { listener(it) }
 	}
 
 	class Persistent private constructor(private val seed: Long, private val data: IntArray?) {
@@ -158,11 +146,11 @@ class CircularShuffleOrder private constructor(
 			return if (data != null) "$seed;${data.joinToString(",")}" else seed.toString()
 		}
 
-		fun toFactory(listener: Listener, controller: MediaController): (Int) -> CircularShuffleOrder {
+		fun toFactory(controller: MediaController): (Int) -> ((CircularShuffleOrder) -> Unit) -> CircularShuffleOrder {
 			if (data == null) {
-				return { CircularShuffleOrder(listener, it, controller.mediaItemCount, seed) }
+				return { c -> { CircularShuffleOrder(it, c, controller.mediaItemCount, seed) } }
 			} else {
-				return {
+				return { _ ->
 					if (controller.mediaItemCount != data.size) {
 						throw IllegalStateException(
 							"CircularShuffleOrder.Persistable: " +
@@ -171,7 +159,7 @@ class CircularShuffleOrder private constructor(
 							Log.e(TAG, Log.getStackTraceString(it))
 						}
 					}
-					CircularShuffleOrder(listener, data, seed)
+					{ CircularShuffleOrder(it, data, seed) }
 				}
 			}
 		}

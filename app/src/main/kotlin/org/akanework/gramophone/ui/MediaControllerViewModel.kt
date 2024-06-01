@@ -38,7 +38,8 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 	override fun onStart(owner: LifecycleOwner) {
 		val sessionToken =
 			SessionToken(context, ComponentName(context, GramophonePlaybackService::class.java))
-		controllerLifecycle = LifecycleHost()
+		val lc = LifecycleHost()
+		controllerLifecycle = lc
 		controllerFuture =
 			MediaController
 				.Builder(context, sessionToken)
@@ -47,14 +48,16 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 				.apply {
 					addListener(
 						{
-							if (controllerFuture != null && this != controllerFuture)
-								throw IllegalStateException()
-							if (controllerFuture?.isDone == true &&
-								controllerFuture?.isCancelled == false) {
-								val instance = get()
-								val lifecycle = controllerLifecycle!!
-								lifecycle.lifecycleRegistry.currentState = Lifecycle.State.CREATED
-								connectionListenersImpl.dispatch { it(instance, lifecycle.lifecycle) }
+							if (isCancelled) return@addListener
+							val instance = get()
+							if (this != controllerFuture) {
+								// If there is a race condition that would cause this controller
+								// to leak, which can happen, just make sure we don't leak.
+								lc.destroy()
+								instance.release()
+							} else {
+								lc.lifecycleRegistry.currentState = Lifecycle.State.CREATED
+								connectionListenersImpl.dispatch { it(instance, lc.lifecycle) }
 							}
 						}, ContextCompat.getMainExecutor(context)
 					)

@@ -95,7 +95,7 @@ import kotlin.random.Random
  */
 @androidx.annotation.OptIn(UnstableApi::class)
 class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Listener,
-    MediaLibraryService.MediaLibrarySession.Callback, Player.Listener, CircularShuffleOrder.Listener {
+    MediaLibraryService.MediaLibrarySession.Callback, Player.Listener {
 
     companion object {
         private const val TAG = "GramoPlaybackService"
@@ -117,8 +117,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private var mediaSession: MediaLibrarySession? = null
     private var controller: MediaController? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
-    private var shuffleFactory: ((Int) -> CircularShuffleOrder)? = null
-    private var shufflePersistent: CircularShuffleOrder.Persistent? = null
+    private var shuffleFactory:
+            ((Int) -> ((CircularShuffleOrder) -> Unit) -> CircularShuffleOrder)? = null
     private lateinit var customCommands: List<CommandButton>
     private lateinit var handler: Handler
     private lateinit var nm: NotificationManagerCompat
@@ -190,7 +190,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                 setLightsEnabled(false)
                 setShowBadge(false)
                 setSound(null, null)
-            }.build())
+            }.build()
+            )
         } else if (nm.getNotificationChannel(NOTIFY_CHANNEL_ID) != null) {
             // for people who upgraded from S/S_V2 to newer version
             nm.deleteNotificationChannel(NOTIFY_CHANNEL_ID)
@@ -235,30 +236,33 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     .build(),
             )
 
-        val player = EndedWorkaroundPlayer(ExoPlayer.Builder(
-            this,
-            GramophoneRenderFactory(this)
-                .setEnableAudioFloatOutput(
-                    prefs.getBooleanStrict("floatoutput", false))
-                .setEnableDecoderFallback(true)
-                .setEnableAudioTrackPlaybackParams( // hardware/system-accelerated playback speed
-                    prefs.getBooleanStrict("ps_hardware_acc", true))
-                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER),
-                GramophoneMediaSourceFactory(this))
-            .setWakeMode(C.WAKE_MODE_LOCAL)
-            .setSkipSilenceEnabled(prefs.getBooleanStrict("skip_silence", false))
-            /*.setMediaSourceFactory(
-                DefaultMediaSourceFactory(this, DefaultExtractorsFactory()
-                    .setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_INDEX_SEEKING))
-            ) TODO flag breaks playback of AcousticGuitar.mp3, report exo bug + add UI toggle*/
-            .setAudioAttributes(
-                AudioAttributes
-                    .Builder()
-                    .setUsage(C.USAGE_MEDIA)
-                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                    .build(), true
+        val player = EndedWorkaroundPlayer(
+            ExoPlayer.Builder(
+                this,
+                GramophoneRenderFactory(this)
+                    .setEnableAudioFloatOutput(
+                        prefs.getBooleanStrict("floatoutput", false)
+                    )
+                    .setEnableDecoderFallback(true)
+                    .setEnableAudioTrackPlaybackParams( // hardware/system-accelerated playback speed
+                        prefs.getBooleanStrict("ps_hardware_acc", true)
+                    )
+                    .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER),
+                GramophoneMediaSourceFactory(this)
+                /* .setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_INDEX_SEEKING))
+            TODO flag breaks playback of AcousticGuitar.mp3, report exo bug + add UI toggle*/
             )
-            .build())
+                .setWakeMode(C.WAKE_MODE_LOCAL)
+                .setSkipSilenceEnabled(prefs.getBooleanStrict("skip_silence", false))
+                .setAudioAttributes(
+                    AudioAttributes
+                        .Builder()
+                        .setUsage(C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .build(), true
+                )
+                .build()
+        )
         if (BuildConfig.DEBUG) {
             player.exoPlayer.addAnalyticsListener(EventLogger())
         }
@@ -267,8 +271,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.exoPlayer.audioSessionId)
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
         })
-        lastPlayedManager = LastPlayedManager(this, player) {
-            if (mediaSession?.player?.shuffleModeEnabled == true) shufflePersistent else null }
+        lastPlayedManager = LastPlayedManager(this, player)
         lastPlayedManager.allowSavingState = false
 
         mediaSession =
@@ -278,8 +281,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                     // Coil-based bitmap loader to reuse Coil's caching and to make sure we use
                     // the same cover art as the rest of the app, ie MediaStore's cover
 
-                    override fun decodeBitmap(data: ByteArray)
-                    = throw UnsupportedOperationException("decodeBitmap() not supported")
+                    override fun decodeBitmap(data: ByteArray) =
+                        throw UnsupportedOperationException("decodeBitmap() not supported")
 
                     override fun loadBitmap(
                         uri: Uri
@@ -297,8 +300,12 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                                             completer.set((result as BitmapImage).bitmap)
                                         },
                                         onError = { _ ->
-                                            completer.setException(Exception("coil onError called" +
-                                                    " (normal if no album art exists)"))
+                                            completer.setException(
+                                                Exception(
+                                                    "coil onError called" +
+                                                            " (normal if no album art exists)"
+                                                )
+                                            )
                                         }
                                     )
                                     .build())
@@ -306,7 +313,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                                     completer.addCancellationListener(
                                         { it.dispose() },
                                         ContextCompat.getMainExecutor(
-                                            this@GramophonePlaybackService)
+                                            this@GramophonePlaybackService
+                                        )
                                     )
                                 }
                             "coil load for $uri"
@@ -326,7 +334,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
                         this,
                         PENDING_INTENT_SESSION_ID,
                         Intent(this, MainActivity::class.java),
-                        PendingIntent.FLAG_IMMUTABLE or  PendingIntent.FLAG_UPDATE_CURRENT,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
                     )
                 )
                 .build()
@@ -335,7 +343,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             if (mediaSession == null) return@post
             lastPlayedManager.restore { items, factory ->
                 if (mediaSession == null) return@restore
-                applyShuffleSeed(true, factory.toFactory(this, controller!!))
+                applyShuffleSeed(true, factory.toFactory(controller!!))
                 if (items != null) {
                     try {
                         mediaSession?.player?.setMediaItems(
@@ -485,7 +493,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     ): ListenableFuture<MediaItemsWithStartPosition> {
         val settable = SettableFuture.create<MediaItemsWithStartPosition>()
         lastPlayedManager.restore { items, factory ->
-            applyShuffleSeed(true, factory.toFactory(this, this.controller!!))
+            applyShuffleSeed(true, factory.toFactory(this.controller!!))
             if (items == null) {
                 settable.setException(NullPointerException(
                     "null MediaItemsWithStartPosition, see former logs for root cause"))
@@ -547,8 +555,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         if (events.contains(EVENT_SHUFFLE_MODE_ENABLED_CHANGED) &&
             shuffleFactory == null && !events.contains(Player.EVENT_TIMELINE_CHANGED)) {
             // when enabling shuffle, re-shuffle lists so that the first index is up to date
-            applyShuffleSeed(false) { CircularShuffleOrder(
-                this, it, controller!!.mediaItemCount, Random.nextLong()) }
+            applyShuffleSeed(false) { c -> { CircularShuffleOrder(
+                it, c, controller!!.mediaItemCount, Random.nextLong()) } }
         }
     }
 
@@ -610,29 +618,20 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         }
     }
 
-    private fun applyShuffleSeed(lazy: Boolean, factory: (Int) -> CircularShuffleOrder) {
+    private fun applyShuffleSeed(lazy: Boolean, factory:
+        (Int) -> ((CircularShuffleOrder) -> Unit) -> CircularShuffleOrder) {
         if (lazy) {
             shuffleFactory = factory
         } else {
-            (mediaSession?.player as EndedWorkaroundPlayer?)?.exoPlayer?.let {
+            (mediaSession?.player as EndedWorkaroundPlayer?)?.let {
                 val data = try {
                     factory(it.currentMediaItemIndex)
                 } catch (e: IllegalStateException) {
                     lastPlayedManager.eraseShuffleOrder()
                     throw e
                 }
-                it.setShuffleOrder(data.also { s ->
-                    onPersistableDataUpdated(CircularShuffleOrder.Persistent(s))
-                })
+                it.setShuffleOrder(data)
             }
         }
-    }
-
-    override fun onPersistableDataUpdated(order: CircularShuffleOrder.Persistent) {
-        shufflePersistent = order
-    }
-
-    override fun onLazilySetShuffleOrder(factory: (Int) -> CircularShuffleOrder) {
-        applyShuffleSeed(true, factory)
     }
 }

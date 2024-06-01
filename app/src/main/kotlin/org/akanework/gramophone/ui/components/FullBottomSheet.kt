@@ -88,8 +88,7 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
-import org.akanework.gramophone.ui.components.FullBottomSheet.PlaylistCardMoveCallback.PlaylistCardMoveHelperContract
-import java.util.Collections
+import java.util.LinkedList
 import kotlin.math.min
 
 @SuppressLint("NotifyDataSetChanged")
@@ -381,9 +380,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 							or WindowInsetsCompat.Type.displayCutout(), Insets.of(0, i2.top, 0, 0))
 					.build()
 			}
-			val pl = dumpPlaylist()
-			val playlistAdapter = PlaylistCardAdapter(pl, activity)
-			val callback: ItemTouchHelper.Callback = PlaylistCardMoveCallback(playlistAdapter)
+			val playlistAdapter = PlaylistCardAdapter(activity)
+			val callback: ItemTouchHelper.Callback = PlaylistCardMoveCallback(playlistAdapter::onRowMoved)
 			val touchHelper = ItemTouchHelper(callback)
 			touchHelper.attachToRecyclerView(recyclerView)
 			playlistNowPlaying = playlistBottomSheet.findViewById(R.id.now_playing)
@@ -396,8 +394,8 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			}
 			recyclerView.layoutManager = LinearLayoutManager(context)
 			recyclerView.adapter = playlistAdapter
-			recyclerView.scrollToPosition(pl.indexOfFirst { item ->
-				item.first == (instance?.currentMediaItemIndex ?: 0)
+			recyclerView.scrollToPosition(playlistAdapter.playlist.first.indexOfFirst { i ->
+				i == (instance?.currentMediaItemIndex ?: 0)
 			})
 			recyclerView.fastScroll(null, null)
 			playlistBottomSheet.setOnDismissListener {
@@ -1006,20 +1004,19 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 	}
 
-	private fun dumpPlaylist(): MutableList<Pair<Int, MediaItem>> {
-		val items = mutableListOf<Pair<Int, MediaItem>>()
-		if (instance!!.shuffleModeEnabled) {
-			var i = instance!!.currentTimeline.getFirstWindowIndex(true)
-			while (i != C.INDEX_UNSET) {
-				items.add(Pair(i, instance!!.getMediaItemAt(i)))
-				i = instance!!.currentTimeline.getNextWindowIndex(i, Player.REPEAT_MODE_OFF, true)
-			}
-		} else {
-			for (i in 0 until instance!!.mediaItemCount) {
-				items.add(Pair(i, instance!!.getMediaItemAt(i)))
-			}
+	private fun dumpPlaylist(): Pair<MutableList<Int>, MutableList<MediaItem>> {
+		val items = LinkedList<MediaItem>()
+		for (i in 0 until instance!!.mediaItemCount) {
+			items.add(instance!!.getMediaItemAt(i))
 		}
-		return items
+		val indexes = LinkedList<Int>()
+		val s = instance!!.shuffleModeEnabled
+		var i = instance!!.currentTimeline.getFirstWindowIndex(s)
+		while (i != C.INDEX_UNSET) {
+			indexes.add(i)
+			i = instance!!.currentTimeline.getNextWindowIndex(i, Player.REPEAT_MODE_OFF, s)
+		}
+		return Pair(indexes, items)
 	}
 
 	private inner class LyricAdapter(
@@ -1116,9 +1113,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 		}
 
 		@SuppressLint("NotifyDataSetChanged")
-		fun updateTextColor(newColorConstrast: Int, newColor: Int, newHighlightColor: Int) {
+		fun updateTextColor(newColorContrast: Int, newColor: Int, newHighlightColor: Int) {
 			defaultTextColor = newColor
-			contrastTextColor = newColorConstrast
+			contrastTextColor = newColorContrast
 			highlightTextColor = newHighlightColor
 			notifyDataSetChanged()
 		}
@@ -1152,11 +1149,11 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 	}
 
 
-	private class PlaylistCardAdapter(
-		private var playlist: MutableList<Pair<Int, MediaItem>>,
+	private inner class PlaylistCardAdapter(
 		private val activity: MainActivity
-	) : MyRecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>(), PlaylistCardMoveHelperContract {
+	) : MyRecyclerView.Adapter<PlaylistCardAdapter.ViewHolder>() {
 
+		var playlist: Pair<MutableList<Int>, MutableList<MediaItem>> = dumpPlaylist()
 		override fun onCreateViewHolder(
 			parent: ViewGroup,
 			viewType: Int
@@ -1168,7 +1165,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			)
 
 		override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-			val item = playlist[holder.bindingAdapterPosition].second
+			val item = playlist.second[playlist.first[holder.bindingAdapterPosition]]
 			holder.songName.text = item.mediaMetadata.title
 			holder.songArtist.text = item.mediaMetadata.artist
 			holder.indicator.text =
@@ -1184,15 +1181,16 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				ViewCompat.performHapticFeedback(v, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
 				val pos = holder.bindingAdapterPosition
-				instance?.removeMediaItem(playlist[pos].first)
-				val idx = playlist.removeAt(pos).first
-				playlist = playlist.map { it.copy(first = if (it.first > idx) it.first - 1 else it.first) }.toMutableList()
+				val idx = playlist.first.removeAt(pos)
+				playlist.first.replaceAll { if (it > idx) it - 1 else it }
+				instance?.removeMediaItem(idx)
+				playlist.second.removeAt(idx)
 				notifyItemRemoved(pos)
 			}
 			holder.itemView.setOnClickListener {
 				ViewCompat.performHapticFeedback(it, HapticFeedbackConstantsCompat.CONTEXT_CLICK)
 				val instance = activity.getPlayer()
-				instance?.seekToDefaultPosition(playlist[holder.absoluteAdapterPosition].first)
+				instance?.seekToDefaultPosition(playlist.first[holder.absoluteAdapterPosition])
 			}
 		}
 
@@ -1201,7 +1199,9 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			super.onViewRecycled(holder)
 		}
 
-		override fun getItemCount(): Int = playlist.size
+		override fun getItemCount(): Int = if (playlist.first.size != playlist.second.size)
+			throw IllegalStateException()
+		else playlist.first.size
 
 		inner class ViewHolder(
 			view: View,
@@ -1213,24 +1213,22 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			val closeButton: MaterialButton = view.findViewById(R.id.close)
 		}
 
-		override fun onRowMoved(from: Int, to: Int) {
-			if (from < to) {
-				for (i in from until to) {
-					Collections.swap(playlist, i, i + 1)
-				}
-			} else {
-				for (i in from downTo to + 1) {
-					Collections.swap(playlist, i, i - 1)
-				}
-			}
-			notifyItemMoved(from, to)
+		fun onRowMoved(from: Int, to: Int) {
 			val mediaController = activity.getPlayer()
-			mediaController?.moveMediaItem(from, to)
+			val from1 = playlist.first.removeAt(from)
+			playlist.first.replaceAll { if (it > from1) it - 1 else it }
+			val movedItem = playlist.second.removeAt(from1)
+			val to1 = if (to > 0) playlist.first[to - 1] + 1 else 0
+			playlist.first.replaceAll { if (it >= to1) it + 1 else it }
+			playlist.first.add(to, to1)
+			playlist.second.add(to1, movedItem)
+			mediaController?.moveMediaItem(from1, to1)
+			notifyItemMoved(from, to)
 		}
 	}
 
 
-	private class PlaylistCardMoveCallback(private val touchHelperContract: PlaylistCardMoveHelperContract) :
+	private class PlaylistCardMoveCallback(private val touchHelperContract: (Int, Int) -> Unit) :
 		ItemTouchHelper.Callback() {
 		override fun isLongPressDragEnabled(): Boolean {
 			return true
@@ -1253,16 +1251,12 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 			viewHolder: RecyclerView.ViewHolder,
 			target: RecyclerView.ViewHolder
 		): Boolean {
-			touchHelperContract.onRowMoved(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+			touchHelperContract(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
 			return false
 		}
 
 		override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-		}
-
-		interface PlaylistCardMoveHelperContract {
-			fun onRowMoved(from: Int, to: Int)
+			throw IllegalStateException()
 		}
 	}
 
