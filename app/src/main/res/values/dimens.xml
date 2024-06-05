@@ -17,4 +17,6 @@
     <dimen name="grid_card_margin_top">8dp</dimen>
     <dimen name="grid_card_margin_label">12.5dp</dimen>
     <dimen name="grid_card_padding_bottom">24dp</dimen>
+    <dimen name="lyric_top_padding">36dp</dimen>
+    <dimen name="lyric_bottom_padding">640dp</dimen>
 </resources>
