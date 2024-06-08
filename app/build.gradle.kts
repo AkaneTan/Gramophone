@@ -5,7 +5,7 @@ import com.android.build.gradle.tasks.PackageAndroidArtifact
 import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.util.Properties
 
-val aboutLibsVersion = "11.1.4" // keep in sync with plugin version
+val aboutLibsVersion = "11.2.1" // keep in sync with plugin version
 
 plugins {
     id("com.android.application")
@@ -56,19 +56,25 @@ android {
             excludes += "META-INF/*.version"
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true // TODO kill it once alpha2 is out
+
+    java {
+        compileOptions {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
+            isCoreLibraryDesugaringEnabled = true // TODO kill it once alpha2 is out
+        }
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += listOf(
-            "-Xno-param-assertions",
-            "-Xno-call-assertions",
-            "-Xno-receiver-assertions",
-        )
+    kotlin {
+        jvmToolchain(17)
+        compilerOptions {
+            freeCompilerArgs = listOf(
+                "-Xno-param-assertions",
+                "-Xno-call-assertions",
+                "-Xno-receiver-assertions"
+            )
+        }
     }
 
     lint {

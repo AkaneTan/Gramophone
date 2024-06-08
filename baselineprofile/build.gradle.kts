@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
@@ -10,13 +12,14 @@ android {
 	namespace = "org.nift4.baselineprofile"
 	compileSdk = 34
 
-	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(17)
+		}
 	}
 
-	kotlinOptions {
-		jvmTarget = "17"
+	kotlin {
+		jvmToolchain(17)
 	}
 
 	defaultConfig {

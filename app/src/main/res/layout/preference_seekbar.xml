@@ -51,26 +51,35 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical">
 
-            <TextView
-                android:id="@android:id/title"
+            <!-- For better RTL support -->
+            <LinearLayout
+                android:id="@+id/title_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="64dp"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="19sp"
-                tools:text="Title" />
+                android:layout_toStartOf="@id/seekbar_value">
+
+                <TextView
+                    android:id="@android:id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="19sp"
+                    tools:text="Title" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/seekbar_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@android:id/title"
-                android:layout_alignParentTop="true"
+                android:layout_alignBottom="@id/title_container"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="24dp"
+                android:gravity="end"
+                android:minWidth="40dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="15sp"
                 tools:text="50" />
@@ -79,7 +88,7 @@
                 android:id="@+id/seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@android:id/title"
+                android:layout_below="@id/title_container"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginTop="12dp"
                 android:background="@null"
