@@ -43,6 +43,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.preference.PreferenceManager
 import coil3.annotation.ExperimentalCoilApi
+import coil3.asDrawable
 import coil3.imageLoader
 import coil3.request.Disposable
 import coil3.request.ImageRequest
