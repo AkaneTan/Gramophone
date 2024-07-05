@@ -17,6 +17,7 @@
 
 package org.akanework.gramophone.logic
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -193,6 +194,13 @@ inline fun <reified T, reified U> HashMap<T, U>.putIfAbsentSupport(key: T, value
         // Duh...
         if (!containsKey(key))
             put(key, value)
+    }
+}
+
+inline fun <reified T> MutableList<T>.replaceAllSupport(operator: (T) -> T) {
+    val li = listIterator()
+    while (li.hasNext()) {
+        li.set(operator(li.next()))
     }
 }
 
@@ -406,7 +414,7 @@ inline fun SharedPreferences.getStringSetStrict(key: String, defValue: Set<Strin
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 fun Context.hasImagePermission() =
-    checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) ==
+    checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) ==
             PackageManager.PERMISSION_GRANTED
 
 @Suppress("NOTHING_TO_INLINE")

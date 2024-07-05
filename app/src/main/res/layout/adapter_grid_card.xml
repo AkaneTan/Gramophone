@@ -7,7 +7,6 @@
     android:layout_gravity="center_horizontal"
     android:clickable="true"
     android:focusable="true"
-    android:background="?selectableItemBackground"
     android:gravity="center_horizontal"
     android:paddingBottom="@dimen/grid_card_padding_bottom">
 

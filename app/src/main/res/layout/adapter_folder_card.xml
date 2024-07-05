@@ -6,7 +6,6 @@
     android:layout_height="75dp"
     android:clickable="true"
     android:focusable="true"
-    android:background="?attr/selectableItemBackground"
     android:paddingStart="24dp"
     android:paddingEnd="54dp"
     android:orientation="horizontal"

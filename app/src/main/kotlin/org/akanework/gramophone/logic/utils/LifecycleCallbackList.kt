@@ -3,7 +3,6 @@ package org.akanework.gramophone.logic.utils
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import coil3.request.Disposable
 
 interface LifecycleCallbackList<T> {
 	fun addCallback(lifecycle: Lifecycle?, callback: T)

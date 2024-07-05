@@ -44,7 +44,7 @@ abstract class CallbackViewInflater(private val parent: AppCompatViewInflater, p
 			false, false, false, false)
 			?: viewFromTag(context, name, attrs))
 			.also {
-				cb.onCreateView(context, name, attrs, it)
+				cb.onCreateView(context, attrs, it)
 			}
 	}
 
@@ -132,7 +132,7 @@ abstract class CallbackViewInflater(private val parent: AppCompatViewInflater, p
 	}
 
 	interface Callback {
-		fun onCreateView(context: Context, name: String, attrs: AttributeSet, result: View?)
+		fun onCreateView(context: Context, attrs: AttributeSet, result: View?)
 	}
 
 	private val sConstructorMap: SimpleArrayMap<String?, Constructor<out View?>?> =

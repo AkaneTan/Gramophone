@@ -69,7 +69,6 @@ class ViewCompatInflater
 
 		override fun onCreateView(
 			context: Context,
-			name: String,
 			attrs: AttributeSet,
 			result: View?
 		) {

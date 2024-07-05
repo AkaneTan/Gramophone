@@ -84,6 +84,7 @@ import org.akanework.gramophone.logic.hasImagePermission
 import org.akanework.gramophone.logic.hasScopedStorageV1
 import org.akanework.gramophone.logic.hasScopedStorageWithMediaTypes
 import org.akanework.gramophone.logic.playOrPause
+import org.akanework.gramophone.logic.replaceAllSupport
 import org.akanework.gramophone.logic.setTextAnimation
 import org.akanework.gramophone.logic.setTimer
 import org.akanework.gramophone.logic.startAnimation
@@ -1258,7 +1259,7 @@ class FullBottomSheet
 				val instance = activity.getPlayer()
 				val pos = holder.bindingAdapterPosition
 				val idx = playlist.first.removeAt(pos)
-				playlist.first.replaceAll { if (it > idx) it - 1 else it }
+				playlist.first.replaceAllSupport { if (it > idx) it - 1 else it }
 				instance?.removeMediaItem(idx)
 				playlist.second.removeAt(idx)
 				notifyItemRemoved(pos)
@@ -1292,10 +1293,10 @@ class FullBottomSheet
 		fun onRowMoved(from: Int, to: Int) {
 			val mediaController = activity.getPlayer()
 			val from1 = playlist.first.removeAt(from)
-			playlist.first.replaceAll { if (it > from1) it - 1 else it }
+			playlist.first.replaceAllSupport { if (it > from1) it - 1 else it }
 			val movedItem = playlist.second.removeAt(from1)
 			val to1 = if (to > 0) playlist.first[to - 1] + 1 else 0
-			playlist.first.replaceAll { if (it >= to1) it + 1 else it }
+			playlist.first.replaceAllSupport { if (it >= to1) it + 1 else it }
 			playlist.first.add(to, to1)
 			playlist.second.add(to1, movedItem)
 			mediaController?.moveMediaItem(from1, to1)
