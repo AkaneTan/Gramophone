@@ -130,7 +130,7 @@ public class CustomSmoothScroller extends RecyclerView.SmoothScroller {
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     protected void onSeekTargetStep(int dx, int dy, RecyclerView.State state, Action action) {
-        // TODO(b/72745539): Is there ever a time when onSeekTargetStep should be called when
+        // TO-DO(b/72745539): Is there ever a time when onSeekTargetStep should be called when
         // getChildCount returns 0?  Should this logic be extracted out of this method such that
         // this method is not called if getChildCount() returns 0?
         if (getChildCount() == 0) {

@@ -62,7 +62,6 @@ android {
             toolchain {
                 languageVersion = JavaLanguageVersion.of(17)
             }
-            isCoreLibraryDesugaringEnabled = true // TODO kill it once alpha2 is out
         }
     }
 
@@ -211,7 +210,6 @@ dependencies {
     implementation("io.coil-kt.coil3:coil:3.0.0-alpha07")
     //noinspection GradleDependency newer versions need java.nio which is api 26+
     //implementation("com.github.albfernandez:juniversalchardet:2.0.3") TODO
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // TODO kill it once alpha2 is out
     implementation("androidx.profileinstaller:profileinstaller:1.3.1")
     "baselineProfile"(project(":baselineprofile"))
     // --- below does not apply to release builds ---
