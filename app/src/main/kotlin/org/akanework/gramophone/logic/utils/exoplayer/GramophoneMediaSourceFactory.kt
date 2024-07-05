@@ -19,7 +19,6 @@ import androidx.media3.exoplayer.source.ExternallyLoadedMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import androidx.media3.exoplayer.source.SingleSampleMediaSource
 import androidx.media3.exoplayer.upstream.CmcdConfiguration
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
@@ -51,7 +50,6 @@ class GramophoneMediaSourceFactory(
 	private var liveMaxOffsetMs: Long
 	private var liveMinSpeed: Float
 	private var liveMaxSpeed: Float
-	private var parseSubtitlesDuringExtraction = false
 
 	constructor(context: Context?) : this(
 		DefaultDataSource.Factory(
@@ -201,48 +199,37 @@ class GramophoneMediaSourceFactory(
 				mediaSources[0] = mediaSource
 
 				for (i in subtitleConfigurations.indices) {
-					if (this.parseSubtitlesDuringExtraction) {
-						val format = (Format.Builder()).setSampleMimeType(
-							subtitleConfigurations[i].mimeType
-						).setLanguage(
-							subtitleConfigurations[i].language
-						).setSelectionFlags(
-							subtitleConfigurations[i].selectionFlags
-						).setRoleFlags(
-							subtitleConfigurations[i].roleFlags
-						).setLabel(
-							subtitleConfigurations[i].label
-						).setId(subtitleConfigurations[i].id).build()
-						val extractorsFactory = ExtractorsFactory { arrayOf(UnknownSubtitlesExtractor(format)) }
-						val progressiveMediaSourceFactory = ProgressiveMediaSource.Factory(
-							this.dataSourceFactory,
-							{ BundledExtractorsAdapter(extractorsFactory) },
-							{ DrmSessionManager.DRM_UNSUPPORTED },
-							DefaultLoadErrorHandlingPolicy(),
-							1048576
-						)
-						if (this.loadErrorHandlingPolicy != null) {
-							progressiveMediaSourceFactory.setLoadErrorHandlingPolicy(
-								loadErrorHandlingPolicy!!
-							)
-						}
-
-						mediaSources[i + 1] = progressiveMediaSourceFactory.createMediaSource(
-							MediaItem.fromUri(
-								subtitleConfigurations[i].uri.toString()
-							)
-						)
-					} else {
-						val singleSampleMediaSourceFactory =
-							SingleSampleMediaSource.Factory(this.dataSourceFactory)
-						if (this.loadErrorHandlingPolicy != null) {
-							singleSampleMediaSourceFactory.setLoadErrorHandlingPolicy(this.loadErrorHandlingPolicy)
-						}
-
-						mediaSources[i + 1] = singleSampleMediaSourceFactory.createMediaSource(
-							subtitleConfigurations[i], -9223372036854775807L
+					val format = (Format.Builder()).setSampleMimeType(
+						subtitleConfigurations[i].mimeType
+					).setLanguage(
+						subtitleConfigurations[i].language
+					).setSelectionFlags(
+						subtitleConfigurations[i].selectionFlags
+					).setRoleFlags(
+						subtitleConfigurations[i].roleFlags
+					).setLabel(
+						subtitleConfigurations[i].label
+					).setId(subtitleConfigurations[i].id).build()
+					val extractorsFactory =
+						ExtractorsFactory { arrayOf(UnknownSubtitlesExtractor(format)) }
+					val progressiveMediaSourceFactory = ProgressiveMediaSource.Factory(
+						this.dataSourceFactory,
+						{ BundledExtractorsAdapter(extractorsFactory) },
+						{ DrmSessionManager.DRM_UNSUPPORTED },
+						DefaultLoadErrorHandlingPolicy(),
+						1048576
+					)
+					if (this.loadErrorHandlingPolicy != null) {
+						progressiveMediaSourceFactory.setLoadErrorHandlingPolicy(
+							loadErrorHandlingPolicy!!
 						)
 					}
+
+					mediaSources[i + 1] = progressiveMediaSourceFactory.createMediaSource(
+						MediaItem.fromUri(
+							subtitleConfigurations[i].uri.toString()
+						)
+					)
 				}
 
 				mediaSource = MergingMediaSource(*mediaSources.toTypedArray())
@@ -264,7 +251,6 @@ class GramophoneMediaSourceFactory(
 		private val supportedTypes: MutableSet<Int?> = hashSetOf()
 		private val mediaSourceFactories: MutableMap<Int?, MediaSource.Factory?> = hashMapOf()
 		private var dataSourceFactory: DataSource.Factory? = null
-		private var parseSubtitlesDuringExtraction = false
 		private var cmcdConfigurationFactory: CmcdConfiguration.Factory? = null
 		private var drmSessionManagerProvider: DrmSessionManagerProvider? = null
 		private var loadErrorHandlingPolicy: LoadErrorHandlingPolicy? = null
@@ -303,7 +289,6 @@ class GramophoneMediaSourceFactory(
 					}
 
 					mediaSourceFactory.setSubtitleParserFactory(this.subtitleParserFactory)
-					mediaSourceFactory.experimentalParseSubtitlesDuringExtraction(this.parseSubtitlesDuringExtraction)
 					mediaSourceFactories[contentType] = mediaSourceFactory
 					return mediaSourceFactory
 				}
