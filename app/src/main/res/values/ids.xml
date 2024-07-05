@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<item name="genres" type="id">genres</item>
-	<item name="dates" type="id">dates</item>
+	<item name="genres" type="id" />
+	<item name="dates" type="id" />
+	<item name="songs" type="id" />
+	<item name="albums" type="id" />
+	<item name="artists" type="id" />
+	<item name="folders" type="id" />
+	<item name="detailed_folders" type="id" />
+	<item name="playlists" type="id" />
 </resources>
