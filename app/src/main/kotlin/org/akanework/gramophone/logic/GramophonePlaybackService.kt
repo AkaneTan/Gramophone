@@ -586,7 +586,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         }
     }
 
-    @SuppressLint("MissingPermission") // only used on S/S_V2
+    @SuppressLint("MissingPermission", "NotificationPermission") // only used on S/S_V2
     override fun onForegroundServiceStartNotAllowedException() {
         Log.w(TAG, "Failed to resume playback :/")
         if (mayThrowForegroundServiceStartNotAllowed()) {

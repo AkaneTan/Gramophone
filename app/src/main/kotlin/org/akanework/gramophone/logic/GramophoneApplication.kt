@@ -35,7 +35,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
@@ -53,61 +53,55 @@ import kotlin.system.exitProcess
  *
  * @author AkaneTan, nift4
  */
-class GramophoneApplication : Application(), SingletonImageLoader.Factory {
+class GramophoneApplication : Application(), SingletonImageLoader.Factory,
+    Thread.UncaughtExceptionHandler {
 
     companion object {
         private const val TAG = "GramophoneApplication"
     }
 
+    init {
+        Thread.setDefaultUncaughtExceptionHandler(this)
+    }
+
     @OptIn(UnstableApi::class)
     override fun onCreate() {
-        // Set up BugHandlerActivity.
-        Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
-            val exceptionMessage = Log.getStackTraceString(paramThrowable)
-            val threadName = Thread.currentThread().name
-            Log.e(TAG, "Error on thread $threadName:\n $exceptionMessage")
-            val intent = Intent(this, BugHandlerActivity::class.java)
-            intent.putExtra("exception_message", exceptionMessage)
-            intent.putExtra("thread", threadName)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-
-            exitProcess(10)
-        }
         super.onCreate()
-        // Cheat by loading preferences before setting up StrictMode.
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         if (BuildConfig.DEBUG) {
-            // Use StrictMode to find anti-patterns issues (as of writing, no known violations)
-            // (of course not counting SharedPreferences which just is like that by nature)
-            StrictMode.setThreadPolicy(ThreadPolicy.Builder()
-                .detectAll().permitDiskReads() // permit disk reads due to media3 setMetadata() TODO extra player thread
-                .penaltyLog().penaltyDialog().build())
-            StrictMode.setVmPolicy(VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog().penaltyDeath().build())
+            // Use StrictMode to find anti-pattern issues
+            StrictMode.setThreadPolicy(
+                ThreadPolicy.Builder()
+                    .detectAll().permitDiskReads() // permit disk reads due to media3 setMetadata() TODO extra player thread
+                    .penaltyLog().penaltyDialog().build())
+            StrictMode.setVmPolicy(
+                VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog().penaltyDeath().build())
         }
+        // This is a separate thread to avoid disk read on main thread and improve startup time
+        Thread {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            // Set application theme when launching.
+            when (prefs.getStringStrict("theme_mode", "0")) {
+                "0" -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
 
-        // https://github.com/androidx/media/issues/805
-        if (needsMissingOnDestroyCallWorkarounds()) {
-            val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
-        }
+                "1" -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
 
-        // Set application theme when launching.
-        when (prefs.getStringStrict("theme_mode", "0")) {
-            "0" -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                "2" -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
             }
 
-            "1" -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            // https://github.com/androidx/media/issues/805
+            if (needsMissingOnDestroyCallWorkarounds()) {
+                val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                nm.cancel(DefaultMediaNotificationProvider.DEFAULT_NOTIFICATION_ID)
             }
-
-            "2" -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
+        }.start()
     }
 
     @kotlin.OptIn(ExperimentalCoilApi::class)
@@ -126,7 +120,7 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
                                 ThumbnailUtils.createAudioThumbnail(file, options.size.let {
                                         Size(it.width.pxOrElse { size?.width ?: 10000 },
                                             it.height.pxOrElse { size?.height ?: 10000 })
-                                    }, null).asCoilImage(), true, DataSource.DISK)
+                                    }, null).asImage(), true, DataSource.DISK)
                         }
                     })
                 }
@@ -156,5 +150,17 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
                 })
             }
             .build()
+    }
+
+    override fun uncaughtException(t: Thread, e: Throwable) {
+        val exceptionMessage = Log.getStackTraceString(e)
+        val threadName = Thread.currentThread().name
+        Log.e(TAG, "Error on thread $threadName:\n $exceptionMessage")
+        val intent = Intent(this, BugHandlerActivity::class.java)
+        intent.putExtra("exception_message", exceptionMessage)
+        intent.putExtra("thread", threadName)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        exitProcess(10)
     }
 }

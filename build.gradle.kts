@@ -3,7 +3,7 @@ plugins {
     val agpVersion = "8.5.0"
     id("com.android.application") version agpVersion apply false
 	id("com.android.test") version agpVersion apply false
-	id("androidx.baselineprofile") version "1.2.3" apply false
+	id("androidx.baselineprofile") version "1.2.4" apply false
     val kotlinVersion = "2.0.0"
     id("org.jetbrains.kotlin.android") version kotlinVersion apply false
     id("org.jetbrains.kotlin.plugin.parcelize") version kotlinVersion apply false
