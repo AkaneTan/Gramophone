@@ -6,9 +6,6 @@ import androidx.lifecycle.LifecycleOwner
 import coil3.request.Disposable
 
 interface LifecycleCallbackList<T> {
-	fun addCallbackForever(callback: T) {
-		addCallback(null, callback)
-	}
 	fun addCallback(lifecycle: Lifecycle?, callback: T)
 	fun removeCallback(callback: T)
 }

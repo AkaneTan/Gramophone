@@ -36,6 +36,7 @@ import com.google.common.primitives.Ints
 import java.io.IOException
 
 @OptIn(UnstableApi::class)
+@Suppress("unused")
 class GramophoneMediaSourceFactory(
 	private var dataSourceFactory: DataSource.Factory,
 	extractorsFactory: ExtractorsFactory

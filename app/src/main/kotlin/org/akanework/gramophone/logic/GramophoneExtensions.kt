@@ -178,7 +178,6 @@ fun MediaController.getTimer(): Int? =
         else null
     }
 
-fun MediaController.hasTimer(): Boolean = getTimer() != null
 fun MediaController.setTimer(value: Int) {
     sendCustomCommand(
         SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY).apply {

@@ -190,7 +190,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.collection:collection-ktx:1.4.0")
-    implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")

@@ -76,8 +76,8 @@ public class CustomSmoothScroller extends RecyclerView.SmoothScroller {
     // scrolling slows down and reschedule another interim target scroll
     private static final float TARGET_SEEK_EXTRA_SCROLL_RATIO = 1.2f;
     private final DisplayMetrics mDisplayMetrics;
-    protected LinearInterpolator mLinearInterpolator = new LinearInterpolator();
-    protected TimeInterpolator mDecelerateInterpolator =
+    protected final LinearInterpolator mLinearInterpolator = new LinearInterpolator();
+    protected final TimeInterpolator mDecelerateInterpolator =
         new PathInterpolator(0.4f, 0.2f, 0f, 1f);
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     protected PointF mTargetVector;
@@ -102,6 +102,7 @@ public class CustomSmoothScroller extends RecyclerView.SmoothScroller {
 
     /**
      * {@inheritDoc}
+     * @noinspection NullableProblems
      */
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
@@ -124,6 +125,7 @@ public class CustomSmoothScroller extends RecyclerView.SmoothScroller {
 
     /**
      * {@inheritDoc}
+     * @noinspection NullableProblems
      */
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
@@ -135,7 +137,6 @@ public class CustomSmoothScroller extends RecyclerView.SmoothScroller {
             stop();
             return;
         }
-        //noinspection PointlessBooleanExpression
         if (DEBUG && mTargetVector != null
             && (mTargetVector.x * dx < 0 || mTargetVector.y * dy < 0)) {
             throw new IllegalStateException("Scroll happened in the opposite direction"

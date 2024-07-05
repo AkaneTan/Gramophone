@@ -20,7 +20,7 @@
 
 ## スクリーンショット
 | ![スクリーンショット 1](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_1.png) | ![スクリーンショット 2](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_2.png) | ![スクリーンショット 3](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_3.png) |
-|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+|--------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | ![スクリーンショット 4](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_4.png) | ![スクリーンショット 5](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_5.png) | ![スクリーンショット 6](https://github.com/AkaneTan/Gramophone/raw/beta/resources/screenshot_6.png) |
 
 ## インストール

@@ -70,10 +70,6 @@ object CalculationUtils {
         return color and 0x00ffffff or (alpha shl 24)
     }
 
-    private fun constrain(amount: Float, low: Float, high: Float): Float {
-        return if (amount < low) low else amount.coerceAtMost(high)
-    }
-
     @Suppress("NOTHING_TO_INLINE")
     inline fun lerp(start: Float, stop: Float, amount: Float): Float {
         return start + (stop - start) * amount
@@ -92,7 +88,7 @@ object CalculationUtils {
 
     /** Returns the single argument constrained between [0.0, 1.0].  */
     private fun saturate(value: Float): Float {
-        return constrain(value, 0.0f, 1.0f)
+        return value.coerceAtLeast(0f).coerceAtMost(1f)
     }
 
     /** Returns the saturated (constrained between [0, 1]) result of [.lerpInv].  */

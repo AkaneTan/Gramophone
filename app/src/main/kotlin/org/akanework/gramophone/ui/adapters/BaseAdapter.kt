@@ -97,7 +97,7 @@ abstract class BaseAdapter<T>(
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
     override val itemHeightHelper by lazy {
         DefaultItemHeightHelper.concatItemHeightHelper(decorAdapter, {1}, this) }
-    protected val handler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
     private var bgHandlerThread: HandlerThread? = null
     private var bgHandler: Handler? = null
     private val rawList = ArrayList<T>(liveData?.value?.size ?: 0)

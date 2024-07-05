@@ -1,3 +1,5 @@
+@file:Suppress("SameReturnValue")
+
 package org.akanework.gramophone.ui.components
 
 import android.content.res.ColorStateList

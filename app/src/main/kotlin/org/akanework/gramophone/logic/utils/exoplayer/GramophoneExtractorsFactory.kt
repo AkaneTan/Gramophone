@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.atomic.AtomicBoolean
 
+@Suppress("unused")
 @OptIn(UnstableApi::class)
 class GramophoneExtractorsFactory : ExtractorsFactory {
 	companion object {

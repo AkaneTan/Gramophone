@@ -35,7 +35,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -98,13 +100,14 @@ import java.util.LinkedList
 import kotlin.math.min
 
 @SuppressLint("NotifyDataSetChanged")
-class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
+@androidx.annotation.OptIn(UnstableApi::class)
+class FullBottomSheet
+	(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
 	ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), Player.Listener,
 	SharedPreferences.OnSharedPreferenceChangeListener {
 	constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 		this(context, attrs, defStyleAttr, 0)
 	constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-	constructor(context: Context) : this(context, null)
 
 	private val activity
 		get() = context as MainActivity
@@ -286,7 +289,7 @@ class FullBottomSheet(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
 				}
 
 				else -> {
-					return@addCallback Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
+					return@addCallback Futures.immediateFuture(SessionResult(SessionError.ERROR_NOT_SUPPORTED))
 				}
 			}
 			return@addCallback Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))

@@ -124,12 +124,11 @@ object LrcUtils {
                         }
 
                         // read as single line *IF* this is a single line lyric
-                        if (nextSync == "[$firstSync]") {
-                            lyricLine = line.substring(sequence.last().range.last + 1)
+                        lyricLine = if (nextSync == "[$firstSync]") {
+                            line.substring(sequence.last().range.last + 1)
                                 .let { if (trim) it.trim() else it }
-                        }
-                        else {
-                            lyricLine = lrcContent.substring(startIndex + 1, endIndex)
+                        } else {
+                            lrcContent.substring(startIndex + 1, endIndex)
                                 .let { if (trim) it.trim() else it }
                         }
                     }

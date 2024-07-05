@@ -60,6 +60,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
 import coil3.BitmapImage
@@ -482,7 +483,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             }
 
             else -> {
-                SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
+                SessionResult(SessionError.ERROR_BAD_VALUE)
             }
         })
     }
