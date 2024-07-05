@@ -186,7 +186,7 @@ aboutLibraries {
 }
 
 dependencies {
-    val media3Version = "1.4.0-alpha01"
+    val media3Version = "1.4.0-beta01"
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.collection:collection-ktx:1.4.0")
