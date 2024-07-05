@@ -35,7 +35,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
@@ -126,7 +126,7 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory {
                                 ThumbnailUtils.createAudioThumbnail(file, options.size.let {
                                         Size(it.width.pxOrElse { size?.width ?: 10000 },
                                             it.height.pxOrElse { size?.height ?: 10000 })
-                                    }, null).asCoilImage(), true, DataSource.DISK)
+                                    }, null).asImage(), true, DataSource.DISK)
                         }
                     })
                 }
