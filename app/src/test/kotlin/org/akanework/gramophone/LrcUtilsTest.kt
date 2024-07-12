@@ -21,16 +21,16 @@ class LrcUtilsTest {
 		if (multiline == null) {
 			val a = parse(lrcContent, trim, true, mustSkip)
 			val b = parse(lrcContent, trim, false, mustSkip)
-			assertEquals("multiline true and false should result in same list for this string", b, a)
+			assertEquals("multiline true and false should result in same list for this string (trim=$trim)", b, a)
 			return a
 		}
 		val a = LrcUtils.parseLrcString(lrcContent, trim, multiline)
 		if (mustSkip != null) {
 			val b = listOf(MediaStoreUtils.Lyric(content = lrcContent))
 			if (mustSkip) {
-				assertEquals(b, a)
+				assertEquals("excepted skip (trim=$trim multiline=$multiline)", b, a)
 			} else {
-				assertNotEquals(b, a)
+				assertNotEquals("excepted no skip (trim=$trim multiline=$multiline)", b, a)
 			}
 		}
 		return a
