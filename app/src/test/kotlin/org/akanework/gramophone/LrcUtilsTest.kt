@@ -15,13 +15,13 @@ class LrcUtilsTest {
 		if (trim == null) {
 			val a = parse(lrcContent, true, multiline, mustSkip)
 			val b = parse(lrcContent, false, multiline, mustSkip)
-			assertEquals("trim true and false should result in same list for this string", a, b)
+			assertEquals("trim true and false should result in same list for this string", b, a)
 			return a
 		}
 		if (multiline == null) {
 			val a = parse(lrcContent, trim, true, mustSkip)
 			val b = parse(lrcContent, trim, false, mustSkip)
-			assertEquals("multiline true and false should result in same list for this string", a, b)
+			assertEquals("multiline true and false should result in same list for this string", b, a)
 			return a
 		}
 		val a = LrcUtils.parseLrcString(lrcContent, trim, multiline)
