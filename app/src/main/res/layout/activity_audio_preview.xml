@@ -73,7 +73,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:importantForAccessibility="no"
-                            android:text=" • "
+                            android:text="@string/seperator_dot"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
@@ -84,16 +84,25 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/play_pause_replay_button"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="0dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Play"
                     android:padding="4dp"
-                    android:src="@drawable/ic_play_arrow" />
+                    android:src="@drawable/ic_play_arrow"
+                    android:layout_marginTop="18dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/play_anim"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="42dp"
+                    app:iconTint="?attr/colorOnSecondaryContainer" />
             </LinearLayout>
 
             <LinearLayout

@@ -1,51 +1,68 @@
 package org.akanework.gramophone.ui
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.preference.PreferenceManager
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.playOrPause
+import org.akanework.gramophone.logic.startAnimation
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
+import org.akanework.gramophone.logic.utils.exoplayer.GramophoneMediaSourceFactory
+import org.akanework.gramophone.logic.utils.exoplayer.GramophoneRenderFactory
+import org.akanework.gramophone.ui.components.FullBottomSheet.Companion.SLIDER_UPDATE_INTERVAL
+import kotlin.io.path.Path
+import kotlin.io.path.name
 
 class AudioPreviewActivity : AppCompatActivity() {
 
     private lateinit var player: ExoPlayer
-    private lateinit var titleAndButtonsContainer: LinearLayout
     private lateinit var audioTitle: TextView
     private lateinit var artistTextView: TextView
     private lateinit var durationTextView: TextView
     private lateinit var albumArt: ImageView
     private lateinit var timeSlider: Slider
-    private lateinit var playPauseButton: ImageButton
+    private lateinit var playPauseButton: MaterialButton
 
     private val handler = Handler(Looper.getMainLooper())
+    private var runnableRunning = false
+    private var lastKnownDuration = C.TIME_UNSET
     private val updateSliderRunnable = object : Runnable {
         override fun run() {
-            timeSlider.value = player.currentPosition.toFloat()
-            handler.postDelayed(this, 1000)
+            if (lastKnownDuration != player.duration) {
+                // midi duration does not seem to be available in any callback, midi extractor bug?
+                lastKnownDuration = player.duration
+                timeSlider.valueTo = player.duration.toFloat().coerceAtLeast(1f)
+                durationTextView.text = convertDurationToTimeStamp(player.duration)
+            }
+            timeSlider.value = player.currentPosition.toFloat().coerceAtMost(timeSlider.valueTo)
+                .coerceAtLeast(timeSlider.valueFrom)
+            if (runnableRunning) handler.postDelayed(this, 100)
         }
     }
 
-    private lateinit var audioManager: AudioManager
-    private lateinit var audioFocusRequest: AudioFocusRequest
-
+    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         setContentView(R.layout.activity_audio_preview)
 
         audioTitle = findViewById(R.id.title_text_view)
@@ -55,58 +72,30 @@ class AudioPreviewActivity : AppCompatActivity() {
         timeSlider = findViewById(R.id.time_slider)
         playPauseButton = findViewById(R.id.play_pause_replay_button)
 
-        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+        player = ExoPlayer.Builder(this,
+            GramophoneRenderFactory(this)
+                .setEnableAudioFloatOutput(
+                    prefs.getBooleanStrict("floatoutput", false)
+                )
+                .setEnableDecoderFallback(true)
+                .setEnableAudioTrackPlaybackParams( // hardware/system-accelerated playback speed
+                    prefs.getBooleanStrict("ps_hardware_acc", true)
+                )
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER),
+            GramophoneMediaSourceFactory(this)
+        )
+            .setWakeMode(C.WAKE_MODE_LOCAL)
             .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build()
-            )
-            .setOnAudioFocusChangeListener { focusChange ->
-                when (focusChange) {
-                    AudioManager.AUDIOFOCUS_LOSS -> {
-                        player.pause()
-                        updatePlayPauseButton()
-                    }
-                }
-            }
-            .build()
-
-        player = ExoPlayer.Builder(this).build()
-
-        handleIntent(intent)
-
-        playPauseButton.setOnClickListener {
-            if (player.isPlaying) {
-                player.pause()
-            } else {
-                if (requestAudioFocus()) {
-                    player.play()
-                }
-            }
-            updatePlayPauseButton()
-        }
-
-        timeSlider.addOnChangeListener { _, value, fromUser ->
-            if (fromUser) {
-                player.seekTo(value.toLong())
-            }
-        }
-
+                AudioAttributes
+                    .Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                    .build(), true
+            ).build()
         player.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                when (playbackState) {
-                    Player.STATE_READY -> {
-                        timeSlider.valueTo = player.duration.toFloat()
-                        handler.post(updateSliderRunnable)
-                    }
-
-                    Player.STATE_ENDED -> finish()
-                }
-            }
-
             override fun onIsPlayingChanged(isPlaying: Boolean) {
+                runnableRunning = isPlaying
+                handler.post(updateSliderRunnable)
                 updatePlayPauseButton()
             }
 
@@ -115,15 +104,27 @@ class AudioPreviewActivity : AppCompatActivity() {
                 newPosition: Player.PositionInfo,
                 reason: Int
             ) {
-                timeSlider.value = player.currentPosition.toFloat()
+                handler.post(updateSliderRunnable)
+            }
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                if (mediaItem == null) return
+                audioTitle.text =
+                    mediaItem.mediaMetadata.title ?:
+                    mediaItem.localConfiguration?.uri?.lastPathSegment?.let { Path(it) }?.name
+                artistTextView.text = mediaItem.mediaMetadata.artist
+                mediaItem.mediaMetadata.artworkData?.let {
+                    val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    albumArt.setImageBitmap(bitmap)
+                } ?: run {
+                    albumArt.setImageResource(R.drawable.ic_default_cover)
+                }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                audioTitle.text =
-                    mediaMetadata.title ?: intent.data?.lastPathSegment ?: "Audio Title"
-                artistTextView.text = mediaMetadata.artist ?: "Unknown Artist"
-                durationTextView.text = convertDurationToTimeStamp(player.duration)
-
+                audioTitle.text = mediaMetadata.title ?: player.currentMediaItem
+                    ?.localConfiguration?.uri?.lastPathSegment?.let { Path(it) }?.name
+                artistTextView.text = mediaMetadata.artist
                 mediaMetadata.artworkData?.let {
                     val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
                     albumArt.setImageBitmap(bitmap)
@@ -132,6 +133,18 @@ class AudioPreviewActivity : AppCompatActivity() {
                 }
             }
         })
+
+        playPauseButton.setOnClickListener {
+            if (player.playbackState == Player.STATE_ENDED) player.seekToDefaultPosition()
+            player.playOrPause()
+        }
+
+        timeSlider.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                player.seekTo(value.toLong())
+            }
+        }
+        handleIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -149,37 +162,41 @@ class AudioPreviewActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestAudioFocus(): Boolean {
-        val result = audioManager.requestAudioFocus(audioFocusRequest)
-        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (requestAudioFocus()) {
-            player.playWhenReady = true
-            handler.post(updateSliderRunnable)
-        }
-    }
-
     override fun onPause() {
         super.onPause()
         player.playWhenReady = false
-        handler.removeCallbacks(updateSliderRunnable)
-        audioManager.abandonAudioFocusRequest(audioFocusRequest)
-        finish()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        runnableRunning = false
         player.release()
-        handler.removeCallbacks(updateSliderRunnable)
-        audioManager.abandonAudioFocusRequest(audioFocusRequest)
+        super.onDestroy()
     }
 
     private fun updatePlayPauseButton() {
-        playPauseButton.setImageResource(
-            if (player.isPlaying) R.drawable.ic_pause_filled else R.drawable.ic_play_arrow
-        )
+        if (player.isPlaying) {
+            if (playPauseButton.getTag(R.id.play_next) as Int? != 1) {
+                playPauseButton.icon = AppCompatResources.getDrawable(this, R.drawable.play_anim)
+                playPauseButton.icon.startAnimation()
+                playPauseButton.setTag(R.id.play_next, 1)
+            }
+            //if (!isUserTracking) {
+            //    progressDrawable.animate = true
+            //}
+            if (!runnableRunning) {
+                handler.postDelayed(updateSliderRunnable, SLIDER_UPDATE_INTERVAL)
+                runnableRunning = true
+            }
+        } else if (player.playbackState != Player.STATE_BUFFERING) {
+            if (playPauseButton.getTag(R.id.play_next) as Int? != 2) {
+                playPauseButton.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.pause_anim)
+                playPauseButton.icon.startAnimation()
+                playPauseButton.setTag(R.id.play_next, 2)
+            }
+            //if (!isUserTracking) {
+            //    progressDrawable.animate = false
+            //}
+        }
     }
 }
