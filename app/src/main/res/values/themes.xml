@@ -133,4 +133,12 @@
 
     <style name="Theme.Splash" parent="Day.Theme.Splash" />
 
+    <style name="Theme.AudioPreviewDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
 </resources>
