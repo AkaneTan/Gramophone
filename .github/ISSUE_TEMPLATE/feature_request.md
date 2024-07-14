@@ -19,4 +19,4 @@ A clear and concise description of any alternative solutions or features you've 
 **Additional context**
 Add any other context or screenshots about the feature request here.
 
-- [ ] I will follow issue format and will add `[FR]` to start of my issue title, and I acknowledge that if I didn't follow the format my issue might get closed without further explaination.
+- [ ] I will follow the issue format and will add `[FR]` to the start of my issue title, and I acknowledge that if I don't follow the format, my issue might get closed without further explanation.
