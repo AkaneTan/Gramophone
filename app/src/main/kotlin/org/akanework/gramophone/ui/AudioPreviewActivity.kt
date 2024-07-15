@@ -8,6 +8,7 @@ import android.os.Looper
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.OptIn
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.media3.common.AudioAttributes
@@ -20,6 +21,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.preference.PreferenceManager
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getBooleanStrict
@@ -34,6 +36,7 @@ import kotlin.io.path.name
 
 class AudioPreviewActivity : AppCompatActivity() {
 
+    private lateinit var d: AlertDialog
     private lateinit var player: ExoPlayer
     private lateinit var audioTitle: TextView
     private lateinit var artistTextView: TextView
@@ -59,18 +62,27 @@ class AudioPreviewActivity : AppCompatActivity() {
         }
     }
 
+    // TODO add squiggly progress, isUserTracking logic and text view for current pos
+    // TODO and way to open this song in gramophone IF its part of library
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        setContentView(R.layout.activity_audio_preview)
 
-        audioTitle = findViewById(R.id.title_text_view)
-        artistTextView = findViewById(R.id.artist_text_view)
-        durationTextView = findViewById(R.id.duration_text_view)
-        albumArt = findViewById(R.id.album_art)
-        timeSlider = findViewById(R.id.time_slider)
-        playPauseButton = findViewById(R.id.play_pause_replay_button)
+        d = MaterialAlertDialogBuilder(this)
+            .setView(R.layout.activity_audio_preview)
+            .setOnDismissListener {
+                runnableRunning = false
+                player.release()
+                handler.postDelayed(this::finish, 200)
+            }
+            .show()
+        audioTitle = d.findViewById(R.id.title_text_view)!!
+        artistTextView = d.findViewById(R.id.artist_text_view)!!
+        durationTextView = d.findViewById(R.id.duration_text_view)!!
+        albumArt = d.findViewById(R.id.album_art)!!
+        timeSlider = d.findViewById(R.id.time_slider)!!
+        playPauseButton = d.findViewById(R.id.play_pause_replay_button)!!
 
         player = ExoPlayer.Builder(this,
             GramophoneRenderFactory(this)
@@ -133,7 +145,6 @@ class AudioPreviewActivity : AppCompatActivity() {
                 }
             }
         })
-
         playPauseButton.setOnClickListener {
             if (player.playbackState == Player.STATE_ENDED) player.seekToDefaultPosition()
             player.playOrPause()
@@ -168,8 +179,8 @@ class AudioPreviewActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        runnableRunning = false
-        player.release()
+        if (d.isShowing)
+            d.dismiss()
         super.onDestroy()
     }
 

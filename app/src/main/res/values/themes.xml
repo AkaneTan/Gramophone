@@ -133,12 +133,15 @@
 
     <style name="Theme.Splash" parent="Day.Theme.Splash" />
 
-    <style name="Theme.AudioPreviewDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Theme.AudioPreviewDialogTheme" parent="Theme.Gramophone">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
 </resources>
