@@ -40,10 +40,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Set release type
+        run: echo releaseType=CI > package.properties
+
       - name: Create signing files
         if: github.event_name == 'push'
         run: |
-          echo releaseType=CI > package.properties
           mkdir -p ~/.gradle
           echo "${{ secrets.KEYSTORE_SECRET }}" | base64 -d > ~/key.jks
           echo "AKANE_RELEASE_STORE_FILE=$(realpath ~/key.jks)" > ~/.gradle/gradle.properties
