@@ -51,12 +51,25 @@ jobs:
           echo "AKANE_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> ~/.gradle/gradle.properties
           echo "AKANE_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PWD }}" >> ~/.gradle/gradle.properties
 
-      - name: Build with Gradle
+      - name: Build with Gradle for push
+        if: github.event_name == 'push'
         run: ./gradlew :app:assembleRelease
+  
+      - name: Build with Gradle for pull request
+        if: github.event_name == 'pull_request'
+        run: ./gradlew :app:assembleDebug
 
-      - name: Find apk
+      - name: Find apk for push
+        if: github.event_name == 'push'
         run: |
           APK_FILE=$(find app/build/outputs/apk/release -name '*.apk')
+          echo "APK_FILE=$APK_FILE" >> $GITHUB_ENV
+          echo "APK_FILE_NAME=$(basename $APK_FILE .apk)" >> $GITHUB_ENV
+  
+      - name: Find apk for pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          APK_FILE=$(find app/build/outputs/apk/debug -name '*.apk')
           echo "APK_FILE=$APK_FILE" >> $GITHUB_ENV
           echo "APK_FILE_NAME=$(basename $APK_FILE .apk)" >> $GITHUB_ENV
 
