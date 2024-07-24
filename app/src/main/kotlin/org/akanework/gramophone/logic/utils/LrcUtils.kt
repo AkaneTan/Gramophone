@@ -130,7 +130,19 @@ object LrcUtils {
 
         markTranslations(lyricsList)
 
-        lyricsList.removeAll { it.content.isEmpty() }
+        if (lyricsList.isNotEmpty()) {
+            var count = 0
+            while (true) {
+                if (count < lyricsList.size
+                    && lyricsList[count].content.isEmpty()) {
+                    lyricsList.removeAt(count)
+                    count --
+                } else {
+                    break
+                }
+                count++
+            }
+        }
 
         if (lyricsList.isEmpty() && lrcContent.isNotEmpty()) {
             lyricsList.add(MediaStoreUtils.Lyric(null, lrcContent, false))
