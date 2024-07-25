@@ -140,10 +140,10 @@
 				android:value="0"
 				android:visibility="gone"
 				app:labelBehavior="gone"
-				app:thumbHeight="0dp"
-				app:thumbWidth="0dp"
-				app:thumbTrackGapSize="2dp"
-				app:trackHeight="6dp"
+				app:thumbHeight="24dp"
+				app:thumbWidth="4dp"
+				app:thumbTrackGapSize="4dp"
+				app:trackHeight="11dp"
 				tools:value="0.5"
 				tools:visibility="visible" />
 
