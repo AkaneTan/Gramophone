@@ -1393,7 +1393,7 @@ class FullBottomSheet
 				newIndex != bottomSheetFullLyricAdapter.currentFocusPos
 			) {
 				if (bottomSheetFullLyricList[newIndex].content.isNotEmpty()) {
-					val smoothScroller = createSmoothScroller(animationLock)
+					val smoothScroller = createSmoothScroller(animationLock || newIndex == 0)
 					smoothScroller.targetPosition = newIndex
 					bottomSheetFullLyricLinearLayoutManager.startSmoothScroll(
 						smoothScroller
