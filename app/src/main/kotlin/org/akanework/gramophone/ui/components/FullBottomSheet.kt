@@ -97,6 +97,7 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
+import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import java.util.LinkedList
 import kotlin.math.min
 
@@ -327,6 +328,15 @@ class FullBottomSheet
 					com.google.android.material.R.attr.colorPrimary,
 				)
 			)
+		}
+
+		bottomSheetFullCover.setOnClickListener {
+			val position = activity.libraryViewModel.mediaItemList.value?.indexOfFirst {
+				it.mediaId == instance?.currentMediaItem?.mediaId
+			}
+			activity.startFragment(DetailDialogFragment()) {
+				putInt("Position", position!!)
+			}
 		}
 
 		bottomSheetTimerButton.setOnClickListener {
