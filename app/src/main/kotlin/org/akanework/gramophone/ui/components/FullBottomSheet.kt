@@ -98,6 +98,7 @@ import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
+import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import java.util.LinkedList
 import kotlin.math.min
 
@@ -336,6 +337,19 @@ class FullBottomSheet
 			}
 			activity.startFragment(DetailDialogFragment()) {
 				putInt("Position", position!!)
+			}
+		}
+
+		bottomSheetFullTitle.setOnClickListener {
+			minimize?.invoke()
+			val position = instance?.currentMediaItem?.mediaId?.let { currentMediaItemId ->
+				activity.libraryViewModel.albumItemList.value?.indexOfFirst { album ->
+					album.songList.any { it.mediaId == currentMediaItemId }
+				}
+			}
+			activity.startFragment(GeneralSubFragment()) {
+				putInt("Position", position!!)
+				putInt("Item", R.id.album)
 			}
 		}
 
