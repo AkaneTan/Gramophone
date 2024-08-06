@@ -97,6 +97,7 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
+import org.akanework.gramophone.ui.fragments.ArtistSubFragment
 import org.akanework.gramophone.ui.fragments.DetailDialogFragment
 import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import java.util.LinkedList
@@ -350,6 +351,19 @@ class FullBottomSheet
 			activity.startFragment(GeneralSubFragment()) {
 				putInt("Position", position!!)
 				putInt("Item", R.id.album)
+			}
+		}
+
+		bottomSheetFullSubtitle.setOnClickListener {
+			minimize?.invoke()
+			val position = instance?.currentMediaItem?.mediaId?.let { currentMediaItemId ->
+				activity.libraryViewModel.artistItemList.value?.indexOfFirst { artist ->
+					artist.songList.any { it.mediaId == currentMediaItemId }
+				}
+			}
+			activity.startFragment(ArtistSubFragment()) {
+				putInt("Position", position!!)
+				putInt("Item", R.id.artist)
 			}
 		}
 
