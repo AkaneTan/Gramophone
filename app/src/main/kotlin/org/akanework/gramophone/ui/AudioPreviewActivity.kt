@@ -1,11 +1,14 @@
 package org.akanework.gramophone.ui
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AlertDialog
@@ -31,6 +34,7 @@ import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTi
 import org.akanework.gramophone.logic.utils.exoplayer.GramophoneMediaSourceFactory
 import org.akanework.gramophone.logic.utils.exoplayer.GramophoneRenderFactory
 import org.akanework.gramophone.ui.components.FullBottomSheet.Companion.SLIDER_UPDATE_INTERVAL
+import org.akanework.gramophone.ui.components.SquigglyProgress
 import kotlin.io.path.Path
 import kotlin.io.path.name
 
@@ -40,13 +44,18 @@ class AudioPreviewActivity : AppCompatActivity() {
     private lateinit var player: ExoPlayer
     private lateinit var audioTitle: TextView
     private lateinit var artistTextView: TextView
+    private lateinit var currentPositionTextView: TextView
     private lateinit var durationTextView: TextView
     private lateinit var albumArt: ImageView
     private lateinit var timeSlider: Slider
+    private lateinit var timeSeekbar: SeekBar
     private lateinit var playPauseButton: MaterialButton
+    private lateinit var progressDrawable: SquigglyProgress
+    private lateinit var prefs: SharedPreferences
 
     private val handler = Handler(Looper.getMainLooper())
     private var runnableRunning = false
+    private var isUserTracking = false
     private var lastKnownDuration = C.TIME_UNSET
     private val updateSliderRunnable = object : Runnable {
         override fun run() {
@@ -54,20 +63,31 @@ class AudioPreviewActivity : AppCompatActivity() {
                 // midi duration does not seem to be available in any callback, midi extractor bug?
                 lastKnownDuration = player.duration
                 timeSlider.valueTo = player.duration.toFloat().coerceAtLeast(1f)
+                timeSeekbar.max = player.duration.toInt()
                 durationTextView.text = convertDurationToTimeStamp(player.duration)
             }
-            timeSlider.value = player.currentPosition.toFloat().coerceAtMost(timeSlider.valueTo)
+            val currentPosition = player.currentPosition.toFloat().coerceAtMost(timeSlider.valueTo)
                 .coerceAtLeast(timeSlider.valueFrom)
+            if (!isUserTracking) {
+                timeSlider.value = currentPosition
+                timeSeekbar.progress = currentPosition.toInt()
+                currentPositionTextView.text = convertDurationToTimeStamp(currentPosition.toLong())
+            }
             if (runnableRunning) handler.postDelayed(this, 100)
         }
     }
 
-    // TODO add squiggly progress, isUserTracking logic and text view for current pos
+    private val prefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        when (key) {
+            "default_progress_bar" -> updateSliderVisibility()
+        }
+    }
+
     // TODO and way to open this song in gramophone IF its part of library
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         d = MaterialAlertDialogBuilder(this)
             .setView(R.layout.activity_audio_preview)
@@ -79,12 +99,37 @@ class AudioPreviewActivity : AppCompatActivity() {
             .show()
         audioTitle = d.findViewById(R.id.title_text_view)!!
         artistTextView = d.findViewById(R.id.artist_text_view)!!
+        currentPositionTextView = d.findViewById(R.id.current_position_text_view)!!
         durationTextView = d.findViewById(R.id.duration_text_view)!!
         albumArt = d.findViewById(R.id.album_art)!!
         timeSlider = d.findViewById(R.id.time_slider)!!
+        timeSeekbar = d.findViewById(R.id.slider_squiggly)!!
         playPauseButton = d.findViewById(R.id.play_pause_replay_button)!!
 
-        player = ExoPlayer.Builder(this,
+        prefs.registerOnSharedPreferenceChangeListener(prefChangeListener)
+        updateSliderVisibility()
+
+        val seekBarProgressWavelength =
+            resources.getDimensionPixelSize(R.dimen.media_seekbar_progress_wavelength).toFloat()
+        val seekBarProgressAmplitude =
+            resources.getDimensionPixelSize(R.dimen.media_seekbar_progress_amplitude).toFloat()
+        val seekBarProgressPhase =
+            resources.getDimensionPixelSize(R.dimen.media_seekbar_progress_phase).toFloat()
+        val seekBarProgressStrokeWidth =
+            resources.getDimensionPixelSize(R.dimen.media_seekbar_progress_stroke_width).toFloat()
+
+        timeSeekbar.progressDrawable = SquigglyProgress().also {
+            progressDrawable = it
+            it.waveLength = seekBarProgressWavelength
+            it.lineAmplitude = seekBarProgressAmplitude
+            it.phaseSpeed = seekBarProgressPhase
+            it.strokeWidth = seekBarProgressStrokeWidth
+            it.transitionEnabled = true
+            it.animate = false
+        }
+
+        player = ExoPlayer.Builder(
+            this,
             GramophoneRenderFactory(this)
                 .setEnableAudioFloatOutput(
                     prefs.getBooleanStrict("floatoutput", false)
@@ -122,8 +167,8 @@ class AudioPreviewActivity : AppCompatActivity() {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 if (mediaItem == null) return
                 audioTitle.text =
-                    mediaItem.mediaMetadata.title ?:
-                    mediaItem.localConfiguration?.uri?.lastPathSegment?.let { Path(it) }?.name
+                    mediaItem.mediaMetadata.title
+                        ?: mediaItem.localConfiguration?.uri?.lastPathSegment?.let { Path(it) }?.name
                 artistTextView.text = mediaItem.mediaMetadata.artist
                 mediaItem.mediaMetadata.artworkData?.let {
                     val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
@@ -153,8 +198,31 @@ class AudioPreviewActivity : AppCompatActivity() {
         timeSlider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 player.seekTo(value.toLong())
+                currentPositionTextView.text = convertDurationToTimeStamp(value.toLong())
             }
         }
+
+        timeSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    currentPositionTextView.text = convertDurationToTimeStamp(progress.toLong())
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isUserTracking = true
+                progressDrawable.animate = false
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                seekBar?.let {
+                    player.seekTo(it.progress.toLong())
+                }
+                isUserTracking = false
+                progressDrawable.animate = player.isPlaying
+            }
+        })
+
         handleIntent(intent)
     }
 
@@ -179,9 +247,20 @@ class AudioPreviewActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        prefs.unregisterOnSharedPreferenceChangeListener(prefChangeListener)
         if (d.isShowing)
             d.dismiss()
         super.onDestroy()
+    }
+
+    private fun updateSliderVisibility() {
+        if (prefs.getBooleanStrict("default_progress_bar", false)) {
+            timeSlider.visibility = View.VISIBLE
+            timeSeekbar.visibility = View.GONE
+        } else {
+            timeSlider.visibility = View.GONE
+            timeSeekbar.visibility = View.VISIBLE
+        }
     }
 
     private fun updatePlayPauseButton() {
@@ -191,9 +270,9 @@ class AudioPreviewActivity : AppCompatActivity() {
                 playPauseButton.icon.startAnimation()
                 playPauseButton.setTag(R.id.play_next, 1)
             }
-            //if (!isUserTracking) {
-            //    progressDrawable.animate = true
-            //}
+            if (!isUserTracking) {
+                progressDrawable.animate = true
+            }
             if (!runnableRunning) {
                 handler.postDelayed(updateSliderRunnable, SLIDER_UPDATE_INTERVAL)
                 runnableRunning = true
@@ -205,9 +284,9 @@ class AudioPreviewActivity : AppCompatActivity() {
                 playPauseButton.icon.startAnimation()
                 playPauseButton.setTag(R.id.play_next, 2)
             }
-            //if (!isUserTracking) {
-            //    progressDrawable.animate = false
-            //}
+            if (!isUserTracking) {
+                progressDrawable.animate = false
+            }
         }
     }
 }
