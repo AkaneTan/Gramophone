@@ -67,7 +67,7 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:icon="@drawable/ic_filter_alt"
+            app:icon="@drawable/ic_sort"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="24dp"
