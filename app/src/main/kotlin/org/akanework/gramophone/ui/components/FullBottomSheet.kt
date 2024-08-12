@@ -1151,8 +1151,11 @@ class FullBottomSheet
 					(12.5f).dpToPx(context).toInt(),
 					paddingBottom.dpToPx(context)
 				)
-				pivotX = 0f
-				pivotY = height.toFloat() / 2
+
+				post {
+					pivotX = 0f
+					pivotY = height / 2f
+				}
 
 				when {
 					isHighlightPayload -> {
