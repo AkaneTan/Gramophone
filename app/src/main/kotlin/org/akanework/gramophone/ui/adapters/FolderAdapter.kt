@@ -89,7 +89,7 @@ class FolderAdapter(
             fileNodePath.add(path)
             update(false)
         } else if (fileNodePath.isNotEmpty()) {
-            fileNodePath.removeLast()
+            fileNodePath.removeAt(fileNodePath.lastIndex)
             update(true)
         }
     }

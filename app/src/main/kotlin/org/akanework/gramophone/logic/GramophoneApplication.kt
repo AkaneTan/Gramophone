@@ -34,7 +34,6 @@ import androidx.preference.PreferenceManager
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.fetch.Fetcher
@@ -104,7 +103,6 @@ class GramophoneApplication : Application(), SingletonImageLoader.Factory,
         }.start()
     }
 
-    @kotlin.OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         return ImageLoader.Builder(context)
             .diskCache(null)

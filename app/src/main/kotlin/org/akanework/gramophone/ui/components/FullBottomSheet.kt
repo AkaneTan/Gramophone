@@ -43,7 +43,6 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil3.annotation.ExperimentalCoilApi
 import coil3.asDrawable
 import coil3.dispose
 import coil3.imageLoader
@@ -864,7 +863,6 @@ class FullBottomSheet
 		}
 	}
 
-	@OptIn(ExperimentalCoilApi::class)
 	@SuppressLint("NotifyDataSetChanged")
 	override fun onMediaItemTransition(
 		mediaItem: MediaItem?,

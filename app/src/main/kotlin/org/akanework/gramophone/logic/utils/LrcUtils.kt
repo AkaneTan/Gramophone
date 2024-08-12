@@ -11,7 +11,6 @@ import androidx.media3.extractor.metadata.id3.TextInformationFrame
 import androidx.media3.extractor.metadata.vorbis.VorbisComment
 import java.io.File
 import java.nio.charset.Charset
-import kotlin.math.pow
 
 object LrcUtils {
 
@@ -107,7 +106,7 @@ object LrcUtils {
             val lyricContent = line.substring(matches.last().range.last + 1).let { if (trim) it.trim() else it }
 
             matches.forEach { match ->
-                val timeString = match.groupValues[1] + (match.groupValues[2] ?: "")
+                val timeString = match.groupValues[1] + match.groupValues[2]
                 val timestamp = parseTime(timeString)
 
                 if (!foundNonNull && timestamp > 0) {
