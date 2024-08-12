@@ -19,13 +19,17 @@ package org.akanework.gramophone.ui.adapters
 
 import android.net.Uri
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ShareCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -310,15 +314,41 @@ class SongAdapter(
                     true
                 }*/
 
-                /*
-				R.id.share -> {
-					val builder = ShareCompat.IntentBuilder(mainActivity)
-					val mimeTypes = mutableSetOf<String>()
-					builder.addStream(viewModel.fileUriList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
-					mimeTypes.add(viewModel.mimeTypeList.value?.get(songList[holder.bindingAdapterPosition].mediaId.toLong())!!)
-					builder.setType(mimeTypes.singleOrNull() ?: "audio/*").startChooser()
-				 } */
-				 */
+                R.id.share -> {
+                    val mediaItem = viewModel.mediaItemList.value?.find {
+                        it.mediaId == item.mediaId
+                    } ?: return@setOnMenuItemClickListener true
+
+                    val uri = mediaItem.requestMetadata.mediaUri
+                        ?: mediaItem.localConfiguration?.uri
+                        ?: return@setOnMenuItemClickListener true
+
+                    val mimeType = mediaItem.mediaMetadata.extras?.getString("MIME_TYPE")
+                        ?: "audio/*"
+
+                    try {
+                        val contentUri = if (uri.scheme == "file") {
+                            FileProvider.getUriForFile(
+                                mainActivity,
+                                "${mainActivity.packageName}.fileProvider",
+                                File(uri.path!!)
+                            )
+                        } else uri
+
+                        ShareCompat.IntentBuilder(mainActivity)
+                            .setType(mimeType)
+                            .setStream(contentUri)
+                            .setChooserTitle("Share audio file")
+                            .startChooser()
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            mainActivity,
+                            "Unable to share: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    true
+                }
                 else -> false
             }
         }

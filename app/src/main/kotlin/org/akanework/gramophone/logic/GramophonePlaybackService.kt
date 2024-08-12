@@ -64,7 +64,6 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
 import coil3.BitmapImage
-import coil3.annotation.ExperimentalCoilApi
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -168,7 +167,6 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         }
     }
 
-    @OptIn(ExperimentalCoilApi::class)
     override fun onCreate() {
         handler = Handler(Looper.getMainLooper())
         super.onCreate()

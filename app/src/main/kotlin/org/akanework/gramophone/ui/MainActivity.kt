@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Import our viewModels.
-    private val libraryViewModel: LibraryViewModel by viewModels()
+    val libraryViewModel: LibraryViewModel by viewModels()
     val controllerViewModel: MediaControllerViewModel by viewModels()
     val startingActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}

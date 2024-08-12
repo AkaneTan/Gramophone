@@ -54,6 +54,7 @@ constructor(
         marqueeRepeatLimit = -1
         isFocusable = true
         isFocusableInTouchMode = true
+        isHorizontalFadingEdgeEnabled = true
     }
 
     override fun isFocused(): Boolean = true

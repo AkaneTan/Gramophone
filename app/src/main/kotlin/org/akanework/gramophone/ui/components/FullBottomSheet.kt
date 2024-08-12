@@ -29,6 +29,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.graphics.Insets
 import androidx.core.graphics.TypefaceCompat
+import androidx.core.view.doOnLayout
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -43,7 +44,6 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil3.annotation.ExperimentalCoilApi
 import coil3.asDrawable
 import coil3.dispose
 import coil3.imageLoader
@@ -97,6 +97,9 @@ import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
+import org.akanework.gramophone.ui.fragments.ArtistSubFragment
+import org.akanework.gramophone.ui.fragments.DetailDialogFragment
+import org.akanework.gramophone.ui.fragments.GeneralSubFragment
 import java.util.LinkedList
 import kotlin.math.min
 
@@ -327,6 +330,41 @@ class FullBottomSheet
 					com.google.android.material.R.attr.colorPrimary,
 				)
 			)
+		}
+
+		bottomSheetFullCover.setOnClickListener {
+			val position = activity.libraryViewModel.mediaItemList.value?.indexOfFirst {
+				it.mediaId == instance?.currentMediaItem?.mediaId
+			}
+			activity.startFragment(DetailDialogFragment()) {
+				putInt("Position", position!!)
+			}
+		}
+
+		bottomSheetFullTitle.setOnClickListener {
+			minimize?.invoke()
+			val position = instance?.currentMediaItem?.mediaId?.let { currentMediaItemId ->
+				activity.libraryViewModel.albumItemList.value?.indexOfFirst { album ->
+					album.songList.any { it.mediaId == currentMediaItemId }
+				}
+			}
+			activity.startFragment(GeneralSubFragment()) {
+				putInt("Position", position!!)
+				putInt("Item", R.id.album)
+			}
+		}
+
+		bottomSheetFullSubtitle.setOnClickListener {
+			minimize?.invoke()
+			val position = instance?.currentMediaItem?.mediaId?.let { currentMediaItemId ->
+				activity.libraryViewModel.artistItemList.value?.indexOfFirst { artist ->
+					artist.songList.any { it.mediaId == currentMediaItemId }
+				}
+			}
+			activity.startFragment(ArtistSubFragment()) {
+				putInt("Position", position!!)
+				putInt("Item", R.id.artist)
+			}
 		}
 
 		bottomSheetTimerButton.setOnClickListener {
@@ -826,7 +864,6 @@ class FullBottomSheet
 		}
 	}
 
-	@OptIn(ExperimentalCoilApi::class)
 	@SuppressLint("NotifyDataSetChanged")
 	override fun onMediaItemTransition(
 		mediaItem: MediaItem?,
@@ -1115,8 +1152,11 @@ class FullBottomSheet
 					(12.5f).dpToPx(context).toInt(),
 					paddingBottom.dpToPx(context)
 				)
-				pivotX = 0f
-				pivotY = height.toFloat() / 2
+
+				doOnLayout {
+					pivotX = 0f
+					pivotY = height / 2f
+				}
 
 				when {
 					isHighlightPayload -> {
