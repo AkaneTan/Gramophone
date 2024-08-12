@@ -29,6 +29,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.graphics.Insets
 import androidx.core.graphics.TypefaceCompat
+import androidx.core.view.doOnLayout
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -1152,7 +1153,7 @@ class FullBottomSheet
 					paddingBottom.dpToPx(context)
 				)
 
-				post {
+				doOnLayout {
 					pivotX = 0f
 					pivotY = height / 2f
 				}
