@@ -139,10 +139,11 @@
 				android:value="0"
 				android:visibility="gone"
 				app:labelBehavior="gone"
-				app:thumbHeight="0dp"
-				app:thumbWidth="0dp"
-				app:thumbTrackGapSize="2dp"
-				app:trackHeight="6dp"
+				style="@style/Widget.Material3.Slider.Legacy"
+				app:thumbElevation="0dp"
+				app:trackHeight="5dp"
+				app:thumbHeight="20dp"
+				app:thumbWidth="20dp"
 				tools:value="0.5"
 				tools:visibility="visible" />
 
