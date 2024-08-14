@@ -189,6 +189,7 @@ aboutLibraries {
 }
 
 dependencies {
+    implementation(project(":libphonograph:libphonograph"))
     val media3Version = "1.4.0"
     implementation("androidx.activity:activity-ktx:1.9.1")
     implementation("androidx.appcompat:appcompat:1.7.0")

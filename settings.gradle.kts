@@ -22,4 +22,4 @@ plugins {
 }
 
 rootProject.name = "Gramophone"
-include(":app", ":baselineprofile")
+include(":libphonograph:libphonograph", ":app", ":baselineprofile")
