@@ -12,7 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/baselineprofile" />
             <option value="$PROJECT_DIR$/libphonograph" />
-            <option value="$PROJECT_DIR$/libphonograph/libphonograph" />
+            <option value="$PROJECT_DIR$/libphonograph/libPhonograph" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
