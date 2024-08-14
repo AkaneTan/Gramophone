@@ -22,20 +22,21 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.media3.common.MediaItem
 import androidx.preference.PreferenceManager
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.getBooleanStrict
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
+import uk.akane.libphonograph.items.Artist
 
 /**
  * [ArtistAdapter] is an adapter for displaying artists.
  */
 class ArtistAdapter(
     fragment: Fragment,
-    private val artistList: MutableLiveData<List<MediaStoreUtils.Artist>>,
-    private val albumArtists: MutableLiveData<List<MediaStoreUtils.Artist>>,
-) : BaseAdapter<MediaStoreUtils.Artist>
+    private val artistList: MutableLiveData<List<Artist<MediaItem>>>,
+    private val albumArtists: MutableLiveData<List<Artist<MediaItem>>>,
+) : BaseAdapter<Artist<MediaItem>>
     (
     fragment,
     liveData = null,
@@ -47,7 +48,7 @@ class ArtistAdapter(
     defaultLayoutType = LayoutType.LIST
 ) {
 
-    override fun virtualTitleOf(item: MediaStoreUtils.Artist): String {
+    override fun virtualTitleOf(item: Artist<MediaItem>): String {
         return context.getString(R.string.unknown_artist)
     }
 
@@ -60,7 +61,7 @@ class ArtistAdapter(
         liveData = if (isAlbumArtist) albumArtists else artistList
     }
 
-    override fun onClick(item: MediaStoreUtils.Artist) {
+    override fun onClick(item: Artist<MediaItem>) {
         mainActivity.startFragment(ArtistSubFragment()) {
             putInt("Position", toRawPos(item))
             putInt(
@@ -73,8 +74,7 @@ class ArtistAdapter(
         }
     }
 
-    override fun onMenu(item: MediaStoreUtils.Artist, popupMenu: PopupMenu) {
-
+    override fun onMenu(item: Artist<MediaItem>, popupMenu: PopupMenu) {
         popupMenu.inflate(R.menu.more_menu_less)
 
         popupMenu.setOnMenuItemClickListener { it1 ->
@@ -102,7 +102,7 @@ class ArtistAdapter(
         }
     }
 
-    override fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<MediaStoreUtils.Artist>> {
+    override fun createDecorAdapter(): BaseDecorAdapter<out BaseAdapter<Artist<MediaItem>>> {
         return ArtistDecorAdapter(this)
     }
 

@@ -34,6 +34,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.media3.common.MediaItem
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -53,13 +54,13 @@ import org.akanework.gramophone.logic.ui.DefaultItemHeightHelper
 import org.akanework.gramophone.logic.ui.ItemHeightHelper
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.ui.placeholderScaleToFit
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.components.CustomGridLayoutManager
 import org.akanework.gramophone.ui.components.GridPaddingDecoration
 import org.akanework.gramophone.ui.components.NowPlayingDrawable
 import org.akanework.gramophone.ui.fragments.AdapterFragment
 import org.akanework.gramophone.ui.getAdapterType
+import uk.akane.libphonograph.items.Item
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
@@ -487,7 +488,7 @@ abstract class BaseAdapter<T>(
         NONE, LIST, COMPACT_LIST, GRID
     }
 
-    open class StoreItemHelper<T : MediaStoreUtils.Item>(
+    open class StoreItemHelper<T : Item<MediaItem>>(
         typesSupported: Set<Sorter.Type> = setOf(
             Sorter.Type.ByTitleDescending, Sorter.Type.ByTitleAscending,
             Sorter.Type.BySizeDescending, Sorter.Type.BySizeAscending

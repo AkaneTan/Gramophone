@@ -30,10 +30,10 @@ import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.ui.MyRecyclerView
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.LibraryViewModel
 import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.adapters.Sorter
+import uk.akane.libphonograph.reader.Reader
 
 /**
  * GeneralSubFragment:
@@ -119,7 +119,7 @@ class GeneralSubFragment : BaseFragment(true) {
             R.id.playlist -> {
                 // Playlists
                 val item = libraryViewModel.playlistList.value!![position]
-                title = if (item is MediaStoreUtils.RecentlyAdded) {
+                title = if (item is Reader.RecentlyAdded) {
                     requireContext().getString(R.string.recently_added)
                 } else {
                     item.title ?: requireContext().getString(R.string.unknown_playlist)
