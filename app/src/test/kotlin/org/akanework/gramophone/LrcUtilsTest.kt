@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Ignore
 import org.junit.Test
 
@@ -48,6 +49,99 @@ class LrcUtilsTest {
 			str.appendLine(")")
 		}
 		return str.toString()
+	}
+
+	@Test
+	fun testA2Format() {
+		val a2Lrc = "[00:12.00]This is <00:12.10>a <00:12.20>test <00:12.30>of <00:12.40>A2 <00:12.50>format"
+		val parsed = parse(a2Lrc)
+		assertNotNull(parsed)
+		assertEquals(1, parsed?.size)
+		val lyric = parsed?.get(0)
+		assertEquals(12000L, lyric?.timeStamp)
+		assertEquals("This is a test of A2 format", lyric?.content)
+		assertEquals(
+			listOf(
+				Pair(0, 12100L),
+				Pair(8, 12200L),
+				Pair(10, 12300L),
+				Pair(15, 12400L),
+				Pair(18, 12500L)
+			),
+			lyric?.wordTimestamps
+		)
+	}
+
+	@Test
+	fun testA2FormatMixedWithStandard() {
+		val mixedLrc = """
+            [00:10.00]This is a standard line
+            [00:12.00]This <00:12.10>is <00:12.20>an <00:12.30>A2 <00:12.40>line
+            [00:14.00]Back to standard
+        """.trimIndent()
+		val parsed = parse(mixedLrc)
+		assertNotNull(parsed)
+		assertEquals(3, parsed?.size)
+
+		assertEquals(10000L, parsed?.get(0)?.timeStamp)
+		assertEquals("This is a standard line", parsed?.get(0)?.content)
+		assertTrue(parsed?.get(0)?.wordTimestamps?.isEmpty() ?: false)
+
+		assertEquals(12000L, parsed?.get(1)?.timeStamp)
+		assertEquals("This is an A2 line", parsed?.get(1)?.content)
+		assertEquals(
+			listOf(
+				Pair(0, 12100L),
+				Pair(5, 12200L),
+				Pair(8, 12300L),
+				Pair(11, 12400L)
+			),
+			parsed?.get(1)?.wordTimestamps
+		)
+
+		assertEquals(14000L, parsed?.get(2)?.timeStamp)
+		assertEquals("Back to standard", parsed?.get(2)?.content)
+		assertTrue(parsed?.get(2)?.wordTimestamps?.isEmpty() ?: false)
+	}
+
+	@Test
+	fun testA2FormatWithPartialWords() {
+		val partialA2Lrc = "[00:12.00]This is <00:12.10>a test <00:12.30>of A2 <00:12.50>format"
+		val parsed = parse(partialA2Lrc)
+		assertNotNull(parsed)
+		assertEquals(1, parsed?.size)
+		val lyric = parsed?.get(0)
+		assertEquals(12000L, lyric?.timeStamp)
+		assertEquals("This is a test of A2 format", lyric?.content)
+		assertEquals(
+			listOf(
+				Pair(0, 12100L),
+				Pair(8, 12300L),
+				Pair(15, 12500L)
+			),
+			lyric?.wordTimestamps
+		)
+	}
+
+	@Test
+	fun testA2FormatWithEmptyWords() {
+		val emptyWordsA2Lrc = "[00:12.00]<00:12.10><00:12.20>Test<00:12.30><00:12.40>A2<00:12.50>"
+		val parsed = parse(emptyWordsA2Lrc)
+		assertNotNull(parsed)
+		assertEquals(1, parsed?.size)
+		val lyric = parsed?.get(0)
+		assertEquals(12000L, lyric?.timeStamp)
+		assertEquals("TestA2", lyric?.content)
+		assertEquals(
+			listOf(
+				Pair(0, 12100L),
+				Pair(0, 12200L),
+				Pair(0, 12300L),
+				Pair(4, 12400L),
+				Pair(4, 12500L)
+			),
+			lyric?.wordTimestamps
+		)
 	}
 
 	@Test

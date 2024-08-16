@@ -95,6 +95,7 @@ object LrcUtils {
         if (lrcContent.isBlank()) return null
 
         val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()
+        val wordTimeMarksRegex = "<(\\d{2}:\\d{2})([.:]\\d+)?>".toRegex()
         val lyricsList = mutableListOf<MediaStoreUtils.Lyric>()
         var foundNonNull = false
         var lyricsText: StringBuilder? = StringBuilder()
@@ -103,7 +104,8 @@ object LrcUtils {
             val matches = timeMarksRegex.findAll(line).toList()
             if (matches.isEmpty()) return@forEach
 
-            val lyricContent = line.substring(matches.last().range.last + 1).let { if (trim) it.trim() else it }
+            val lyricContent = line.substring(matches.last().range.last + 1)
+                .let { if (trim) it.trim() else it }
 
             matches.forEach { match ->
                 val timeString = match.groupValues[1] + match.groupValues[2]
@@ -123,7 +125,33 @@ object LrcUtils {
                 }
 
                 lyricsText?.append("$lyricLine\n")
-                lyricsList.add(MediaStoreUtils.Lyric(timestamp, lyricLine))
+
+                if (wordTimeMarksRegex.containsMatchIn(lyricLine)) {
+                    val wordMatches = wordTimeMarksRegex.findAll(lyricLine)
+                    val words = lyricLine.split(wordTimeMarksRegex)
+                    val wordTimestamps = words.mapIndexedNotNull { index, word ->
+                        wordMatches.elementAtOrNull(index)?.let { match ->
+                            val wordTimestamp =
+                                parseTime(match.groupValues[1] + match.groupValues[2])
+                            Pair(words.take(index).sumOf { it.length }, wordTimestamp)
+                        }
+                    }
+                    lyricsList.add(
+                        MediaStoreUtils.Lyric(
+                            timestamp,
+                            lyricLine.replace(wordTimeMarksRegex, ""),
+                            false,
+                            wordTimestamps
+                        )
+                    )
+                } else {
+                    lyricsList.add(
+                        MediaStoreUtils.Lyric(
+                            timestamp,
+                            lyricLine
+                        )
+                    )
+                }
             }
         }
 

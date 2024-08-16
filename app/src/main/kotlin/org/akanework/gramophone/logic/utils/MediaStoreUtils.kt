@@ -42,7 +42,8 @@ object MediaStoreUtils {
     data class Lyric(
         val timeStamp: Long? = null,
         val content: String = "",
-        var isTranslation: Boolean = false
+        var isTranslation: Boolean = false,
+        val wordTimestamps: List<Pair<Int, Long>> = emptyList()
     ) : Parcelable
 
     /**
