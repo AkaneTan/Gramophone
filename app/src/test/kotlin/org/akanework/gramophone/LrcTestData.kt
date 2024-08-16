@@ -254,7 +254,6 @@ object LrcTestData {
 			"[03:06.76]繋げよう\n" +
 			"[03:06.76]Let's connect\n"
 	val DREAM_THREAD_PARSED = listOf(
-		MediaStoreUtils.Lyric(timeStamp = 0, content = """""", isTranslation = false),
 		MediaStoreUtils.Lyric(timeStamp = 830, content = """そっと目を覚ませば　暗い闇に覆われ""", isTranslation = false),
 		MediaStoreUtils.Lyric(timeStamp = 830, content = """Quietly, when I open my eyes, I find myself covered in dark darkness""", isTranslation = true),
 		MediaStoreUtils.Lyric(timeStamp = 10790, content = """1人…また1人…散る涙に悲しみを堪えて""", isTranslation = false),
