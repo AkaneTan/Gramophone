@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:liftOnScroll="false">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingtoolbar"
+            style="?attr/collapsingToolbarLayoutMediumStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_app_bar_height"
+            app:collapsedTitleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+            app:contentScrim="@android:color/transparent"
+            app:expandedTitleMarginStart="20dp"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:title="@string/homepage">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="0dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                app:layout_collapseMode="pin"
+                app:titleMarginStart="0dp"/>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

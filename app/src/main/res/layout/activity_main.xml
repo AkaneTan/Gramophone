@@ -1,32 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     tools:context=".ui.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"
-        android:name="org.akanework.gramophone.ui.fragments.ViewPagerFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <org.akanework.gramophone.ui.components.PlayerBottomSheet
-        android:id="@+id/player_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="1dp"
-        app:behavior_hideable="true"
-        app:shapeAppearance="@style/BottomPlayerCornerShape"
+        android:name="org.akanework.gramophone.ui.fragments.ViewPagerContainerFragment" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/hide_sheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HS"
+        android:layout_gravity="center_vertical"
+        android:textAllCaps="true"
+        android:textSize="15sp"
+        android:textColor="?colorOnSurface"
+        app:backgroundTint="?colorSurfaceContainerHigh"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/show_sheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SS"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:textAllCaps="true"
+        android:textSize="15sp"
+        android:textColor="?colorOnSurface"
+        app:backgroundTint="?colorSurfaceContainerHigh"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/show_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SA"
+        android:layout_gravity="center_vertical|end"
+        android:textAllCaps="true"
+        android:textSize="15sp"
+        android:textColor="?colorOnSurface"
+        app:backgroundTint="?colorSurfaceContainerHigh"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/hide_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HA"
+        android:textAllCaps="true"
+        android:textSize="15sp"
+        android:layout_gravity="center|end"
+        android:layout_marginBottom="128dp"
+        android:textColor="?colorOnSurface"
+        app:backgroundTint="?colorSurfaceContainerHigh"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/hide_nav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HN"
+        android:textAllCaps="true"
+        android:textSize="15sp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="128dp"
+        android:textColor="?colorOnSurface"
+        app:backgroundTint="?colorSurfaceContainerHigh"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/show_nav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SN"
+        android:textAllCaps="true"
+        android:textSize="15sp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="128dp"
+        android:textColor="?colorOnSurface"
+        app:backgroundTint="?colorSurfaceContainerHigh"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/bottom_nav_height"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_app_bar"
+        app:labelVisibilityMode="unlabeled"
+        app:backgroundTint="?colorSurfaceContainerLow"
+        app:itemPaddingBottom="0dp"
+        app:itemPaddingTop="0dp"
+        />
+
+    <org.akanework.gramophone.ui.components.BottomSheet
+        android:id="@+id/standard_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:marginLeftSystemWindowInsets="false"
         app:marginRightSystemWindowInsets="false"
         app:paddingBottomSystemWindowInsets="false"
-        app:layout_behavior="org.akanework.gramophone.logic.ui.MyBottomSheetBehavior"
-        android:backgroundTint="?attr/colorSurfaceContainer"
-        tools:behavior_peekHeight="1000dp" />
+        app:behavior_hideable="true"
+        app:layout_behavior="org.akanework.gramophone.logic.ui.CustomBottomSheetBehavior"
+        app:behavior_peekHeight="0dp"
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

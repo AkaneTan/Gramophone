@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/preview_player"
+    android:background="?colorSurfaceContainerLow">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/cover"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginBottom="2dp"
+        android:background="?colorSecondaryContainer"
+        app:shapeAppearance="@style/BottomSheetStyle.Preview.ImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="@string/default_str"
+        android:textColor="?colorOnSurface"
+        android:fontFamily="sans-serif"
+        android:textFontWeight="500"
+        tools:ignore="UnusedAttribute"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintStart_toEndOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toStartOf="@id/controller_btn"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/skip_to_next"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:insetBottom="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:insetTop="0dp"
+        android:layout_marginEnd="10dp"
+        app:iconPadding="0dp"
+        app:iconGravity="textStart"
+        app:backgroundTint="?colorSurfaceContainerLow"
+        app:icon="@drawable/ic_skip_next_outline"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:iconSize="22dp"
+        app:rippleColor="@android:color/darker_gray"
+        app:layout_constraintTop_toTopOf="@id/cover"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/controller_btn"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:insetBottom="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:insetTop="0dp"
+        app:iconPadding="0dp"
+        app:iconGravity="textStart"
+        app:backgroundTint="?colorSurfaceContainerLow"
+        app:icon="@drawable/ic_play_arrow_outline"
+        app:iconTint="?colorPrimary"
+        app:iconSize="26dp"
+        app:rippleColor="@android:color/darker_gray"
+        app:layout_constraintTop_toTopOf="@id/cover"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toStartOf="@id/skip_to_next"
+        />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="30"
+        style="@style/BottomSheetStyle.Preview.LinearProgressIndicator"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

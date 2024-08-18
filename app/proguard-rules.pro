@@ -14,23 +14,8 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
--keepattributes SourceFile,LineNumberTable
+#-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-# -renamesourcefileattribute SourceFile
-
--dontobfuscate
-
-# Enable more agressive optimizations changing access of classes and methods
--allowaccessmodification
-
-# reflection by androidx via theme attr viewInflaterClass
--keep class org.akanework.gramophone.logic.ui.ViewCompatInflater { *; }
-
-# get rid of spammy logging
--assumenosideeffects class
-                  android.util.Log {
-    public static int v(...);
-    public static int d(...);
-}
+#-renamesourcefileattribute SourceFile

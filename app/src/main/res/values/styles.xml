@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="BottomSheetStyle">
+
+    </style>
+    <style name="BottomSheetStyle.Preview">
+
+    </style>
+    <style name="BottomSheetStyle.Preview.ImageView">
+        <item name="cornerSize">5dp</item>
+    </style>
+    <style name="BottomSheetStyle.Preview.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator.Legacy">
+        <item name="indicatorColor">?colorPrimary</item>
+        <item name="trackThickness">2dp</item>
+        <item name="android:alpha">0.8</item>
+    </style>
+</resources>

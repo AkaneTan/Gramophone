@@ -2,117 +2,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Read music files (Android 13 and later) (includes .lrc and thumbnails) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"
-        android:minSdkVersion="33" />
-    <!-- Read cover files, this is never requested by UI but exists for users who want it -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
-        android:minSdkVersion="33" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
-        android:minSdkVersion="34" />
-    <!-- Read music files, .lrc files and cover files (Android 12 and earlier) -->
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <!-- Required for editing playlists via MediaStore and deleting songs (Android 10 and earlier) -->
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29"
-        tools:ignore="ScopedStorage" />
-    <!-- Run music playback service -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
-        android:minSdkVersion="34" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- Remove ExoPlayer permission as we don't network playback for now -->
-    <uses-permission
-        android:name="android.permission.ACCESS_NETWORK_STATE"
-        tools:node="remove" />
-
-    <!-- TODO now that google fixed androidx, for enableOnBackInvokedCallback we need to fix
-        1. bottom sheet hide/show (eg settings)
-        2. bottom sheet -> home
-        3. lyrics -> bottom sheet -->
     <application
-        android:name=".logic.GramophoneApplication"
+        android:name=".Gramophone"
         android:allowBackup="true"
-        android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:enableOnBackInvokedCallback="false"
         android:label="@string/app_name"
-        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Gramophone"
-        android:windowSoftInputMode="adjustResize"
-        tools:targetApi="upside_down_cake">
+        tools:targetApi="31">
         <activity
-            android:name=".logic.ui.BugHandlerActivity"
+            android:name=".ui.SetupActivity"
             android:exported="false" />
-
-        <service
-            android:name=".logic.GramophonePlaybackService"
-            android:exported="true"
-            android:foregroundServiceType="mediaPlayback"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-                <action android:name="androidx.media3.session.MediaLibraryService" />
-                <action android:name="androidx.media3.session.MediaSessionService" />
-            </intent-filter>
-        </service>
-
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/Theme.Splash"
-            android:exported="true"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.MUSIC_PLAYER" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.APP_MUSIC" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".ui.AudioPreviewActivity"
-            android:theme="@style/Theme.AudioPreviewDialogTheme"
-            android:exported="true"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="content" />
-                <data android:scheme="file" />
-                <data android:mimeType="audio/*" />
-            </intent-filter>
-        </activity>
-
-        <receiver
-            android:name="androidx.media3.session.MediaButtonReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
+                <action android:name="android.intent.action.MAIN" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

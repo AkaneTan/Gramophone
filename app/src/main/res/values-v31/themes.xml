@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-	<style name="Day.Theme.Splash" parent="Base.Day.Theme.Splash" />
-	<style name="Night.Theme.Splash" parent="Base.Night.Theme.Splash" />
-	<style name="Theme.Gramophone" parent="Base.Theme.Gramophone" />
-</resources>

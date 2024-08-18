@@ -1,57 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.fragments.SearchFragment">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stateListAnimator="@null"
         app:liftOnScroll="false">
 
-        <LinearLayout
-            android:id="@+id/topAppBar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingtoolbar"
+            style="?attr/collapsingToolbarLayoutMediumStyle"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="8dp">
+            android:layout_height="@dimen/top_app_bar_height"
+            app:collapsedTitleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+            app:contentScrim="@android:color/transparent"
+            app:expandedTitleMarginStart="20dp"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:title="@string/search">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/return_button"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:backgroundTint="@android:color/transparent"
-                app:icon="@drawable/ic_arrow_back"
-                app:iconGravity="textStart"
-                app:iconPadding="8dp"
-                app:iconSize="24dp"
-                app:iconTint="?attr/colorOnSurface" />
-
-            <EditText
-                android:id="@+id/edit_text"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:autofillHints=""
-                android:backgroundTint="@android:color/transparent"
-                android:hint="@string/search"
-                android:inputType="text"
-                android:singleLine="true"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:textSize="20sp" />
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="0dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                app:layout_collapseMode="pin"
+                app:titleMarginStart="0dp" />
 
-        </LinearLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        layout="@layout/fragment_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
