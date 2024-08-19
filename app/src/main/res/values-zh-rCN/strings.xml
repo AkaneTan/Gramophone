@@ -12,7 +12,6 @@
     <string name="audio_permission">音频权限</string>
     <string name="audio_badge_desc">用来读取您的音乐库</string>
     <string name="notification_permission">通知权限 (可选)</string>
-    <string name="notification_badge_desc">用来发送媒体通知</string>
     <string name="pic_badge_desc">用来读取专辑封面文件</string>
     <string name="pic_permission">相册权限 (可选)</string>
 </resources>

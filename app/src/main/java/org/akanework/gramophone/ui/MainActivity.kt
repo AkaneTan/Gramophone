@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.checkEssentialPermission
 import org.akanework.gramophone.logic.enableEdgeToEdgeProperly
 import org.akanework.gramophone.logic.utils.AnimationUtils
 import org.akanework.gramophone.logic.utils.BottomSheetUtils
@@ -45,9 +46,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // val intent = Intent(this, SetupActivity::class.java)
-        // this.startActivity(intent)
-        // finish()
+        if (!checkEssentialPermission()) {
+            val intent = Intent(this, SetupActivity::class.java)
+            this.startActivity(intent)
+            finish()
+            return
+        }
 
         enableEdgeToEdgeProperly()
         setContentView(R.layout.activity_main)

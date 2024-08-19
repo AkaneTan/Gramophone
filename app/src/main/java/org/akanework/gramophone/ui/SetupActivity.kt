@@ -1,5 +1,6 @@
 package org.akanework.gramophone.ui
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -51,32 +52,35 @@ class SetupActivity : AppCompatActivity() {
         viewPager.offscreenPageLimit = 9999
 
         continueMaterialButton.setOnClickListener {
+            if (overrideContinueListener != null) {
+                overrideContinueListener?.invoke()
+                return@setOnClickListener
+            }
+            if (!isContinueMaterialButtonEnabled) return@setOnClickListener
             if (viewPager.currentItem + 1 < adapter.itemCount) {
-                viewPager.setCurrentItemInterpolated(viewPager.currentItem + 1, duration = AnimationUtils.MID_DURATION)
-                isPreviousMaterialButtonAvailable = viewPager.currentItem + 1 != 0
-                isContinueMaterialButtonEnabled = this.checkEssentialPermission() && viewPager.currentItem + 1 == 1
+                isPreviousMaterialButtonAvailable = true
+                viewPager.setCurrentItemInterpolated(
+                    viewPager.currentItem + 1,
+                    duration = AnimationUtils.MID_DURATION
+                )
+            } else {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
         }
 
         previousMaterialButton.setOnClickListener {
-            if (viewPager.currentItem > 0) {
-                viewPager.setCurrentItemInterpolated(viewPager.currentItem - 1, duration = AnimationUtils.MID_DURATION)
-                isPreviousMaterialButtonAvailable = viewPager.currentItem - 1 != 0
-                isContinueMaterialButtonEnabled = !(!this.checkEssentialPermission() && viewPager.currentItem - 1 == 1)
+            if (isPreviousMaterialButtonAvailable && viewPager.currentItem > 0) {
+                isPreviousMaterialButtonAvailable = viewPager.currentItem - 1 > 0
+                viewPager.setCurrentItemInterpolated(
+                    viewPager.currentItem - 1,
+                    duration = AnimationUtils.MID_DURATION
+                )
             }
         }
-
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d("TAG", "viewPager.c: ${viewPager.currentItem}")
-        if (viewPager.currentItem != 0) {
-            isPreviousMaterialButtonAvailable = true
-        }
-        isContinueMaterialButtonEnabled = !(!this.checkEssentialPermission() && viewPager.currentItem == 1)
-    }
-
+    var overrideContinueListener: (() -> Unit)? = null
     var isPreviousMaterialButtonAvailable: Boolean
         get() = previousMaterialButton.marginLeft == 0
         set(value) {

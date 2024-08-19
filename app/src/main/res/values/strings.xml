@@ -11,7 +11,10 @@
     <string name="audio_permission">Audio permission</string>
     <string name="audio_badge_desc">For reading your music library</string>
     <string name="notification_permission">Notification permission (Optional)</string>
-    <string name="notification_badge_desc">For posting media notification</string>
+    <string name="notification_badge_desc">For posting error notifications</string>
     <string name="pic_badge_desc">For reading file album covers</string>
     <string name="pic_permission">Album permission (Optional)</string>
+    <string name="storage_permission">Storage permission</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 </resources>
