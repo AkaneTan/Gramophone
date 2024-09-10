@@ -78,10 +78,21 @@ class FolderAdapter(
     }
 
     override fun onChanged(value: FileNode<MediaItem>) {
-        root = value.folderList.values
-            .firstOrNull()?.folderList?.values
-            ?.firstOrNull()?.folderList?.values
-            ?.firstOrNull()
+        root = value
+        if (fileNodePath.isEmpty()) {
+            val stg = value.folderList.values.firstOrNull()
+            val emu = stg?.folderList?.values?.firstOrNull()
+            val usr = emu?.folderList?.values?.firstOrNull()
+            if (stg != null) {
+                fileNodePath.add(stg.folderName)
+            }
+            if (emu != null) {
+                fileNodePath.add(emu.folderName)
+            }
+            if (usr != null) {
+                fileNodePath.add(usr.folderName)
+            }
+        }
         update(null)
     }
 
