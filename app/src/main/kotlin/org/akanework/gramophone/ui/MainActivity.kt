@@ -18,10 +18,14 @@
 package org.akanework.gramophone.ui
 
 import android.app.NotificationManager
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.view.Choreographer
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -212,7 +216,11 @@ class MainActivity : AppCompatActivity() {
                 updateLibrary()
             } else {
                 reportFullyDrawn()
-                // TODO: Show a prompt here
+                Toast.makeText(this, getString(R.string.grant_audio), Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.setData(Uri.parse("package:$packageName"))
+                startActivity(intent)
+                finish()
             }
         }
     }
