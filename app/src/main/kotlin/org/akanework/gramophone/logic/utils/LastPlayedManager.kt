@@ -116,7 +116,7 @@ class LastPlayedManager(context: Context,
                     b.writeLong(it.mediaMetadata.extras?.getLong("GenreId"))
                     b.writeStringSafe(it.mediaMetadata.extras?.getString("Author"))
                     b.writeInt(it.mediaMetadata.extras?.getInt("CdTrackNumber"))
-                    b.writeLong(it.mediaMetadata.extras?.getLong("Duration"))
+                    b.writeLong(it.mediaMetadata.durationMs)
                     b.writeStringUnsafe(it.mediaMetadata.extras?.getString("Path"))
                     b.writeLong(it.mediaMetadata.extras?.getLong("ModifiedDate"))
                     b.toString()
@@ -219,6 +219,7 @@ class LastPlayedManager(context: Context,
                                     .setDiscNumber(discNumber)
                                     .setRecordingYear(recordingYear)
                                     .setReleaseYear(releaseYear)
+                                    .setDurationMs(duration)
                                     .setIsBrowsable(isBrowsable)
                                     .setIsPlayable(isPlayable)
                                     .setExtras(Bundle().apply {
@@ -238,9 +239,6 @@ class LastPlayedManager(context: Context,
                                             putInt("CdTrackNumber", cdTrackNumber)
                                         }
                                         putString("Author", author)
-                                        if (duration != null) {
-                                            putLong("Duration", duration)
-                                        }
                                         putString("Path", path)
                                         if (modifiedDate != null) {
                                             putLong("ModifiedDate", modifiedDate)

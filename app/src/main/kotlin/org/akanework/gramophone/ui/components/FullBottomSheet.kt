@@ -142,7 +142,7 @@ class FullBottomSheet
 	private val touchListener = object : SeekBar.OnSeekBarChangeListener, Slider.OnSliderTouchListener {
 		override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 			if (fromUser) {
-				val dest = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+				val dest = instance?.currentMediaItem?.mediaMetadata?.durationMs
 				if (dest != null) {
 					bottomSheetFullPosition.text =
 						CalculationUtils.convertDurationToTimeStamp((progress.toLong()))
@@ -470,7 +470,7 @@ class FullBottomSheet
 
 		bottomSheetFullSlider.addOnChangeListener { _, value, isUser ->
 			if (isUser) {
-				val dest = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+				val dest = instance?.currentMediaItem?.mediaMetadata?.durationMs
 				if (dest != null) {
 					bottomSheetFullPosition.text =
 						CalculationUtils.convertDurationToTimeStamp((value).toLong())
@@ -924,8 +924,7 @@ class FullBottomSheet
 			bottomSheetFullSubtitle.setTextAnimation(
 				mediaItem?.mediaMetadata?.artist ?: context.getString(R.string.unknown_artist), skipAnimation = firstTime
 			)
-			bottomSheetFullDuration.text =
-				mediaItem?.mediaMetadata?.extras?.getLong("Duration")
+			bottomSheetFullDuration.text = mediaItem?.mediaMetadata?.durationMs
 					?.let { CalculationUtils.convertDurationToTimeStamp(it) }
 			if (playlistNowPlaying != null) {
 				playlistNowPlaying!!.text = mediaItem?.mediaMetadata?.title
@@ -952,7 +951,7 @@ class FullBottomSheet
 			playlistNowPlayingCover?.dispose()
 		}
 		val position = CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)
-		val duration = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+		val duration = instance?.currentMediaItem?.mediaMetadata?.durationMs
 		if (duration != null && !isUserTracking) {
 			bottomSheetFullSeekBar.max = duration.toInt()
 			bottomSheetFullSeekBar.progress = instance?.currentPosition?.toInt() ?: 0
@@ -1286,9 +1285,7 @@ class FullBottomSheet
 			holder.songName.text = item.mediaMetadata.title
 			holder.songArtist.text = item.mediaMetadata.artist
 			holder.indicator.text =
-				CalculationUtils.convertDurationToTimeStamp(
-					item.mediaMetadata.extras?.getLong("Duration")!!
-				)
+				CalculationUtils.convertDurationToTimeStamp(item.mediaMetadata.durationMs!!)
 			holder.songCover.load(item.mediaMetadata.artworkUri) {
 				placeholderScaleToFit(R.drawable.ic_default_cover)
 				crossfade(true)
@@ -1529,7 +1526,7 @@ class FullBottomSheet
 			if (!runnableRunning) return
 			val position =
 				CalculationUtils.convertDurationToTimeStamp(instance?.currentPosition ?: 0)
-			val duration = instance?.currentMediaItem?.mediaMetadata?.extras?.getLong("Duration")
+			val duration = instance?.currentMediaItem?.mediaMetadata?.durationMs
 			if (duration != null && !isUserTracking) {
 				bottomSheetFullSeekBar.max = duration.toInt()
 				bottomSheetFullSeekBar.progress = instance?.currentPosition?.toInt() ?: 0

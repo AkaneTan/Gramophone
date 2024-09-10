@@ -20,8 +20,10 @@ package org.akanework.gramophone.logic.utils
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.util.UnstableApi
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +53,7 @@ object MediaStoreUtils {
      * @param context
      * @return
      */
+    @OptIn(UnstableApi::class)
     private fun getAllSongs(context: Context): ReaderResult<MediaItem> {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val limitValue = prefs.getInt(
@@ -74,6 +77,7 @@ object MediaStoreUtils {
                             .Builder()
                             .setIsBrowsable(false)
                             .setIsPlayable(true)
+                            .setDurationMs(duration)
                             .setTitle(title)
                             .setWriter(writer)
                             .setCompilation(compilation)
@@ -102,9 +106,6 @@ object MediaStoreUtils {
                                 putString("Author", author)
                                 if (addDate != null) {
                                     putLong("AddDate", addDate)
-                                }
-                                if (duration != null) {
-                                    putLong("Duration", duration)
                                 }
                                 if (modifiedDate != null) {
                                     putLong("ModifiedDate", modifiedDate)
