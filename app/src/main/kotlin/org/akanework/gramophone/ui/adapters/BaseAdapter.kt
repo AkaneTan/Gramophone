@@ -23,13 +23,13 @@ import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -80,11 +80,6 @@ abstract class BaseAdapter<T>(
 ) : AdapterFragment.BaseInterface<BaseAdapter<T>.ViewHolder>(), Observer<List<T>>,
     PopupTextProvider, ItemHeightHelper {
 
-    companion object {
-        // this relies on the assumption that all RecyclerViews always have same width
-        // (though it does get invalidated if that is not the case, for eg rotation)
-        private var gridHeightCache = 0
-    }
     val context = fragment.requireContext()
     protected inline val mainActivity
         get() = context as MainActivity
@@ -93,6 +88,7 @@ abstract class BaseAdapter<T>(
     private val listHeight = context.resources.getDimensionPixelSize(R.dimen.list_height)
     private val largerListHeight = context.resources.getDimensionPixelSize(R.dimen.larger_list_height)
     private var gridHeight: Int? = null
+    private var lockedInGridSize = false
     private val sorter = Sorter(sortHelper, naturalOrderHelper, rawOrderExposed)
     val decorAdapter by lazy { createDecorAdapter() }
     override val concatAdapter by lazy { ConcatAdapter(decorAdapter, this) }
@@ -152,7 +148,9 @@ abstract class BaseAdapter<T>(
                     applyLayoutManager()
                 }
             }
-            calculateGridSizeIfNeeded()
+            if (recyclerView != null && recyclerView!!.width != 0)
+                calculateGridSizeIfNeeded()
+            lockedInGridSize = false
             notifyDataSetChanged() // we change view type for all items
         }
     private var reverseRaw = false
@@ -204,17 +202,6 @@ abstract class BaseAdapter<T>(
     override fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-        if (gridHeight == null && itemCount > 0 && layoutType == LayoutType.GRID) {
-            recyclerView.doOnLayout {
-                recyclerView.post {
-                    if (gridHeight == null) {
-                        if (calculateGridSizeIfNeeded()) {
-                            notifyDataSetChanged()
-                        }
-                    }
-                }
-            }
-        }
         if (ownsView) {
             recyclerView.setHasFixedSize(true)
             if (recyclerView.layoutManager != layoutManager) {
@@ -309,10 +296,8 @@ abstract class BaseAdapter<T>(
                         list.addAll(newList)
                         if (diff != null)
                             diff.dispatchUpdatesTo(this)
-                        else {
-                            calculateGridSizeIfNeeded()
+                        else
                             notifyDataSetChanged()
-                        }
                         if (oldCount != newCount) decorAdapter.updateSongCounter()
                         onListUpdated()
                     } finally {
@@ -359,7 +344,8 @@ abstract class BaseAdapter<T>(
         position: Int
     ) {
         if (layoutType == LayoutType.GRID) {
-            val newHeight = gridHeight ?: gridHeightCache
+            lockedInGridSize = true
+            val newHeight = gridHeight!!
             if (holder.itemView.layoutParams.height != newHeight) {
                 holder.itemView.updateLayoutParams<ViewGroup.LayoutParams> {
                     height = newHeight
@@ -382,10 +368,10 @@ abstract class BaseAdapter<T>(
         }
     }
 
-    // need to call notifyDataSetChanged() afterwards
-    private fun calculateGridSizeIfNeeded(): Boolean {
-        if (recyclerView != null && layoutType == LayoutType.GRID && gridHeight == null
-            && recyclerView!!.width != 0) {
+    // need to call notifyDataSetChanged() afterwards, unless lockedInGridSize == false
+    private fun calculateGridSizeIfNeeded() {
+        if (layoutType != LayoutType.GRID) return
+        if (recyclerView != null && recyclerView!!.width != 0) {
             val cardPadding = context.resources.getDimensionPixelSize(R.dimen.grid_card_side_padding)
             val marginTop = context.resources.getDimensionPixelSize(R.dimen.grid_card_margin_top)
             val marginLabel = context.resources.getDimensionPixelSize(R.dimen.grid_card_margin_label)
@@ -404,12 +390,22 @@ abstract class BaseAdapter<T>(
             h += 2 * marginLabel // label vertical margin
             h += paddingBottom // bottom padding of whole card
             gridHeight = h
-            return if (h == gridHeightCache) false else {
-                gridHeightCache = gridHeight!!
-                true
-            }
+        } else {
+            throw IllegalStateException("$recyclerView == null || ${recyclerView?.width} == 0")
         }
-        return false
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onWidthChanged(width: Int) {
+        calculateGridSizeIfNeeded()
+        if (lockedInGridSize) {
+            lockedInGridSize = false
+            Log.w(
+                "BaseAdapter",
+                "RecyclerView width changed after locking, this must not happen during startup"
+            )
+            notifyDataSetChanged()
+        }
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
@@ -515,7 +511,7 @@ abstract class BaseAdapter<T>(
         val count = ((to / ((layoutManager as? GridLayoutManager)?.spanCount ?: fallbackSpans)
             .toFloat()) + 0.5f).toInt()
         return count * when (layoutType) {
-            LayoutType.GRID -> gridHeight ?: gridHeightCache
+            LayoutType.GRID -> gridHeight!!
             LayoutType.COMPACT_LIST -> listHeight
             LayoutType.LIST, null -> largerListHeight
             else -> throw IllegalArgumentException()

@@ -19,9 +19,12 @@ package org.akanework.gramophone.logic.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.doOnLayout
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
@@ -32,7 +35,6 @@ import me.zhanghai.android.fastscroll.FixOnItemTouchListenerRecyclerView
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import org.akanework.gramophone.R
 
-// Please don't try to understand it :) this abstracts away all the ugly details you rather not know
 class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int)
 	: FixOnItemTouchListenerRecyclerView(context, attributeSet, defStyleAttr),
 	AppBarLayout.OnOffsetChangedListener {
@@ -40,10 +42,36 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 			: this(context, attributeSet, 0)
 	constructor(context: Context) : this(context, null)
 
+	private var lastWidth = 0
+	private var deferredFastScrollBuilder: (() -> FastScroller)? = null
 	private var appBarLayout: AppBarLayout? = null
 	private var ah: MyAnimationHelper? = null
 	private var scrollInProgress = false
 	private var scrollIsNatural = false
+
+	override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+		super.onLayout(changed, l, t, r, b)
+		if (lastWidth != width) {
+			adapter.dispatchToAdapter { it.onWidthChanged(width) }
+			lastWidth = width
+		}
+		if (width == 0)
+			Log.w("MyRecyclerView", "width is 0 in doOnLayout??? will not set fast scroll builder!!")
+		else {
+			deferredFastScrollBuilder?.let {
+				it.invoke()
+				deferredFastScrollBuilder = null
+			}
+		}
+	}
+
+	private fun RecyclerView.Adapter<*>?.dispatchToAdapter(action: (Adapter<*>) -> Unit) {
+		if (this is ConcatAdapter) {
+			adapters.forEach { it.dispatchToAdapter(action) }
+		} else if (this is Adapter<*>) {
+			action(this)
+		}
+	}
 
 	fun setAppBar(appBarLayout: AppBarLayout) {
 		this.appBarLayout = appBarLayout
@@ -108,18 +136,29 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 		}
 	}
 
-	fun fastScroll(popupTextProvider: PopupTextProvider?, ihh: ItemHeightHelper?): FastScroller {
-		return FastScrollerBuilder(this)
-			.setViewHelper(RecyclerViewHelper(this, popupTextProvider, ihh))
-			.also { builder -> builder.setAnimationHelper(MyAnimationHelper().also { ah = it }) }
-			.useMd2Style()
-			.setTrackDrawable(
-				AppCompatResources.getDrawable(
-					context,
-					R.drawable.ic_transparent
-				)!!
-			)
-			.build()
+	fun fastScroll(popupTextProvider: PopupTextProvider?, ihh: ItemHeightHelper?) {
+		// fast scroll builders should be called only after layout phase
+		val fsBuilder = {
+			FastScrollerBuilder(this)
+				.setViewHelper(RecyclerViewHelper(this, popupTextProvider, ihh))
+				.also { builder ->
+					builder.setAnimationHelper(MyAnimationHelper().also {
+						ah = it
+					})
+				}
+				.useMd2Style()
+				.setTrackDrawable(
+					AppCompatResources.getDrawable(
+						context,
+						R.drawable.ic_transparent
+					)!!
+				)
+				.build()
+		}
+		if (width == 0)
+			this.deferredFastScrollBuilder = fsBuilder
+		else
+			fsBuilder()
 	}
 
 	override fun onOffsetChanged(unused: AppBarLayout?, offset: Int) {
@@ -139,6 +178,7 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 
 		open fun onAttachedToRecyclerView(recyclerView: MyRecyclerView) {}
 		open fun onDetachedFromRecyclerView(recyclerView: MyRecyclerView) {}
+		open fun onWidthChanged(width: Int) {}
 	}
 
 	private inner class MyAnimationHelper : DefaultAnimationHelper(this) {

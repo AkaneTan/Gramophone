@@ -264,6 +264,9 @@ class LastPlayedManager(context: Context,
                 }
                 return@launch
             } catch (e: Exception) {
+                try {
+                    this@LastPlayedManager.eraseShuffleOrder()
+                } catch (_: Exception) {}
                 Log.e(TAG, Log.getStackTraceString(e))
                 runCallback(callback, seed) { null }
                 return@launch
