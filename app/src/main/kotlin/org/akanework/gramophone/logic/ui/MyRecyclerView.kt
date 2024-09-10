@@ -50,7 +50,6 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 	private var scrollIsNatural = false
 
 	override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-		super.onLayout(changed, l, t, r, b)
 		if (lastWidth != width) {
 			adapter.dispatchToAdapter { it.onWidthChanged(width) }
 			lastWidth = width
@@ -63,6 +62,7 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 				deferredFastScrollBuilder = null
 			}
 		}
+		super.onLayout(changed, l, t, r, b)
 	}
 
 	private fun RecyclerView.Adapter<*>?.dispatchToAdapter(action: (Adapter<*>) -> Unit) {
@@ -159,6 +159,12 @@ class MyRecyclerView(context: Context, attributeSet: AttributeSet?, defStyleAttr
 			this.deferredFastScrollBuilder = fsBuilder
 		else
 			fsBuilder()
+	}
+
+	override fun setAdapter(adapter: RecyclerView.Adapter<*>?) {
+		super.setAdapter(adapter)
+		if (width != 0)
+			adapter.dispatchToAdapter { it.onWidthChanged(width) }
 	}
 
 	override fun onOffsetChanged(unused: AppBarLayout?, offset: Int) {

@@ -13,10 +13,10 @@
     <dimen name="decor_height">48dp</dimen>
     <dimen name="list_height">75dp</dimen>
     <dimen name="larger_list_height">78dp</dimen>
-    <dimen name="grid_card_label_height">45dp</dimen>
+    <dimen name="grid_card_label_height">70sp</dimen>
     <dimen name="grid_card_margin_top">8dp</dimen>
     <dimen name="grid_card_margin_label">12.5dp</dimen>
-    <dimen name="grid_card_padding_bottom">24dp</dimen>
+    <dimen name="grid_card_padding_bottom">0dp</dimen>
     <dimen name="lyric_top_padding">36dp</dimen>
     <dimen name="lyric_bottom_padding">640dp</dimen>
 </resources>
