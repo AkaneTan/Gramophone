@@ -10,7 +10,7 @@ plugins {
 
 android {
 	namespace = "org.nift4.baselineprofile"
-	compileSdk = 34
+	compileSdk = 35
 
 	java {
 		toolchain {
@@ -24,7 +24,7 @@ android {
 
 	defaultConfig {
 		minSdk = 28
-		targetSdk = 34
+		targetSdk = 35
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
@@ -38,7 +38,7 @@ android {
 		create<ManagedVirtualDevice>("pixel6Api34") {
 			device = "Pixel 6"
 			apiLevel = 34
-			systemImageSource = "google"
+			systemImageSource = "aosp"
 		}
 	}
 }
@@ -54,7 +54,7 @@ dependencies {
 	implementation("androidx.test.ext:junit:1.2.1")
 	implementation("androidx.test.espresso:espresso-core:3.6.1")
 	implementation("androidx.test.uiautomator:uiautomator:2.3.0")
-	implementation("androidx.benchmark:benchmark-macro-junit4:1.2.4")
+	implementation("androidx.benchmark:benchmark-macro-junit4:1.3.0")
 }
 
 androidComponents {

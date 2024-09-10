@@ -29,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.LibraryViewModel
 import uk.akane.libphonograph.reader.Reader
@@ -56,7 +57,7 @@ object MediaStoreUtils {
     @OptIn(UnstableApi::class)
     private fun getAllSongs(context: Context): ReaderResult<MediaItem> {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val limitValue = prefs.getInt(
+        val limitValue = if (BuildConfig.DISABLE_MEDIA_STORE_FILTER) 0 else prefs.getInt(
             "mediastore_filter",
             context.resources.getInteger(R.integer.filter_default_sec)
         )

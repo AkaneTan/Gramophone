@@ -1,6 +1,9 @@
 package org.nift4.baselineprofile
 
 import android.annotation.SuppressLint
+import android.media.MediaScannerConnection
+import android.net.Uri
+import android.os.Environment
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -10,6 +13,9 @@ import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 
 /**
  * This test class generates a basic startup baseline profile for the target package.
@@ -44,6 +50,31 @@ class BaselineProfileGenerator {
 	@SuppressLint("SdCardPath")
 	@Test
 	fun generate() {
+		val ctx = InstrumentationRegistry.getInstrumentation().context
+		val musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+		val testDir = File(musicDir, "gp_baseline")
+		val files = listOf("test1.mp3", "test2.flac", "test3.wav", "test4.ogg", "test5.opus")
+		if (testDir.exists())
+			testDir.deleteRecursively()
+		testDir.mkdir()
+		for (i in files) {
+			ctx.assets.open(i).use {
+				try {
+					FileOutputStream(File(testDir, i)).use { o ->
+						it.copyTo(o)
+					}
+				} catch (e: FileNotFoundException) {
+					// scoped storage, files are there, ignore it
+				}
+			}
+		}
+		MediaScannerConnection.scanFile(
+			ctx,
+			files.map { File(testDir, it).absolutePath }.toTypedArray(),
+			null) { _: String, _: Uri -> }
+		val ae = InstrumentationRegistry.getInstrumentation().uiAutomation
+		ae.executeShellCommand("pm clear org.akanework.gramophone")
+		Thread.sleep(1000) // let device settle a bit
 		// The application id for the running build variant is read from the instrumentation arguments.
 		rule.collect(
 			packageName = InstrumentationRegistry.getArguments().getString("targetAppId")
@@ -57,21 +88,28 @@ class BaselineProfileGenerator {
 
 			// Start default activity for your app
 			pressHome()
-			device.executeShellCommand("pm clear org.akanework.gramophone")
-			device.executeShellCommand("pm grant org.akanework.gramophone android.permission.READ_MEDIA_AUDIO")
+			ae.executeShellCommand("pm grant org.akanework.gramophone android.permission.READ_MEDIA_AUDIO")
 			startActivityAndWait()
 
 			// More interactions to optimize advanced journeys of your app.
 			// 1. Wait until the content is asynchronously loaded
-			device.wait(Until.findObject(By.text("8 Songs")), 30L)
+			device.wait(Until.findObject(By.text("5 Songs")), 30L)
 			// 2. Scroll the tabs
 			device.swipe(800, 1000, 200, 1000, 20)
 			device.waitForIdle(20L)
 			device.swipe(200, 1000, 800, 1000, 20)
 			device.waitForIdle(20L)
 			// 3. Play a song
-			device.findObject(By.text("Summit (feat. Ellie Goulding)")).click()
-			Thread.sleep(5000)
+			device.findObject(By.text("Ending / Credits")).click()
+			Thread.sleep(2000)
+			device.findObject(By.text("test3")).click()
+			Thread.sleep(2000)
+			device.findObject(By.text("Level 1")).click()
+			Thread.sleep(2000)
+			device.findObject(By.text("Level 2")).click()
+			Thread.sleep(2000)
+			device.findObject(By.text("Level 3")).click()
+			Thread.sleep(2000)
 
 
 			// Check UiAutomator documentation for more information how to interact with the app.

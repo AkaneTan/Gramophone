@@ -110,6 +110,11 @@ android {
             "RELEASE_TYPE",
             "\"$releaseType\""
         )
+        buildConfigField(
+            "boolean",
+            "DISABLE_MEDIA_STORE_FILTER",
+            "false"
+        )
         setProperty("archivesBaseName", "Gramophone-$versionName${versionNameSuffix ?: ""}")
         vectorDrawables {
             useSupportLibrary = true
@@ -125,15 +130,50 @@ android {
                 "proguard-rules.pro",
             )
         }
+        create("benchmarkRelease") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            buildConfigField(
+                "boolean",
+                "DISABLE_MEDIA_STORE_FILTER",
+                "true"
+            )
+            matchingFallbacks += "release"
+        }
+        create("nonMinifiedRelease") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            buildConfigField(
+                "boolean",
+                "DISABLE_MEDIA_STORE_FILTER",
+                "true"
+            )
+            matchingFallbacks += "release"
+        }
         create("profiling") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             isProfileable = true
+            matchingFallbacks += "release"
         }
         create("userdebug") {
             isMinifyEnabled = false
             isProfileable = true
             isJniDebuggable = true
             isPseudoLocalesEnabled = true
+            matchingFallbacks += "release"
         }
         debug {
             isPseudoLocalesEnabled = true
@@ -191,16 +231,16 @@ aboutLibraries {
 dependencies {
     implementation(project(":libphonograph:libPhonograph"))
     val media3Version = "1.4.1"
-    implementation("androidx.activity:activity-ktx:1.9.1")
+    implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.collection:collection-ktx:1.4.3")
     implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha14")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-beta01")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     //implementation("androidx.datastore:datastore-preferences:1.1.0-rc01") TODO don't abuse shared prefs
-    implementation("androidx.fragment:fragment-ktx:1.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation("androidx.fragment:fragment-ktx:1.8.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.5")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-exoplayer-midi:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
