@@ -38,6 +38,7 @@ class BlacklistSettingsFragment : BaseFragment() {
         }
 
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+        recyclerView.enableEdgeToEdgePaddingListener()
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = BlacklistFolderAdapter(this, folderArray, prefs)
 
