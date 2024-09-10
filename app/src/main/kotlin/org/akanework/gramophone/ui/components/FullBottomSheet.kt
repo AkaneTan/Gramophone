@@ -198,7 +198,7 @@ class FullBottomSheet
 	private val bottomSheetFullSeekBar: SeekBar
 	private val bottomSheetFullSlider: Slider
 	private val bottomSheetFullCoverFrame: MaterialCardView
-	val bottomSheetFullLyricRecyclerView: RecyclerView
+	val bottomSheetFullLyricRecyclerView: MyRecyclerView
 	private val bottomSheetFullLyricList: MutableList<MediaStoreUtils.Lyric> = mutableListOf()
 	private val bottomSheetFullLyricAdapter: LyricAdapter = LyricAdapter(bottomSheetFullLyricList)
 	private val bottomSheetFullLyricLinearLayoutManager = CustomLinearLayoutManager(context)
