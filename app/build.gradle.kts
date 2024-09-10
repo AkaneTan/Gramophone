@@ -95,8 +95,8 @@ android {
         // keep support for it for a while.
         minSdk = 21
         targetSdk = 34
-        versionCode = 12
-        versionName = "1.0.10"
+        versionCode = 13
+        versionName = "1.0.11"
         if (releaseType != "Release") {
             versionNameSuffix = myVersionName
         }
