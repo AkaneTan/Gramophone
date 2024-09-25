@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -302,10 +301,6 @@ data class Margin(var left: Int, var top: Int, var right: Int, var bottom: Int) 
         marginLayoutParams.updateMargins(left, top, right, bottom)
     }
 }
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun Cursor.getColumnIndexOrNull(columnName: String): Int? =
-    getColumnIndex(columnName).let { if (it == -1) null else it }
 
 fun View.updateMargin(
     block: Margin.() -> Unit

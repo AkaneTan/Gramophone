@@ -4,7 +4,7 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
 	id("com.android.test")
-	id("org.jetbrains.kotlin.android")
+	kotlin("android")
 	id("androidx.baselineprofile")
 }
 

@@ -10,8 +10,8 @@ val aboutLibsVersion = "11.2.2" // keep in sync with plugin version
 plugins {
     id("com.android.application")
     id("androidx.baselineprofile")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.parcelize")
+    kotlin("android")
+    kotlin("plugin.parcelize")
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
