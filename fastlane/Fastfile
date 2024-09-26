@@ -1,0 +1,56 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+opt_out_usage
+default_platform(:android)
+
+platform :android do
+  def ensure_git_ok()
+    ensure_git_branch(branch: "beta")
+    ensure_git_status_clean
+  end
+  def gradle_reproducible(task, system_properties={})
+    gradle(flags: "--no-configuration-cache --no-build-cache --no-daemon",
+           system_properties: system_properties,
+           tasks: ["clean", task])
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :googleplay do
+    ensure_git_ok
+    gradle_reproducible(system_properties: {"signing2": "true"},
+           task: "assembleRelease")
+    upload_to_play_store(release_status: "draft", track: "alpha")
+  end
+
+  desc "Build release"
+  lane :buildrel do
+    ensure_git_ok
+    
+    gradle_reproducible(task: "assembleRelease")
+  end
+
+  desc "Prepare release"
+  lane :preprel do
+    ensure_git_ok
+    # TODO bump version number
+    changelog = prompt(text: "Changelog")
+    # TODO save changelog to disk
+    # TODO git commit
+    buildrel
+    # TODO create draft(?) release on gh
+  end
+end

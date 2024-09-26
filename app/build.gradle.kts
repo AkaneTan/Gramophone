@@ -34,6 +34,14 @@ android {
                 keyPassword = project.properties["AKANE_RELEASE_KEY_PASSWORD"].toString()
             }
         }
+        create("release2") {
+            if (project.hasProperty("AKANE2_RELEASE_KEY_ALIAS")) {
+                storeFile = file(project.properties["AKANE2_RELEASE_STORE_FILE"].toString())
+                storePassword = project.properties["AKANE2_RELEASE_STORE_PASSWORD"].toString()
+                keyAlias = project.properties["AKANE2_RELEASE_KEY_ALIAS"].toString()
+                keyPassword = project.properties["AKANE2_RELEASE_KEY_PASSWORD"].toString()
+            }
+        }
     }
 
     androidResources {
@@ -186,8 +194,9 @@ android {
             vcsInfo {
                 include = false
             }
-            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS")) {
-                signingConfig = signingConfigs["release"]
+            if (project.hasProperty("AKANE_RELEASE_KEY_ALIAS") || project.hasProperty("signing2")) {
+                signingConfig = signingConfigs[if (project.hasProperty("signing2"))
+                    "release2" else "release"]
             }
             isCrunchPngs = false // for reproducible builds TODO how much size impact does this have? where are the pngs from? can we use webp?
         }
@@ -233,14 +242,14 @@ dependencies {
     val media3Version = "1.4.1"
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.collection:collection-ktx:1.4.3")
+    implementation("androidx.collection:collection-ktx:1.4.4")
     implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-beta01")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     //implementation("androidx.datastore:datastore-preferences:1.1.0-rc01") TODO don't abuse shared prefs
     implementation("androidx.fragment:fragment-ktx:1.8.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.5")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-exoplayer-midi:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
@@ -255,7 +264,7 @@ dependencies {
     implementation("io.coil-kt.coil3:coil:3.0.0-alpha10")
     //noinspection GradleDependency newer versions need java.nio which is api 26+
     //implementation("com.github.albfernandez:juniversalchardet:2.0.3") TODO
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation("androidx.profileinstaller:profileinstaller:1.4.0")
     "baselineProfile"(project(":baselineprofile"))
     // --- below does not apply to release builds ---
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
