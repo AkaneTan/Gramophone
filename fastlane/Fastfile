@@ -32,7 +32,7 @@ platform :android do
   lane :googleplay do
     ensure_git_ok
     gradle_reproducible(system_properties: {"signing2": "true"},
-           task: "assembleRelease")
+           task: "bundleRelease")
     upload_to_play_store(release_status: "draft", track: "alpha")
   end
 
