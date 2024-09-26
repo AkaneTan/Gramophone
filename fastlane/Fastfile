@@ -17,10 +17,10 @@ platform :android do
     ensure_git_branch(branch: "beta")
     ensure_git_status_clean
   end
-  def gradle_reproducible(task, system_properties={})
+  def gradle_reproducible(options)
     gradle(flags: "--no-configuration-cache --no-build-cache --no-daemon",
-           system_properties: system_properties,
-           tasks: ["clean", task])
+           system_properties: options[:system_properties],
+           tasks: ["clean", options[:task]])
   end
 
   desc "Runs all the tests"
