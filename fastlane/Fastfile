@@ -31,7 +31,7 @@ platform :android do
   desc "Deploy a new version to the Google Play"
   lane :googleplay do
     ensure_git_ok
-    gradle_reproducible(system_properties: {"signing2": "true"},
+    gradle_reproducible(system_properties: {"org.gradle.project.signing2": "true"},
            task: "bundleRelease")
     upload_to_play_store(release_status: "draft", track: "alpha")
   end
