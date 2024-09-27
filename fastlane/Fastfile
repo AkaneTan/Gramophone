@@ -32,7 +32,7 @@ platform :android do
   lane :googleplay do
     ensure_git_ok
     gradle_reproducible(system_properties: {"org.gradle.project.signing2": "true"},
-           task: "bundleRelease")
+           task: ":app:bundleRelease")
     upload_to_play_store(release_status: "draft", track: "alpha")
   end
 
@@ -40,17 +40,33 @@ platform :android do
   lane :buildrel do
     ensure_git_ok
     
-    gradle_reproducible(task: "assembleRelease")
+    gradle_reproducible(task: ":app:assembleRelease")
   end
 
   desc "Prepare release"
   lane :preprel do
     ensure_git_ok
-    # TODO bump version number
-    changelog = prompt(text: "Changelog")
-    # TODO save changelog to disk
-    # TODO git commit
+    orig_version = android_get_version_name(gradle_file: "app/build.gradle.kts")
+    version = prompt(text: "Enter new version (current is #{orig_version})")
+    changelog = prompt(text: "Enter Changelog: (type END when done)", multi_line_end_keyword: "END")
+    android_set_version_code(gradle_file: "app/build.gradle.kts")
+    vercode = android_get_version_code(gradle_file: "app/build.gradle.kts")
+    android_set_version_name(version_name: version, gradle_file: "app/build.gradle.kts")
+    File.write("metadata/android/en-US/changelogs/#{vercode}.txt", changelog)
+    git_add(path: "fastlane/metadata/android/en-US/changelogs/#{vercode}.txt")
+    git_commit(path: ["app/build.gradle.kts", "fastlane/metadata/android/en-US/changelogs/#{vercode}.txt"], message: "Release #{version}")
     buildrel
-    # TODO create draft(?) release on gh
+    googleplay
+    set_github_release(
+      repository_name: "AkaneTan/Gramophone",
+      api_token: File.read("creds.txt"), # make sure it has no newline :D has to contain personal access token
+      name: "Gramophone v#{version}",
+      tag_name: "v#{version}",
+      is_draft: true,
+      description: changelog,
+      commitish: "beta",
+      upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]]
+    )
+    println(message: "Created draft release: #{lane_context[SharedValues::SET_GITHUB_RELEASE_HTML_LINK]}")
   end
 end
