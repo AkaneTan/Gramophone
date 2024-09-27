@@ -33,7 +33,7 @@ platform :android do
     ensure_git_ok
     gradle_reproducible(system_properties: {"org.gradle.project.signing2": "true"},
            task: ":app:bundleRelease")
-    upload_to_play_store(release_status: "draft", track: "alpha")
+    upload_to_play_store(release_status: "draft", track: "alpha", skip_upload_apk: true)
   end
 
   desc "Build release"
@@ -55,8 +55,8 @@ platform :android do
     File.write("metadata/android/en-US/changelogs/#{vercode}.txt", changelog)
     git_add(path: "fastlane/metadata/android/en-US/changelogs/#{vercode}.txt")
     git_commit(path: ["app/build.gradle.kts", "fastlane/metadata/android/en-US/changelogs/#{vercode}.txt"], message: "Release #{version}")
-    googleplay
     buildrel
+    googleplay
     set_github_release(
       repository_name: "AkaneTan/Gramophone",
       api_token: File.read("creds.txt"), # make sure it has no newline :D has to contain personal access token
