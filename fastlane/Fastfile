@@ -31,7 +31,7 @@ platform :android do
   desc "Deploy a new version to the Google Play"
   lane :googleplay do
     ensure_git_ok
-    gradle_reproducible(system_properties: {"org.gradle.project.signing2": "true"},
+    gradle_reproducible(system_properties: {"org.gradle.project.signing2": "true", "org.gradle.project.releaseType": "Release"},
            task: ":app:bundleRelease")
     upload_to_play_store(release_status: "draft", track: "alpha", skip_upload_apk: true)
   end
@@ -40,7 +40,8 @@ platform :android do
   lane :buildrel do
     ensure_git_ok
     
-    gradle_reproducible(task: ":app:assembleRelease")
+    gradle_reproducible(system_properties: {"org.gradle.project.releaseType": "Release"},
+             task: ":app:assembleRelease")
   end
 
   desc "Prepare release"
