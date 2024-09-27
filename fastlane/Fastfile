@@ -61,8 +61,8 @@ platform :android do
     set_github_release(
       repository_name: "AkaneTan/Gramophone",
       api_token: File.read("creds.txt"), # make sure it has no newline :D has to contain personal access token
-      name: "Gramophone v#{version}",
-      tag_name: "v#{version}",
+      name: "Gramophone #{version}",
+      tag_name: version, # must be version name for F-Droid
       is_draft: true,
       description: changelog,
       commitish: "beta",
