@@ -46,8 +46,6 @@ object CalculationUtils {
         return "$minutes:$seconds"
     }
 
-    fun Long.convertDurationToTimeStamp() = convertDurationToTimeStamp(this)
-
     /**
      * convertUnixTimestampToMonthDay:
      *   Converts unix timestamp to Month - Day format.
@@ -99,3 +97,5 @@ object CalculationUtils {
     }
 
 }
+
+fun Long.convertDurationToTimeStamp() = CalculationUtils.convertDurationToTimeStamp(this)
