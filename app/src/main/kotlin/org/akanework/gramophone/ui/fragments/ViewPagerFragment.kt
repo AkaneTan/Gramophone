@@ -39,6 +39,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.clone
+import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.needsManualSnackBarInset
 import org.akanework.gramophone.logic.updateMargin
@@ -85,7 +86,7 @@ class ViewPagerFragment : BaseFragment(true) {
                         .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
                     try {
                         (requireActivity() as MainActivity).startingActivity.launch(intent)
-                    } catch (e: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                         // Let's show a toast here if no system inbuilt EQ was found.
                         Toast.makeText(
                             requireContext(),
@@ -163,25 +164,24 @@ class ViewPagerFragment : BaseFragment(true) {
 
         // Set this to 9999 so it won't lag anymore.
         viewPager2.offscreenPageLimit = 9999
-        val adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+        val adapter = ViewPager2Adapter(childFragmentManager, viewLifecycleOwner.lifecycle, requireContext(), viewPager2)
         viewPager2.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = getString(adapter.getLabelResId(position))
+            tab.view.post {
+                /*
+                 * Add margin to last and first tab.
+                 * There's no attribute to let you set margin
+                 * to the last tab.
+                 */
+                val lp = tab.view.layoutParams as ViewGroup.MarginLayoutParams
+                lp.marginStart = if (position == 0)
+                    resources.getDimension(R.dimen.tab_layout_content_padding).toInt() else 0
+                lp.marginEnd = if (position == tabLayout.tabCount - 1)
+                    resources.getDimension(R.dimen.tab_layout_content_padding).toInt() else 0
+                tab.view.layoutParams = lp
+            }
         }.attach()
-
-        /*
-         * Add margin to last and first tab.
-         * There's no attribute to let you set margin
-         * to the last tab.
-         */
-        val lastTab = tabLayout.getTabAt(tabLayout.tabCount - 1)!!.view
-        val firstTab = tabLayout.getTabAt(0)!!.view
-        val lastParam = lastTab.layoutParams as ViewGroup.MarginLayoutParams
-        val firstParam = firstTab.layoutParams as ViewGroup.MarginLayoutParams
-        lastParam.marginEnd = resources.getDimension(R.dimen.tab_layout_content_padding).toInt()
-        firstParam.marginStart = resources.getDimension(R.dimen.tab_layout_content_padding).toInt()
-        lastTab.layoutParams = lastParam
-        firstTab.layoutParams = firstParam
 
         return rootView
     }

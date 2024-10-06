@@ -67,6 +67,7 @@ import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVIC
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_QUERY_TIMER
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.jetbrains.annotations.Contract
 import java.io.File
 import java.util.Locale
 
@@ -392,6 +393,7 @@ inline fun <reified T> SharedPreferences.use(relax: Boolean = false, doIt: Share
 
 // use below functions if accessing from UI thread only
 @Suppress("NOTHING_TO_INLINE")
+@Contract(value = "_,!null->!null")
 inline fun SharedPreferences.getStringStrict(key: String, defValue: String?): String? {
     return use { getString(key, defValue) }
 }
@@ -407,6 +409,7 @@ inline fun SharedPreferences.getBooleanStrict(key: String, defValue: Boolean): B
 }
 
 @Suppress("NOTHING_TO_INLINE")
+@Contract(value = "_,!null->!null")
 inline fun SharedPreferences.getStringSetStrict(key: String, defValue: Set<String>?): Set<String>? {
     return use { getStringSet(key, defValue) }
 }

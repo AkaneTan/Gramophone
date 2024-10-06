@@ -1343,21 +1343,13 @@ class FullBottomSheet
 
 
 	private class PlaylistCardMoveCallback(private val touchHelperContract: (Int, Int) -> Unit) :
-		ItemTouchHelper.Callback() {
+		ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
 		override fun isLongPressDragEnabled(): Boolean {
 			return true
 		}
 
 		override fun isItemViewSwipeEnabled(): Boolean {
 			return false
-		}
-
-		override fun getMovementFlags(
-			recyclerView: RecyclerView,
-			viewHolder: RecyclerView.ViewHolder
-		): Int {
-			val dragFlag = ItemTouchHelper.UP or ItemTouchHelper.DOWN
-			return makeMovementFlags(dragFlag, 0)
 		}
 
 		override fun onMove(

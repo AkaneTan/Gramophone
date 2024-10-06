@@ -45,7 +45,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:paddingBottom="0dp"
             app:tabBackground="@android:color/transparent"
             app:tabIndicator="@drawable/selected_chip_background"
             app:tabIndicatorColor="?colorSecondaryContainer"

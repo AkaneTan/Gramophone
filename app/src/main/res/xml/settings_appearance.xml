@@ -34,4 +34,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:layout="@layout/preference_category_md"
+        android:title="@string/settings_preference_category_home">
+
+        <org.akanework.gramophone.ui.components.TabOrderPreference
+            android:key="tabs"
+            android:layout="@layout/preference_basic"
+            app:iconSpaceReserved="false"
+            android:title="@string/tab_order"
+            android:summary="@string/tab_order_summary"
+            android:defaultValue="" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

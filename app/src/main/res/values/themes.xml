@@ -13,6 +13,7 @@
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="collapsingToolbarLayoutLargeStyle">@style/CollapsingToolbarLarge</item>
         <item name="popupMenuBackground">@drawable/popup_background</item>
+        <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
     </style>
 
     <style name="PreV31.Theme.Gramophone" parent="Base.Theme.Gramophone">
@@ -144,4 +145,10 @@
         <item name="android:windowActionModeOverlay">true</item>
     </style>
 
+    <style name="AppTheme.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="dialogCornerRadius">28dp</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="android:colorBackground">?attr/colorSurface</item>
+        <item name="android:layout" tools:ignore="PrivateResource">@layout/m3_alert_dialog</item>
+    </style>
 </resources>

@@ -19,4 +19,5 @@
     <dimen name="grid_card_padding_bottom">0dp</dimen>
     <dimen name="lyric_top_padding">36dp</dimen>
     <dimen name="lyric_bottom_padding">640dp</dimen>
+	<dimen name="tab_list_item_height">50dp</dimen>
 </resources>
