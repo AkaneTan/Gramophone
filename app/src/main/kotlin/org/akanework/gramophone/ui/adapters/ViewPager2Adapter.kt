@@ -71,7 +71,7 @@ class ViewPager2Adapter(
     fun getLabelResId(position: Int) = tabs[position]!!.label
 
     override fun getItemCount() = tabs.indexOf(null)
-        .also { if (it == -2) throw IllegalStateException("indexOf null is -1 in tab list?") }
+        .also { if (it == -1) throw IllegalStateException("indexOf null is -1 in tab list?") }
 
     override fun createFragment(position: Int): Fragment =
         AdapterFragment().apply {
@@ -79,6 +79,14 @@ class ViewPager2Adapter(
                 putInt("ID", tabs[position]!!.id)
             }
         }
+
+    override fun getItemId(position: Int): Long {
+        return tabs[position]!!.id.toLong()
+    }
+
+    override fun containsItem(itemId: Long): Boolean {
+        return tabs.any { it?.id?.toLong() == itemId }
+    }
 
     companion object {
         enum class Tab(val id: Int, val label: Int) {
