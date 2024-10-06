@@ -15,9 +15,9 @@ A sane music player built with media3 and material design library that is follow
 - Dynamic player UI monet color
 - View and play your favorite music
 - Search your favourite music
-- Web streaming (coming soon!)
+- Uses MediaStore to quickly access music database
 - Synced lyrics
-- Manage & Add your playlist (coming soon!)
+- Read-only Playlist support
 
 ## Screenshots
 | ![Screenshot 1](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_1.jpg) | ![Screenshot 2](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_2.jpg) | ![Screenshot 3](https://raw.githubusercontent.com/AkaneTan/Gramophone/beta/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_3.jpg) |
