@@ -56,7 +56,7 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
     private lateinit var albumAdapter: AlbumAdapter
     private lateinit var songAdapter: SongAdapter
     private lateinit var gridPaddingDecoration: GridPaddingDecoration
-    private lateinit var recyclerView: MyRecyclerView
+    private var recyclerView: MyRecyclerView? = null
     private var spans by Delegates.notNull<Int>()
 
     override fun onCreateView(
@@ -97,7 +97,7 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
             isSubFragment = true, fallbackSpans = spans / 2 // one song takes 2 spans
         )
         songAdapter.decorAdapter.jumpUpPos = 0
-        recyclerView.layoutManager = GridLayoutManager(context, spans).apply {
+        recyclerView!!.layoutManager = GridLayoutManager(context, spans).apply {
             spanSizeLookup = object : SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     // BaseDecorAdapter always is full width
@@ -109,11 +109,11 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
         }
         val ih = DefaultItemHeightHelper.concatItemHeightHelper(albumAdapter.itemHeightHelper,
             { albumAdapter.concatAdapter.itemCount }, songAdapter.itemHeightHelper)
-        recyclerView.enableEdgeToEdgePaddingListener()
-        recyclerView.adapter = ConcatAdapter(albumAdapter.concatAdapter, songAdapter.concatAdapter)
-        recyclerView.addItemDecoration(gridPaddingDecoration)
-        recyclerView.setAppBar(appBarLayout)
-        recyclerView.fastScroll(this, ih)
+        recyclerView!!.enableEdgeToEdgePaddingListener()
+        recyclerView!!.adapter = ConcatAdapter(albumAdapter.concatAdapter, songAdapter.concatAdapter)
+        recyclerView!!.addItemDecoration(gridPaddingDecoration)
+        recyclerView!!.setAppBar(appBarLayout)
+        recyclerView!!.fastScroll(this, ih)
 
         topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
@@ -134,6 +134,6 @@ class ArtistSubFragment : BaseFragment(true), PopupTextProvider {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        recyclerView.removeItemDecoration(gridPaddingDecoration)
+        recyclerView?.removeItemDecoration(gridPaddingDecoration)
     }
 }

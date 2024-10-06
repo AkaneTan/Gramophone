@@ -68,6 +68,7 @@ import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVIC
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import java.io.File
+import java.util.Locale
 
 fun Player.playOrPause() {
     if (isPlaying) {
@@ -159,6 +160,9 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
             }
         }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Int.toLocaleString() = String.format(Locale.getDefault(), "%d", this)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun Int.dpToPx(context: Context): Int =
@@ -417,16 +421,8 @@ inline fun needsMissingOnDestroyCallWorkarounds(): Boolean =
     Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun hasImprovedMediaStore(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-
-@Suppress("NOTHING_TO_INLINE")
 inline fun needsManualSnackBarInset(): Boolean =
     Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun hasAlbumArtistIdInMediaStore(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun hasOsClipboardDialog(): Boolean =

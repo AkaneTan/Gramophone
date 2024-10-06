@@ -94,6 +94,7 @@ import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.ui.placeholderScaleToFit
 import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.logic.utils.CalculationUtils
+import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.logic.utils.ColorUtils
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.ui.MainActivity
@@ -1273,7 +1274,7 @@ class FullBottomSheet
 		override fun onCreateViewHolder(
 			parent: ViewGroup,
 			viewType: Int
-		): PlaylistCardAdapter.ViewHolder =
+		): ViewHolder =
 			ViewHolder(
 				LayoutInflater
 					.from(parent.context)
@@ -1284,8 +1285,7 @@ class FullBottomSheet
 			val item = playlist.second[playlist.first[holder.bindingAdapterPosition]]
 			holder.songName.text = item.mediaMetadata.title
 			holder.songArtist.text = item.mediaMetadata.artist
-			holder.indicator.text =
-				CalculationUtils.convertDurationToTimeStamp(item.mediaMetadata.durationMs!!)
+			holder.indicator.text = item.mediaMetadata.durationMs?.convertDurationToTimeStamp()
 			holder.songCover.load(item.mediaMetadata.artworkUri) {
 				placeholderScaleToFit(R.drawable.ic_default_cover)
 				crossfade(true)

@@ -1,12 +1,15 @@
 package org.akanework.gramophone.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.OptIn
 import androidx.fragment.app.activityViewModels
+import androidx.media3.common.util.UnstableApi
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.error
@@ -15,6 +18,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
 import org.akanework.gramophone.logic.getFile
+import org.akanework.gramophone.logic.toLocaleString
 import org.akanework.gramophone.logic.ui.placeholderScaleToFit
 import org.akanework.gramophone.logic.utils.CalculationUtils.convertDurationToTimeStamp
 import org.akanework.gramophone.ui.LibraryViewModel
@@ -23,7 +27,8 @@ class DetailDialogFragment : BaseFragment(false) {
 
     private val libraryViewModel: LibraryViewModel by activityViewModels()
 
-    override fun onCreateView(
+	@OptIn(UnstableApi::class)
+	override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,7 +39,14 @@ class DetailDialogFragment : BaseFragment(false) {
         rootView.findViewById<MaterialToolbar>(R.id.topAppBar).setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
-        val mediaItem = libraryViewModel.mediaItemList.value!![requireArguments().getInt("Position")]
+        val pos = requireArguments().getInt("Position")
+        val vmv = libraryViewModel.mediaItemList.value
+        if (vmv == null || vmv.size <= pos) {
+            Log.e("DetailDialogFragment", "$vmv with size ${vmv?.size} didn't contain $pos")
+            parentFragmentManager.popBackStack()
+            return null
+        }
+        val mediaItem = vmv[pos]
         val mediaMetadata = mediaItem.mediaMetadata
         val albumCoverImageView = rootView.findViewById<ImageView>(R.id.album_cover)
         val titleTextView = rootView.findViewById<TextView>(R.id.title)
@@ -59,15 +71,15 @@ class DetailDialogFragment : BaseFragment(false) {
         if (mediaMetadata.albumArtist != null) {
             albumArtistTextView.text = mediaMetadata.albumArtist
         }
-        discNumberTextView.text = mediaMetadata.discNumber?.toString()
-        trackNumberTextView.text = mediaMetadata.trackNumber?.toString()
+        discNumberTextView.text = mediaMetadata.discNumber?.toLocaleString()
+        trackNumberTextView.text = mediaMetadata.trackNumber?.toLocaleString()
         if (mediaMetadata.genre != null) {
             genreTextView.text = mediaMetadata.genre
         }
         if (mediaMetadata.releaseYear != null || mediaMetadata.recordingYear != null) {
-            yearTextView.text = (mediaMetadata.releaseYear ?: mediaMetadata.recordingYear)?.toString()
+            yearTextView.text = (mediaMetadata.releaseYear ?: mediaMetadata.recordingYear)?.toLocaleString()
         }
-        durationTextView.text = convertDurationToTimeStamp(mediaMetadata.durationMs!!)
+	    mediaMetadata.durationMs?.let { durationTextView.text = convertDurationToTimeStamp(it) }
         mimeTypeTextView.text = mediaItem.localConfiguration?.mimeType ?: "(null)"
         pathTextView.text = mediaItem.getFile()?.path
             ?: mediaItem.requestMetadata.mediaUri?.toString() ?: "(null)"
