@@ -4,8 +4,8 @@ plugins {
     id("com.android.application") version agpVersion apply false
 	id("com.android.library") version agpVersion apply false
 	id("com.android.test") version agpVersion apply false
-	id("androidx.baselineprofile") version "1.3.1" apply false
-    val kotlinVersion = "2.0.20"
+	id("androidx.baselineprofile") version "1.3.2" apply false
+    val kotlinVersion = "2.0.21-RC"
 	kotlin("android") version kotlinVersion apply false
     kotlin("plugin.parcelize") version kotlinVersion apply false
     id("com.mikepenz.aboutlibraries.plugin") version "11.2.1" apply false
