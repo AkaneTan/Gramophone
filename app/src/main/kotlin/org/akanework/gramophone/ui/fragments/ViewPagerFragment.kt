@@ -22,6 +22,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -91,7 +92,9 @@ class ViewPagerFragment : BaseFragment(true) {
                         putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                     }
                     try {
-                        (requireActivity() as MainActivity).startingActivity.launch(intent)
+                        if (Settings.System.getString(requireContext().contentResolver, "firebase.test.lab") != "true") {
+                            (requireActivity() as MainActivity).startingActivity.launch(intent)
+                        }
                     } catch (_: ActivityNotFoundException) {
                         // Let's show a toast here if no system inbuilt EQ was found.
                         Toast.makeText(
