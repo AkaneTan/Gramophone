@@ -48,6 +48,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
 import androidx.media3.common.util.Util.isBitmapFactorySupportedMimeType
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
@@ -111,9 +112,11 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         const val SERVICE_SET_TIMER = "set_timer"
         const val SERVICE_QUERY_TIMER = "query_timer"
         const val SERVICE_GET_LYRICS = "get_lyrics"
+        const val SERVICE_GET_SESSION = "get_session"
         const val SERVICE_TIMER_CHANGED = "changed_timer"
     }
 
+    private var lastSessionId = 0
     private var mediaSession: MediaLibrarySession? = null
     private var controller: MediaController? = null
     private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
@@ -265,11 +268,9 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         if (BuildConfig.DEBUG) {
             player.exoPlayer.addAnalyticsListener(EventLogger())
         }
-        sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
-            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.exoPlayer.audioSessionId)
-            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
-        })
+        player.exoPlayer.audioSessionId = Util.generateAudioSessionIdV21(this)
+        lastSessionId = player.exoPlayer.audioSessionId
+        broadcastAudioSession()
         lastPlayedManager = LastPlayedManager(this, player)
         lastPlayedManager.allowSavingState = false
 
@@ -374,13 +375,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         // Important: this must happen before sending stop() as that changes state ENDED -> IDLE
         lastPlayedManager.save()
         mediaSession!!.player.stop()
-        sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
-            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-            putExtra(
-                AudioEffect.EXTRA_AUDIO_SESSION,
-                (mediaSession!!.player as EndedWorkaroundPlayer).exoPlayer.audioSessionId
-            )
-        })
+        broadcastAudioSessionClose()
         controller!!.release()
         controller = null
         mediaSession!!.release()
@@ -412,6 +407,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             }
         }
         availableSessionCommands.add(SessionCommand(SERVICE_SET_TIMER, Bundle.EMPTY))
+        availableSessionCommands.add(SessionCommand(SERVICE_GET_SESSION, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY))
         handler.post {
@@ -424,6 +420,34 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
             .setAvailableSessionCommands(availableSessionCommands.build())
             .build()
+    }
+
+    override fun onAudioSessionIdChanged(audioSessionId: Int) {
+        super.onAudioSessionIdChanged(audioSessionId)
+        broadcastAudioSessionClose()
+        lastSessionId = audioSessionId
+        broadcastAudioSession()
+    }
+
+    private fun broadcastAudioSession() {
+        if (lastSessionId != 0) {
+            sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
+                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, lastSessionId)
+                putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+            })
+        } else {
+            Log.e(TAG, "session id is 0? why????? THIS MIGHT BREAK EQUALIZER")
+        }
+    }
+
+    private fun broadcastAudioSessionClose() {
+        if (lastSessionId != 0) {
+            sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
+                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, lastSessionId)
+            })
+        }
     }
 
     override fun onCustomCommand(
@@ -462,6 +486,12 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             SERVICE_GET_LYRICS -> {
                 SessionResult(SessionResult.RESULT_SUCCESS).also {
                     it.extras.putParcelableArray("lyrics", lyrics?.toTypedArray())
+                }
+            }
+
+            SERVICE_GET_SESSION -> {
+                SessionResult(SessionResult.RESULT_SUCCESS).also {
+                    it.extras.putInt("session", lastSessionId)
                 }
             }
 

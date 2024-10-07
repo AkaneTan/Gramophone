@@ -41,6 +41,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.Insets
 import androidx.core.net.toFile
@@ -51,8 +52,10 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
@@ -64,6 +67,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS
+import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_SESSION
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_QUERY_TIMER
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -216,6 +220,16 @@ fun MediaController.getLyrics(): MutableList<MediaStoreUtils.Lyric>? =
     ).get().extras.let {
         (BundleCompat.getParcelableArray(it, "lyrics", MediaStoreUtils.Lyric::class.java)
                 as Array<MediaStoreUtils.Lyric>?)?.toMutableList()
+    }
+
+@OptIn(UnstableApi::class)
+@Suppress("UNCHECKED_CAST")
+fun MediaController.getSessionId(): Int? =
+	sendCustomCommand(
+        SessionCommand(SERVICE_GET_SESSION, Bundle.EMPTY),
+        Bundle.EMPTY
+	).get().extras.getInt("session", C.AUDIO_SESSION_ID_UNSET).let {
+        if (it == C.AUDIO_SESSION_ID_UNSET) null else it
     }
 
 // https://twitter.com/Piwai/status/1529510076196630528

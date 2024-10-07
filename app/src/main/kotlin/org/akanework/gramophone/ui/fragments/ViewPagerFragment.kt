@@ -20,6 +20,7 @@ package org.akanework.gramophone.ui.fragments
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,6 +42,7 @@ import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.clone
 import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.enableEdgeToEdgePaddingListener
+import org.akanework.gramophone.logic.getSessionId
 import org.akanework.gramophone.logic.needsManualSnackBarInset
 import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.ui.LibraryViewModel
@@ -82,8 +84,12 @@ class ViewPagerFragment : BaseFragment(true) {
                     (requireActivity() as MainActivity).startFragment(SearchFragment())
                 }
                 R.id.equalizer -> {
-                    val intent = Intent("android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL")
-                        .addCategory("android.intent.category.CATEGORY_CONTENT_MUSIC")
+                    val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
+                        // EXTRA_PACKAGE_NAME is probably not needed but might as well add for good measure
+                        putExtra(AudioEffect.EXTRA_PACKAGE_NAME, requireContext().packageName)
+                        putExtra(AudioEffect.EXTRA_AUDIO_SESSION, (requireActivity() as MainActivity).getPlayer()?.getSessionId())
+                        putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+                    }
                     try {
                         (requireActivity() as MainActivity).startingActivity.launch(intent)
                     } catch (_: ActivityNotFoundException) {
