@@ -130,7 +130,7 @@ object LrcUtils {
         markTranslations(lyricsList)
 
         lyricsList.takeWhile { it.content.isEmpty() }
-            .forEach { _ -> lyricsList.removeFirst() }
+            .forEach { _ -> lyricsList.removeAt(0) }
 
         if (lyricsList.isEmpty() && lrcContent.isNotEmpty()) {
             lyricsList.add(MediaStoreUtils.Lyric(null, lrcContent, false))

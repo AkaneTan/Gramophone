@@ -25,6 +25,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:backgroundTint="@android:color/transparent"
+                android:contentDescription="@string/back"
                 app:icon="@drawable/ic_arrow_back"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"

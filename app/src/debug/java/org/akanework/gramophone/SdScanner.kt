@@ -63,7 +63,7 @@ class SdScanner(private val context: Context) {
 				}
 			}
 		}
-		if (filesToProcess.size == 0) {
+		if (filesToProcess.isEmpty()) {
 			scannerEnded()
 		} else {
 			val pathsToProcess = filesToProcess.map { it.absolutePath }.toMutableList()

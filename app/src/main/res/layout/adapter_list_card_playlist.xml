@@ -90,6 +90,8 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+        android:tooltipText="@string/remove"
+        android:contentDescription="@string/remove"
         app:icon="@drawable/ic_close"
         app:iconGravity="textStart"
         app:iconPadding="0dp"

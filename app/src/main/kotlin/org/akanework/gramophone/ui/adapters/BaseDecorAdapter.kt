@@ -164,7 +164,7 @@ open class BaseDecorAdapter<T : BaseAdapter<*>>(
                     shuffleModeEnabled = false
                     repeatMode = REPEAT_MODE_OFF
                     setMediaItems(songList, 0, C.TIME_UNSET)
-                    if (songList.size > 0) {
+                    if (songList.isNotEmpty()) {
                         prepare()
                         play()
                     }

@@ -282,7 +282,7 @@ abstract class BaseAdapter<T>(
                         else comparator?.compare(o1, o2) ?: 0
                     }
                 }
-                val diff = if (((list.size != 0 && newList.size != 0) || allowDiffUtils) && canDiff)
+                val diff = if (((list.isNotEmpty() && newList.isNotEmpty()) || allowDiffUtils) && canDiff)
                     DiffUtil.calculateDiff(SongDiffCallback(list, newList)) else null
                 val oldCount = list.size
                 val newCount = newList.size

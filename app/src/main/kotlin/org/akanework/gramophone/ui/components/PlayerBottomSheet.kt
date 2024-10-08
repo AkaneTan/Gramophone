@@ -164,29 +164,29 @@ class PlayerBottomSheet private constructor(
         ) {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> {
-                    fullPlayer.visibility = View.GONE
-                    previewPlayer.visibility = View.VISIBLE
+                    fullPlayer.visibility = GONE
+                    previewPlayer.visibility = VISIBLE
                     previewPlayer.alpha = 1f
                     fullPlayer.alpha = 0f
                     bottomSheetBackCallback!!.isEnabled = false
                 }
 
                 BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING -> {
-                    fullPlayer.visibility = View.VISIBLE
-                    previewPlayer.visibility = View.VISIBLE
+                    fullPlayer.visibility = VISIBLE
+                    previewPlayer.visibility = VISIBLE
                 }
 
                 BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_HALF_EXPANDED -> {
-                    previewPlayer.visibility = View.GONE
-                    fullPlayer.visibility = View.VISIBLE
+                    previewPlayer.visibility = GONE
+                    fullPlayer.visibility = VISIBLE
                     previewPlayer.alpha = 0f
                     fullPlayer.alpha = 1f
                     bottomSheetBackCallback!!.isEnabled = true
                 }
 
                 BottomSheetBehavior.STATE_HIDDEN -> {
-                    previewPlayer.visibility = View.GONE
-                    fullPlayer.visibility = View.GONE
+                    previewPlayer.visibility = GONE
+                    fullPlayer.visibility = GONE
                     previewPlayer.alpha = 0f
                     fullPlayer.alpha = 0f
                     bottomSheetBackCallback!!.isEnabled = false
@@ -219,7 +219,7 @@ class PlayerBottomSheet private constructor(
             bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
                     if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE
+                        VISIBLE
                     ) {
                         fullPlayer.bottomSheetFullLyricRecyclerView.fadOutAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
                         fullPlayer.bottomSheetLyricButton.isChecked = false
@@ -230,7 +230,7 @@ class PlayerBottomSheet private constructor(
 
                 override fun handleOnBackProgressed(backEvent: BackEventCompat) {
                     if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE
+                        VISIBLE
                     ) {
                         // TODO
                     } else {
@@ -240,7 +240,7 @@ class PlayerBottomSheet private constructor(
 
                 override fun handleOnBackPressed() {
                     if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE
+                        VISIBLE
                     ) {
                         fullPlayer.bottomSheetFullLyricRecyclerView.fadOutAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
                         fullPlayer.bottomSheetLyricButton.isChecked = false
@@ -251,7 +251,7 @@ class PlayerBottomSheet private constructor(
 
                 override fun handleOnBackCancelled() {
                     if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
-                        View.VISIBLE
+                        VISIBLE
                     ) {
                         fullPlayer.bottomSheetFullLyricRecyclerView.fadInAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
                         fullPlayer.bottomSheetLyricButton.isChecked = false

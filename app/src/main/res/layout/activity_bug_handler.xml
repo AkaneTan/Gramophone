@@ -34,6 +34,7 @@
                 android:paddingStart="4dp"
                 android:paddingEnd="8dp"
                 app:layout_collapseMode="pin"
+                app:navigationContentDescription="@string/back"
                 app:navigationIcon="@drawable/ic_arrow_back"
                 app:navigationIconTint="?colorOnSurface" />
 
@@ -49,14 +50,15 @@
 
         <TextView
             android:id="@+id/error"
-            android:textIsSelectable="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="?attr/colorOnSurface"
-            android:paddingTop="12dp"
             android:paddingStart="24dp"
+            android:paddingTop="12dp"
             android:paddingEnd="24dp"
-            android:textSize="11sp" />
+            android:textColor="?attr/colorOnSurface"
+            android:textIsSelectable="true"
+            android:textSize="11sp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
     </androidx.core.widget.NestedScrollView>
 

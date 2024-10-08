@@ -94,11 +94,11 @@ class SearchFragment : BaseFragment(false) {
                     filteredList.clear()
                     // Filter the library.
                     libraryViewModel.mediaItemList.value?.filter {
-                        val isMatchingTitle = it.mediaMetadata.title?.contains(text, true) ?: false
+                        val isMatchingTitle = it.mediaMetadata.title?.contains(text, true) == true
                         val isMatchingAlbum =
-                            it.mediaMetadata.albumTitle?.contains(text, true) ?: false
+	                        it.mediaMetadata.albumTitle?.contains(text, true) == true
                         val isMatchingArtist =
-                            it.mediaMetadata.artist?.contains(text, true) ?: false
+	                        it.mediaMetadata.artist?.contains(text, true) == true
                         isMatchingTitle || isMatchingAlbum || isMatchingArtist
                     }?.let {
                         filteredList.addAll(

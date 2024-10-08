@@ -92,6 +92,8 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+        android:tooltipText="@string/more"
+        android:contentDescription="@string/more"
         app:icon="@drawable/ic_more_vert_alt"
         app:iconGravity="textStart"
         app:iconPadding="0dp"

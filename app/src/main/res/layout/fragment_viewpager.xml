@@ -34,7 +34,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
                 android:paddingStart="24dp"
-                android:paddingEnd="8dp"
+                android:paddingEnd="16dp"
                 app:layout_collapseMode="pin"
                 app:menu="@menu/home_menu" />
 

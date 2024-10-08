@@ -18,7 +18,6 @@
 package org.akanework.gramophone.ui
 
 import android.app.NotificationManager
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri

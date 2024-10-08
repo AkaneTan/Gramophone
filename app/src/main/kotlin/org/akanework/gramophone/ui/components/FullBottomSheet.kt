@@ -510,7 +510,7 @@ class FullBottomSheet
 			instance?.addListener(this@FullBottomSheet)
 			updateTimer()
 			onRepeatModeChanged(instance?.repeatMode ?: Player.REPEAT_MODE_OFF)
-			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled ?: false)
+			onShuffleModeEnabledChanged(instance?.shuffleModeEnabled == true)
 			onPlaybackStateChanged(instance?.playbackState ?: Player.STATE_IDLE)
 			onMediaItemTransition(
 				instance?.currentMediaItem,
@@ -561,11 +561,11 @@ class FullBottomSheet
 	private fun refreshSettings(key: String?) {
 		if (key == null || key == "default_progress_bar") {
 			if (prefs.getBooleanStrict("default_progress_bar", false)) {
-				bottomSheetFullSlider.visibility = View.VISIBLE
-				bottomSheetFullSeekBar.visibility = View.GONE
+				bottomSheetFullSlider.visibility = VISIBLE
+				bottomSheetFullSeekBar.visibility = GONE
 			} else {
-				bottomSheetFullSlider.visibility = View.GONE
-				bottomSheetFullSeekBar.visibility = View.VISIBLE
+				bottomSheetFullSlider.visibility = GONE
+				bottomSheetFullSeekBar.visibility = VISIBLE
 			}
 		}
 		if (key == null || key == "centered_title") {
@@ -1086,19 +1086,19 @@ class FullBottomSheet
 		override fun onCreateViewHolder(
 			parent: ViewGroup,
 			viewType: Int
-		): LyricAdapter.ViewHolder =
+		): ViewHolder =
 			ViewHolder(
 				LayoutInflater
 					.from(parent.context)
 					.inflate(R.layout.lyrics, parent, false),
 			)
 
-		override fun onBindViewHolder(holder: LyricAdapter.ViewHolder, position: Int) {
+		override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 		}
 
 		override fun onBindViewHolder(
-			holder: LyricAdapter.ViewHolder,
+			holder: ViewHolder,
 			position: Int,
 			payloads: MutableList<Any>
 		) {
@@ -1123,7 +1123,7 @@ class FullBottomSheet
 			}
 
 			with(holder.lyricTextView) {
-				visibility = if (lyric.content.isNotEmpty()) View.VISIBLE else View.GONE
+				visibility = if (lyric.content.isNotEmpty()) VISIBLE else GONE
 				text = lyric.content
 				gravity = if (isLyricCentered) Gravity.CENTER else Gravity.START
 				translationY = 0f

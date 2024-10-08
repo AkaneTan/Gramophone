@@ -79,7 +79,7 @@ class DetailDialogFragment : BaseFragment(false) {
         if (mediaMetadata.releaseYear != null || mediaMetadata.recordingYear != null) {
             yearTextView.text = (mediaMetadata.releaseYear ?: mediaMetadata.recordingYear)?.toLocaleString()
         }
-	    mediaMetadata.durationMs?.let { durationTextView.text = convertDurationToTimeStamp(it) }
+        mediaMetadata.durationMs?.let { durationTextView.text = convertDurationToTimeStamp(it) }
         mimeTypeTextView.text = mediaItem.localConfiguration?.mimeType ?: "(null)"
         pathTextView.text = mediaItem.getFile()?.path
             ?: mediaItem.requestMetadata.mediaUri?.toString() ?: "(null)"

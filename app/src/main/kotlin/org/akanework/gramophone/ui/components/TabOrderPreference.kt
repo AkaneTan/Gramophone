@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.RecyclerView
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.replaceAllSupport
 import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.mapSettingToTabList
 import org.akanework.gramophone.ui.adapters.ViewPager2Adapter.Companion.mapTabListToSetting

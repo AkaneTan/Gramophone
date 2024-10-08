@@ -7,12 +7,14 @@
 	android:clickable="true"
 	android:focusable="true"
 	android:paddingHorizontal="18dp"
-	android:background="?attr/selectableItemBackground">
+	android:background="?attr/selectableItemBackground"
+	tools:ignore="Overdraw">
 
 	<View
 		android:layout_width="0dp"
 		android:layout_height="3dp"
 		android:background="?colorControlNormal"
+		android:contentDescription="@string/divider"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toStartOf="@id/dragHandle"
 		app:layout_constraintStart_toStartOf="parent"

@@ -266,7 +266,7 @@ class FolderAdapter(
         override fun getItemCount(): Int = if (enabled) 1 else 0
     }
 
-    private abstract class FolderCardAdapter(protected val folderFragment: FolderAdapter) :
+    private abstract class FolderCardAdapter(val folderFragment: FolderAdapter) :
         MyRecyclerView.Adapter<FolderCardAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(
