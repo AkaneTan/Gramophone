@@ -20,6 +20,7 @@ package org.akanework.gramophone.ui.fragments.settings
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.TextView
 import androidx.preference.Preference
 import com.google.android.material.color.MaterialColors
@@ -67,12 +68,16 @@ class AboutSettingsTopFragment : BasePreferenceFragment() {
             versionTextView.text =
                 BuildConfig.VERSION_NAME
         } else if (preference.key == "contributors") {
-            LibsBuilder()
-                // This line could technically be deleted, but this saves us some reflection
-                // and hence makes ProGuard + resource shrinking work without weird hacks.
-                .withLibs(Libs.Builder().withJson(requireContext(), R.raw.aboutlibraries).build())
-                .start(requireActivity())
-        }
-        return super.onPreferenceTreeClick(preference)
+            if (Settings.System.getString(requireContext().contentResolver, "firebase.test.lab") != "true") {
+                LibsBuilder()
+                    // This line could technically be deleted, but this saves us some reflection
+                    // and hence makes ProGuard + resource shrinking work without weird hacks.
+                    .withLibs(
+                        Libs.Builder().withJson(requireContext(), R.raw.aboutlibraries).build()
+                    )
+                    .start(requireActivity())
+            }
+        } else return super.onPreferenceTreeClick(preference)
+        return true
     }
 }
