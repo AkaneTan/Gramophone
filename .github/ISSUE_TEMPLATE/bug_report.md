@@ -31,4 +31,4 @@ If applicable, add screenshots to help explain your problem.
 **Additional context**
 Add any other context about the problem here.
 
-- [ ] I will follow the issue format and will add `[BUG]` to the start of my issue title, and I acknowledge that if I don't follow the format, my issue might get closed without further explanation.
+- [ ] I will open one issue per bug, follow the issue format and will add `[BUG]` to the start of my issue title, and I acknowledge that if I don't follow the format, my issue might get closed without further explanation.
