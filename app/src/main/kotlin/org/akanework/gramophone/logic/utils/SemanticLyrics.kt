@@ -149,15 +149,41 @@ private sealed class SyntacticLyrics {
 						pos += 3
 						continue
 					}
+					if (pos + 4 < text.length && text.regionMatches(pos, " v1: ", 0, 5)) {
+						out.add(SpeakerTag(SpeakerEntity.Voice1))
+						pos += 5
+						continue
+					}
+					if (pos + 4 < text.length && text.regionMatches(pos, " v2: ", 0, 5)) {
+						out.add(SpeakerTag(SpeakerEntity.Voice2))
+						pos += 5
+						continue
+					}
+					if (pos + 3 < text.length && text.regionMatches(pos, " F: ", 0, 4)) {
+						out.add(SpeakerTag(SpeakerEntity.Female))
+						pos += 4
+						continue
+					}
+					if (pos + 3 < text.length && text.regionMatches(pos,  "M: ", 0, 4)) {
+						out.add(SpeakerTag(SpeakerEntity.Male))
+						pos += 4
+						continue
+					}
+					if (pos + 3 < text.length && text.regionMatches(pos, " D: ", 0, 4)) {
+						out.add(SpeakerTag(SpeakerEntity.Duet))
+						pos += 4
+						continue
+					}
+				}
+				// Metadata (or the bg speaker, which looks like metadata) can only appear in the
+				// beginning of a file or after newlines
+				if (out.isEmpty() || out.last() is NewLine) {
 					if (pos + 4 < text.length && text.regionMatches(pos, "[bg: ", 0, 5)) {
 						out.add(SpeakerTag(SpeakerEntity.Background))
 						pos += 5
 						isBgSpeaker = true
 						continue
 					}
-				}
-				// Metadata can only appear in beginning of file or after newline
-				if (out.isEmpty() || out.last() is NewLine) {
 					val mmMatch = metadataRegex.matchAt(text, pos)
 					if (mmMatch != null) {
 						out.add(Metadata(mmMatch.groupValues[1], mmMatch.groupValues[2]))
