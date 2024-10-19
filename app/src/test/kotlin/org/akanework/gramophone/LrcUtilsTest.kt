@@ -76,25 +76,26 @@ class LrcUtilsTest {
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED, lrc)
 	}
 
-	@Ignore("idk why but its very broken")
+	/*
+	 * Test the synthetic newline feature. If this is intentionally broken, it's not a big deal.
+	 * But don't break it accidentally.
+	 */
 	@Test
-	fun testTemplateLrc2() {
+	fun testTemplateLrcSyntheticNewlines() {
 		val lrc = parse(LrcTestData.AS_IT_WAS.replace("\n", ""))
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED, lrc)
 	}
 
 	@Test
-	fun testTemplateLrc3() {
-		// TODO re-enable multiline after fixing bug in legacy multiline parser where single
-		//  newline is not handled the same
-		val lrc = parse(LrcTestData.AS_IT_WAS + "\n", multiline = false)
+	fun testTemplateLrc2() {
+		val lrc = parse(LrcTestData.AS_IT_WAS + "\n")
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED, lrc)
 	}
 
 	@Test
-	fun testTemplateLrc4() {
+	fun testTemplateLrcTrimToggle() {
 		val a = parse(LrcTestData.AS_IT_WAS_NO_TRIM, trim = false)
 		val b = parse(LrcTestData.AS_IT_WAS_NO_TRIM, trim = true)
 		assertNotEquals(b, a)
@@ -103,11 +104,20 @@ class LrcUtilsTest {
 	}
 
 	@Test
-	fun testTemplateLrc5() {
-		val lrc = parse(LrcTestData.DREAM_THREAD, multiline = false) // TODO multiline crashes
+	fun testTemplateLrcTranslate2Compressed() {
+		val lrc = parse(LrcTestData.DREAM_THREAD)
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.DREAM_THREAD_PARSED, lrc)
 	}
+
+	// TODO test if multiline works
+	// TODO test if translations type 1 works
+	// TODO test if extended lrc works
+	// TODO test if extended lrc without normal sync points works
+	// TODO test if wakaloke works
+	// TODO test if apple music v1/v2/bg works
+	// TODO test if [offset: ] works
+	// TODO test if sorting out invalid lrc with 000000 works
 
 	@Test
 	fun testParserSkippedHello() {

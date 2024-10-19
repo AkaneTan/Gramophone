@@ -66,33 +66,34 @@ object LrcUtils {
 
 
     /*
- * Formats we have to consider in this method are:
- *  - Simple LRC files (ref Wikipedia) ex: [00:11.22] hello i am lyric
- *  - "compressed LRC" with >1 tag for repeating line ex: [00:11.22][00:15.33] hello i am lyric
- *  - Invalid LRC with all-zero tags [00:00.00] hello i am lyric
- *  - Lyrics that aren't synced and have no tags at all
- *  - Translations, type 1 (ex: pasting first japanese and then english lrc file into one file)
- *  - Translations, type 2 (ex: translated line directly under previous non-translated line)
- *  - The timestamps can variate in the following ways: [00:11] [00:11:22] [00:11.22] [00:11.222] [00:11:222]
- *
- * Multiline format:
- * - This technically isn't part of any listed guidelines, however is allows for
- *      reading of otherwise discarded lyrics
- * - All the lines between sync point A and B are read as lyric text of A
- *
- * In the future, we also want to support:
- *  - Extended LRC (ref Wikipedia) ex: [00:11.22] <00:11.22> hello <00:12.85> i am <00:13.23> lyric
- *  - Wakaloke gender extension (ref Wikipedia)
- *  - [offset:] tag in header (ref Wikipedia)
- * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
- */
+     * Formats we have to consider in this method are:
+     *  - Simple LRC files (ref Wikipedia) ex: [00:11.22] hello i am lyric
+     *  - "compressed LRC" with >1 tag for repeating line ex: [00:11.22][00:15.33] hello i am lyric
+     *  - Invalid LRC with all-zero tags [00:00.00] hello i am lyric
+     *  - Lyrics that aren't synced and have no tags at all
+     *  - Translations, type 1 (ex: pasting first japanese and then english lrc file into one file)
+     *  - Translations, type 2 (ex: translated line directly under previous non-translated line)
+     *  - The timestamps can variate in the following ways: [00:11] [00:11:22] [00:11.22] [00:11.222] [00:11:222]
+     *
+     * Multiline format:
+     * - This technically isn't part of any listed guidelines, however is allows for
+     *      reading of otherwise discarded lyrics
+     * - All the lines between sync point A and B are read as lyric text of A
+     *
+     * In the future, we also want to support:
+     *  - Extended LRC (ref Wikipedia) ex: [00:11.22] <00:11.22> hello <00:12.85> i am <00:13.23> lyric
+     *  - Wakaloke gender extension (ref Wikipedia)
+     *  - [offset:] tag in header (ref Wikipedia)
+     * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
+     */
     @VisibleForTesting
     fun parseLrcString(
         lrcContent: String,
         trim: Boolean,
         multilineEnable: Boolean
     ): MutableList<MediaStoreUtils.Lyric>? {
-        if (lrcContent.isBlank()) return null
+        /*if (true)*/ return SemanticLyrics.parseForLegacy(lrcContent, trim, multilineEnable)
+        /*if (lrcContent.isBlank()) return null
 
         val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()
         val lyricsList = mutableListOf<MediaStoreUtils.Lyric>()
@@ -168,7 +169,7 @@ object LrcUtils {
         val millisecondsString = matchResult?.groupValues?.get(3)
         val milliseconds = millisecondsString?.padEnd(3, '0')?.take(3)?.toLongOrNull() ?: 0
 
-        return minutes * 60000 + seconds * 1000 + milliseconds
+        return minutes * 60000 + seconds * 1000 + milliseconds*/
     }
 }
 
