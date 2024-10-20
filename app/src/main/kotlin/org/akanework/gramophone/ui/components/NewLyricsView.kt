@@ -194,7 +194,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 				.build(), sb, paddingTop.dpToPx(context), paddingBottom.dpToPx(context))
 		}
 		val heights = spLines.map { it.layout.height + it.paddingTop + it.paddingBottom }
-		return Pair(Pair(width, (heights.max() / smallSizeFactor + heights.sum()).toInt()), spLines)
+		return Pair(Pair(width, (heights.max() * (1 - (1 / smallSizeFactor)) + heights.sum()).toInt()), spLines)
 	}
 
 	data class SbItem(val layout: StaticLayout, val text: SpannableStringBuilder, val paddingTop: Int, val paddingBottom: Int)
