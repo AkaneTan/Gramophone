@@ -1,5 +1,10 @@
 package org.akanework.gramophone.logic.utils
 
+import android.os.Parcel
+import android.os.Parcelable
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.WriteWith
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.collections.map
 
@@ -27,7 +32,8 @@ import kotlin.collections.map
  * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
  */
 
-enum class SpeakerEntity(val isWakaloke: Boolean) {
+@Parcelize
+enum class SpeakerEntity(val isWakaloke: Boolean) : Parcelable {
 	Male(true), // Wakaloke
 	Female(true), // Wakaloke
 	Duet(true), // Wakaloke
@@ -314,18 +320,33 @@ private sealed class SyntacticLyrics {
  *  - [offset:] tag in header (ref Wikipedia)
  * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
  */
-sealed class SemanticLyrics {
+sealed class SemanticLyrics : Parcelable {
 	abstract val unsyncedText: List<String>
+	@Parcelize
 	class UnsyncedLyrics(override val unsyncedText: List<String>) : SemanticLyrics()
-	class SyncedLyrics(val text: List<Pair<LyricLine, Boolean>>) : SemanticLyrics() {
+	@Parcelize
+	class SyncedLyrics(val text: List<LyricLineHolder>) : SemanticLyrics() {
 		override val unsyncedText: List<String>
-			get() = text.map { it.first.text }
+			get() = text.map { it.lyric.text }
 	}
+	@Parcelize
 	data class LyricLine(val text: String,
 	                          val start: ULong,
 	                          val words: List<Word>?,
-	                          val speaker: SpeakerEntity?)
-	data class Word(val timeRange: ULongRange, val charRange: ULongRange)
+	                          val speaker: SpeakerEntity?) : Parcelable
+	@Parcelize
+	data class LyricLineHolder(val lyric: LyricLine,
+	                     val isTranslated: Boolean) : Parcelable
+	@Parcelize
+	data class Word(val timeRange: @WriteWith<ULongRangeParceler>() ULongRange, val charRange: @WriteWith<ULongRangeParceler>() ULongRange) : Parcelable
+	object ULongRangeParceler : Parceler<ULongRange> {
+		override fun create(parcel: Parcel) = parcel.readLong().toULong()..parcel.readLong().toULong()
+
+		override fun ULongRange.write(parcel: Parcel, flags: Int) {
+			parcel.writeLong(first.toLong())
+			parcel.writeLong(last.toLong())
+		}
+	}
 	companion object {
 		fun parse(lyricText: String, trimEnabled: Boolean, multiLineEnabled: Boolean): SemanticLyrics? {
 			val lyricSyntax = SyntacticLyrics.parse(lyricText, multiLineEnabled)
@@ -463,18 +484,17 @@ sealed class SemanticLyrics {
 					it.copy(speaker = SpeakerEntity.Male)
 				else it
 			}.map {
-				Pair(it, it.start == previousTimestamp).also {
-					previousTimestamp = it.first.start
+				LyricLineHolder(it, it.start == previousTimestamp).also {
+					previousTimestamp = it.lyric.start
 				}
 			})
 		}
 
-		fun parseForLegacy(lyricText: String, trimEnabled: Boolean, multiLineEnabled: Boolean):
-				MutableList<MediaStoreUtils.Lyric>? {
-			val lyric = parse(lyricText, trimEnabled, multiLineEnabled) ?: return null
+		fun convertForLegacy(lyric: SemanticLyrics?): MutableList<MediaStoreUtils.Lyric>? {
+			if (lyric == null) return null
 			if (lyric is SyncedLyrics) {
 				return lyric.text.map {
-					MediaStoreUtils.Lyric(it.first.start.toLong(), it.first.text, it.second)
+					MediaStoreUtils.Lyric(it.lyric.start.toLong(), it.lyric.text, it.isTranslated)
 				}.toMutableList()
 			}
 			return mutableListOf(MediaStoreUtils.Lyric(null, lyric.unsyncedText.joinToString("\n"), false))

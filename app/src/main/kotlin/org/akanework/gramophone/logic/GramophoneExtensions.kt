@@ -67,10 +67,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS
+import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_LYRICS_LEGACY
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_GET_SESSION
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_QUERY_TIMER
 import org.akanework.gramophone.logic.GramophonePlaybackService.Companion.SERVICE_SET_TIMER
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.SemanticLyrics
+import org.akanework.gramophone.logic.utils.SemanticLyrics.LyricLineHolder
 import org.jetbrains.annotations.Contract
 import java.io.File
 import java.util.Locale
@@ -213,13 +216,22 @@ inline fun <reified T> MutableList<T>.replaceAllSupport(operator: (T) -> T) {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun MediaController.getLyrics(): MutableList<MediaStoreUtils.Lyric>? =
+fun MediaController.getLyricsLegacy(): MutableList<MediaStoreUtils.Lyric>? =
     sendCustomCommand(
-        SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+        SessionCommand(SERVICE_GET_LYRICS_LEGACY, Bundle.EMPTY),
         Bundle.EMPTY
     ).get().extras.let {
         (BundleCompat.getParcelableArray(it, "lyrics", MediaStoreUtils.Lyric::class.java)
                 as Array<MediaStoreUtils.Lyric>?)?.toMutableList()
+    }
+
+@Suppress("UNCHECKED_CAST")
+fun MediaController.getLyrics(): SemanticLyrics? =
+    sendCustomCommand(
+        SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+        Bundle.EMPTY
+    ).get().extras.let {
+        BundleCompat.getParcelable<SemanticLyrics>(it, "lyrics", SemanticLyrics::class.java)
     }
 
 @OptIn(UnstableApi::class)

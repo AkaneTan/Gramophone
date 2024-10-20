@@ -16,10 +16,10 @@ object LrcUtils {
 
     private const val TAG = "LrcUtils"
 
-    data class LrcParserOptions(val trim: Boolean, val multiLine: Boolean, val legacyParser: Boolean, val errorText: String)
+    data class LrcParserOptions(val trim: Boolean, val multiLine: Boolean, val errorText: String)
 
     @OptIn(UnstableApi::class)
-    fun extractAndParseLyrics(metadata: Metadata, parserOptions: LrcParserOptions): MutableList<MediaStoreUtils.Lyric>? {
+    fun extractAndParseLyrics(metadata: Metadata, parserOptions: LrcParserOptions): SemanticLyrics? {
         for (i in 0..<metadata.length()) {
             val meta = metadata.get(i)
             val data =
@@ -32,7 +32,32 @@ object LrcUtils {
                 else null
             val lyrics = data?.let {
                 try {
-                    parseLrcString(it, parserOptions)
+                    SemanticLyrics.parse(it, parserOptions.trim, parserOptions.multiLine)
+                } catch (e: Exception) {
+                    Log.e(TAG, Log.getStackTraceString(e))
+                    SemanticLyrics.UnsyncedLyrics(listOf(parserOptions.errorText))
+                }
+            }
+            return lyrics ?: continue
+        }
+        return null
+    }
+
+    @OptIn(UnstableApi::class)
+    fun extractAndParseLyricsLegacy(metadata: Metadata, parserOptions: LrcParserOptions): MutableList<MediaStoreUtils.Lyric>? {
+        for (i in 0..<metadata.length()) {
+            val meta = metadata.get(i)
+            val data =
+                if (meta is VorbisComment && meta.key == "LYRICS") // ogg / flac
+                    meta.value
+                else if (meta is BinaryFrame && (meta.id == "USLT" || meta.id == "SYLT")) // mp3 / other id3 based
+                    UsltFrameDecoder.decode(ParsableByteArray(meta.data))
+                else if (meta is TextInformationFrame && (meta.id == "USLT" || meta.id == "SYLT")) // m4a
+                    meta.values.joinToString("\n")
+                else null
+            val lyrics = data?.let {
+                try {
+                    parseLrcStringLegacy(it, parserOptions)
                 } catch (e: Exception) {
                     Log.e(TAG, Log.getStackTraceString(e))
                     mutableListOf(MediaStoreUtils.Lyric(content = parserOptions.errorText))
@@ -44,11 +69,24 @@ object LrcUtils {
     }
 
     @OptIn(UnstableApi::class)
-    fun loadAndParseLyricsFile(musicFile: File?, parserOptions: LrcParserOptions): MutableList<MediaStoreUtils.Lyric>? {
+    fun loadAndParseLyricsFile(musicFile: File?, parserOptions: LrcParserOptions): SemanticLyrics? {
         val lrcFile = musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".lrc") }
         return loadLrcFile(lrcFile)?.let {
             try {
-                parseLrcString(it, parserOptions)
+                SemanticLyrics.parse(it, parserOptions.trim, parserOptions.multiLine)
+            } catch (e: Exception) {
+                Log.e(TAG, Log.getStackTraceString(e))
+                SemanticLyrics.UnsyncedLyrics(listOf(parserOptions.errorText))
+            }
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    fun loadAndParseLyricsFileLegacy(musicFile: File?, parserOptions: LrcParserOptions): MutableList<MediaStoreUtils.Lyric>? {
+        val lrcFile = musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".lrc") }
+        return loadLrcFile(lrcFile)?.let {
+            try {
+                parseLrcStringLegacy(it, parserOptions)
             } catch (e: Exception) {
                 Log.e(TAG, Log.getStackTraceString(e))
                 null
@@ -67,12 +105,10 @@ object LrcUtils {
     }
 
     @VisibleForTesting
-    fun parseLrcString(
+    fun parseLrcStringLegacy(
         lrcContent: String,
         parserOptions: LrcParserOptions
     ): MutableList<MediaStoreUtils.Lyric>? {
-        if (!parserOptions.legacyParser)
-            return SemanticLyrics.parseForLegacy(lrcContent, parserOptions.trim, parserOptions.multiLine)
         if (lrcContent.isBlank()) return null
 
         val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()

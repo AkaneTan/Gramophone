@@ -82,8 +82,11 @@ import org.akanework.gramophone.logic.utils.CircularShuffleOrder
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.LrcUtils.LrcParserOptions
 import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
+import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyricsLegacy
 import org.akanework.gramophone.logic.utils.LrcUtils.loadAndParseLyricsFile
+import org.akanework.gramophone.logic.utils.LrcUtils.loadAndParseLyricsFileLegacy
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.SemanticLyrics
 import org.akanework.gramophone.logic.utils.exoplayer.EndedWorkaroundPlayer
 import org.akanework.gramophone.logic.utils.exoplayer.GramophoneMediaSourceFactory
 import org.akanework.gramophone.logic.utils.exoplayer.GramophoneRenderFactory
@@ -113,6 +116,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         const val SERVICE_SET_TIMER = "set_timer"
         const val SERVICE_QUERY_TIMER = "query_timer"
         const val SERVICE_GET_LYRICS = "get_lyrics"
+        const val SERVICE_GET_LYRICS_LEGACY = "get_lyrics_legacy"
         const val SERVICE_GET_SESSION = "get_session"
         const val SERVICE_TIMER_CHANGED = "changed_timer"
     }
@@ -120,7 +124,8 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private var lastSessionId = 0
     private var mediaSession: MediaLibrarySession? = null
     private var controller: MediaController? = null
-    private var lyrics: MutableList<MediaStoreUtils.Lyric>? = null
+    private var lyrics: SemanticLyrics? = null
+    private var lyricsLegacy: MutableList<MediaStoreUtils.Lyric>? = null
     private var shuffleFactory:
             ((Int) -> ((CircularShuffleOrder) -> Unit) -> CircularShuffleOrder)? = null
     private lateinit var customCommands: List<CommandButton>
@@ -411,6 +416,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         availableSessionCommands.add(SessionCommand(SERVICE_GET_SESSION, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_QUERY_TIMER, Bundle.EMPTY))
         availableSessionCommands.add(SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY))
+        availableSessionCommands.add(SessionCommand(SERVICE_GET_LYRICS_LEGACY, Bundle.EMPTY))
         handler.post {
             session.sendCustomCommand(
                 controller,
@@ -486,7 +492,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
 
             SERVICE_GET_LYRICS -> {
                 SessionResult(SessionResult.RESULT_SUCCESS).also {
-                    it.extras.putParcelableArray("lyrics", lyrics?.toTypedArray())
+                    it.extras.putParcelable("lyrics", lyrics)
+                }
+            }
+
+            SERVICE_GET_LYRICS_LEGACY -> {
+                SessionResult(SessionResult.RESULT_SUCCESS).also {
+                    it.extras.putParcelableArray("lyrics", lyricsLegacy?.toTypedArray())
                 }
             }
 
@@ -544,31 +556,56 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             val multiLine = prefs.getBoolean("lyric_multiline", false)
             val newParser = prefs.getBoolean("lyric_parser", false)
             val options = LrcParserOptions(trim = trim, multiLine = multiLine,
-                legacyParser = !newParser, errorText = getString(
-                androidx.media3.session.R.string.error_message_io))
-            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), options)
-            if (lrc == null) {
-                loop@ for (i in tracks.groups) {
-                    for (j in 0 until i.length) {
-                        if (!i.isTrackSelected(j)) continue
-                        // note: wav files can have null metadata
-                        val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                        lrc = extractAndParseLyrics(trackMetadata, options) ?: continue
-                        // add empty element at the beginning
-                        lrc.add(0, MediaStoreUtils.Lyric())
-                        break@loop
+                errorText = getString(androidx.media3.session.R.string.error_message_io))
+            if (newParser) {
+                var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), options)
+                if (lrc == null) {
+                    loop@ for (i in tracks.groups) {
+                        for (j in 0 until i.length) {
+                            if (!i.isTrackSelected(j)) continue
+                            // note: wav files can have null metadata
+                            val trackMetadata = i.getTrackFormat(j).metadata ?: continue
+                            lrc = extractAndParseLyrics(trackMetadata, options) ?: continue
+                            break@loop
+                        }
                     }
                 }
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                mediaSession?.let {
-                    lyrics = lrc
-                    it.broadcastCustomCommand(
-                        SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
-                        Bundle.EMPTY
-                    )
+                CoroutineScope(Dispatchers.Main).launch {
+                    mediaSession?.let {
+                        lyrics = lrc
+                        lyricsLegacy = null
+                        it.broadcastCustomCommand(
+                            SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+                            Bundle.EMPTY
+                        )
+                    }
+                }.join()
+            } else {
+                var lrc = loadAndParseLyricsFileLegacy(mediaItem?.getFile(), options)
+                if (lrc == null) {
+                    loop@ for (i in tracks.groups) {
+                        for (j in 0 until i.length) {
+                            if (!i.isTrackSelected(j)) continue
+                            // note: wav files can have null metadata
+                            val trackMetadata = i.getTrackFormat(j).metadata ?: continue
+                            lrc = extractAndParseLyricsLegacy(trackMetadata, options) ?: continue
+                            // add empty element at the beginning
+                            lrc.add(0, MediaStoreUtils.Lyric())
+                            break@loop
+                        }
+                    }
                 }
-            }.join()
+                CoroutineScope(Dispatchers.Main).launch {
+                    mediaSession?.let {
+                        lyrics = null
+                        lyricsLegacy = lrc
+                        it.broadcastCustomCommand(
+                            SessionCommand(SERVICE_GET_LYRICS, Bundle.EMPTY),
+                            Bundle.EMPTY
+                        )
+                    }
+                }.join()
+            }
         }
     }
 

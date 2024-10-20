@@ -74,6 +74,7 @@ import org.akanework.gramophone.logic.getBooleanStrict
 import org.akanework.gramophone.logic.getFile
 import org.akanework.gramophone.logic.getIntStrict
 import org.akanework.gramophone.logic.getLyrics
+import org.akanework.gramophone.logic.getLyricsLegacy
 import org.akanework.gramophone.logic.getTimer
 import org.akanework.gramophone.logic.hasImagePermission
 import org.akanework.gramophone.logic.hasScopedStorageV1
@@ -88,7 +89,6 @@ import org.akanework.gramophone.logic.ui.placeholderScaleToFit
 import org.akanework.gramophone.logic.updateMargin
 import org.akanework.gramophone.logic.utils.CalculationUtils
 import org.akanework.gramophone.logic.utils.ColorUtils
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
 import org.akanework.gramophone.logic.utils.convertDurationToTimeStamp
 import org.akanework.gramophone.ui.MainActivity
 import org.akanework.gramophone.ui.fragments.ArtistSubFragment
@@ -149,7 +149,7 @@ class FullBottomSheet
 			if (mediaId != null) {
 				if (seekBar != null) {
 					instance?.seekTo((seekBar.progress.toLong()))
-					bottomSheetFullLyricView.updateLyric(seekBar.progress.toLong())
+					bottomSheetFullLyricView.updateLyricPositionFromPlaybackPos()
 				}
 			}
 			isUserTracking = false
@@ -164,7 +164,7 @@ class FullBottomSheet
 			val mediaId = instance?.currentMediaItem?.mediaId
 			if (mediaId != null) {
 				instance?.seekTo((slider.value.toLong()))
-				bottomSheetFullLyricView.updateLyric(slider.value.toLong())
+				bottomSheetFullLyricView.updateLyricPositionFromPlaybackPos()
 			}
 			isUserTracking = false
 		}
@@ -259,8 +259,13 @@ class FullBottomSheet
 				GramophonePlaybackService.SERVICE_TIMER_CHANGED -> updateTimer()
 
 				GramophonePlaybackService.SERVICE_GET_LYRICS -> {
-					val parsedLyrics = instance?.getLyrics()
-					bottomSheetFullLyricView.updateLyrics(parsedLyrics)
+					if (prefs.getBoolean("lyric_parser", false)) {
+						val parsedLyrics = instance?.getLyrics()
+						bottomSheetFullLyricView.updateLyrics(parsedLyrics)
+					} else {
+						val parsedLyrics = instance?.getLyricsLegacy()
+						bottomSheetFullLyricView.updateLyricsLegacy(parsedLyrics)
+					}
 				}
 
 				else -> {
@@ -917,7 +922,7 @@ class FullBottomSheet
 				min(instance?.currentPosition?.toFloat() ?: 0f, bottomSheetFullSlider.valueTo)
 			bottomSheetFullPosition.text = position
 		}
-		bottomSheetFullLyricView.updateLyric(duration)
+		bottomSheetFullLyricView.updateLyricPositionFromPlaybackPos()
 	}
 
 	override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
@@ -1171,7 +1176,7 @@ class FullBottomSheet
 					min(instance?.currentPosition?.toFloat() ?: 0f, bottomSheetFullSlider.valueTo)
 				bottomSheetFullPosition.text = position
 			}
-			bottomSheetFullLyricView.updateLyric(duration)
+			bottomSheetFullLyricView.updateLyricPositionFromPlaybackPos()
 			if (instance?.isPlaying == true) {
 				handler.postDelayed(this, SLIDER_UPDATE_INTERVAL)
 			} else {
