@@ -46,7 +46,6 @@ class LegacyLyricsAdapter(
 	private var recyclerView: MyRecyclerView? = null
 	private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 	private var defaultTextColor = 0
-	private var contrastTextColor = 0
 	private var highlightTextColor = 0
 	private val interpolator = PathInterpolator(0.4f, 0.2f, 0f, 1f)
 	private val lyricList = mutableListOf<MediaStoreUtils.Lyric>()
@@ -55,7 +54,6 @@ class LegacyLyricsAdapter(
 	private var currentTranslationPos = -1
 	private var isBoldEnabled = false
 	private var isLyricCentered = false
-	private var isLyricContrastEnhanced = false
 	private val sizeFactor = 1f
 	private val defaultSizeFactor = .97f
 
@@ -199,7 +197,6 @@ class LegacyLyricsAdapter(
 	fun updateLyricStatus() {
 		isBoldEnabled = prefs.getBooleanStrict("lyric_bold", false)
 		isLyricCentered = prefs.getBooleanStrict("lyric_center", false)
-		isLyricContrastEnhanced = prefs.getBooleanStrict("lyric_contrast", false)
 	}
 
 	override fun getItemCount(): Int = lyricList.size
@@ -375,9 +372,8 @@ class LegacyLyricsAdapter(
 		}
 	}
 
-	fun updateTextColor(newColorContrast: Int, newColor: Int, newHighlightColor: Int) {
+	fun updateTextColor(newColor: Int, newHighlightColor: Int) {
 		defaultTextColor = newColor
-		contrastTextColor = newColorContrast
 		highlightTextColor = newHighlightColor
 		@SuppressLint("NotifyDataSetChanged")
 		notifyDataSetChanged()

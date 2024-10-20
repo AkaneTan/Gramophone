@@ -3,10 +3,15 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<org.akanework.gramophone.ui.components.NewLyricsView
-		android:id="@+id/lyric_view"
+	<androidx.core.widget.NestedScrollView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:clipToPadding="false"
-		android:clipChildren="false" />
+		android:clipChildren="false">
+
+		<org.akanework.gramophone.ui.components.NewLyricsView
+			android:id="@+id/lyric_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+	</androidx.core.widget.NestedScrollView>
 </merge>

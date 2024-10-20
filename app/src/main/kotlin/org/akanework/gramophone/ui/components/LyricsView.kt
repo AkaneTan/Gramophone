@@ -21,7 +21,6 @@ class LyricsView(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 	private val adapter
 		get() = recyclerView?.adapter as LegacyLyricsAdapter?
 	private var defaultTextColor = 0
-	private var contrastTextColor = 0
 	private var highlightTextColor = 0
 	private var lyrics: SemanticLyrics? = null
 	private var lyricsLegacy: MutableList<MediaStoreUtils.Lyric>? = null
@@ -37,13 +36,13 @@ class LyricsView(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 		if (prefs.getBooleanStrict("lyric_ui", false)) {
 			inflate(context, R.layout.lyric_view_v2, this)
 			newView = findViewById(R.id.lyric_view)
-			newView?.updateTextColor(contrastTextColor, defaultTextColor, highlightTextColor)
+			newView?.updateTextColor(defaultTextColor, highlightTextColor)
 			newView?.updateLyrics(lyrics)
 		} else {
 			inflate(context, R.layout.lyric_view, this)
 			recyclerView = findViewById(R.id.recycler_view)
 			recyclerView!!.adapter = LegacyLyricsAdapter(context).also {
-				it.updateTextColor(contrastTextColor, defaultTextColor, highlightTextColor)
+				it.updateTextColor(defaultTextColor, highlightTextColor)
 			}
 			recyclerView!!.addItemDecoration(LyricPaddingDecoration(context))
 			if (lyrics != null)
@@ -65,7 +64,7 @@ class LyricsView(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 	}
 
 	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-		if (key == "lyric_center" || key == "lyric_bold" || key == "lyric_contrast") {
+		if (key == "lyric_center" || key == "lyric_bold") {
 			adapter?.onPrefsChanged()
 			newView?.onPrefsChanged()
 		} else if (key == "lyric_ui") {
@@ -92,11 +91,10 @@ class LyricsView(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 		newView?.updateLyrics(null)
 	}
 
-	fun updateTextColor(newColorContrast: Int, newColor: Int, newHighlightColor: Int) {
+	fun updateTextColor(newColor: Int, newHighlightColor: Int) {
 		defaultTextColor = newColor
-		contrastTextColor = newColorContrast
 		highlightTextColor = newHighlightColor
-		adapter?.updateTextColor(contrastTextColor, defaultTextColor, highlightTextColor)
-		newView?.updateTextColor(contrastTextColor, defaultTextColor, highlightTextColor)
+		adapter?.updateTextColor(defaultTextColor, highlightTextColor)
+		newView?.updateTextColor(defaultTextColor, highlightTextColor)
 	}
 }

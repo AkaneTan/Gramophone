@@ -12,6 +12,6 @@
 		android:clipToPadding="false"
 		android:clipChildren="false"
 		android:scrollbars="none"
-		app:layoutManager=".logic.ui.CustomLinearLayoutManager"
+		app:layoutManager="org.akanework.gramophone.logic.ui.CustomLinearLayoutManager"
 		tools:listitem="@layout/lyrics" />
 </merge>

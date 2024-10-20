@@ -792,7 +792,6 @@ class FullBottomSheet
 				colorSurface
 			)
 			bottomSheetFullLyricView.updateTextColor(
-				androidx.core.graphics.ColorUtils.setAlphaComponent(colorOnSurfaceVariant, 170),
 				androidx.core.graphics.ColorUtils.setAlphaComponent(colorPrimary, 77),
 				colorPrimary
 			)

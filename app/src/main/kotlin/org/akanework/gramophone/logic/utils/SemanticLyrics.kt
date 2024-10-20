@@ -338,13 +338,21 @@ sealed class SemanticLyrics : Parcelable {
 	data class LyricLineHolder(val lyric: LyricLine,
 	                     val isTranslated: Boolean) : Parcelable
 	@Parcelize
-	data class Word(val timeRange: @WriteWith<ULongRangeParceler>() ULongRange, val charRange: @WriteWith<ULongRangeParceler>() ULongRange) : Parcelable
+	data class Word(val timeRange: @WriteWith<ULongRangeParceler>() ULongRange, val charRange: @WriteWith<IntRangeParceler>() IntRange) : Parcelable
 	object ULongRangeParceler : Parceler<ULongRange> {
 		override fun create(parcel: Parcel) = parcel.readLong().toULong()..parcel.readLong().toULong()
 
 		override fun ULongRange.write(parcel: Parcel, flags: Int) {
 			parcel.writeLong(first.toLong())
 			parcel.writeLong(last.toLong())
+		}
+	}
+	object IntRangeParceler : Parceler<IntRange> {
+		override fun create(parcel: Parcel) = parcel.readInt()..parcel.readInt()
+
+		override fun IntRange.write(parcel: Parcel, flags: Int) {
+			parcel.writeInt(first)
+			parcel.writeInt(last)
 		}
 	}
 	companion object {
@@ -402,13 +410,13 @@ sealed class SemanticLyrics : Parcelable {
 					element is SyntacticLyrics.NewLine -> {
 						var words = if (currentLine.size > 1) {
 							val wout = mutableListOf<Word>()
-							var idx = 0uL
+							var idx = 0
 							for (i in currentLine.indices) {
 								val current = currentLine[i]
 								if (current.second == null)
 									continue // skip dummy words that only exist to provide time
 								val oIdx = idx
-								idx += current.second?.length?.toUInt() ?: 0u
+								idx += current.second?.length ?: 0
 								val endInclusive = if (i + 1 < currentLine.size) {
 									// If we have a next word (with sync point), use its sync
 									// point minus 1ms as end point of this word
@@ -441,9 +449,9 @@ sealed class SemanticLyrics : Parcelable {
 										|| it.charRange.first.toLong() - startDiff >= text.length)
 										listOf()
 									else
-										listOf(it.copy(charRange = (it.charRange.first.toLong() -
-												startDiff).coerceAtLeast(0).toULong()..
-												(it.charRange.last.toLong() - startDiff).toULong()))
+										listOf(it.copy(charRange = (it.charRange.first -
+												startDiff).coerceAtLeast(0)..
+												(it.charRange.last - startDiff)))
 								}?.toMutableList()
 							}
 							out.add(

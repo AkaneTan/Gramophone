@@ -38,15 +38,6 @@
 
     <SwitchPreferenceCompat
         android:defaultValue="false"
-        android:key="lyric_contrast"
-        android:layout="@layout/preference_switch"
-        android:summary="@string/settings_lyrics_contrast_summary"
-        android:title="@string/settings_lyrics_contrast"
-        android:widgetLayout="@layout/preference_switch_widget"
-        app:iconSpaceReserved="false" />
-
-    <SwitchPreferenceCompat
-        android:defaultValue="false"
         android:key="lyric_multiline"
         android:layout="@layout/preference_switch"
         android:summary="@string/settings_lyrics_multiline_summary"
