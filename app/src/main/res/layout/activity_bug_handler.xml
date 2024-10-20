@@ -55,6 +55,7 @@
             android:paddingStart="24dp"
             android:paddingTop="12dp"
             android:paddingEnd="24dp"
+            android:paddingBottom="64dp"
             android:textColor="?attr/colorOnSurface"
             android:textIsSelectable="true"
             android:textSize="11sp"

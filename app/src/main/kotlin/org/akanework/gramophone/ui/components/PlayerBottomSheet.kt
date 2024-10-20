@@ -218,10 +218,10 @@ class PlayerBottomSheet private constructor(
                 standardBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED }
             bottomSheetBackCallback = object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
-                    if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
+                    if (fullPlayer.bottomSheetFullLyricView.visibility ==
                         VISIBLE
                     ) {
-                        fullPlayer.bottomSheetFullLyricRecyclerView.fadOutAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
+                        fullPlayer.bottomSheetFullLyricView.fadOutAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
                         fullPlayer.bottomSheetLyricButton.isChecked = false
                     } else {
                         standardBottomSheetBehavior!!.startBackProgress(backEvent)
@@ -229,7 +229,7 @@ class PlayerBottomSheet private constructor(
                 }
 
                 override fun handleOnBackProgressed(backEvent: BackEventCompat) {
-                    if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
+                    if (fullPlayer.bottomSheetFullLyricView.visibility ==
                         VISIBLE
                     ) {
                         // TODO
@@ -239,10 +239,10 @@ class PlayerBottomSheet private constructor(
                 }
 
                 override fun handleOnBackPressed() {
-                    if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
+                    if (fullPlayer.bottomSheetFullLyricView.visibility ==
                         VISIBLE
                     ) {
-                        fullPlayer.bottomSheetFullLyricRecyclerView.fadOutAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
+                        fullPlayer.bottomSheetFullLyricView.fadOutAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
                         fullPlayer.bottomSheetLyricButton.isChecked = false
                     } else {
                         standardBottomSheetBehavior!!.handleBackInvoked()
@@ -250,10 +250,10 @@ class PlayerBottomSheet private constructor(
                 }
 
                 override fun handleOnBackCancelled() {
-                    if (fullPlayer.bottomSheetFullLyricRecyclerView.visibility ==
+                    if (fullPlayer.bottomSheetFullLyricView.visibility ==
                         VISIBLE
                     ) {
-                        fullPlayer.bottomSheetFullLyricRecyclerView.fadInAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
+                        fullPlayer.bottomSheetFullLyricView.fadInAnimation(FullBottomSheet.LYRIC_FADE_TRANSITION_SEC)
                         fullPlayer.bottomSheetLyricButton.isChecked = false
                     } else {
                         standardBottomSheetBehavior!!.cancelBackProgress()
