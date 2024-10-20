@@ -1,6 +1,7 @@
 package org.akanework.gramophone.logic.utils
 
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.map
 
 /*
  * Syntactic-semantic lyric parser.
@@ -26,13 +27,13 @@ import java.util.concurrent.atomic.AtomicReference
  * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
  */
 
-enum class SpeakerEntity {
-	Male, // Wakaloke
-	Female, // Wakaloke
-	Duet, // Wakaloke
-	Background, // Apple
-	Voice1, // Apple
-	Voice2 // Apple
+enum class SpeakerEntity(val isWakaloke: Boolean) {
+	Male(true), // Wakaloke
+	Female(true), // Wakaloke
+	Duet(true), // Wakaloke
+	Background(false), // Apple
+	Voice1(false), // Apple
+	Voice2(false) // Apple
 }
 
 /*
@@ -77,8 +78,7 @@ private sealed class SyntacticLyrics {
 			return minute * 60u * 1000u + milliseconds
 		}
 
-		fun parse(text: String, trimEnabled: Boolean,
-		          multiLineEnabled: Boolean): List<SyntacticLyrics>? {
+		fun parse(text: String, multiLineEnabled: Boolean): List<SyntacticLyrics>? {
 			if (text.isBlank()) return null
 			var pos = 0
 			val out = mutableListOf<SyntacticLyrics>()
@@ -292,14 +292,6 @@ private sealed class SyntacticLyrics {
 						else it
 					}
 				} else it
-			}.let {
-				if (trimEnabled) it.map {
-					when (it) {
-						is LyricText -> LyricText(it.text.trim())
-						is InvalidText -> InvalidText(it.text.trim())
-						else -> it
-					}
-				} else it
 			}
 		}
 	}
@@ -336,7 +328,7 @@ sealed class SemanticLyrics {
 	data class Word(val timeRange: ULongRange, val charRange: ULongRange)
 	companion object {
 		fun parse(lyricText: String, trimEnabled: Boolean, multiLineEnabled: Boolean): SemanticLyrics? {
-			val lyricSyntax = SyntacticLyrics.parse(lyricText, trimEnabled, multiLineEnabled)
+			val lyricSyntax = SyntacticLyrics.parse(lyricText, multiLineEnabled)
 				?: return null
 			if (lyricSyntax.find { it !is SyntacticLyrics.InvalidText } == null)
 				return UnsyncedLyrics(lyricSyntax.map { (it as SyntacticLyrics.InvalidText).text })
@@ -387,7 +379,7 @@ sealed class SemanticLyrics {
 						currentLine.add(Pair(lastWordSyncPoint ?: lastSyncPoint!!, element.text))
 					}
 					element is SyntacticLyrics.NewLine -> {
-						val words = if (currentLine.size > 1) {
+						var words = if (currentLine.size > 1) {
 							val wout = mutableListOf<Word>()
 							var idx = 0uL
 							for (i in currentLine.indices) {
@@ -417,9 +409,25 @@ sealed class SemanticLyrics {
 							wout
 						} else null
 						if (currentLine.isNotEmpty() || lastWordSyncPoint != null || lastSyncPoint != null) {
+							var text = currentLine.joinToString("") { it.second ?: "" }
+							if (trimEnabled) {
+								val orig = text
+								text = orig.trimStart()
+								val startDiff = orig.length - text.length
+								text = text.trimEnd()
+								words = words?.flatMap {
+									if (it.charRange.last.toLong() - startDiff < 0
+										|| it.charRange.first.toLong() - startDiff >= text.length)
+										listOf()
+									else
+										listOf(it.copy(charRange = (it.charRange.first.toLong() -
+												startDiff).coerceAtLeast(0).toULong()..
+												(it.charRange.last.toLong() - startDiff).toULong()))
+								}?.toMutableList()
+							}
 							out.add(
 								LyricLine(
-									currentLine.joinToString("") { it.second ?: "" },
+									text,
 									if (currentLine.isNotEmpty()) currentLine.first().first
 									else lastWordSyncPoint ?: lastSyncPoint!!, words, speaker
 								)
@@ -434,8 +442,7 @@ sealed class SemanticLyrics {
 						lastWordSyncPoint = null
 						// Wakaloke extension speakers stick around unless another speaker is
 						// specified. (The default speaker - before one is chosen - is male.)
-						if (speaker != SpeakerEntity.Duet && speaker != SpeakerEntity.Male &&
-							speaker != SpeakerEntity.Female)
+						if (speaker?.isWakaloke != true)
 							speaker = null
 						hadLyricSinceWordSync = true
 					}
@@ -444,11 +451,17 @@ sealed class SemanticLyrics {
 			out.sortBy { it.start }
 			var sawNonBlank = false
 			var previousTimestamp = 0uL
+			val defaultIsWakalokeM = out.find { it.speaker?.isWakaloke == true } != null &&
+				out.find { it.speaker?.isWakaloke == false } == null
 			return SyncedLyrics(out.flatMap {
 				if (sawNonBlank || it.text.isNotBlank()) {
 					sawNonBlank = true
 					listOf(it)
 				} else listOf()
+			}.map {
+				if (defaultIsWakalokeM && it.speaker == null)
+					it.copy(speaker = SpeakerEntity.Male)
+				else it
 			}.map {
 				Pair(it, it.start == previousTimestamp).also {
 					previousTimestamp = it.first.start
@@ -464,7 +477,7 @@ sealed class SemanticLyrics {
 					MediaStoreUtils.Lyric(it.first.start.toLong(), it.first.text, it.second)
 				}.toMutableList()
 			}
-			return mutableListOf(MediaStoreUtils.Lyric(null, lyric.unsyncedText.joinToString(""), false))
+			return mutableListOf(MediaStoreUtils.Lyric(null, lyric.unsyncedText.joinToString("\n"), false))
 		}
 	}
 }

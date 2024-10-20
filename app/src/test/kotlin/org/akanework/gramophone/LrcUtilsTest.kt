@@ -58,8 +58,8 @@ class LrcUtilsTest {
 				str.appendLine("\tPair(LyricLine(start = ${i.start}uL, text = \"\"\"${i.text}\"\"\", " +
 						"words = ${i.words?.let { "listOf(${it.map { "SemanticLyrics.Word(" +
 								"timeRange = ${it.timeRange.first}uL..${it.timeRange.last}uL, " +
-								"charRange = ${it.charRange.first}uL..${it.charRange.last}uL)," }})" }
-							?: "null"}, speaker = ${i.speaker?.name?.let
+								"charRange = ${it.charRange.first}uL..${it.charRange.last}uL)" }
+							.joinToString()})" } ?: "null"}, speaker = ${i.speaker?.name?.let
 						{ "SpeakerEntity.$it" } ?: "null"}), ${j.second}),")
 			}
 			str.appendLine(")")
@@ -84,6 +84,9 @@ class LrcUtilsTest {
 		val lrc = lyricArrayToString(parseSynced(LrcTestData.AS_IT_WAS))
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED_STR, lyricArrayToString(LrcTestData.AS_IT_WAS_PARSED))
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED_STR, lrc)
+		val lrc2 = lyricArrayToString(parseSynced(LrcTestData.AM_I_DREAMING, trim = false))
+		assertEquals(LrcTestData.AM_I_DREAMING_PARSED_NO_TRIM_STR, lyricArrayToString(LrcTestData.AM_I_DREAMING_PARSED_NO_TRIM))
+		assertEquals(LrcTestData.AM_I_DREAMING_PARSED_NO_TRIM_STR, lrc2)
 	}
 
 	@Test
@@ -221,15 +224,27 @@ class LrcUtilsTest {
 	}
 
 	@Test
-	fun testTranslationType1() {
+	fun testTemplateLrcTranslationType1() {
 		val lrc = parseSynced(LrcTestData.ALL_STAR)
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.ALL_STAR_PARSED, lrc)
 	}
 
-	// TODO test if extended lrc works
-	// TODO test if wakaloke works
-	// TODO test if apple music v1/v2/bg works
+	@Test
+	fun testTemplateLrcExtendedAppleTrimToggle() {
+		val lrc = parseSynced(LrcTestData.AM_I_DREAMING, trim = false)
+		val lrc2 = parseSynced(LrcTestData.AM_I_DREAMING, trim = true)
+		assertNotNull(lrc)
+		assertEquals(LrcTestData.AM_I_DREAMING_PARSED_NO_TRIM, lrc)
+		assertEquals(LrcTestData.AM_I_DREAMING_PARSED_TRIM, lrc2)
+	}
+
+	@Test
+	fun testTemplateLrcWakaloke() {
+		val lrc = parseSynced(LrcTestData.WAKALOKE_TEST)
+		assertNotNull(lrc)
+		assertEquals(LrcTestData.WAKALOKE_TEST_PARSED, lrc)
+	}
 
 	@Test
 	fun testParserSkippedHello() {

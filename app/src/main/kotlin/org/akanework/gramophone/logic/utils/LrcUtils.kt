@@ -16,8 +16,10 @@ object LrcUtils {
 
     private const val TAG = "LrcUtils"
 
+    data class LrcParserOptions(val trim: Boolean, val multiLine: Boolean, val legacyParser: Boolean, val errorText: String)
+
     @OptIn(UnstableApi::class)
-    fun extractAndParseLyrics(metadata: Metadata, trim: Boolean, multilineEnable: Boolean): MutableList<MediaStoreUtils.Lyric>? {
+    fun extractAndParseLyrics(metadata: Metadata, parserOptions: LrcParserOptions): MutableList<MediaStoreUtils.Lyric>? {
         for (i in 0..<metadata.length()) {
             val meta = metadata.get(i)
             val data =
@@ -30,10 +32,10 @@ object LrcUtils {
                 else null
             val lyrics = data?.let {
                 try {
-                    parseLrcString(it, trim, multilineEnable)
+                    parseLrcString(it, parserOptions)
                 } catch (e: Exception) {
                     Log.e(TAG, Log.getStackTraceString(e))
-                    null
+                    mutableListOf(MediaStoreUtils.Lyric(content = parserOptions.errorText))
                 }
             }
             return lyrics ?: continue
@@ -42,11 +44,11 @@ object LrcUtils {
     }
 
     @OptIn(UnstableApi::class)
-    fun loadAndParseLyricsFile(musicFile: File?, trim: Boolean, multilineEnable: Boolean): MutableList<MediaStoreUtils.Lyric>? {
+    fun loadAndParseLyricsFile(musicFile: File?, parserOptions: LrcParserOptions): MutableList<MediaStoreUtils.Lyric>? {
         val lrcFile = musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".lrc") }
         return loadLrcFile(lrcFile)?.let {
             try {
-                parseLrcString(it, trim, multilineEnable)
+                parseLrcString(it, parserOptions)
             } catch (e: Exception) {
                 Log.e(TAG, Log.getStackTraceString(e))
                 null
@@ -64,36 +66,14 @@ object LrcUtils {
         }
     }
 
-
-    /*
-     * Formats we have to consider in this method are:
-     *  - Simple LRC files (ref Wikipedia) ex: [00:11.22] hello i am lyric
-     *  - "compressed LRC" with >1 tag for repeating line ex: [00:11.22][00:15.33] hello i am lyric
-     *  - Invalid LRC with all-zero tags [00:00.00] hello i am lyric
-     *  - Lyrics that aren't synced and have no tags at all
-     *  - Translations, type 1 (ex: pasting first japanese and then english lrc file into one file)
-     *  - Translations, type 2 (ex: translated line directly under previous non-translated line)
-     *  - The timestamps can variate in the following ways: [00:11] [00:11:22] [00:11.22] [00:11.222] [00:11:222]
-     *
-     * Multiline format:
-     * - This technically isn't part of any listed guidelines, however is allows for
-     *      reading of otherwise discarded lyrics
-     * - All the lines between sync point A and B are read as lyric text of A
-     *
-     * In the future, we also want to support:
-     *  - Extended LRC (ref Wikipedia) ex: [00:11.22] <00:11.22> hello <00:12.85> i am <00:13.23> lyric
-     *  - Wakaloke gender extension (ref Wikipedia)
-     *  - [offset:] tag in header (ref Wikipedia)
-     * We completely ignore all ID3 tags from the header as MediaStore is our source of truth.
-     */
     @VisibleForTesting
     fun parseLrcString(
         lrcContent: String,
-        trim: Boolean,
-        multilineEnable: Boolean
+        parserOptions: LrcParserOptions
     ): MutableList<MediaStoreUtils.Lyric>? {
-        /*if (true)*/ return SemanticLyrics.parseForLegacy(lrcContent, trim, multilineEnable)
-        /*if (lrcContent.isBlank()) return null
+        if (!parserOptions.legacyParser)
+            return SemanticLyrics.parseForLegacy(lrcContent, parserOptions.trim, parserOptions.multiLine)
+        if (lrcContent.isBlank()) return null
 
         val timeMarksRegex = "\\[(\\d{2}:\\d{2})([.:]\\d+)?]".toRegex()
         val lyricsList = mutableListOf<MediaStoreUtils.Lyric>()
@@ -104,7 +84,7 @@ object LrcUtils {
             val matches = timeMarksRegex.findAll(line).toList()
             if (matches.isEmpty()) return@forEach
 
-            val lyricContent = line.substring(matches.last().range.last + 1).let { if (trim) it.trim() else it }
+            val lyricContent = line.substring(matches.last().range.last + 1).let { if (parserOptions.trim) it.trim() else it }
 
             matches.forEach { match ->
                 val timeString = match.groupValues[1] + match.groupValues[2]
@@ -115,10 +95,10 @@ object LrcUtils {
                     lyricsText = null
                 }
 
-                val lyricLine = if (multilineEnable) {
+                val lyricLine = if (parserOptions.multiLine) {
                     val startIndex = lrcContent.indexOf(line) + match.value.length
                     val endIndex = findEndIndex(lrcContent, startIndex, timeMarksRegex)
-                    lrcContent.substring(startIndex, endIndex).let { if (trim) it.trim() else it }
+                    lrcContent.substring(startIndex, endIndex).let { if (parserOptions.trim) it.trim() else it }
                 } else {
                     lyricContent
                 }
@@ -169,7 +149,7 @@ object LrcUtils {
         val millisecondsString = matchResult?.groupValues?.get(3)
         val milliseconds = millisecondsString?.padEnd(3, '0')?.take(3)?.toLongOrNull() ?: 0
 
-        return minutes * 60000 + seconds * 1000 + milliseconds*/
+        return minutes * 60000 + seconds * 1000 + milliseconds
     }
 }
 

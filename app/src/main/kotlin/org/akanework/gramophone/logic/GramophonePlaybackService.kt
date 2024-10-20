@@ -80,6 +80,7 @@ import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.CircularShuffleOrder
 import org.akanework.gramophone.logic.utils.LastPlayedManager
+import org.akanework.gramophone.logic.utils.LrcUtils.LrcParserOptions
 import org.akanework.gramophone.logic.utils.LrcUtils.extractAndParseLyrics
 import org.akanework.gramophone.logic.utils.LrcUtils.loadAndParseLyricsFile
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
@@ -541,14 +542,18 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         lyricsLock.runInBg {
             val trim = prefs.getBoolean("trim_lyrics", false)
             val multiLine = prefs.getBoolean("lyric_multiline", false)
-            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), trim, multiLine)
+            val newParser = prefs.getBoolean("lyric_parser", false)
+            val options = LrcParserOptions(trim = trim, multiLine = multiLine,
+                legacyParser = !newParser, errorText = getString(
+                androidx.media3.session.R.string.error_message_io))
+            var lrc = loadAndParseLyricsFile(mediaItem?.getFile(), options)
             if (lrc == null) {
                 loop@ for (i in tracks.groups) {
                     for (j in 0 until i.length) {
                         if (!i.isTrackSelected(j)) continue
                         // note: wav files can have null metadata
                         val trackMetadata = i.getTrackFormat(j).metadata ?: continue
-                        lrc = extractAndParseLyrics(trackMetadata, trim, multiLine) ?: continue
+                        lrc = extractAndParseLyrics(trackMetadata, options) ?: continue
                         // add empty element at the beginning
                         lrc.add(0, MediaStoreUtils.Lyric())
                         break@loop
