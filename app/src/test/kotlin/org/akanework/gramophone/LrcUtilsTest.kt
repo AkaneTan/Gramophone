@@ -1,49 +1,66 @@
 package org.akanework.gramophone
 
-import org.akanework.gramophone.logic.utils.LrcUtils
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.SemanticLyrics
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Ignore
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LrcUtilsTest {
 
-	private fun parse(lrcContent: String, trim: Boolean? = null, multiline: Boolean? = null, mustSkip: Boolean? = false): MutableList<MediaStoreUtils.Lyric>? {
+	private fun parse(lrcContent: String, trim: Boolean? = null, multiline: Boolean? = null, mustSkip: Boolean? = false): SemanticLyrics? {
 		if (trim == null) {
 			val a = parse(lrcContent, true, multiline, mustSkip)
 			val b = parse(lrcContent, false, multiline, mustSkip)
-			assertEquals("trim true and false should result in same list for this string", b, a)
+			assertFalse("trim true and false should result in same type of lyrics", a is SemanticLyrics.SyncedLyrics != b is SemanticLyrics.SyncedLyrics)
+			if (a is SemanticLyrics.SyncedLyrics)
+				assertEquals("trim true and false should result in same list for this string", (b as SemanticLyrics.SyncedLyrics).text, a.text)
+			else
+				assertEquals("trim true and false should result in same list for this string", b?.unsyncedText, a?.unsyncedText)
 			return a
 		}
 		if (multiline == null) {
 			val a = parse(lrcContent, trim, true, mustSkip)
 			val b = parse(lrcContent, trim, false, mustSkip)
-			assertEquals("multiline true and false should result in same list for this string (trim=$trim)", b, a)
+			assertFalse("multiline true and false should result in same type of lyrics (trim=$trim)", a is SemanticLyrics.SyncedLyrics != b is SemanticLyrics.SyncedLyrics)
+			if (a is SemanticLyrics.SyncedLyrics)
+				assertEquals("multiline true and false should result in same list for this string (trim=$trim)", (b as SemanticLyrics.SyncedLyrics).text, a.text)
+			else
+				assertEquals("multiline true and false should result in same list for this string (trim=$trim)", b?.unsyncedText, a?.unsyncedText)
 			return a
 		}
-		val a = LrcUtils.parseLrcString(lrcContent, trim, multiline)
+		val a = SemanticLyrics.parse(lrcContent, trim, multiline)
 		if (mustSkip != null) {
-			val b = listOf(MediaStoreUtils.Lyric(content = lrcContent))
 			if (mustSkip) {
-				assertEquals("excepted skip (trim=$trim multiline=$multiline)", b, a)
+				assertTrue("excepted skip (trim=$trim multiline=$multiline)", a is SemanticLyrics.UnsyncedLyrics)
 			} else {
-				assertNotEquals("excepted no skip (trim=$trim multiline=$multiline)", b, a)
+				assertFalse("excepted no skip (trim=$trim multiline=$multiline)", a is SemanticLyrics.UnsyncedLyrics)
 			}
 		}
 		return a
 	}
 
-	private fun lyricArrayToString(lrc: List<MediaStoreUtils.Lyric>?): String {
+	private fun parseSynced(lrcContent: String, trim: Boolean? = null, multiline: Boolean? = null): List<Pair<SemanticLyrics.LyricLine, Boolean>>? {
+		return (parse(lrcContent, trim, multiline, mustSkip = false) as SemanticLyrics.SyncedLyrics?)?.text
+	}
+
+	private fun lyricArrayToString(lrc: List<Pair<SemanticLyrics.LyricLine, Boolean>>?): String {
 		val str = StringBuilder("val testData = ")
 		if (lrc == null) {
 			str.appendLine("null")
 		} else {
 			str.appendLine("listOf(")
-			for (i in lrc) {
-				str.appendLine("\tMediaStoreUtils.Lyric(timeStamp = ${i.timeStamp}, content = \"\"\"${i.content}\"\"\", isTranslation = ${i.isTranslation}),")
+			for (j in lrc) {
+				val i = j.first
+				str.appendLine("\tPair(LyricLine(start = ${i.start}uL, text = \"\"\"${i.text}\"\"\", " +
+						"words = ${i.words?.let { "listOf(${it.map { "SemanticLyrics.Word(" +
+								"timeRange = ${it.timeRange.first}uL..${it.timeRange.last}uL, " +
+								"charRange = ${it.charRange.first}uL..${it.charRange.last}uL)," }})" }
+							?: "null"}, speaker = ${i.speaker?.name?.let
+						{ "SpeakerEntity.$it" } ?: "null"}), ${j.second}),")
 			}
 			str.appendLine(")")
 		}
@@ -64,14 +81,14 @@ class LrcUtilsTest {
 
 	@Test
 	fun testPrintUtility() {
-		val lrc = lyricArrayToString(parse(LrcTestData.AS_IT_WAS))
+		val lrc = lyricArrayToString(parseSynced(LrcTestData.AS_IT_WAS))
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED_STR, lyricArrayToString(LrcTestData.AS_IT_WAS_PARSED))
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED_STR, lrc)
 	}
 
 	@Test
 	fun testTemplateLrc1() {
-		val lrc = parse(LrcTestData.AS_IT_WAS)
+		val lrc = parseSynced(LrcTestData.AS_IT_WAS)
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED, lrc)
 	}
@@ -82,22 +99,22 @@ class LrcUtilsTest {
 	 */
 	@Test
 	fun testTemplateLrcSyntheticNewlines() {
-		val lrc = parse(LrcTestData.AS_IT_WAS.replace("\n", ""))
+		val lrc = parseSynced(LrcTestData.AS_IT_WAS.replace("\n", ""))
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED, lrc)
 	}
 
 	@Test
 	fun testTemplateLrc2() {
-		val lrc = parse(LrcTestData.AS_IT_WAS + "\n")
+		val lrc = parseSynced(LrcTestData.AS_IT_WAS + "\n")
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.AS_IT_WAS_PARSED, lrc)
 	}
 
 	@Test
 	fun testTemplateLrcTrimToggle() {
-		val a = parse(LrcTestData.AS_IT_WAS_NO_TRIM, trim = false)
-		val b = parse(LrcTestData.AS_IT_WAS_NO_TRIM, trim = true)
+		val a = parseSynced(LrcTestData.AS_IT_WAS_NO_TRIM, trim = false)
+		val b = parseSynced(LrcTestData.AS_IT_WAS_NO_TRIM, trim = true)
 		assertNotEquals(b, a)
 		assertEquals(LrcTestData.AS_IT_WAS_NO_TRIM_PARSED_FALSE, a)
 		assertEquals(LrcTestData.AS_IT_WAS_NO_TRIM_PARSED_TRUE, b)
@@ -105,19 +122,114 @@ class LrcUtilsTest {
 
 	@Test
 	fun testTemplateLrcTranslate2Compressed() {
-		val lrc = parse(LrcTestData.DREAM_THREAD)
+		val lrc = parseSynced(LrcTestData.DREAM_THREAD)
 		assertNotNull(lrc)
 		assertEquals(LrcTestData.DREAM_THREAD_PARSED, lrc)
 	}
 
-	// TODO test if multiline works
-	// TODO test if translations type 1 works
+	@Test
+	fun testTemplateLrcZeroTimestamps() {
+		val lrc = parse(LrcTestData.AS_IT_WAS.replace("\\[(\\d{2}):(\\d{2})([.:]\\d+)?]".toRegex(), "[00:00.00]"), mustSkip = true)
+		assertNotNull(lrc)
+		assertEquals(LrcTestData.AS_IT_WAS_PARSED.map { it.first.text }, lrc!!.unsyncedText)
+	}
+
+	@Test
+	fun testSyntheticNewLineMultiLineParser() {
+		val lrcS = parseSynced("[11:22.33]hello\ngood morning[33:44.55]how are you?", multiline = false)
+		assertNotNull(lrcS)
+		val lrcM = parseSynced("[11:22.33]hello\ngood morning[33:44.55]how are you?", multiline = true)
+		assertNotNull(lrcM)
+		assertNotEquals(lrcS!!, lrcM!!)
+		assertEquals(2, lrcS.size)
+		assertEquals(2, lrcM.size)
+		assertEquals("hello", lrcS[0].first.text)
+		assertEquals("hello\ngood morning", lrcM[0].first.text)
+		assertEquals("how are you?", lrcS[1].first.text)
+		assertEquals("how are you?", lrcM[1].first.text)
+	}
+
+	@Test
+	fun testSimpleMultiLineParser() {
+		val lrcS = parseSynced("[11:22.33]hello\ngood morning\n[33:44.55]how are you?", multiline = false)
+		assertNotNull(lrcS)
+		val lrcM = parseSynced("[11:22.33]hello\ngood morning\n[33:44.55]how are you?", multiline = true)
+		assertNotNull(lrcM)
+		assertNotEquals(lrcS!!, lrcM!!)
+		assertEquals(2, lrcS.size)
+		assertEquals(2, lrcM.size)
+		assertEquals("hello", lrcS[0].first.text)
+		assertEquals("hello\ngood morning", lrcM[0].first.text)
+		assertEquals("how are you?", lrcS[1].first.text)
+		assertEquals("how are you?", lrcM[1].first.text)
+	}
+
+	@Test
+	fun testOffsetMultiLineParser() {
+		val lrc = parseSynced("[offset:+3][00:00.004]hello\ngood morning\n[00:00.005]how are you?", multiline = true)
+		assertNotNull(lrc)
+		assertEquals(2, lrc!!.size)
+		assertEquals("hello\ngood morning", lrc[0].first.text)
+		assertEquals(1uL, lrc[0].first.start)
+		assertEquals("how are you?", lrc[1].first.text)
+		assertEquals(2uL, lrc[1].first.start)
+	}
+
+	@Test
+	fun testBogusOffsetMultiLineParser() {
+		val lrc = parseSynced("[offset:+200][00:00.004]hello\ngood morning\n[00:00.005]how are you?", multiline = true)
+		assertNotNull(lrc)
+		assertEquals(2, lrc!!.size)
+		assertEquals("hello\ngood morning", lrc[0].first.text)
+		assertEquals(0uL, lrc[0].first.start)
+		assertEquals("how are you?", lrc[1].first.text)
+		assertEquals(0uL, lrc[1].first.start)
+	}
+
+	@Test
+	fun testNegativeOffsetMultiLineParser() {
+		val lrc = parseSynced("[offset:-200][00:00.004]hello\ngood morning\n[00:00.005]how are you?", multiline = true)
+		assertNotNull(lrc)
+		assertEquals(2, lrc!!.size)
+		assertEquals("hello\ngood morning", lrc[0].first.text)
+		assertEquals(204uL, lrc[0].first.start)
+		assertEquals("how are you?", lrc[1].first.text)
+		assertEquals(205uL, lrc[1].first.start)
+	}
+
+	@Test
+	fun testDualOffsetMultiLineParser() {
+		val lrc = parseSynced("[offset:-200][00:00.004]hello\ngood morning\n[offset:+3][00:00.005]how are you?", multiline = true)
+		assertNotNull(lrc)
+		assertEquals(2, lrc!!.size)
+		// Order is swapped because second timestamp is smaller thanks to offset
+		assertEquals("how are you?", lrc[0].first.text)
+		assertEquals(2uL, lrc[0].first.start)
+		assertEquals("hello\ngood morning", lrc[1].first.text)
+		assertEquals(204uL, lrc[1].first.start)
+	}
+
+	@Test
+	fun testOnlyWordSyncPoints() {
+		val lrc = parseSynced("<00:00.02>a<00:01.00>l\n<00:03.00>b")
+		assertNotNull(lrc)
+		assertEquals(2, lrc!!.size)
+		assertEquals("al", lrc[0].first.text)
+		assertEquals(20uL, lrc[0].first.start)
+		assertEquals("b", lrc[1].first.text)
+		assertEquals(3000uL, lrc[1].first.start)
+	}
+
+	@Test
+	fun testTranslationType1() {
+		val lrc = parseSynced(LrcTestData.ALL_STAR)
+		assertNotNull(lrc)
+		assertEquals(LrcTestData.ALL_STAR_PARSED, lrc)
+	}
+
 	// TODO test if extended lrc works
-	// TODO test if extended lrc without normal sync points works
 	// TODO test if wakaloke works
 	// TODO test if apple music v1/v2/bg works
-	// TODO test if [offset: ] works
-	// TODO test if sorting out invalid lrc with 000000 works
 
 	@Test
 	fun testParserSkippedHello() {

@@ -60,7 +60,9 @@ private sealed class SyntacticLyrics {
 	data class Metadata(val name: String, val value: String) : SyntacticLyrics()
 	data class LyricText(val text: String) : SyntacticLyrics()
 	data class InvalidText(val text: String) : SyntacticLyrics()
-	class NewLine : SyntacticLyrics()
+	open class NewLine() : SyntacticLyrics() {
+		class SyntheticNewLine : NewLine()
+	}
 
 	companion object {
 		// also eats space if present
@@ -115,9 +117,9 @@ private sealed class SyntacticLyrics {
 					// we tried. Can't do much about it.
 					// If you want to write something that looks like a timestamp into your lyrics,
 					// you'll probably have to delete the following three lines.
-					if (!(out.indexOfLast { it is NewLine } >= out.indexOfLast { it is SyncPoint }
-						|| (out.isNotEmpty() && out.last() is SyncPoint)))
-						out.add(NewLine())
+					if (!(out.isNotEmpty() && out.last() is NewLine
+								|| out.isNotEmpty() && out.last() is SyncPoint))
+						out.add(NewLine.SyntheticNewLine())
 					out.add(SyncPoint(parseTime(tmMatch)))
 					pos += tmMatch.value.length
 					continue
@@ -208,7 +210,7 @@ private sealed class SyntacticLyrics {
 				// Only count lyric text as lyric text if there is at least one kind of timestamp
 				// associated.
 				if (out.indexOfLast { it is NewLine } <
-					out.indexOfLast { it is SyncPoint || it is WordSyncPoint}) {
+					out.indexOfLast { it is SyncPoint || it is WordSyncPoint }) {
 					if (last is LyricText) {
 						out[out.size - 1] = LyricText(last.text + subText)
 					} else {
@@ -223,16 +225,21 @@ private sealed class SyntacticLyrics {
 				}
 				pos = firstUnsafeCharPos
 			}
+			if (out.isNotEmpty() && out.last() is SyncPoint)
+				out.add(InvalidText(""))
 			if (out.isNotEmpty() && out.last() !is NewLine)
-				out.add(NewLine())
+				out.add(NewLine.SyntheticNewLine())
 			return out.let {
 				// If there isn't a single sync point with timestamp over zero, that is probably not
 				// a valid .lrc file.
-				if (it.find { it is SyncPoint && it.timestamp > 0u } == null)
+				if (it.find { it is SyncPoint && it.timestamp > 0u
+							|| it is WordSyncPoint && it.timestamp > 0u} == null)
 					// Recover only text information to make the most out of this damaged file.
 					it.flatMap {
-						if (it is LyricText || it is InvalidText)
+						if (it is InvalidText)
 							listOf(it)
+						else if (it is LyricText)
+							listOf(InvalidText(it.text))
 						else
 							listOf()
 					}
@@ -261,10 +268,18 @@ private sealed class SyntacticLyrics {
 							}
 							aa != null -> {
 								a.set(null)
-								if (aa.last() == '\n')
-									listOf(LyricText(aa.dropLast(1)), NewLine(), it)
-								else
-									listOf(LyricText(aa), it)
+								var aaa: String = aa
+								var i = 0
+								while (aaa.last() == '\n') {
+									i++
+									aaa = aaa.dropLast(1)
+								}
+								listOf(LyricText(aaa)).let {
+									var aaaa: List<SyntacticLyrics> = it
+									while (i-- > 0)
+										aaaa = aaaa + listOf(NewLine())
+									aaaa
+								} + it
 							}
 							else -> listOf(it)
 						}
