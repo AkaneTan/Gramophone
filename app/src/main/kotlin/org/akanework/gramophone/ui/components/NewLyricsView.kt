@@ -10,31 +10,40 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import android.view.animation.PathInterpolator
 import androidx.core.graphics.TypefaceCompat
 import androidx.core.widget.NestedScrollView
 import androidx.preference.PreferenceManager
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.dpToPx
 import org.akanework.gramophone.logic.getBooleanStrict
+import org.akanework.gramophone.logic.ui.spans.MyForegroundColorSpan
 import org.akanework.gramophone.logic.ui.spans.StaticLayoutBuilderCompat
+import org.akanework.gramophone.logic.utils.CalculationUtils.lerp
+import org.akanework.gramophone.logic.utils.CalculationUtils.lerpInv
 import org.akanework.gramophone.logic.utils.SemanticLyrics
 import org.akanework.gramophone.logic.utils.SpeakerEntity
 import org.akanework.gramophone.ui.MainActivity
+import kotlin.math.min
 
 // TODO colors for wakaloke ext
 // TODO react to clicks
-// TODO animations
+// TODO color animations
 class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
 	private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 	private val smallSizeFactor = 0.97f
+	private val scaleInAnimTime = 650f / 2
+	private val scaleColorInterpolator = PathInterpolator(0.4f, 0.2f, 0f, 1f)
 	private val defaultTextPaint = TextPaint().apply { color = Color.RED }
 	private val translationTextPaint = TextPaint().apply { color = Color.GREEN }
 	private val translationBackgroundTextPaint = TextPaint().apply { color = Color.BLUE }
-	private var wordActiveSpan: ForegroundColorSpan? = null
+	private var wordActiveSpan = MyForegroundColorSpan(Color.CYAN)
 	private var spForRender: List<SbItem>? = null
 	private var spForMeasure: Pair<Pair<Int, Int>, List<SbItem>>? = null
+	private val spSpanCache = hashMapOf<SpannableStringBuilder, Int>()
 	private var defaultTextColor = 0
 	private var highlightTextColor = 0
 	private var lyrics: SemanticLyrics? = null
@@ -63,7 +72,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 		}
 		if (highlightTextColor != newHighlightColor) {
 			highlightTextColor = newHighlightColor
-			wordActiveSpan = null
+			wordActiveSpan.color = highlightTextColor
 			invalidate()
 		}
 	}
@@ -104,58 +113,76 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			requestLayout()
 			return
 		}
+		var animating = false
 		canvas.save()
 		val lines = if (lyrics is SemanticLyrics.SyncedLyrics)
 				(lyrics as SemanticLyrics.SyncedLyrics).text else null
 		spForRender!!.forEachIndexed { i, it ->
-			var setSpan = false
-			val lastWord = lines?.get(i)?.lyric?.words?.lastOrNull()?.timeRange
-			val currentLineStarted = lines != null && posForRender > lines[i].lyric.start
-			val highlight = lines == null || currentLineStarted && lastWord != null &&
-					lastWord.last > posForRender || currentLineStarted &&
-					lines.find { it.lyric.start > lines[i].lyric.start
-							&& posForRender > it.lyric.start } == null
-			if (!highlight)
-				canvas.translate(0f, it.paddingTop.toFloat())
+			var spanEnd: Int? = null
+			val firstTs = lines?.get(i)?.lyric?.start ?: ULong.MIN_VALUE
+			val lastTs = lines?.get(i)?.lyric?.words?.lastOrNull()?.timeRange?.last ?: lines
+				?.find { it.lyric.start > lines[i].lyric.start }?.lyric?.start ?: Long.MAX_VALUE.toULong()
+			val timeOffsetForUse = min(scaleInAnimTime, lerp(firstTs.toFloat(), lastTs.toFloat(),
+				0.5f) - firstTs.toFloat())
+			val highlight = posForRender >= firstTs - timeOffsetForUse.toULong() &&
+					posForRender <= lastTs + timeOffsetForUse.toULong()
+			val scaleInProgress = if (lines == null) 1f else lerpInv(firstTs.toFloat() -
+					timeOffsetForUse, firstTs.toFloat() + timeOffsetForUse, posForRender.toFloat())
+			val scaleOutProgress = if (lines == null) 1f else lerpInv(lastTs.toFloat() -
+					timeOffsetForUse, lastTs.toFloat() + timeOffsetForUse, posForRender.toFloat())
+			val hlScaleFactor = if (lines == null) smallSizeFactor else {
+				// lerp argument order is swapped because we divide by this factor
+				if (scaleOutProgress >= 0f && scaleOutProgress <= 1f)
+					lerp(smallSizeFactor, 1f, scaleColorInterpolator.getInterpolation(scaleOutProgress))
+				else if (scaleInProgress >= 0f && scaleInProgress <= 1f)
+					lerp(1f, smallSizeFactor, scaleColorInterpolator.getInterpolation(scaleInProgress))
+				else if (highlight)
+					smallSizeFactor
+				else 1f
+			}
+			if ((scaleInProgress >= -.1f && scaleInProgress <= 1f) ||
+				(scaleOutProgress >= -.1f && scaleOutProgress <= 1f))
+				animating = true
+			canvas.translate(0f, it.paddingTop.toFloat() / hlScaleFactor)
 			if (highlight) {
-				canvas.translate(0f, it.paddingTop.toFloat() / smallSizeFactor)
 				canvas.save()
-				canvas.scale(1f / smallSizeFactor, 1f / smallSizeFactor)
-				if (wordActiveSpan == null)
-					wordActiveSpan = ForegroundColorSpan(highlightTextColor)
+				canvas.scale(1f / hlScaleFactor, 1f / hlScaleFactor)
 				if (lines != null && lines[i].lyric.words != null) {
 					val word = lines[i].lyric.words?.findLast { it.timeRange.start <= posForRender }
-					if (word != null) {
-						it.text.setSpan(wordActiveSpan, 0, word.charRange.last,
-							Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-						setSpan = true
-					}
+					if (word != null)
+						spanEnd = word.charRange.last
 				} else {
-					it.text.setSpan(wordActiveSpan, 0, it.text.length,
-						Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-					setSpan = true
+					spanEnd = it.text.length
 				}
 			} else if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL) {
 				canvas.save()
 				if (it.layout.alignment == Layout.Alignment.ALIGN_OPPOSITE)
-					canvas.translate(width * (1 - smallSizeFactor), 0f)
+					canvas.translate(width * (1 - hlScaleFactor), 0f)
 				else
-					canvas.translate(width * ((1 - smallSizeFactor) / 2), 0f)
+					canvas.translate(width * ((1 - hlScaleFactor) / 2), 0f)
+			}
+			val cachedEnd = spSpanCache[it.text]
+			if (cachedEnd != spanEnd) {
+				if (cachedEnd != null)
+					it.text.removeSpan(wordActiveSpan)
+				if (spanEnd != null) {
+					it.text.setSpan(
+						wordActiveSpan, 0, spanEnd,
+						Spanned.SPAN_INCLUSIVE_INCLUSIVE
+					)
+					spSpanCache[it.text] = spanEnd
+				} else
+					spSpanCache.remove(it.text)
 			}
 			it.layout.draw(canvas)
 			val th = it.layout.height.toFloat() + it.paddingBottom
-			if (highlight) {
-				if (setSpan)
-					it.text.removeSpan(wordActiveSpan)
+			if (highlight || it.layout.alignment != Layout.Alignment.ALIGN_NORMAL)
 				canvas.restore()
-				canvas.translate(0f, th / smallSizeFactor)
-			} else {
-				if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL)
-					canvas.restore()
-				canvas.translate(0f, th)
-			}
+			canvas.translate(0f, th / hlScaleFactor)
 		}
 		canvas.restore()
+		if (animating)
+			invalidate()
 	}
 
 	override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -170,6 +197,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			|| spForMeasure!!.first.second != bottom - top)
 			spForMeasure = buildSpForMeasure(lyrics, right - left)
 		spForRender = spForMeasure!!.second
+		invalidate()
 	}
 
 	fun buildSpForMeasure(lyrics: SemanticLyrics?, width: Int): Pair<Pair<Int, Int>, List<SbItem>> {
