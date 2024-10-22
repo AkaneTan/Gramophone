@@ -451,9 +451,9 @@ sealed class SemanticLyrics : Parcelable {
 										|| it.charRange.first.toLong() - startDiff >= text.length)
 										listOf()
 									else
-										listOf(it.copy(charRange = (it.charRange.first - startDiff
-												).coerceAtLeast(0)..(it.charRange.last -
-												startDiff).coerceAtMost(text.length)))
+										listOf(it.copy(charRange = (it.charRange.first - startDiff)
+											.coerceAtLeast(0)..(it.charRange.last - startDiff)
+											.coerceAtMost(text.length - 1)))
 								}?.toMutableList()
 							}
 							val start = if (currentLine.isNotEmpty()) currentLine.first().first
