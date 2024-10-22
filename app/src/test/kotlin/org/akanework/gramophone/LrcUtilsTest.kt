@@ -261,7 +261,7 @@ class LrcUtilsTest {
 		assertEquals(200uL, lrc[0].lyric.words!![1].timeRange.start)
 		assertEquals(1000uL - 1uL, lrc[0].lyric.words!![1].timeRange.last)
 		assertEquals(1000uL, lrc[0].lyric.words!![2].timeRange.start)
-		println(lrc[0].lyric.words!![2].timeRange.last)
+		println(lrc[0].lyric.words!![2].timeRange.last) // TODO test this is sane
 		assertEquals(10100uL, lrc[1].lyric.start)
 		assertNotNull(lrc[1].lyric.words)
 		assertEquals(3, lrc[1].lyric.words!!.size)
@@ -270,7 +270,7 @@ class LrcUtilsTest {
 		assertEquals(10200uL, lrc[1].lyric.words!![1].timeRange.start)
 		assertEquals(11000uL - 1uL, lrc[1].lyric.words!![1].timeRange.last)
 		assertEquals(11000uL, lrc[1].lyric.words!![2].timeRange.start)
-		println(lrc[1].lyric.words!![2].timeRange.last)
+		println(lrc[1].lyric.words!![2].timeRange.last) // TODO test this is sane
 	}
 
 	@Test
