@@ -552,7 +552,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onTracksChanged(tracks: Tracks) {
         val mediaItem = controller!!.currentMediaItem
         lyricsLock.runInBg {
-            val trim = prefs.getBoolean("trim_lyrics", false)
+            val trim = prefs.getBoolean("trim_lyrics", true)
             val multiLine = prefs.getBoolean("lyric_multiline", false)
             val newParser = prefs.getBoolean("lyric_parser", false)
             val options = LrcParserOptions(trim = trim, multiLine = multiLine,

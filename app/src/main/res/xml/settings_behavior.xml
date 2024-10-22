@@ -54,7 +54,7 @@
             app:iconSpaceReserved="false" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="trim_lyrics"
             android:layout="@layout/preference_switch"
             android:title="@string/settings_trim_lyrics"

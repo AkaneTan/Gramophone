@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.collections.map
+import kotlin.math.min
 
 /*
  * Syntactic-semantic lyric parser.
@@ -132,54 +133,54 @@ private sealed class SyntacticLyrics {
 				}
 				// Speaker points can only appear directly after a sync point
 				if (out.isNotEmpty() && out.last() is SyncPoint) {
-					if (pos + 3 < text.length && text.regionMatches(pos, "v1: ", 0, 4)) {
+					if (pos + 2 < text.length && text.regionMatches(pos, "v1:", 0, 3)) {
+						out.add(SpeakerTag(SpeakerEntity.Voice1))
+						pos += 3
+						continue
+					}
+					if (pos + 2 < text.length && text.regionMatches(pos, "v2:", 0, 3)) {
+						out.add(SpeakerTag(SpeakerEntity.Voice2))
+						pos += 3
+						continue
+					}
+					if (pos + 1 < text.length && text.regionMatches(pos, "F:", 0, 2)) {
+						out.add(SpeakerTag(SpeakerEntity.Female))
+						pos += 2
+						continue
+					}
+					if (pos + 1 < text.length && text.regionMatches(pos, "M:", 0, 2)) {
+						out.add(SpeakerTag(SpeakerEntity.Male))
+						pos += 2
+						continue
+					}
+					if (pos + 1 < text.length && text.regionMatches(pos, "D:", 0, 2)) {
+						out.add(SpeakerTag(SpeakerEntity.Duet))
+						pos += 2
+						continue
+					}
+					if (pos + 3 < text.length && text.regionMatches(pos, " v1:", 0, 4)) {
 						out.add(SpeakerTag(SpeakerEntity.Voice1))
 						pos += 4
 						continue
 					}
-					if (pos + 3 < text.length && text.regionMatches(pos, "v2: ", 0, 4)) {
+					if (pos + 3 < text.length && text.regionMatches(pos, " v2:", 0, 4)) {
 						out.add(SpeakerTag(SpeakerEntity.Voice2))
 						pos += 4
 						continue
 					}
-					if (pos + 2 < text.length && text.regionMatches(pos, "F: ", 0, 3)) {
+					if (pos + 2 < text.length && text.regionMatches(pos, " F:", 0, 3)) {
 						out.add(SpeakerTag(SpeakerEntity.Female))
 						pos += 3
 						continue
 					}
-					if (pos + 2 < text.length && text.regionMatches(pos, "M: ", 0, 3)) {
+					if (pos + 2 < text.length && text.regionMatches(pos,  " M:", 0, 3)) {
 						out.add(SpeakerTag(SpeakerEntity.Male))
 						pos += 3
 						continue
 					}
-					if (pos + 2 < text.length && text.regionMatches(pos, "D: ", 0, 3)) {
+					if (pos + 2 < text.length && text.regionMatches(pos, " D:", 0, 3)) {
 						out.add(SpeakerTag(SpeakerEntity.Duet))
 						pos += 3
-						continue
-					}
-					if (pos + 4 < text.length && text.regionMatches(pos, " v1: ", 0, 5)) {
-						out.add(SpeakerTag(SpeakerEntity.Voice1))
-						pos += 5
-						continue
-					}
-					if (pos + 4 < text.length && text.regionMatches(pos, " v2: ", 0, 5)) {
-						out.add(SpeakerTag(SpeakerEntity.Voice2))
-						pos += 5
-						continue
-					}
-					if (pos + 3 < text.length && text.regionMatches(pos, " F: ", 0, 4)) {
-						out.add(SpeakerTag(SpeakerEntity.Female))
-						pos += 4
-						continue
-					}
-					if (pos + 3 < text.length && text.regionMatches(pos,  "M: ", 0, 4)) {
-						out.add(SpeakerTag(SpeakerEntity.Male))
-						pos += 4
-						continue
-					}
-					if (pos + 3 < text.length && text.regionMatches(pos, " D: ", 0, 4)) {
-						out.add(SpeakerTag(SpeakerEntity.Duet))
-						pos += 4
 						continue
 					}
 				}
@@ -433,7 +434,8 @@ sealed class SemanticLyrics : Parcelable {
 									(wout.map { it.charRange.count() / it.timeRange.count() }
 										.average() * (current.second?.length ?: 0)).toULong()
 								}
-								wout.add(Word(current.first..endInclusive, oIdx..<idx))
+								if (endInclusive > current.first)
+									wout.add(Word(current.first..endInclusive, oIdx..<idx))
 							}
 							wout
 						} else null
@@ -449,9 +451,9 @@ sealed class SemanticLyrics : Parcelable {
 										|| it.charRange.first.toLong() - startDiff >= text.length)
 										listOf()
 									else
-										listOf(it.copy(charRange = (it.charRange.first -
-												startDiff).coerceAtLeast(0)..
-												(it.charRange.last - startDiff)))
+										listOf(it.copy(charRange = (it.charRange.first - startDiff
+												).coerceAtLeast(0)..(it.charRange.last -
+												startDiff).coerceAtMost(text.length)))
 								}?.toMutableList()
 							}
 							val start = if (currentLine.isNotEmpty()) currentLine.first().first
