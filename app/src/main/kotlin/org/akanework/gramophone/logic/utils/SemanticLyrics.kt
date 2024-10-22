@@ -454,15 +454,13 @@ sealed class SemanticLyrics : Parcelable {
 												(it.charRange.last - startDiff)))
 								}?.toMutableList()
 							}
-							out.add(
-								LyricLine(
-									text,
-									if (currentLine.isNotEmpty()) currentLine.first().first
-									else lastWordSyncPoint ?: lastSyncPoint!!, words, speaker
-								)
-							)
+							val start = if (currentLine.isNotEmpty()) currentLine.first().first
+							else lastWordSyncPoint ?: lastSyncPoint!!
+							out.add(LyricLine(text, start, words, speaker))
 							compressed.forEach {
-								out.add(out.last().copy(start = it, words = null))
+								val diff = it - start
+								out.add(out.last().copy(start = it, words = words?.map { it.copy(
+									it.timeRange.start + diff..it.timeRange.last + diff) }))
 							}
 						}
 						compressed.clear()

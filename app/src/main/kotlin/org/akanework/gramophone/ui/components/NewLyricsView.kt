@@ -8,9 +8,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.StaticLayout
 import android.text.TextPaint
-import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.animation.PathInterpolator
 import androidx.core.graphics.TypefaceCompat
@@ -150,7 +148,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 				if (lines != null && lines[i].lyric.words != null) {
 					val word = lines[i].lyric.words?.findLast { it.timeRange.start <= posForRender }
 					if (word != null)
-						spanEnd = word.charRange.last
+						spanEnd = word.charRange.last + 1
 				} else {
 					spanEnd = it.text.length
 				}
