@@ -265,7 +265,9 @@ dependencies {
     implementation("io.coil-kt.coil3:coil:3.0.0-alpha10")
     //noinspection GradleDependency newer versions need java.nio which is api 26+
     //implementation("com.github.albfernandez:juniversalchardet:2.0.3") TODO
-    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
+    implementation("androidx.profileinstaller:profileinstaller:1.4.0")
+    implementation("com.github.xiaowine:Lyric-Getter-Api:6.0.0")
+    implementation("com.github.xiaowine:XKT:1.0.12")
     "baselineProfile"(project(":baselineprofile"))
     // --- below does not apply to release builds ---
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
