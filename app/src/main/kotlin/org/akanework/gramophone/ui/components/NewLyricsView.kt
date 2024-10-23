@@ -199,11 +199,11 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			var colorSpan = it.text.getSpans<MyForegroundColorSpan>().firstOrNull()
 			val cachedEnd = colorSpan?.let { j -> it.text.getSpanStart(j) } ?: -1
 			val col = if (inColorAnim) ColorUtils.blendARGB(if (scaleOutProgress >= 0f &&
-				scaleOutProgress <= 1f) highlightTextColor else defaultTextColor,
-				if (scaleInProgress >= 0f && scaleInProgress <= 1f &&
-					gradientProgress == Float.NEGATIVE_INFINITY) highlightTextColor
-				else defaultTextColor, if (scaleOutProgress >= 0f &&
-					scaleOutProgress <= 1f) scaleOutProgress else scaleInProgress) else 0
+				scaleOutProgress <= 1f) highlightTextColor else defaultTextColor, if (
+				scaleInProgress >= 0f && scaleInProgress <= 1f && gradientProgress == Float
+					.NEGATIVE_INFINITY) highlightTextColor else defaultTextColor,
+				scaleColorInterpolator.getInterpolation(if (scaleOutProgress >= 0f &&
+					scaleOutProgress <= 1f) scaleOutProgress else scaleInProgress)) else 0
 			if (cachedEnd != spanEndWithoutGradient || inColorAnim != (colorSpan != wordActiveSpan)) {
 				if (cachedEnd != -1) {
 					it.text.removeSpan(colorSpan!!)
