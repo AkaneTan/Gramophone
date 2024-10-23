@@ -168,4 +168,8 @@
     <string name="settings_preference_category_home">主屏幕</string>
     <string name="tab_order">配置标签顺序</string>
     <string name="tab_order_summary">应用将在启动时显示第一个标签。分隔符后的标签将被隐藏。</string>
+    <string name="settings_lyrics_StatusBarLyric">打开 状态栏歌词</string>
+    <string name="settings_lyrics_StatusBarLyric_summary">打开 状态栏歌词 （某些系统可用）</string>
+    <string name="settings_lyrics_Lyric_Getter">"打开  Lyric Getter Api "</string>
+    <string name="settings_lyrics_Lyric_Getter_summary">发送歌词到Lyric Getter Api</string>
 </resources>

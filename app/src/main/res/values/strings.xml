@@ -199,7 +199,7 @@
     <string name="settings_lyrics_ui">Enable new lyric UI</string>
     <string name="settings_lyrics_ui_summary">Experimental UI to display word-by-word lyric with advanced features</string>
     <string name="settings_lyrics_StatusBarLyric">Enable StatusBarLyric </string>
-    <string name="settings_lyrics_StatusBarLyric_summary">Enable StatusBarLyric (Available for some devices)</string>
-    <string name="settings_lyrics_Lyric_Getter">Enable Lyric-Getter-Api</string>
-    <string name="settings_lyrics_Lyric_Getter_summary">Send Lyrics via Lyric-Getter-Api</string>
+    <string name="settings_lyrics_StatusBarLyric_summary">Enable StatusBarLyric (Available for some system)</string>
+    <string name="settings_lyrics_Lyric_Getter">Enable Lyric Getter Api</string>
+    <string name="settings_lyrics_Lyric_Getter_summary">Send Lyrics via Lyric Getter Api</string>
 </resources>
