@@ -122,7 +122,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 	}
 
 	override fun onDraw(canvas: Canvas) {
-		posForRender = instance?.currentPosition?.toULong() ?: 0uL
+		posForRender = instance?.currentPosition?.toULong() ?: 0uL // TODO do some mp3s go backwards sometimes lol??
 		if (spForRender == null) {
 			requestLayout()
 			return
@@ -138,8 +138,8 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			val firstTs = lines?.get(i)?.lyric?.start ?: ULong.MIN_VALUE
 			val lastTs = lines?.get(i)?.lyric?.words?.lastOrNull()?.timeRange?.last ?: lines
 				?.find { it.lyric.start > lines[i].lyric.start }?.lyric?.start ?: Long.MAX_VALUE.toULong()
-			val timeOffsetForUse = min(scaleInAnimTime, lerp(firstTs.toFloat(), lastTs.toFloat(),
-				0.5f) - firstTs.toFloat())
+			val timeOffsetForUse = min(scaleInAnimTime, min(lerp(firstTs.toFloat(), lastTs.toFloat(),
+				0.5f) - firstTs.toFloat(), firstTs.toFloat()))
 			val highlight = posForRender >= firstTs - timeOffsetForUse.toULong() &&
 					posForRender <= lastTs + timeOffsetForUse.toULong()
 			val scaleInProgress = if (lines == null) 1f else lerpInv(firstTs.toFloat() -
@@ -179,12 +179,14 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 				} else {
 					spanEnd = it.text.length
 				}
-			} else if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL) {
-				canvas.save()
+			}
+			if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL) {
+				if (!highlight)
+					canvas.save()
 				if (it.layout.alignment == Layout.Alignment.ALIGN_OPPOSITE)
-					canvas.translate(width * (1 - hlScaleFactor), 0f)
-				else
-					canvas.translate(width * ((1 - hlScaleFactor) / 2), 0f)
+					canvas.translate(width * (1 - smallSizeFactor / hlScaleFactor), 0f)
+				else // Layout.Alignment.ALIGN_CENTER
+					canvas.translate(width * ((1 - smallSizeFactor / hlScaleFactor) / 2), 0f)
 			}
 			if (gradientProgress >= -.1f && gradientProgress <= 1f)
 				animating = true
@@ -202,21 +204,14 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			if (cachedEnd != spanEndWithoutGradient || inColorAnim != (colorSpan != wordActiveSpan)) {
 				if (cachedEnd != -1) {
 					it.text.removeSpan(colorSpan!!)
-					if (!inColorAnim && colorSpan != wordActiveSpan) {
+					if (colorSpan != wordActiveSpan && (!inColorAnim || spanEndWithoutGradient == -1)) {
 						if (colorSpanPool.size < 10)
 							colorSpanPool.add(colorSpan)
-						colorSpan = wordActiveSpan
-					} else if (inColorAnim) {
-						if (colorSpan == wordActiveSpan)
-							colorSpan = null
-						else if (spanEndWithoutGradient <= 0) {
-							if (colorSpanPool.size < 10)
-								colorSpanPool.add(colorSpan)
-							colorSpan = null
-						}
-					}
+						colorSpan = null
+					} else if (inColorAnim && colorSpan == wordActiveSpan)
+						colorSpan = null
 				}
-				if (spanEndWithoutGradient > 0) {
+				if (spanEndWithoutGradient != -1) {
 					if (inColorAnim && colorSpan == null)
 						colorSpan = colorSpanPool.getOrElse(0) { MyForegroundColorSpan(col) }
 					else if (!inColorAnim)
@@ -227,7 +222,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 					)
 				}
 			}
-			if (inColorAnim && spanEndWithoutGradient > 0) {
+			if (inColorAnim && spanEndWithoutGradient != -1) {
 				if (colorSpan!! == wordActiveSpan)
 					throw IllegalStateException("colorSpan == wordActiveSpan")
 				colorSpan.color = col
@@ -256,11 +251,28 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 				val firstLine = it.layout.getLineForOffset(spanStartGradient)
 				val lastLine = it.layout.getLineForOffset(spanEnd)
 				for (line in firstLine..lastLine) {
-					if (line == firstLine) {
+					if (line == firstLine && it.layout.alignment != Layout.Alignment.ALIGN_OPPOSITE) {
 						it.layout.paint.getTextBounds(it.text.toString(),
 							it.layout.getLineStart(line), spanStartGradient, bounds)
 						gradientSpan.lineOffsets.add(bounds.width())
 					} else gradientSpan.lineOffsets.add(0)
+					if (it.layout.alignment == Layout.Alignment.ALIGN_OPPOSITE) {
+						it.layout.paint.getTextBounds(
+							it.text.toString(), max(
+								spanStartGradient,
+								it.layout.getLineStart(line)
+							), it.layout.getLineEnd(line), bounds
+						)
+						gradientSpan.lineOffsets[gradientSpan.lineOffsets.size - 1] = gradientSpan
+							.lineOffsets.last() + (width - bounds.width())
+					} else if (it.layout.alignment == Layout.Alignment.ALIGN_CENTER) {
+						it.layout.paint.getTextBounds(
+							it.text.toString(), it.layout.getLineStart(line),
+							it.layout.getLineEnd(line), bounds
+						)
+						gradientSpan.lineOffsets[gradientSpan.lineOffsets.size - 1] = gradientSpan
+							.lineOffsets.last() + ((width - bounds.width()) / 2)
+					}
 					gradientSpan.lineOffsets.add(it.layout.getLineBottom(line) - it.layout.getLineTop(line))
 					it.layout.paint.getTextBounds(it.text.toString(), max(spanStartGradient,
 						it.layout.getLineStart(line)), min(spanEnd, it.layout.getLineEnd(line)), bounds)
@@ -269,6 +281,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 					gradientSpan.lineOffsets.add(min(it.layout.getLineEnd(line), spanEnd) - spanStartGradient)
 				}
 				gradientSpan.lineOffsets.add(spanEnd - spanStartGradient)
+				gradientSpan.lineOffsets.add(if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL) 2 else 1)
 				gradientSpan.progress = gradientProgress
 			}
 			it.layout.draw(canvas)
