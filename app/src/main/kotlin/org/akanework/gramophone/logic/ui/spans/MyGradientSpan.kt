@@ -21,13 +21,15 @@ class MyGradientSpan(val grdWidth: Int, color: Int, highlightColor: Int) : Chara
 		Shader.TileMode.CLAMP
 	)
 	var progress = 1f
-	var lineOffsets = mutableListOf<Int>()
+	lateinit var lineOffsets: List<Int>
+	var lineCountDivider = 0
+	var totalCharsForProgress = 0
 	var lineCount = 0
 	override fun updateDrawState(tp: TextPaint) {
 		tp.color = Color.WHITE
-		val o = 5 * ((lineCount / lineOffsets[lineOffsets.size-1]) % ((lineOffsets.size - 2) / 5))
+		val o = 5 * ((lineCount / lineCountDivider) % (lineOffsets.size / 5))
 		val ourProgress = max(0f, min(1f, lerpInv(lineOffsets[o + 3].toFloat(), lineOffsets[o + 4]
-			.toFloat(), lerp(0f, lineOffsets[lineOffsets.size-2].toFloat(), progress))))
+			.toFloat(), lerp(0f, totalCharsForProgress.toFloat(), progress))))
 		shader.setLocalMatrix(matrix.apply {
 			reset()
 			postTranslate(lineOffsets[o].toFloat() + ((lineOffsets[o + 2]

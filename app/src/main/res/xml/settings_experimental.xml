@@ -36,6 +36,7 @@
             android:layout="@layout/preference_basic"
             android:title="@string/settings_crash_application"
             android:summary="@string/settings_crash_application_summary"
+            app:isPreferenceVisible="false"
             app:iconSpaceReserved="false" />
 
         <SwitchPreferenceCompat

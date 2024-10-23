@@ -1,6 +1,5 @@
 package org.akanework.gramophone.ui.components
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -37,9 +36,10 @@ import kotlin.math.min
 class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
 	private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-	private val grdWidth = 20.dpToPx(context) // TODO unhardcode?
+	private val grdWidth = 20.dpToPx(context)
 	private val smallSizeFactor = 0.97f
-	private val scaleInAnimTime = 650f / 2 // TODO maybe reduce this
+	// TODO maybe reduce this to avoid really fast word skipping
+	private val scaleInAnimTime = 650f / 2
 	private val scaleColorInterpolator = PathInterpolator(0.4f, 0.2f, 0f, 1f)
 	private val defaultTextPaint = TextPaint().apply { color = Color.RED }
 	private val translationTextPaint = TextPaint().apply { color = Color.GREEN }
@@ -134,6 +134,7 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 		spForRender!!.forEachIndexed { i, it ->
 			var spanEnd = -1
 			var spanStartGradient = -1
+			var wordIdx: Int? = null
 			var gradientProgress = Float.NEGATIVE_INFINITY
 			val firstTs = lines?.get(i)?.lyric?.start ?: ULong.MIN_VALUE
 			val lastTs = lines?.get(i)?.lyric?.words?.lastOrNull()?.timeRange?.last ?: lines
@@ -164,8 +165,10 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 				canvas.save()
 				canvas.scale(1f / hlScaleFactor, 1f / hlScaleFactor)
 				if (lines != null && lines[i].lyric.words != null) {
-					val word = lines[i].lyric.words?.findLast { it.timeRange.start <= posForRender }
-					if (word != null) {
+					wordIdx = lines[i].lyric.words?.indexOfLast { it.timeRange.start <= posForRender }
+					if (wordIdx == -1) wordIdx = null
+					if (wordIdx != null) {
+						val word = lines[i].lyric.words!![wordIdx]
 						spanEnd = word.charRange.last + 1 // get exclusive end
 						val gradientEndTime = min(lastTs.toFloat() - timeOffsetForUse,
 							word.timeRange.last.toFloat())
@@ -247,41 +250,9 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			}
 			if (gradientSpan != null) {
 				gradientSpan.lineCount = 0
-				gradientSpan.lineOffsets.clear()
-				val firstLine = it.layout.getLineForOffset(spanStartGradient)
-				val lastLine = it.layout.getLineForOffset(spanEnd)
-				for (line in firstLine..lastLine) {
-					if (line == firstLine && it.layout.alignment != Layout.Alignment.ALIGN_OPPOSITE) {
-						it.layout.paint.getTextBounds(it.text.toString(),
-							it.layout.getLineStart(line), spanStartGradient, bounds)
-						gradientSpan.lineOffsets.add(bounds.width())
-					} else gradientSpan.lineOffsets.add(0)
-					if (it.layout.alignment == Layout.Alignment.ALIGN_OPPOSITE) {
-						it.layout.paint.getTextBounds(
-							it.text.toString(), max(
-								spanStartGradient,
-								it.layout.getLineStart(line)
-							), it.layout.getLineEnd(line), bounds
-						)
-						gradientSpan.lineOffsets[gradientSpan.lineOffsets.size - 1] = gradientSpan
-							.lineOffsets.last() + (width - bounds.width())
-					} else if (it.layout.alignment == Layout.Alignment.ALIGN_CENTER) {
-						it.layout.paint.getTextBounds(
-							it.text.toString(), it.layout.getLineStart(line),
-							it.layout.getLineEnd(line), bounds
-						)
-						gradientSpan.lineOffsets[gradientSpan.lineOffsets.size - 1] = gradientSpan
-							.lineOffsets.last() + ((width - bounds.width()) / 2)
-					}
-					gradientSpan.lineOffsets.add(it.layout.getLineBottom(line) - it.layout.getLineTop(line))
-					it.layout.paint.getTextBounds(it.text.toString(), max(spanStartGradient,
-						it.layout.getLineStart(line)), min(spanEnd, it.layout.getLineEnd(line)), bounds)
-					gradientSpan.lineOffsets.add(bounds.width())
-					gradientSpan.lineOffsets.add(max(spanStartGradient, it.layout.getLineStart(line)) - spanStartGradient)
-					gradientSpan.lineOffsets.add(min(it.layout.getLineEnd(line), spanEnd) - spanStartGradient)
-				}
-				gradientSpan.lineOffsets.add(spanEnd - spanStartGradient)
-				gradientSpan.lineOffsets.add(if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL) 2 else 1)
+				gradientSpan.lineOffsets = it.words!![wordIdx!!]
+				gradientSpan.totalCharsForProgress = spanEnd - spanStartGradient
+				gradientSpan.lineCountDivider = if (it.layout.alignment != Layout.Alignment.ALIGN_NORMAL) 2 else 1
 				gradientSpan.progress = gradientProgress
 			}
 			it.layout.draw(canvas)
@@ -324,17 +295,56 @@ class NewLyricsView(context: Context, attrs: AttributeSet) : View(context, attrs
 			val paddingTop = if (syncedLines?.get(i)?.isTranslated == true) 2 else 18
 			val paddingBottom = if (i + 1 < (syncedLines?.size ?: -1) &&
 				syncedLines?.get(i + 1)?.isTranslated == true) 2 else 18
-			SbItem(StaticLayoutBuilderCompat.obtain(sb,
+			val layout = StaticLayoutBuilderCompat.obtain(sb,
 				if (tl && bg) translationBackgroundTextPaint else if (tl || bg)
 					translationTextPaint else defaultTextPaint, (width * smallSizeFactor).toInt())
-				.setAlignment(align)
-				.build(), sb, paddingTop.dpToPx(context), paddingBottom.dpToPx(context))
+				.setAlignment(align).build()
+			SbItem(layout, sb, paddingTop.dpToPx(context), paddingBottom.dpToPx(context),
+				syncedLines?.get(i)?.lyric?.words?.map {
+					val ia = mutableListOf<Int>()
+					val firstLine = layout.getLineForOffset(it.charRange.first)
+					val lastLine = layout.getLineForOffset(it.charRange.last + 1)
+					for (line in firstLine..lastLine) {
+						var baseOffset = if (line == firstLine
+							&& layout.alignment != Layout.Alignment.ALIGN_OPPOSITE
+						) {
+							layout.paint.getTextBounds(
+								sb.toString(),
+								layout.getLineStart(line), it.charRange.first, bounds
+							)
+							bounds.width()
+						} else if (layout.alignment == Layout.Alignment.ALIGN_OPPOSITE) {
+							layout.paint.getTextBounds(
+								sb.toString(), max(
+									it.charRange.first,
+									layout.getLineStart(line)
+								), layout.getLineEnd(line), bounds
+							)
+							width - bounds.width()
+						} else 0
+						ia.add(baseOffset + if (layout.alignment == Layout.Alignment.ALIGN_CENTER) {
+							layout.paint.getTextBounds(
+								sb.toString(), layout.getLineStart(line),
+								layout.getLineEnd(line), bounds
+							)
+							(width - bounds.width()) / 2
+						} else 0) // offset from left to start from text on line
+						ia.add(layout.getLineBottom(line) - layout.getLineTop(line)) // line height
+						layout.paint.getTextBounds(sb.toString(), max(it.charRange.first, layout
+							.getLineStart(line)), min(it.charRange.last + 1, layout.getLineEnd(line)), bounds)
+						ia.add(bounds.width()) // width of text in this line
+						ia.add(max(it.charRange.first, layout.getLineStart(line)) - it.charRange.first) // prefix chars
+						ia.add(min(layout.getLineEnd(line), it.charRange.last + 1) - it.charRange.first) // suffix chars
+					}
+					return@map ia
+				})
 		}
 		val heights = spLines.map { it.layout.height + it.paddingTop + it.paddingBottom }
 		return Pair(Pair(width, (heights.max() * (1 - (1 / smallSizeFactor)) + heights.sum()).toInt()), spLines)
 	}
 
-	data class SbItem(val layout: StaticLayout, val text: SpannableStringBuilder, val paddingTop: Int, val paddingBottom: Int)
+	data class SbItem(val layout: StaticLayout, val text: SpannableStringBuilder,
+	                  val paddingTop: Int, val paddingBottom: Int, val words: List<List<Int>>?)
 
 	private fun makeGradientSpan() = MyGradientSpan(grdWidth, defaultTextColor, highlightTextColor)
 }
