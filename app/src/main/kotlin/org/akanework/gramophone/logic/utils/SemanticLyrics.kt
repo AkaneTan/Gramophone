@@ -423,7 +423,7 @@ sealed class SemanticLyrics : Parcelable {
 									// point minus 1ms as end point of this word
 									currentLine[i + 1].first - 1uL
 								} else if (lastWordSyncPoint != null &&
-									lastWordSyncPoint > currentLine[i].first) {
+									lastWordSyncPoint > current.first) {
 									// If we have a dedicated sync point just for the last word,
 									// use it. Similar to dummy words but for the last word only
 									lastWordSyncPoint
@@ -431,8 +431,9 @@ sealed class SemanticLyrics : Parcelable {
 									// Estimate how long this word will take based on character
 									// to time ratio. To avoid this estimation, add a last word
 									// sync point to the line after the text :)
-									(wout.map { it.charRange.count() / it.timeRange.count() }
-										.average() * (current.second?.length ?: 0)).toULong()
+									current.first + (wout.map { it.timeRange.count() /
+											it.charRange.count().toFloat() }.average() *
+											(current.second?.length ?: 0)).toULong()
 								}
 								if (endInclusive > current.first)
 									wout.add(Word(current.first..endInclusive, oIdx..<idx))

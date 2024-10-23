@@ -19,6 +19,7 @@ package org.akanework.gramophone.ui.fragments.settings
 
 import android.os.Bundle
 import androidx.preference.Preference
+import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
 import org.akanework.gramophone.ui.fragments.BasePreferenceFragment
 import org.akanework.gramophone.ui.fragments.BaseSettingFragment
@@ -32,11 +33,13 @@ class ExperimentalSettingsTopFragment : BasePreferenceFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_experimental, rootKey)
-        e = RuntimeException("skill issue")
+        findPreference<Preference>("crash")!!.isVisible = BuildConfig.DEBUG
+        if (BuildConfig.DEBUG)
+            e = RuntimeException("skill issue")
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
-        if (preference.key == "crash") {
+        if (preference.key == "crash" && BuildConfig.DEBUG) {
             throw IllegalArgumentException("I crashed your app >:)", e)
         }
         return super.onPreferenceTreeClick(preference)
