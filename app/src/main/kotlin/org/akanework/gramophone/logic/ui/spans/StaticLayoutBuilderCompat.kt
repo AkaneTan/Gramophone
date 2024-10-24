@@ -228,6 +228,15 @@ class StaticLayoutBuilderCompat private constructor(
 			if (maxLines > 1) {
 				builder.setHyphenationFrequency(hyphenationFrequency)
 			}
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+				builder.setUseLineSpacingFromFallbacks(true)
+			}
+			// TODO uncomment when targetSdk 35
+			// if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+			// 	    builder.setUseBoundsForWidth(true)
+			// 	    builder.setShiftDrawingOffsetForStartOverhang(true)
+			// }
+
 			//if (staticLayoutBuilderConfigurer != null) {
 			//	staticLayoutBuilderConfigurer.configure(builder);
 			//}
