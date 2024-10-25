@@ -17,22 +17,28 @@
 
 package org.akanework.gramophone.logic
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.concurrent.futures.CallbackToFutureAdapter
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -64,6 +70,7 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import androidx.preference.PreferenceManager
+import cn.xiaowine.xkt.AcTool.context
 import coil3.BitmapImage
 import coil3.imageLoader
 import coil3.request.ImageRequest
@@ -78,6 +85,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import org.akanework.gramophone.BuildConfig
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.ui.MyRecyclerView
 import org.akanework.gramophone.logic.utils.CircularShuffleOrder
 import org.akanework.gramophone.logic.utils.LastPlayedManager
 import org.akanework.gramophone.logic.utils.LrcUtils.LrcParserOptions
@@ -91,7 +99,12 @@ import org.akanework.gramophone.logic.utils.exoplayer.EndedWorkaroundPlayer
 import org.akanework.gramophone.logic.utils.exoplayer.GramophoneMediaSourceFactory
 import org.akanework.gramophone.logic.utils.exoplayer.GramophoneRenderFactory
 import org.akanework.gramophone.ui.MainActivity
+import org.akanework.gramophone.ui.components.LegacyLyricsAdapter
+import org.akanework.gramophone.ui.components.NewLyricsView
 import kotlin.random.Random
+import cn.lyric.getter.api.API
+import cn.lyric.getter.api.data.ExtraData
+import cn.lyric.getter.api.tools.Tools
 
 
 /**
@@ -119,8 +132,13 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         const val SERVICE_GET_LYRICS_LEGACY = "get_lyrics_legacy"
         const val SERVICE_GET_SESSION = "get_session"
         const val SERVICE_TIMER_CHANGED = "changed_timer"
+        private const val FLAG_ALWAYS_SHOW_TICKER = 0x01000000
+        private const val FLAG_ONLY_UPDATE_TICKER = 0x02000000
     }
-
+    private var newView: NewLyricsView? = null
+    private var recyclerView: MyRecyclerView? = null
+    private val adapter
+        get() = recyclerView?.adapter as LegacyLyricsAdapter?
     private var lastSessionId = 0
     private var mediaSession: MediaLibrarySession? = null
     private var controller: MediaController? = null
@@ -134,6 +152,10 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     private lateinit var lastPlayedManager: LastPlayedManager
     private val lyricsLock = Semaphore(1)
     private lateinit var prefs: SharedPreferences
+    private var highLyric : String = ""
+    private val notificationManager: NotificationManager by lazy {
+        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
 
     private fun getRepeatCommand() =
         when (controller!!.repeatMode) {
@@ -179,6 +201,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
     override fun onCreate() {
         handler = Handler(Looper.getMainLooper())
         super.onCreate()
+        context = applicationContext
         nm = NotificationManagerCompat.from(this)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         setListener(this)
@@ -373,6 +396,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
             headSetReceiver,
             IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         )
+        startTimer()
     }
 
     // When destroying, we should release server side player
@@ -623,6 +647,7 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         // if timeline changed, handle shuffle update in onTimelineChanged() instead
         // (onTimelineChanged() runs before both this callback and onShuffleModeEnabledChanged(),
         // which means shuffleFactory != null is not a valid check)
+        lyric()
         if (events.contains(EVENT_SHUFFLE_MODE_ENABLED_CHANGED) &&
             shuffleFactory == null && !events.contains(Player.EVENT_TIMELINE_CHANGED)) {
             // when enabling shuffle, re-shuffle lists so that the first index is up to date
@@ -654,6 +679,140 @@ class GramophonePlaybackService : MediaLibraryService(), MediaSessionService.Lis
         mediaSession!!.setCustomLayout(ImmutableList.of(getRepeatCommand(), getShufflingCommand()))
         if (needsMissingOnDestroyCallWorkarounds()) {
             handler.post { lastPlayedManager.save() }
+        }
+    }
+
+    fun startTimer() {
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = object : Runnable {
+            override fun run() {
+                lyric()
+                handler.postDelayed(this, 10)
+            }
+        }
+        handler.post(runnable) // 启动定时器
+    }
+
+    fun lyric() {
+        val getLyricsLegacy = controller?.getLyricsLegacy()
+        val getLyrics = controller?.getLyrics()
+        updateLyricsLegacy(getLyricsLegacy, getLyrics)
+        val highlightedLyric = getCurrentHighlightedLyric()
+        if (highlightedLyric != null) {
+            sendlyric(highlightedLyric)
+        } else {
+            null
+        }
+
+    }
+
+    private fun sendlyric(Lyrics: String) {
+        val lga by lazy { API() }
+        if (highLyric != Lyrics ) {
+            highLyric = Lyrics
+            val isLyricUIEnabled = prefs.getBoolean("lyric_statusbarLyric", true)
+            val isLyricgetterapi = prefs.getBoolean("lyric_lyric_getter_api", true)
+            if (isLyricUIEnabled == true ){
+                sendMeiZuStatusBarLyric(Lyrics)
+                if (isLyricgetterapi == true ){
+                    lga.sendLyric(Lyrics, extra = ExtraData().apply {
+                        packageName = "org.akanework.gramophone"
+                        customIcon = true
+                        base64Icon = Tools.drawableToBase64(getDrawable(R.drawable.ic_gramophone_monochrome)!!)
+                        useOwnMusicController = false
+                        delay = 0
+                    })
+                }
+            }
+            //Log.d(TAG,"当前高亮歌词: $Lyrics")
+
+        }
+
+    }
+    private fun sendMeiZuStatusBarLyric(Lyrics: String) {
+        val channelId = "StatusBarLyric"
+        val channelName = "MeiZuStatusBarLyric"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_MIN // 设为低优先级，避免打扰用户
+            val channel = NotificationChannel(channelId, channelName, importance)
+            channel.description = "魅族状态栏歌词"
+
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+        val notification = NotificationCompat.Builder(context, channelId)
+        notification.setSmallIcon(R.drawable.ic_gramophone_monochrome) // 确保图标存在且有效
+            .setContentTitle("魅族状态栏歌词")  // 通知标题，例如歌曲名称
+            .setContentText(Lyrics)  // 通知正文，例如歌手和专辑信息
+            .setTicker(Lyrics)  // 设置状态栏歌词滚动内容
+            .setPriority(NotificationCompat.PRIORITY_MIN)  // 低优先级，避免打扰
+            .setOngoing(true)  // 设置为持续通知，用户无法轻易滑掉通知
+        val StatusBar = notification.build()
+        // 设置自定义 FLAG，确保只更新状态栏歌词，不更新其他内容
+        StatusBar.extras.putInt("ticker_icon", R.drawable.ic_gramophone_monochrome)
+        StatusBar.extras.putBoolean("ticker_icon_switch", false)
+        // 保持状态栏歌词滚动显示
+        StatusBar.flags = StatusBar.flags.or(FLAG_ALWAYS_SHOW_TICKER)
+        // 只更新 Ticker（歌词），不会更新其他属性
+        StatusBar.flags = StatusBar.flags.or(FLAG_ONLY_UPDATE_TICKER)
+        // 检查是否需要请求通知权限（针对 Android 13 及以上）
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // 如果在 Service 中没有权限，我们不能直接请求权限，因此需要在启动 Service 前确保权限已被授予
+                // 这里可以记录日志或通知调用方权限没有授予
+                Log.e("GramophoneService", "Notification permission not granted.")
+                return
+            } else {
+                // 已经有权限，直接发送通知
+                notificationManager.notify(2, StatusBar)
+            }
+        } else {
+            // 低于 Android 13，不需要请求通知权限，直接发送通知
+            notificationManager.notify(2, StatusBar)
+        }
+    }
+
+
+    private fun updateNewIndex(): Int {
+        val filteredList = lyricsLegacy?.filterIndexed { _, lyric ->
+            (lyric.timeStamp ?: 0) <= (controller?.currentPosition ?: 0)
+        }
+
+        return if (filteredList?.isNotEmpty() == true) {
+            filteredList.indices.maxByOrNull {
+                filteredList[it].timeStamp ?: 0
+            } ?: -1
+        } else {
+            -1
+        }
+    }
+
+
+    fun getCurrentHighlightedLyric(): String? {
+        val position = updateNewIndex()
+        return if (position != -1) {
+            lyricsLegacy?.get(position)?.content // 返回高亮的歌词内容
+        } else {
+            null // 没有高亮的歌词
+        }
+    }
+
+
+    fun updateLyricsLegacy(parsedLyrics: MutableList<MediaStoreUtils.Lyric>?, parsedLyricsa: SemanticLyrics?) {
+        lyrics = null
+        if ( parsedLyrics.toString() == "null" ){
+            lyricsLegacy = SemanticLyrics.convertForLegacy(parsedLyricsa)
+            adapter?.updateLyrics(lyricsLegacy)
+            newView?.updateLyrics(null)
+        } else {
+            lyricsLegacy = parsedLyrics
+            adapter?.updateLyrics(lyricsLegacy)
+            newView?.updateLyrics(null)
+
         }
     }
 
