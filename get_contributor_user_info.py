@@ -27,6 +27,7 @@ GITHUB_USERS = [
     ("Yuyuko1024", "contributors_yuyuko1024"),
     ("ghhccghk", "contributors_ghhccghk"),
     ("banksio", "contributors_banksio"),
+    ("manum45", "contributors_code_contributions"),
     ("lucaxvi", "contributors_code_contributions"),
     ("tungnk123", "contributors_code_contributions"),
     (None, "contributors_code_contributions", "kleidis"),
