@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="settings_content_based_color_summary">Enable album based colour generation</string>
+    <string name="settings_content_based_color">Content based colours</string>
+    <string name="settings_color_accuracy_summary">Make colour generation accurate</string>
+    <string name="settings_color_accuracy">Colour accuracy</string>
+    <string name="settings_category_behavior">Behaviour</string>
+    <string name="settings_behavior_summary">Filters, launch behaviours</string>
+    <string name="settings_player_options_summary">Output quality, playback behaviour</string>
+    <string name="edit_favorites_failed">Editing favourites failed: %s</string>
+    <string name="favorite">Favourite</string>
+    <string name="unfavorite">Unfavourite</string>
+    <string name="favorite_failed_title">Failed to change favourite state of song</string>
+    <string name="favorite_failed_text">Please click here to apply changes, by granting permission to the favourite playlist file</string>
 </resources>
