@@ -468,4 +468,6 @@
     <string name="album_gain">الحفاظ على ديناميكيات الألبوم</string>
     <string name="mix_port_flag_mmap_noirq">MMAP (بدون irq)</string>
     <string name="tempo_pitch_value">%s: %.2fx</string>
+    <string name="settings_replaygain_no_rg_amp">التوهين (دون RG)</string>
+    <string name="settings_replaygain_preamp">مضخم مسبق</string>
 </resources>
