@@ -85,7 +85,7 @@
     <string name="sort_by_release_date">발매 날짜</string>
     <string name="current_playlist">현재 재생 목록</string>
     <string name="timer">수면 타이머</string>
-    <string name="fgs_failed_text">여기를 눌러 앱을 열고 음악을 다시 재생하세요.</string>
+    <string name="fgs_failed_text">여기를 눌러 앱을 열고 음악을 다시 재생하세요</string>
     <string name="fgs_failed_title">음악 재생 재개 실패</string>
     <string name="fgs_failed_channel">음악 재생 재개 실패</string>
     <string name="timer_expiry">수면 타이머가 %s에 음악을 일시 정지합니다</string>
@@ -252,7 +252,7 @@
     <string name="open_in_gramophone">Gramophone에서 열기</string>
     <string name="settings_lyrics_no_animation_summary">가사의 줄 이동 애니메이션 모두 끄기</string>
     <string name="dialog_bitrate">비트레이트</string>
-    <string name="send_email_manually">메일 앱을 찾을 수 없습니다. nift4@posteo.net으로 로그를 보내 주세요.</string>
+    <string name="send_email_manually">메일 앱을 찾을 수 없습니다. nift4@posteo.net으로 로그를 보내 주세요</string>
     <string name="bitrate_format">%1$d kbps</string>
     <string name="settings_contributors_click">%s(여기를 눌러 더 보기)</string>
     <string name="send_email">이메일 전송</string>
