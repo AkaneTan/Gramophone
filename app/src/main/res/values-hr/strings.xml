@@ -298,7 +298,7 @@
     <string name="oh_no">Oh ne!</string>
     <string name="gramophone_crashed_explainer2">Gramophone je prekinuo raditi :(\n\nPošalji mi prijavu greške kako bi se problemi poput onih koji su doveli do ove greške mogli popraviti!\n\nSvaka je situacija jedinstvena poput glazbe – bez tvoje pomoći se ova greška vjerojatno <b>NEĆE</b> popraviti!</string>
     <string name="send_email">Pošalji e-mail</string>
-    <string name="send_email_manually">Pošalji zapis na nift4dev@gmail.com – ne može se pronaći e-mail aplikacija</string>
+    <string name="send_email_manually">Pošalji zapis na nift4@posteo.net – ne može se pronaći e-mail aplikacija</string>
     <string name="failed_to_parse_lyric">Neuspjela obrada tekstova pjesama</string>
     <string name="audio_signal_chain">Lanac audio signala</string>
     <string name="audio_not_initialized">Sustav za reprodukciju zvuka nije inicijaliziran. Pokušaj nešto reproducirati!</string>
@@ -437,7 +437,7 @@
     <string name="spk_encoding_pcm_20bit_big_endian">20-bit PCM (big endian)</string>
     <string name="settings_cookie_summary">Stvori omot albuma u obliku kolačića</string>
     <string name="settings_cookie_info">Omot kao kolačić</string>
-    <string name="settings_pure_dark">Potpuno tamna tema</string>
+    <string name="settings_pure_dark">Potpuno crna u tamnoj temi</string>
     <string name="settings_pure_dark_summary">Tema u kojoj su sve površine u aplikaciji potpuno crne (što može dovesti do problema na OLED ekranima)</string>
     <string name="settings_stop_on_dismiss">Prekini pri odbacivanju</string>
     <string name="settings_stop_on_dismiss_summary">Prekini reprodukciju kada se zadatak aplikacije odbaci iz nedavnih</string>
@@ -481,7 +481,7 @@
     <string name="actions_query_shuffle_specific">promiješaj $item_name</string>
     <string name="edit_favorites_failed">Uređivanje favorita neuspjelo: %s</string>
     <string name="favorite">Favorit</string>
-    <string name="favorite_failed_title">Nije bilo moguće promijenit stanje pjesme</string>
+    <string name="favorite_failed_title">Nije bilo moguće promijeniti stanje pjesme kao favorita</string>
     <string name="favorite_failed_text">Pritisni ovdje za primjenu promjena, davajući dozvole favoritnoj datoteci playliste</string>
     <string name="error_in_bg">Događaju se greške u pozadini</string>
     <string name="settings_whitelist">Bijela lista</string>
@@ -524,4 +524,12 @@
     <string name="mq_pin_queue">Prikvači red čekanja</string>
     <string name="shuffled">%s (promiješano)</string>
     <string name="loading_playlists">Učitavanje playlista …</string>
+    <string name="reverse_order">Preokreni redoslijed</string>
+    <string name="settings_notification_lyrics_title">Tekstovi pjesama u obavijesti</string>
+    <string name="settings_notification_lyrics_summary">Prikaži tekstove pjesama kao naslov i izvođača – naslov kao podnaslov</string>
+    <string name="settings_always_skip_previous">Uvijek preskoči na prethodnu pjesmu</string>
+    <string name="settings_always_skip_previous_summary">Izravno prebaci na prethodnu pjesmu pritiskom tipke za prethodnu pjesmu umjesto traženja na početak</string>
+    <string name="contributors_banksio">Android Auto</string>
+    <string name="unfavorite">Ukloni iz favorita</string>
+    <string name="edit_mode">Uđi u modus uređivanja</string>
 </resources>
